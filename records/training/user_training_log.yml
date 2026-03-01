@@ -1,0 +1,32 @@
+version: 1
+users:
+  qa_alex:
+    completed_revisions:
+      SOP-001: R00
+      SOP-002: R00
+      SOP-003: R00
+      SOP-004: R00
+  dev_lina:
+    completed_revisions:
+      SOP-001: R00
+      SOP-002: R00
+  dev_marcus:
+    completed_revisions:
+      SOP-001: R00
+      SOP-002: R00
+  clin_rina:
+    completed_revisions:
+      SOP-001: R00
+      SOP-004: R00
+  clin_owen:
+    completed_revisions:
+      SOP-001: R00
+      SOP-004: R00
+  audit_nora:
+    completed_revisions:
+      SOP-001: R00
+      SOP-003: R00
+  mgmt_eli:
+    completed_revisions:
+      SOP-001: R00
+      SOP-004: R00

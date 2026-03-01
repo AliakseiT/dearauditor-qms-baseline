@@ -1,0 +1,68 @@
+name: Training Request
+description: Open a per-user training request when SOP published revision exceeds user log revision
+title: "TRAINING REQUEST: "
+body:
+  - type: input
+    id: user_id
+    attributes:
+      label: User ID
+      description: GitHub user requiring training
+      placeholder: "@username"
+    validations:
+      required: true
+  - type: input
+    id: sop_id
+    attributes:
+      label: SOP ID
+      description: SOP identifier from published index
+      placeholder: "SOP-001"
+    validations:
+      required: true
+  - type: input
+    id: sop_file
+    attributes:
+      label: SOP File
+      description: Path to the SOP file changed
+      placeholder: "sops/SOP-001-DocControl.md"
+    validations:
+      required: true
+  - type: input
+    id: published_revision
+    attributes:
+      label: Published Revision
+      description: Revision currently published in README index
+      placeholder: "R01"
+    validations:
+      required: true
+  - type: input
+    id: user_log_revision
+    attributes:
+      label: User Log Revision
+      description: Latest revision recorded in user training log
+      placeholder: "R00 or UNTRAINED"
+    validations:
+      required: true
+  - type: input
+    id: source_commit
+    attributes:
+      label: Source Commit
+      description: Commit that introduced the SOP revision delta
+      placeholder: "git SHA"
+    validations:
+      required: true
+  - type: input
+    id: due_date
+    attributes:
+      label: Due Date
+      description: Deadline for user to complete training
+      placeholder: "YYYY-MM-DD"
+    validations:
+      required: true
+  - type: textarea
+    id: completion_evidence
+    attributes:
+      label: Completion Evidence
+      description: Evidence link when training is completed
+      placeholder: "URL/path to completed training evidence"
+    validations:
+      required: false

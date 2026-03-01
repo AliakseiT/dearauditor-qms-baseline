@@ -1,0 +1,91 @@
+name: SOP Training Matrix Guard
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - sops/*.md
+      - matrices/training_matrix.yml
+
+permissions:
+  contents: read
+
+jobs:
+  enforce_training_matrix_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate SOP updates are reflected in training matrix
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          base_sha = os.environ['BASE_SHA'].strip()
+          head_sha = os.environ['HEAD_SHA'].strip()
+
+          changed_files = subprocess.check_output(
+            ['git', 'diff', '--name-only', base_sha, head_sha],
+            text=True,
+          ).splitlines()
+          changed_files = [f.strip() for f in changed_files if f.strip()]
+          changed_sops = [f for f in changed_files if f.startswith('sops/') and f.endswith('.md')]
+
+          if not changed_sops:
+            print('No SOP markdown changes detected; guard passed.')
+            sys.exit(0)
+
+          if 'matrices/training_matrix.yml' not in changed_files:
+            print('ERROR: SOP changes detected, but matrices/training_matrix.yml was not updated.')
+            sys.exit(1)
+
+          matrix_path = Path('matrices/training_matrix.yml')
+          if not matrix_path.exists():
+            print('ERROR: matrices/training_matrix.yml missing.')
+            sys.exit(1)
+
+          matrix_text = matrix_path.read_text(encoding='utf-8')
+          mapped_tokens = set(re.findall(r'^\s*-\s*(SOP-\d+(?:-[A-Za-z0-9]+)*)\s*$', matrix_text, flags=re.MULTILINE))
+
+          matrix_diff = subprocess.check_output(
+            ['git', 'diff', '--unified=0', base_sha, head_sha, '--', 'matrices/training_matrix.yml'],
+            text=True,
+          )
+
+          errors = []
+          for sop_file in changed_sops:
+            stem = Path(sop_file).stem
+            match = re.search(r'(SOP-\d+)', stem)
+            if not match:
+              errors.append(f'Could not derive SOP ID from {sop_file}.')
+              continue
+
+            sop_id = match.group(1)
+            if sop_id not in mapped_tokens and stem not in mapped_tokens:
+              errors.append(
+                f'{sop_file} changed, but neither {sop_id} nor {stem} exists in required_sops of the matrix.'
+              )
+
+            if not re.search(rf'^[+-].*\b({re.escape(sop_id)}|{re.escape(stem)})\b', matrix_diff, flags=re.MULTILINE):
+              errors.append(
+                f'{sop_file} changed, but matrix diff does not explicitly reference {sop_id}/{stem}.'
+              )
+
+          if errors:
+            print('ERROR: SOP Training Matrix Guard failed:')
+            for err in errors:
+              print(f' - {err}')
+            sys.exit(1)
+
+          print('SOP Training Matrix Guard passed.')
+          PY

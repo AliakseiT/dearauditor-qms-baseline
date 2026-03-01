@@ -6,7 +6,9 @@ on:
       - main
     paths:
       - sops/*.md
+      - README.md
       - matrices/training_matrix.yml
+      - records/training/user_training_log.yml
 
 permissions:
   contents: read
@@ -30,7 +32,8 @@ jobs:
           if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
             BEFORE="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
           fi
-          git diff --name-only "$BEFORE" "$AFTER" -- 'sops/*.md' | sort -u > changed_sops.txt
+
+          git diff --name-only "$BEFORE" "$AFTER" | grep '^sops/.*\.md$' | sort -u > changed_sops.txt || true
           if [ -s changed_sops.txt ]; then
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
             cat changed_sops.txt
@@ -45,62 +48,128 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Build issue payload
+      - name: Build per-user training issue payload
         id: payload
         if: steps.changed.outputs.has_changes == 'true'
         shell: bash
+        env:
+          SOURCE_SHA: ${{ github.sha }}
         run: |
           python -m pip install --quiet pyyaml
           python <<'PY'
           import json
           import os
+          import re
+          from datetime import date, timedelta
           from pathlib import Path
+
           import yaml
 
-          matrix_path = Path("matrices/training_matrix.yml")
-          changed_path = Path("changed_sops.txt")
+          def parse_published_index(readme_text):
+            start = '<!-- PUBLISHED-SOP-INDEX:START -->'
+            end = '<!-- PUBLISHED-SOP-INDEX:END -->'
+            if start not in readme_text or end not in readme_text:
+              return {}
 
-          matrix = {}
-          if matrix_path.exists():
-            matrix = yaml.safe_load(matrix_path.read_text()) or {}
+            block = readme_text.split(start, 1)[1].split(end, 1)[0]
+            rows = {}
+            for raw in block.splitlines():
+              row = raw.strip()
+              if not row.startswith('|'):
+                continue
+              if row.startswith('| SOP ID ') or row.startswith('|---'):
+                continue
+              cols = [c.strip() for c in row.strip('|').split('|')]
+              if len(cols) < 6:
+                continue
+              sop_id, title, sop_file, eff_date, revision, status = cols[:6]
+              rows[sop_id] = {
+                'title': title,
+                'file': sop_file,
+                'effective_date': eff_date,
+                'revision': revision,
+                'status': status,
+              }
+            return rows
 
-          roles = matrix.get("roles", {})
+          matrix_path = Path('matrices/training_matrix.yml')
+          log_path = Path('records/training/user_training_log.yml')
+          readme_path = Path('README.md')
+          changed_path = Path('changed_sops.txt')
+
+          matrix = yaml.safe_load(matrix_path.read_text(encoding='utf-8')) if matrix_path.exists() else {}
+          user_log = yaml.safe_load(log_path.read_text(encoding='utf-8')) if log_path.exists() else {}
+          readme = readme_path.read_text(encoding='utf-8') if readme_path.exists() else ''
+
+          index = parse_published_index(readme)
+          roles = matrix.get('roles', {}) or {}
+          log_users = user_log.get('users', {}) or {}
+
           changed_files = [line.strip() for line in changed_path.read_text().splitlines() if line.strip()]
+          due_date = (date.today() + timedelta(days=14)).isoformat()
 
           entries = []
           for sop_file in changed_files:
-            sop_name = Path(sop_file).stem
+            sop_stem = Path(sop_file).stem
+            match = re.search(r'(SOP-\d+)', sop_stem)
+            if not match:
+              continue
+            sop_id = match.group(1)
+
+            published = index.get(sop_id)
+            if not published:
+              continue
+            published_rev = str(published.get('revision', 'UNKNOWN')).strip()
+
+            required_users = set()
             matched_roles = []
-            assignees = set()
             for role_name, role_def in roles.items():
-              required = set(role_def.get("required_sops", []) or [])
-              if sop_name in required or sop_file in required:
+              required = set(str(v).strip() for v in (role_def.get('required_sops', []) or []))
+              if sop_id in required or sop_stem in required or sop_file in required:
                 matched_roles.append(role_name)
-                for user in role_def.get("users", []) or []:
-                  cleaned = str(user).strip().lstrip("@")
-                  if cleaned and cleaned != "REPLACE_WITH_GH_USERNAME":
-                    assignees.add(cleaned)
+                for user in role_def.get('users', []) or []:
+                  cleaned = str(user).strip().lstrip('@')
+                  if cleaned:
+                    required_users.add(cleaned)
 
-            body = "\n".join([
-              f"SOP updated: `{sop_file}`",
-              "",
-              "Action: complete required training and document completion per QMS procedure.",
-              "",
-              f"Mapped roles: {', '.join(matched_roles) if matched_roles else 'none'}",
-              f"Intended assignees from matrix: {', '.join(sorted(assignees)) if assignees else 'none configured'}",
-            ])
+            for user in sorted(required_users):
+              user_rev = (
+                log_users.get(user, {})
+                .get('completed_revisions', {})
+                .get(sop_id, 'UNTRAINED')
+              )
+              user_rev = str(user_rev).strip() if user_rev is not None else 'UNTRAINED'
 
-            entries.append({
-              "title": f"TRAINING REQUIRED: Read {sop_name}",
-              "body": body,
-              "assignees": sorted(assignees),
-            })
+              if user_rev == published_rev:
+                continue
 
-          output = os.environ["GITHUB_OUTPUT"]
-          with open(output, "a", encoding="utf-8") as fh:
-            fh.write("entries_json<<EOF\n")
+              title = f'TRAINING REQUEST: {user} {sop_id} {user_rev}->{published_rev}'
+              body = '\n'.join([
+                '### Training Request',
+                f'**User ID:** @{user}',
+                f'**SOP ID:** {sop_id}',
+                f'**SOP File:** {sop_file}',
+                f'**Published Revision:** {published_rev}',
+                f'**User Log Revision:** {user_rev}',
+                '**Revision Delta:** Training required due to published revision mismatch',
+                f'**Source Commit:** {os.environ.get("SOURCE_SHA", "")}',
+                f'**Due Date:** {due_date}',
+                f'**Mapped Roles:** {", ".join(matched_roles) if matched_roles else "none"}',
+                '',
+                '_Auto-generated by auto_training_assign workflow._',
+              ])
+
+              entries.append({
+                'title': title,
+                'body': body,
+                'assignees': [user],
+              })
+
+          output = os.environ['GITHUB_OUTPUT']
+          with open(output, 'a', encoding='utf-8') as fh:
+            fh.write('entries_json<<EOF\n')
             fh.write(json.dumps(entries))
-            fh.write("\nEOF\n")
+            fh.write('\nEOF\n')
           PY
 
       - name: Open training issues
@@ -112,6 +181,13 @@ jobs:
           script: |
             const entries = JSON.parse(process.env.ENTRIES_JSON || '[]');
             for (const entry of entries) {
+              const dupQuery = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open in:title "${entry.title.replace(/"/g, '\\"')}"`;
+              const dup = await github.rest.search.issuesAndPullRequests({ q: dupQuery });
+              if (dup.data.total_count > 0) {
+                core.info(`Skipping duplicate open training issue: ${entry.title}`);
+                continue;
+              }
+
               const request = {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
