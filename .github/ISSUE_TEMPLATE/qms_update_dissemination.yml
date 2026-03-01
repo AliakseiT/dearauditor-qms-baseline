@@ -1,0 +1,56 @@
+name: QMS Update Dissemination and Team Feedback
+description: Record communication of QMS updates and collect team feedback
+title: "QMS UPDATE DISSEMINATION: "
+labels:
+  - qms
+  - communication
+  - feedback
+body:
+  - type: input
+    id: update_reference
+    attributes:
+      label: Update Reference
+      description: PR/commit/SOP revision reference for this QMS update.
+      placeholder: "PR #123, SOP-001 R01"
+    validations:
+      required: true
+  - type: textarea
+    id: change_summary
+    attributes:
+      label: Change Summary
+      description: Short summary of what changed in the QMS and why.
+      placeholder: One bullet per key change.
+    validations:
+      required: true
+  - type: textarea
+    id: dissemination_plan
+    attributes:
+      label: Dissemination Plan
+      description: Who was informed, through which channels, and when.
+      placeholder: "Roles/users, Slack/email/meeting, dissemination date"
+    validations:
+      required: true
+  - type: input
+    id: feedback_deadline
+    attributes:
+      label: Feedback Deadline
+      description: Final date for collecting team feedback.
+      placeholder: "YYYY-MM-DD"
+    validations:
+      required: true
+  - type: textarea
+    id: feedback_collected
+    attributes:
+      label: Feedback Collected
+      description: Feedback received from the team.
+      placeholder: One item per line, include source user/role.
+    validations:
+      required: true
+  - type: textarea
+    id: follow_up_actions
+    attributes:
+      label: Follow-up Actions
+      description: Actions accepted/rejected from feedback and rationale.
+      placeholder: One action per line with owner and due date.
+    validations:
+      required: true

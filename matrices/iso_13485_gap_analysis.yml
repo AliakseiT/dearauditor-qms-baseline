@@ -1,0 +1,91 @@
+version: 1
+standard:
+  exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
+  normative_base: "ISO 13485:2016"
+  analysis_scope:
+    clauses: "4.1-8.5"
+  source_documents:
+    - path: "/Users/aliaksei/kiro/dearA/tmp/MDSAP_Audit_Dataset/01_Quality_Management_System/13485-mapping.pdf"
+      purpose: "Clause-to-document mapping baseline"
+    - path: "/Users/aliaksei/Downloads/EVS_EN_ISO_13485 (2).pdf"
+      purpose: "Normative clause interpretation baseline"
+  copyright_note: "Only summary metadata and clause mappings are stored here; no copyrighted standard text is reproduced."
+summary:
+  - "The gap analysis baseline uses ISO 13485 clauses 4.1 through 8.5 for QMS, design controls, post-market, and improvement controls."
+  - "Repository execution model: planning in issues, controlled execution in immutable PR records, with SOP index and training traceability guards."
+  - "Coverage is mapped to SOP IDs so each clause has a traceable procedural owner."
+clause_coverage:
+  - clause: "4.1"
+    mapped_sops: ["SOP-005", "SOP-009", "SOP-010"]
+    status: "planned_in_open_prs"
+  - clause: "4.1.6"
+    mapped_sops: ["SOP-006"]
+    status: "planned_in_open_prs"
+  - clause: "4.2.3"
+    mapped_sops: ["SOP-007"]
+    status: "planned_in_open_prs"
+  - clause: "4.2.4"
+    mapped_sops: ["SOP-001"]
+    status: "covered"
+  - clause: "4.2.5"
+    mapped_sops: ["SOP-001"]
+    status: "covered"
+  - clause: "5.6"
+    mapped_sops: ["SOP-004"]
+    status: "covered"
+  - clause: "6.2"
+    mapped_sops: ["SOP-011"]
+    status: "planned_in_open_prs"
+  - clause: "6.3"
+    mapped_sops: []
+    status: "gap"
+    gap_note: "Dedicated infrastructure and maintenance control procedure is not yet defined as a standalone SOP."
+    proposed_sop: "SOP-017"
+  - clause: "7.1"
+    mapped_sops: ["SOP-008"]
+    status: "planned_in_open_prs"
+  - clause: "7.3"
+    mapped_sops: ["SOP-008", "SOP-009"]
+    status: "planned_in_open_prs"
+  - clause: "7.4"
+    mapped_sops: ["SOP-010"]
+    status: "planned_in_open_prs"
+  - clause: "7.5"
+    mapped_sops: ["SOP-008", "SOP-014"]
+    status: "planned_in_open_prs"
+  - clause: "7.5.9"
+    mapped_sops: ["SOP-007", "SOP-008"]
+    status: "planned_in_open_prs"
+  - clause: "7.6"
+    mapped_sops: ["SOP-006", "SOP-014"]
+    status: "planned_in_open_prs"
+  - clause: "8.1"
+    mapped_sops: ["SOP-004", "SOP-003", "SOP-008"]
+    status: "covered_and_planned"
+  - clause: "8.2.1"
+    mapped_sops: ["SOP-012"]
+    status: "planned_in_open_prs"
+  - clause: "8.2.2"
+    mapped_sops: ["SOP-012"]
+    status: "planned_in_open_prs"
+  - clause: "8.2.3"
+    mapped_sops: ["SOP-013"]
+    status: "planned_in_open_prs"
+  - clause: "8.2.4"
+    mapped_sops: ["SOP-003"]
+    status: "covered"
+  - clause: "8.2.5"
+    mapped_sops: ["SOP-004", "SOP-016"]
+    status: "covered_and_planned"
+  - clause: "8.2.6"
+    mapped_sops: ["SOP-014"]
+    status: "planned_in_open_prs"
+  - clause: "8.3"
+    mapped_sops: ["SOP-015", "SOP-002"]
+    status: "planned_in_open_prs"
+  - clause: "8.4"
+    mapped_sops: ["SOP-016", "SOP-014"]
+    status: "planned_in_open_prs"
+  - clause: "8.5"
+    mapped_sops: ["SOP-002", "SOP-015"]
+    status: "covered_and_planned"

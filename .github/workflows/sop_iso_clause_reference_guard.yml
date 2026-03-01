@@ -1,0 +1,87 @@
+name: SOP ISO Clause Reference Guard
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - sops/*.md
+
+permissions:
+  contents: read
+
+jobs:
+  enforce_iso_references:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate each changed SOP has ISO 13485 clause references
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          import yaml
+
+          base_sha = os.environ['BASE_SHA'].strip()
+          head_sha = os.environ['HEAD_SHA'].strip()
+          changed_files = subprocess.check_output(
+            ['git', 'diff', '--name-only', base_sha, head_sha],
+            text=True,
+          ).splitlines()
+          changed_sops = [f.strip() for f in changed_files if f.strip().startswith('sops/') and f.strip().endswith('.md')]
+
+          if not changed_sops:
+            print('No SOP changes detected; guard passed.')
+            sys.exit(0)
+
+          errors = []
+          for sop_file in changed_sops:
+            path = Path(sop_file)
+            if not path.exists():
+              continue
+
+            text = path.read_text(encoding='utf-8')
+            if not text.startswith('---\n'):
+              errors.append(f'{sop_file}: missing YAML frontmatter with iso_13485_clauses list.')
+              continue
+
+            parts = text.split('\n---\n', 1)
+            if len(parts) != 2:
+              errors.append(f'{sop_file}: malformed YAML frontmatter block.')
+              continue
+
+            try:
+              meta = yaml.safe_load(parts[0].lstrip('-\n')) or {}
+            except Exception as exc:
+              errors.append(f'{sop_file}: invalid YAML frontmatter ({exc}).')
+              continue
+
+            clauses = meta.get('iso_13485_clauses')
+            if not isinstance(clauses, list) or len(clauses) == 0:
+              errors.append(f'{sop_file}: iso_13485_clauses must be a non-empty list.')
+              continue
+
+            for clause in clauses:
+              c = str(clause).strip()
+              if not re.fullmatch(r'\d+(?:\.\d+){0,3}', c):
+                errors.append(f'{sop_file}: invalid clause format "{c}".')
+
+          if errors:
+            print('ERROR: SOP ISO Clause Reference Guard failed:')
+            for err in errors:
+              print(f' - {err}')
+            sys.exit(1)
+
+          print('SOP ISO Clause Reference Guard passed.')
+          PY

@@ -1,0 +1,35 @@
+version: 1
+template_name: supplier_vetting_record
+record_fields:
+  supplier_id: "SUP-000"
+  supplier_name: ""
+  supplier_category: "software|cloud|component|service"
+  criticality: "high|medium|low"
+  initial_assessment_date: "YYYY-MM-DD"
+  assessor: "@username"
+  quality_agreement_required: true
+  quality_agreement_reference: ""
+  regulatory_impact: "none|indirect|direct"
+  risk_assessment:
+    severity: "low|medium|high"
+    probability: "low|medium|high"
+    detectability: "low|medium|high"
+    residual_risk: "low|medium|high"
+  qualification_checks:
+    qms_evidence_reviewed: false
+    security_review_completed: false
+    business_continuity_reviewed: false
+    change_notification_commitment: false
+    supplier_audit_required: false
+  decision:
+    status: "approved|conditionally_approved|rejected"
+    decision_date: "YYYY-MM-DD"
+    approver: "@username"
+    rationale: ""
+  re_evaluation:
+    cadence_days: 365
+    next_review_due: "YYYY-MM-DD"
+    trigger_events:
+      - "Major quality event"
+      - "Regulatory non-conformance"
+      - "Major service change"

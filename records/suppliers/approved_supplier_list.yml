@@ -1,0 +1,16 @@
+version: 1
+list_owner_role: management_representative
+last_review_date: "YYYY-MM-DD"
+next_review_due: "YYYY-MM-DD"
+review_cadence_days: 90
+suppliers:
+  - supplier_id: "SUP-001"
+    supplier_name: "Example Supplier"
+    supplier_category: "software"
+    approval_status: "approved"
+    approved_on: "YYYY-MM-DD"
+    last_vetting_record: "records/suppliers/vetting/SUP-001.yml"
+    quality_agreement_reference: "records/suppliers/agreements/SUP-001-quality-agreement.pdf"
+    next_re_evaluation_due: "YYYY-MM-DD"
+    owner: "@username"
+    notes: ""
