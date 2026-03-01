@@ -1,0 +1,61 @@
+name: Issue-to-PR Part 11 Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: write
+
+concurrency:
+  group: part11-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate_execution_record:
+    runs-on: ubuntu-latest
+    outputs:
+      meaning_of_signature: ${{ steps.parse.outputs.meaning_of_signature }}
+      issue_number: ${{ steps.parse.outputs.issue_number }}
+    steps:
+      - name: Parse PR body for Issue and signature meaning
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+
+            const issueMatch = body.match(/Issue\s+#(\d+)/i);
+            if (!issueMatch) {
+              core.setFailed('Execution Record must reference an Issue number (e.g., "Issue #12").');
+              return;
+            }
+
+            const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
+            let meaning = meaningMatch ? meaningMatch[1].trim() : '';
+            if (!meaning || meaning.startsWith('[')) {
+              meaning = 'Approved Quality Record';
+            }
+
+            core.setOutput('issue_number', issueMatch[1]);
+            core.setOutput('meaning_of_signature', meaning);
+
+  part11_signature_gate:
+    needs: validate_execution_record
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Run Part 11 signature gate
+        uses: AliakseiT/part11-action@main
+        with:
+          target_type: pr
+          meaning_of_signature: ${{ needs.validate_execution_record.outputs.meaning_of_signature }}
+          attestation_mode: pr_comment_mock
+          sign_page_base_url: https://aliakseit.github.io/part11-action/
+          poll_timeout_seconds: '1500'
+          poll_interval_seconds: '15'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
