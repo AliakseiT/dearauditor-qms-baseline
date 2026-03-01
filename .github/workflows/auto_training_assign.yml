@@ -1,0 +1,132 @@
+name: Auto Training Assignment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - sops/*.md
+      - matrices/training_matrix.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  assign_training:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed SOP files
+        id: changed
+        shell: bash
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            BEFORE="$(git rev-list --max-parents=0 HEAD | tail -n 1)"
+          fi
+          git diff --name-only "$BEFORE" "$AFTER" -- 'sops/*.md' | sort -u > changed_sops.txt
+          if [ -s changed_sops.txt ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            cat changed_sops.txt
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No SOP markdown changes detected."
+          fi
+
+      - name: Setup Python
+        if: steps.changed.outputs.has_changes == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build issue payload
+        id: payload
+        if: steps.changed.outputs.has_changes == 'true'
+        shell: bash
+        run: |
+          python -m pip install --quiet pyyaml
+          python <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import yaml
+
+          matrix_path = Path("matrices/training_matrix.yml")
+          changed_path = Path("changed_sops.txt")
+
+          matrix = {}
+          if matrix_path.exists():
+            matrix = yaml.safe_load(matrix_path.read_text()) or {}
+
+          roles = matrix.get("roles", {})
+          changed_files = [line.strip() for line in changed_path.read_text().splitlines() if line.strip()]
+
+          entries = []
+          for sop_file in changed_files:
+            sop_name = Path(sop_file).stem
+            matched_roles = []
+            assignees = set()
+            for role_name, role_def in roles.items():
+              required = set(role_def.get("required_sops", []) or [])
+              if sop_name in required or sop_file in required:
+                matched_roles.append(role_name)
+                for user in role_def.get("users", []) or []:
+                  cleaned = str(user).strip().lstrip("@")
+                  if cleaned and cleaned != "REPLACE_WITH_GH_USERNAME":
+                    assignees.add(cleaned)
+
+            body = "\n".join([
+              f"SOP updated: `{sop_file}`",
+              "",
+              "Action: complete required training and document completion per QMS procedure.",
+              "",
+              f"Mapped roles: {', '.join(matched_roles) if matched_roles else 'none'}",
+              f"Intended assignees from matrix: {', '.join(sorted(assignees)) if assignees else 'none configured'}",
+            ])
+
+            entries.append({
+              "title": f"TRAINING REQUIRED: Read {sop_name}",
+              "body": body,
+              "assignees": sorted(assignees),
+            })
+
+          output = os.environ["GITHUB_OUTPUT"]
+          with open(output, "a", encoding="utf-8") as fh:
+            fh.write("entries_json<<EOF\n")
+            fh.write(json.dumps(entries))
+            fh.write("\nEOF\n")
+          PY
+
+      - name: Open training issues
+        if: steps.changed.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        env:
+          ENTRIES_JSON: ${{ steps.payload.outputs.entries_json }}
+        with:
+          script: |
+            const entries = JSON.parse(process.env.ENTRIES_JSON || '[]');
+            for (const entry of entries) {
+              const request = {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: entry.title,
+                body: entry.body
+              };
+
+              if ((entry.assignees || []).length > 0) {
+                try {
+                  await github.rest.issues.create({ ...request, assignees: entry.assignees });
+                  continue;
+                } catch (error) {
+                  core.warning(`Issue assignment failed for ${entry.title}: ${error.message}`);
+                }
+              }
+
+              await github.rest.issues.create(request);
+            }

@@ -1,0 +1,32 @@
+name: Management Review Plan
+description: Structured management review planning record
+title: "MGMT REVIEW PLAN: "
+labels:
+  - qms
+  - management-review
+  - plan
+body:
+  - type: input
+    id: review_period
+    attributes:
+      label: Review Period
+      description: Period covered by this management review.
+      placeholder: "YYYY-QX or YYYY-MM-DD to YYYY-MM-DD"
+    validations:
+      required: true
+  - type: textarea
+    id: attendees
+    attributes:
+      label: Attendees
+      description: List attendee names/roles or GitHub usernames.
+      placeholder: One per line
+    validations:
+      required: true
+  - type: textarea
+    id: agenda_items
+    attributes:
+      label: Agenda Items
+      description: List the required agenda items for the review meeting.
+      placeholder: One agenda item per line
+    validations:
+      required: true

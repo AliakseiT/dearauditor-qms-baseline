@@ -1,0 +1,32 @@
+name: CAPA Plan
+description: Structured CAPA planning record
+title: "CAPA PLAN: "
+labels:
+  - qms
+  - capa
+  - plan
+body:
+  - type: textarea
+    id: non_conformance
+    attributes:
+      label: Description of Non-Conformance
+      description: Describe the non-conformance with objective evidence.
+      placeholder: Include where/when detected and impacted process or artifact.
+    validations:
+      required: true
+  - type: textarea
+    id: immediate_correction
+    attributes:
+      label: Immediate Correction
+      description: Document immediate containment or correction action.
+      placeholder: What was corrected now to stop recurrence while CAPA is planned?
+    validations:
+      required: true
+  - type: input
+    id: root_cause_assignee
+    attributes:
+      label: Root Cause Analysis Assignee
+      description: GitHub username of the person accountable for root-cause analysis.
+      placeholder: "@username"
+    validations:
+      required: true

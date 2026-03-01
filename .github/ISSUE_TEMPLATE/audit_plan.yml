@@ -1,0 +1,40 @@
+name: Audit Plan
+description: Structured internal audit planning record
+title: "AUDIT PLAN: "
+labels:
+  - qms
+  - audit
+  - plan
+body:
+  - type: textarea
+    id: audit_scope
+    attributes:
+      label: Audit Scope
+      description: Define organizational/process scope and boundaries.
+      placeholder: Include products, processes, departments, and exclusions.
+    validations:
+      required: true
+  - type: input
+    id: lead_auditor
+    attributes:
+      label: Lead Auditor
+      description: GitHub username for the lead auditor.
+      placeholder: "@username"
+    validations:
+      required: true
+  - type: input
+    id: audit_dates
+    attributes:
+      label: Dates
+      description: Planned audit date range.
+      placeholder: "YYYY-MM-DD to YYYY-MM-DD"
+    validations:
+      required: true
+  - type: input
+    id: applicable_standard
+    attributes:
+      label: Applicable Standard
+      description: Primary standard(s) used for this audit.
+      placeholder: "ISO 13485:2016, IEC 62304:2006+A1:2015"
+    validations:
+      required: true
