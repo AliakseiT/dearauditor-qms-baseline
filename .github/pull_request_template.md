@@ -4,11 +4,13 @@
 
 ### Part 11 Signature Requirements
 - **Meaning of Signature:** [e.g., Approved Quality Record]
-- **Signer Role:** [e.g., Quality Assurance Lead]
+- **Signer Roles:** [e.g., Quality Assurance Lead; Management Representative]
+- **Required Signatures:** [e.g., 1 or 2]
 
-### Part 11 Mock Signing (Current)
-1. Wait for the `Issue-to-PR Part 11 Gate` bot comment with the sign link.
-2. Open the link, generate the attestation block, and paste it as a PR comment from your GitHub account.
-3. Confirm `part11/signature-gate` status check turns green.
+### Part 11 Mock Signing (Post-Merge)
+1. Merge the PR.
+2. Wait for the `Issue-to-PR Part 11 Sign-Off` bot comment on the closed PR with `Sign as <Role>` links.
+3. Each signatory opens their role link, completes mock signature login, and clicks `Sign and Post to PR`.
+4. Confirm `part11/signature-gate` status check turns green after required signatures are collected.
 
-*Note: Merging this PR requires re-authentication via the Part 11 Action Gateway.*
+*Note: This is a mock signature flow for process rehearsal; production Part 11 control requires validated authentication and audit controls.*
