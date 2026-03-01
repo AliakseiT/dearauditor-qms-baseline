@@ -1,36 +1,39 @@
+---
 version: 1
 roles:
   qa_lead:
     users:
-      - qa_alex
+    - qa_alex
     required_sops:
-      - SOP-001-DocControl
-      - SOP-002-CAPA
-      - SOP-003-InternalAudit
-      - SOP-004-ManagementReview
+    - SOP-001-DocControl
+    - SOP-002-CAPA
+    - SOP-003-InternalAudit
+    - SOP-004-ManagementReview
+    - SOP-008
   software_engineer:
     users:
-      - dev_lina
-      - dev_marcus
+    - dev_lina
+    - dev_marcus
     required_sops:
-      - SOP-001-DocControl
-      - SOP-002-CAPA
+    - SOP-001-DocControl
+    - SOP-002-CAPA
+    - SOP-008
   clinical_ops:
     users:
-      - clin_rina
-      - clin_owen
+    - clin_rina
+    - clin_owen
     required_sops:
-      - SOP-001-DocControl
-      - SOP-004-ManagementReview
+    - SOP-001-DocControl
+    - SOP-004-ManagementReview
   lead_auditor:
     users:
-      - audit_nora
+    - audit_nora
     required_sops:
-      - SOP-001-DocControl
-      - SOP-003-InternalAudit
+    - SOP-001-DocControl
+    - SOP-003-InternalAudit
   management_representative:
     users:
-      - mgmt_eli
+    - mgmt_eli
     required_sops:
-      - SOP-001-DocControl
-      - SOP-004-ManagementReview
+    - SOP-001-DocControl
+    - SOP-004-ManagementReview
