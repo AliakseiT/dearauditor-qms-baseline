@@ -1,0 +1,123 @@
+name: SOP Published Index Guard
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - sops/*.md
+      - README.md
+
+permissions:
+  contents: read
+
+jobs:
+  enforce_index_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate SOP updates are reflected in published index
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          base_sha = os.environ["BASE_SHA"].strip()
+          head_sha = os.environ["HEAD_SHA"].strip()
+
+          changed_files_raw = subprocess.check_output(
+            ["git", "diff", "--name-only", base_sha, head_sha],
+            text=True,
+          )
+          changed_files = [line.strip() for line in changed_files_raw.splitlines() if line.strip()]
+          changed_sops = [
+            path for path in changed_files if path.startswith("sops/") and path.endswith(".md")
+          ]
+
+          if not changed_sops:
+            print("No SOP markdown changes detected; guard passed.")
+            sys.exit(0)
+
+          changed_files = set(changed_files)
+          if "README.md" not in changed_files:
+            print("ERROR: SOP file changes detected, but README.md published index was not updated.")
+            sys.exit(1)
+
+          readme = Path("README.md")
+          if not readme.exists():
+            print("ERROR: README.md missing.")
+            sys.exit(1)
+
+          text = readme.read_text(encoding="utf-8")
+          start_marker = "<!-- PUBLISHED-SOP-INDEX:START -->"
+          end_marker = "<!-- PUBLISHED-SOP-INDEX:END -->"
+
+          if start_marker not in text or end_marker not in text:
+            print("ERROR: Published SOP index markers are missing in README.md.")
+            sys.exit(1)
+
+          block = text.split(start_marker, 1)[1].split(end_marker, 1)[0]
+          rows = [line.strip() for line in block.splitlines() if line.strip().startswith("|")]
+
+          # Ignore header and separator rows.
+          data_rows = []
+          for row in rows:
+            if row.startswith("| SOP ID ") or row.startswith("|---"):
+              continue
+            data_rows.append(row)
+
+          index = {}
+          for row in data_rows:
+            cols = [c.strip() for c in row.strip("|").split("|")]
+            if len(cols) < 6:
+              continue
+            sop_id, _title, _file, date, revision, _status = cols[:6]
+            index[sop_id] = {"date": date, "revision": revision}
+
+          readme_diff = subprocess.check_output(
+            ["git", "diff", "--unified=0", base_sha, head_sha, "--", "README.md"],
+            text=True,
+          )
+
+          errors = []
+          for sop_path in changed_sops:
+            filename = Path(sop_path).name
+            m = re.search(r"(SOP-\d+)", filename)
+            if not m:
+              errors.append(f"Could not derive SOP ID from filename: {sop_path}")
+              continue
+
+            sop_id = m.group(1)
+            row = index.get(sop_id)
+            if not row:
+              errors.append(f"Published index row missing for {sop_id}.")
+              continue
+
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", row["date"]):
+              errors.append(f"{sop_id} has invalid Effective Date in index: {row['date']}")
+
+            if not re.fullmatch(r"R\d{2}", row["revision"]):
+              errors.append(f"{sop_id} has invalid Published Revision in index: {row['revision']}")
+
+            if not re.search(rf"^[+-].*\b{sop_id}\b", readme_diff, flags=re.MULTILINE):
+              errors.append(
+                f"SOP content changed for {sop_id}, but no README index diff line references {sop_id}."
+              )
+
+          if errors:
+            print("ERROR: SOP Published Index Guard failed:")
+            for err in errors:
+              print(f" - {err}")
+            sys.exit(1)
+
+          print("SOP Published Index Guard passed.")
+          PY
