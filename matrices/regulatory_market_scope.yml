@@ -1,0 +1,53 @@
+version: 1
+scope_owner_role: management_representative
+last_reviewed_on: "2026-03-01"
+jurisdictions:
+  - jurisdiction: Switzerland
+    device_framework:
+      name: "Ordinance on Medical Devices (MedDO)"
+      citation: "SR 812.213"
+      key_references:
+        - ref: "Art. 3 MedDO"
+          note: "Medical device definition baseline in Switzerland."
+        - ref: "Art. 15 MedDO"
+          note: "Classification refers to Annex VIII EU MDR, including software classification approach."
+      source_links:
+        - "https://www.swissmedic.ch/swissmedic/en/home/medical-devices/regulation-of-medical-devices/faq.html"
+        - "https://www.swissmedic.ch/dam/swissmedic/en/dokumente/medizinprodukte/mep_urr/bw630_30_007d_mbmedizinprodukte-software.pdf.download.pdf/BW630_30_007e_MB%20Medical%20Device%20Software.pdf"
+  - jurisdiction: European Union
+    device_framework:
+      name: "Regulation (EU) 2017/745 (MDR)"
+      citation: "EU MDR"
+      key_references:
+        - ref: "Article 2(1) MDR"
+          note: "Definition of medical device includes software."
+        - ref: "Article 51 MDR + Annex VIII"
+          note: "Risk-classification framework; software classification rules applied through Annex VIII (including Rule 11)."
+        - ref: "MDCG 2019-11 Rev.1 (June 2025)"
+          note: "Qualification and classification guidance for software under MDR/IVDR."
+      source_links:
+        - "https://eur-lex.europa.eu/eli/reg/2017/745/2025-01-10/eng"
+        - "https://health.ec.europa.eu/latest-updates/update-mdcg-2019-11-rev1-qualification-and-classification-software-regulation-eu-2017745-and-2025-06-17_en"
+  - jurisdiction: United States
+    device_framework:
+      name: "Federal Food, Drug, and Cosmetic Act + FDA device software policy"
+      citation: "21 U.S.C. and FDA guidance"
+      key_references:
+        - ref: "FD&C Act section 201(h) (21 U.S.C. 321(h))"
+          note: "Device definition baseline for software functions."
+        - ref: "FD&C Act section 520(o) (21 U.S.C. 360j(o))"
+          note: "Software functions excluded from device definition."
+        - ref: "FDA Guidance: Policy for Device Software Functions and Mobile Medical Applications (September 2022)"
+          note: "Risk-based FDA oversight for device software functions."
+        - ref: "FDA Guidance: Content of Premarket Submissions for Device Software Functions (June 2023)"
+          note: "Premarket documentation expectations for device software functions."
+        - ref: "21 CFR Part 820 (QMSR, effective February 2, 2026)"
+          note: "QMS obligations for finished device manufacturers."
+      source_links:
+        - "https://uscode.house.gov/view.xhtml?req=(title:21%20section:321%20edition:prelim)"
+        - "https://uscode.house.gov/view.xhtml?req=(title:21%20section:360j%20edition:prelim)"
+        - "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/policy-device-software-functions-and-mobile-medical-applications"
+        - "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/content-premarket-submissions-device-software-functions"
+        - "https://www.fda.gov/medical-devices/postmarket-requirements-devices/quality-management-system-regulation-qmsr"
+classification_and_claims_policy:
+  principle: "Regulatory qualification, classification, intended use, and claims are maintained per product dossier and approved before release."

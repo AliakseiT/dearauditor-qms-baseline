@@ -8,15 +8,16 @@ company:
     country: "Switzerland"
   operating_model: "remote-first"
   regulatory_role: "Manufacturer"
-  product_type: "Software as a Medical Device (SaMD)"
-  intended_use_domain: "digital clinical software products"
+  product_type: "Healthcare software products; some products may qualify as SaMD"
+  intended_use_policy: "No single intended medical purpose is declared at company level; each product defines intended use, indications, claims, and classification in a product-specific regulatory dossier."
+  infrastructure_policy: "Infrastructure architecture and controls are defined and approved per product dossier; no single shared product infrastructure baseline is imposed at company level."
   qms_intent:
     - "Ensure consistent compliance with ISO 13485 and applicable regulatory requirements."
     - "Maintain product safety and performance through controlled lifecycle processes."
     - "Provide objective evidence and full traceability for quality decisions."
 quality_policy_statement:
   approved_by_role: "management_representative"
-  statement: "ACME GmbH commits to delivering safe, effective SaMD through a risk-based, evidence-driven quality system and continuous improvement."
+  statement: "ACME GmbH commits to delivering safe and effective healthcare software through a risk-based, evidence-driven quality management system and continuous improvement."
 quality_objective_framework:
   governance_cadence: "quarterly"
   objectives:

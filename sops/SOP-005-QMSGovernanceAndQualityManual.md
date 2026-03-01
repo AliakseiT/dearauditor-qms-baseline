@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R01
+revision: R02
 effective_date: 2026-03-01
 status: Published
 owner_role: qa_lead
@@ -11,6 +11,7 @@ iso_13485_clauses:
   - 4.1.2
   - 4.1.3
   - 4.1.4
+  - 4.1.6
   - 4.2.1
   - 4.2.2
   - 5.1
@@ -25,7 +26,7 @@ related_issue: "#1"
 ---
 
 ## 1. Purpose
-Define how ACME GmbH establishes, maintains, governs, and improves the Quality Management System (QMS) and Quality Manual for software as a medical device (SaMD) products.
+Define how ACME GmbH establishes, maintains, governs, and improves the Quality Management System (QMS) and Quality Manual for healthcare software products, including products that qualify as software as a medical device (SaMD).
 
 ## 2. Scope
 Applies to all QMS processes, records, and personnel roles involved in design, development, release, post-market activities, supplier control, and management oversight for ACME GmbH.
@@ -34,24 +35,42 @@ Applies to all QMS processes, records, and personnel roles involved in design, d
 - Legal Entity: ACME GmbH
 - Registered Address: Paradeplatz 8, 8001 Zurich, Switzerland
 - Operating Model: Remote-first company
-- Regulatory Role: Manufacturer of software as a medical device (SaMD)
-- QMS Intent: Maintain an effective ISO 13485-aligned QMS ensuring product safety, regulatory compliance, and controlled evidence for all lifecycle activities.
+- Regulatory Role: Manufacturer
+- Product Intent Policy: No single device intended medical purpose is defined at company level; each product defines intended use, claims, and classification in a product dossier.
 
-## 4. Inputs
+## 4. Regulatory Scope Baseline (Exact References)
+Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml` and reviewed in governance meetings.
+
+- Switzerland:
+  - Ordinance on Medical Devices (MedDO), SR 812.213
+  - MedDO Art. 3 (definition baseline)
+  - MedDO Art. 15 (classification references Annex VIII MDR software rules)
+- European Union:
+  - Regulation (EU) 2017/745 (MDR), Article 2(1)
+  - MDR Article 51 + Annex VIII (including software Rule 11 classification approach)
+  - MDCG 2019-11 Rev.1 (Qualification and classification of software)
+- United States:
+  - FD&C Act section 201(h), codified at 21 U.S.C. 321(h)
+  - FD&C Act section 520(o), codified at 21 U.S.C. 360j(o)
+  - FDA Guidance: Policy for Device Software Functions and Mobile Medical Applications (September 2022)
+  - FDA Guidance: Content of Premarket Submissions for Device Software Functions (June 2023)
+  - 21 CFR Part 820 (QMSR, effective February 2, 2026)
+
+## 5. Inputs
 - Applicable standards and regulatory requirements
 - Current Quality Manual structure and process map
 - KPI and management review outputs
 - Internal audit, CAPA, complaint, and post-market inputs
 - Supplier performance and external issue signals
 
-## 5. Outputs
+## 6. Outputs
 - Controlled and approved Quality Manual baseline
 - Documented QMS scope, process interactions, and responsibilities
 - Approved quality policy and measurable quality objectives
 - Management review actions and follow-up evidence
 - Updated process ownership and governance records
 
-## 6. Roles and Responsibilities
+## 7. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
 | Management Representative | Approves QMS/Quality Manual changes, confirms adequacy and effectiveness. |
@@ -60,83 +79,96 @@ Applies to all QMS processes, records, and personnel roles involved in design, d
 | Lead Auditor | Independently verifies conformance of governed processes through audits. |
 | Top Management | Sets quality policy/objectives, ensures resources, reviews QMS performance. |
 
-## 7. Procedure
+## 8. Procedure
 
-### 7.1 Define QMS Scope and Process Map
+### 8.1 Define QMS Scope and Process Map
 1. QA Lead maintains QMS scope statement in the Quality Manual.
-2. Scope must include organization role (manufacturer), product types, and exclusions with rationale.
+2. Scope includes organization role (manufacturer), product portfolio boundaries, and justified non-applications.
 3. QA Lead maintains process interaction map linking each major QMS process to SOP ownership.
 
-### 7.2 Maintain Quality Manual Structure
+### 8.2 Maintain Quality Manual Structure
 1. Quality Manual must contain at minimum:
    - Scope and exclusions/non-applications
    - Quality policy and objectives reference
    - QMS process interaction map
    - References to controlled SOPs and records
-2. Each change to Quality Manual structure must be reviewed/approved per document control.
-3. Manual structure changes require impact review on downstream SOPs and training assignments.
+2. Changes to Quality Manual structure are reviewed/approved per document control.
+3. Structure changes require impact review on downstream SOPs and training assignments.
 
-### 7.3 Governance Cadence
+### 8.3 Governance Cadence
 1. Monthly QMS governance review is held by QA Lead and Management Representative.
-2. Quarterly governance package includes:
-   - KPI performance trends
-   - Open CAPAs and audit findings
-   - Supplier and post-market trend summary
-   - Regulatory change impacts
+2. Quarterly governance package includes KPI trends, open CAPAs, audit findings, post-market signals, and regulatory changes.
 3. Annual management review confirms suitability, adequacy, and effectiveness of the QMS.
 
-### 7.4 Quality Policy and Objectives Control
+### 8.4 Quality Policy and Objectives Control
 1. Top Management approves quality policy and quality objectives.
 2. Objectives must be measurable and mapped to process owners.
-3. Objective changes require:
-   - Rationale and baseline metric definition
-   - Effective date
-   - Inclusion in next management review input pack
+3. Objective changes require rationale, baseline metric definition, and inclusion in management review inputs.
 
-### 7.5 Responsibility and Communication
-1. Management Representative keeps current responsibility matrix for all quality-affecting functions.
-2. QMS governance decisions are disseminated to affected roles within 5 business days.
-3. Dissemination record includes audience, channel, date, and feedback summary.
+### 8.5 Responsibility and Communication
+1. Management Representative maintains the responsibility matrix for quality-affecting functions.
+2. QMS governance decisions are disseminated to impacted roles within five business days.
+3. Dissemination records capture audience, channel, date, and feedback summary.
 
-### 7.6 Change Management Interface
-1. Any QMS process change is assessed for impact on:
-   - Compliance obligations
-   - Product risk controls
-   - Existing SOPs and training matrix
+### 8.6 Regulatory Scope and Product Dossier Rules
+1. Jurisdiction baseline references are maintained in `matrices/regulatory_market_scope.yml`.
+2. Each product must maintain its own intended use, claims, classification rationale, and regulatory pathway.
+3. Release is blocked for products missing approved regulatory dossier entries.
+
+### 8.7 QMS Tooling Governance (GitHub-Only)
+1. QMS digital tooling inventory is maintained in `matrices/qms_tooling_inventory.yml`.
+2. Current approved QMS tooling is GitHub (repositories, pull requests, issues, workflows).
+3. Tooling changes require risk-based validation/revalidation evidence per ISO 13485 4.1.6.
+
+### 8.8 Infrastructure Definition Rule
+1. Product infrastructure architecture and controls are defined per product dossier.
+2. This SOP does not impose a single shared product infrastructure baseline.
+3. Product dossiers must include infrastructure responsibilities and continuity expectations.
+
+### 8.9 Supplier Model Dependency
+1. Supplier criticality and approved-supplier lifecycle controls are finalized in SOP-010.
+2. Until SOP-010 is approved, supplier governance operates under interim quality agreement and escalation controls.
+
+### 8.10 Change Management Interface
+1. Any QMS process change is assessed for impact on compliance obligations, product risk controls, existing SOPs, and training matrix mappings.
 2. Impacted SOP revisions must be updated in the Published SOP Index and training matrix before merge.
 
-### 7.7 Effectiveness Monitoring
-1. QA Lead tracks the following effectiveness indicators:
+### 8.11 Effectiveness Monitoring
+1. QA Lead tracks:
    - On-time management review completion
    - QMS document update cycle time
    - Late training closure rate
    - Recurrence rate of systemic CAPAs
-2. Indicators are reviewed during management review and used to define improvement actions.
+2. Indicators are reviewed in management review and drive improvement actions.
 
-## 8. Required Records
+## 9. Required Records
 - Quality Manual revision and approval log
 - QMS governance meeting minutes and actions
-- Quality policy/objective approval records
-- Process ownership and responsibility matrix
+- Regulatory scope register review record
+- Product dossier approval records for intended use/classification
+- QMS tooling validation/revalidation records
 - Dissemination and feedback records for QMS updates
 
-## 9. Traceability
+## 10. Traceability
 | ISO 13485 Clause | Control in this SOP | Linked Artifact |
 |---|---|---|
-| 4.2.1, 4.2.2 | Defines documented QMS structure and quality manual minimum content | Quality Manual index and SOP reference map |
+| 4.2.1, 4.2.2 | Defines documented QMS structure and quality manual minimum content | `matrices/quality_manual_traceability.yml` |
 | 5.1, 5.3, 5.4 | Management commitment, policy, and objectives governance | Management review records and KPI package |
 | 5.5 | Responsibility and communication governance | Responsibility matrix and dissemination records |
-| 4.1.4 | QMS process change impact control | Change impact records and SOP updates |
+| 4.1.4 | QMS process change impact control | Change impact records and SOP/index/training updates |
+| 4.1.6 | QMS software validation governance | `matrices/qms_tooling_inventory.yml`, `records/validation/qms-tools/*` |
 
-## 10. Related Controlled Documents
+## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
 - SOP-003 Internal Audit
 - SOP-004 Management Review
 - SOP-009 Change Management (planned)
+- SOP-010 Supplier and Purchasing Control (planned)
 - SOP-011 Competence, Training, and Awareness (planned)
 
-## 11. Revision History
+## 12. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-01 | Initial release (skeleton content). |
-| R01 | 2026-03-01 | Expanded to full operating procedure with ACME GmbH context, governance cadence, responsibilities, and traceability controls. |
+| R01 | 2026-03-01 | Expanded to full operating procedure with ACME GmbH context and governance controls. |
+| R02 | 2026-03-01 | Added exact CH/EU/US regulatory reference baseline, product-specific intended use/infrastructure rules, GitHub-only QMS tooling governance, and supplier-model dependency handling. |
