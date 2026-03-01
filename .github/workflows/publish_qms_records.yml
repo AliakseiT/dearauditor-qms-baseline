@@ -1,0 +1,359 @@
+name: Publish QMS Records
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - records/**/*.md
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  publish_records:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      TARGET_RECORD_REPO: AliakseiT/qms-records
+      TARGET_RECORD_BRANCH: main
+      PART11_TIMEOUT_SECONDS: "5400"
+      PART11_POLL_SECONDS: "20"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect modified records
+        id: records
+        shell: bash
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          MERGE_SHA="${{ github.event.pull_request.merge_commit_sha }}"
+          if [ -z "$MERGE_SHA" ]; then
+            MERGE_SHA="${{ github.sha }}"
+          fi
+
+          git diff --name-only "$BASE_SHA" "$MERGE_SHA" -- 'records/**/*.md' 'records/*.md' | sort -u > changed_records.txt
+          if [ -s changed_records.txt ]; then
+            echo "has_records=true" >> "$GITHUB_OUTPUT"
+            echo "merge_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+            cat changed_records.txt
+          else
+            echo "has_records=false" >> "$GITHUB_OUTPUT"
+            echo "No markdown records changed in this merged PR."
+          fi
+
+      - name: Wait for Part 11 validation comment
+        id: part11
+        if: steps.records.outputs.has_records == 'true'
+        uses: actions/github-script@v7
+        env:
+          TIMEOUT_SECONDS: ${{ env.PART11_TIMEOUT_SECONDS }}
+          POLL_SECONDS: ${{ env.PART11_POLL_SECONDS }}
+        with:
+          script: |
+            const timeoutSeconds = Number(process.env.TIMEOUT_SECONDS || "5400");
+            const pollSeconds = Number(process.env.POLL_SECONDS || "20");
+            const prNumber = context.payload.pull_request.number;
+            const deadline = Date.now() + timeoutSeconds * 1000;
+
+            function extractAttestations(commentBody) {
+              const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
+              if (!codeMatch || !codeMatch[1]) return null;
+              try {
+                return JSON.parse(codeMatch[1].trim());
+              } catch {
+                return null;
+              }
+            }
+
+            function extractTargetHash(commentBody) {
+              const m = commentBody.match(/Target hash:\s*`([a-f0-9]{64})`/i);
+              return m ? m[1] : null;
+            }
+
+            while (Date.now() < deadline) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100
+              });
+
+              const validated = comments
+                .filter((c) => (c.user?.login || '').toLowerCase() === 'github-actions[bot]' && (c.body || '').includes('✅ Part 11 Signature(s) Validated'))
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+              if (validated.length > 0) {
+                const latest = validated[validated.length - 1];
+                const targetHash = extractTargetHash(latest.body || '');
+                const attestations = extractAttestations(latest.body || '');
+
+                if (!targetHash) {
+                  core.warning('Part 11 validated comment found, but target hash is missing.');
+                } else if (!Array.isArray(attestations) || attestations.length === 0) {
+                  core.warning('Part 11 validated comment found, but no JSON attestation array was parsed.');
+                } else {
+                  core.info(`Captured ${attestations.length} validated signature(s) for hash ${targetHash}.`);
+                  core.setOutput('target_hash', targetHash);
+                  core.setOutput('attestations_json', JSON.stringify(attestations));
+                  return;
+                }
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, pollSeconds * 1000));
+            }
+
+            core.setFailed(`Timed out after ${timeoutSeconds}s waiting for Part 11 validated attestation comment on PR #${prNumber}.`);
+
+      - name: Setup Python
+        if: steps.records.outputs.has_records == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build release bundles
+        if: steps.records.outputs.has_records == 'true'
+        env:
+          SOURCE_REPO: ${{ github.repository }}
+          SOURCE_PR: ${{ github.event.pull_request.number }}
+          SOURCE_MERGE_SHA: ${{ steps.records.outputs.merge_sha }}
+          PART11_TARGET_HASH: ${{ steps.part11.outputs.target_hash }}
+          PART11_ATTESTATIONS_JSON: ${{ steps.part11.outputs.attestations_json }}
+        shell: bash
+        run: |
+          python -m pip install --quiet markdown fpdf2
+          python <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          import markdown as md
+          from fpdf import FPDF
+
+          changed = [line.strip() for line in Path("changed_records.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
+          attestations = json.loads(os.environ["PART11_ATTESTATIONS_JSON"])
+          target_hash = os.environ["PART11_TARGET_HASH"].strip()
+
+          source_repo = os.environ["SOURCE_REPO"].strip()
+          source_pr = os.environ["SOURCE_PR"].strip()
+          source_merge_sha = os.environ["SOURCE_MERGE_SHA"].strip()
+
+          out_root = Path("record_bundles")
+          out_root.mkdir(parents=True, exist_ok=True)
+
+          type_prefix = {
+            "management-reviews": "mr",
+            "capas": "capa",
+            "audits": "audit",
+            "training": "trn",
+            "suppliers": "sup",
+          }
+
+          def slugify(text: str) -> str:
+            slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+            return slug or "record"
+
+          release_plan = []
+
+          for src in changed:
+            src_path = Path(src)
+            if not src_path.exists():
+              raise RuntimeError(f"Changed record file no longer exists in merge commit: {src}")
+
+            source_text = src_path.read_text(encoding="utf-8")
+            source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+
+            html = md.markdown(source_text)
+            plain = re.sub(r"<[^>]+>", "", html)
+            lines = plain.splitlines() or [""]
+
+            parent = src_path.parent.name if src_path.parent.name != "records" else "general"
+            prefix = type_prefix.get(parent, "record")
+            record_id = slugify(src_path.stem)
+            base_tag = f"{prefix}-{record_id}"
+            release_title = f"{prefix.upper()} Record: {src_path.stem}"
+
+            bundle_dir = out_root / base_tag
+            bundle_dir.mkdir(parents=True, exist_ok=True)
+
+            (bundle_dir / "record.md").write_text(source_text, encoding="utf-8")
+
+            pdf = FPDF()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.add_page()
+            pdf.set_font("Helvetica", size=11)
+            for raw_line in lines:
+              line = raw_line.replace("\t", "    ")
+              pdf.multi_cell(0, 6, line if line else " ", new_x="LMARGIN", new_y="NEXT")
+
+            pdf_path = bundle_dir / "record.pdf"
+            pdf.output(str(pdf_path))
+            pdf_sha = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+
+            signed_attestation = {
+              "schema_version": 1,
+              "attestation_scope": "qms_record_release",
+              "source_repository": source_repo,
+              "source_pull_request": int(source_pr),
+              "source_merge_commit": source_merge_sha,
+              "part11_target_hash": target_hash,
+              "signed_attestations": attestations,
+              "captured_at_utc": datetime.now(timezone.utc).isoformat(),
+            }
+            (bundle_dir / "signed_attestation.json").write_text(
+              json.dumps(signed_attestation, indent=2) + "\n",
+              encoding="utf-8",
+            )
+
+            manifest = {
+              "schema_version": 1,
+              "record_type": parent,
+              "record_id": record_id,
+              "source_repository": source_repo,
+              "source_pull_request": int(source_pr),
+              "source_merge_commit": source_merge_sha,
+              "source_record_path": src,
+              "source_record_sha256": source_sha,
+              "record_pdf_sha256": pdf_sha,
+              "part11_target_hash": target_hash,
+              "part11_signer_count": len(attestations),
+              "part11_signers": [
+                {
+                  "user_id": att.get("user_id", ""),
+                  "signer_role": att.get("signer_role", ""),
+                  "timestamp": att.get("timestamp", ""),
+                }
+                for att in attestations
+              ],
+              "published_at_utc": datetime.now(timezone.utc).isoformat(),
+            }
+            (bundle_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+            notes = "\n".join([
+              f"# Immutable QMS Record Package",
+              "",
+              f"- Source repo: `{source_repo}`",
+              f"- Source PR: `#{source_pr}`",
+              f"- Source record path: `{src}`",
+              f"- Source merge commit: `{source_merge_sha}`",
+              f"- Part 11 target hash: `{target_hash}`",
+              f"- Signatures captured: `{len(attestations)}`",
+              "",
+              "Assets:",
+              "- `record.md`",
+              "- `record.pdf`",
+              "- `manifest.json`",
+              "- `signed_attestation.json`",
+            ])
+            notes_path = bundle_dir / "release_notes.md"
+            notes_path.write_text(notes + "\n", encoding="utf-8")
+
+            release_plan.append({
+              "base_tag": base_tag,
+              "title": release_title,
+              "bundle_dir": str(bundle_dir),
+              "notes_file": str(notes_path),
+            })
+
+          Path("release_plan.json").write_text(json.dumps(release_plan, indent=2) + "\n", encoding="utf-8")
+          if not release_plan:
+            raise RuntimeError("No releasable record bundles were prepared from changed records.")
+          print(f"Prepared {len(release_plan)} record release bundle(s).")
+          PY
+
+      - name: Upload release bundle evidence
+        if: steps.records.outputs.has_records == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: qms-record-bundles-${{ github.run_id }}
+          path: |
+            record_bundles/
+            release_plan.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish immutable releases to qms-records
+        if: steps.records.outputs.has_records == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.QMS_RECORDS_TOKEN }}
+          TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
+          TARGET_BRANCH: ${{ env.TARGET_RECORD_BRANCH }}
+        shell: bash
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "QMS_RECORDS_TOKEN is required to publish immutable releases in ${TARGET_REPO}."
+            exit 1
+          fi
+
+          python <<'PY'
+          import json
+          import re
+          import subprocess
+          import time
+          from pathlib import Path
+
+          plan = json.loads(Path("release_plan.json").read_text(encoding="utf-8"))
+          import os
+          target_repo = os.environ["TARGET_REPO"].strip()
+          target_branch = os.environ["TARGET_BRANCH"].strip()
+
+          def run_with_retry(cmd, attempts=5, sleep_seconds=3, allow_404=False):
+            last = None
+            for _ in range(attempts):
+              proc = subprocess.run(cmd, text=True, capture_output=True)
+              if proc.returncode == 0:
+                return proc.stdout
+              stderr = (proc.stderr or "") + (proc.stdout or "")
+              if allow_404 and ("HTTP 404" in stderr or "Not Found" in stderr):
+                return None
+              last = stderr.strip()
+              time.sleep(sleep_seconds)
+            raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{last}")
+
+          for entry in plan:
+            base_tag = entry["base_tag"]
+            prefix = f"{base_tag}-r"
+            refs_raw = run_with_retry(
+              ["gh", "api", f"repos/{target_repo}/git/matching-refs/tags/{prefix}"],
+              allow_404=True,
+            )
+            refs = json.loads(refs_raw) if refs_raw else []
+
+            max_rev = 0
+            for ref in refs:
+              ref_name = ref.get("ref", "")
+              m = re.search(r"-r(\d+)$", ref_name)
+              if m:
+                max_rev = max(max_rev, int(m.group(1)))
+
+            tag = f"{base_tag}-r{max_rev + 1:02d}"
+            bundle_dir = Path(entry["bundle_dir"])
+            notes_file = entry["notes_file"]
+
+            assets = [
+              str(bundle_dir / "record.md"),
+              str(bundle_dir / "record.pdf"),
+              str(bundle_dir / "manifest.json"),
+              str(bundle_dir / "signed_attestation.json"),
+            ]
+
+            create_cmd = [
+              "gh", "release", "create", tag,
+              "--repo", target_repo,
+              "--target", target_branch,
+              "--title", entry["title"],
+              "--notes-file", notes_file,
+              "--draft",
+              *assets,
+            ]
+            run_with_retry(create_cmd)
+            run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])
+            print(f"Published immutable release: {target_repo}@{tag}")
+          PY
