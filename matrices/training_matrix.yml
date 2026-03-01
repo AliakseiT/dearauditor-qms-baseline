@@ -10,6 +10,8 @@ roles:
     - SOP-003-InternalAudit
     - SOP-004-ManagementReview
     - SOP-005
+    required_revisions:
+      SOP-005: R01
   software_engineer:
     users:
     - dev_lina
@@ -31,6 +33,8 @@ roles:
     - SOP-001-DocControl
     - SOP-003-InternalAudit
     - SOP-005
+    required_revisions:
+      SOP-005: R01
   management_representative:
     users:
     - mgmt_eli
@@ -38,3 +42,5 @@ roles:
     - SOP-001-DocControl
     - SOP-004-ManagementReview
     - SOP-005
+    required_revisions:
+      SOP-005: R01
