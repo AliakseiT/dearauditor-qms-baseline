@@ -1,0 +1,81 @@
+name: Issue-to-PR Part 11 Sign-Off
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: write
+
+concurrency:
+  group: part11-post-merge-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  prepare_signature_request:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.parse.outputs.issue_number }}
+      meaning_of_signature: ${{ steps.parse.outputs.meaning_of_signature }}
+      signatory_roles: ${{ steps.parse.outputs.signatory_roles }}
+      required_signatures: ${{ steps.parse.outputs.required_signatures }}
+    steps:
+      - name: Parse merged PR body for Issue + signature requirements
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+
+            const issueMatch = body.match(/Issue\s+#(\d+)/i);
+            if (!issueMatch) {
+              core.setFailed('Execution Record must reference an Issue number (e.g., "Issue #12").');
+              return;
+            }
+
+            const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
+            let meaning = meaningMatch ? meaningMatch[1].trim() : '';
+            if (!meaning || meaning.startsWith('[')) {
+              meaning = 'Approved Quality Record';
+            }
+
+            const rolesMatch = body.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
+            let roles = rolesMatch ? rolesMatch[1].trim() : '';
+            if (!roles || roles.startsWith('[')) {
+              roles = 'Quality Assurance Lead';
+            }
+
+            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            let required = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+            if (!Number.isInteger(required) || required < 1) {
+              required = 1;
+            }
+
+            core.setOutput('issue_number', issueMatch[1]);
+            core.setOutput('meaning_of_signature', meaning);
+            core.setOutput('signatory_roles', roles);
+            core.setOutput('required_signatures', String(required));
+
+  post_merge_part11_signoff:
+    if: github.event.pull_request.merged == true
+    needs: prepare_signature_request
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Run post-merge Part 11 signature ceremony
+        uses: AliakseiT/part11-action@main
+        with:
+          target_type: pr
+          meaning_of_signature: ${{ needs.prepare_signature_request.outputs.meaning_of_signature }}
+          attestation_mode: pr_comment_mock
+          sign_page_base_url: https://aliakseit.github.io/part11-action/
+          signatory_roles: ${{ needs.prepare_signature_request.outputs.signatory_roles }}
+          required_signatures: ${{ needs.prepare_signature_request.outputs.required_signatures }}
+          poll_timeout_seconds: '5400'
+          poll_interval_seconds: '20'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

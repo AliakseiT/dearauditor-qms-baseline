@@ -24,3 +24,16 @@
 - Regulatory scope baseline (CH/EU/US): `matrices/regulatory_market_scope.yml`
 - Quality manual section-to-SOP traceability: `matrices/quality_manual_traceability.yml`
 - QMS tooling inventory and validation baseline: `matrices/qms_tooling_inventory.yml`
+
+## Immutable Record Release Tags
+
+QMS execution records are published as immutable releases in `AliakseiT/qms-records`.
+
+| Record Type | Tag Pattern | Example |
+|---|---|---|
+| Management Review | `mr-<record-id>-rNN` | `mr-2026-q1-r01` |
+| CAPA | `capa-<record-id>-rNN` | `capa-0007-r01` |
+| Audit | `audit-<record-id>-rNN` | `audit-mdsap-internal-r02` |
+| Training | `trn-<record-id>-rNN` | `trn-dev-lina-sop-002-r01` |
+| Supplier List / Evaluation | `asl-YYYY.MM.DD-rNN` / `sup-<record-id>-rNN` | `asl-2026.03.01-r01` |
+| Fallback | `record-<record-id>-rNN` | `record-general-note-r01` |

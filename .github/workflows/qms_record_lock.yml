@@ -80,8 +80,10 @@ jobs:
             pdf.set_auto_page_break(auto=True, margin=15)
             pdf.add_page()
             pdf.set_font("Helvetica", size=11)
-            for line in lines:
-              pdf.multi_cell(0, 6, line)
+            for raw_line in lines:
+              line = raw_line.replace("\t", "    ")
+              # Keep cursor anchored to left margin to avoid zero-width rendering edge cases.
+              pdf.multi_cell(0, 6, line if line else " ", new_x="LMARGIN", new_y="NEXT")
 
             out_file = out_dir / f"{source_path.stem}.pdf"
             pdf.output(str(out_file))
