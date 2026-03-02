@@ -2,6 +2,9 @@ version: 2
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
+additional_standards:
+  - exact_name: "EVS-EN ISO 14971:2019+A11:2021 Medical devices - Application of risk management to medical devices"
+    normative_base: "ISO 14971:2019"
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
@@ -66,6 +69,11 @@ quality_manual_sections:
     iso_clauses: ["8.3", "8.5.1", "8.5.2", "8.5.3"]
     controlling_sops: ["SOP-015", "SOP-002"]
     status: "implemented"
+  - section_id: QM-13
+    section_name: "Lifecycle risk management including cybersecurity risk"
+    iso_clauses: ["ISO 14971 4-10"]
+    controlling_sops: ["SOP-018", "SOP-008", "SOP-014"]
+    status: "implemented"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -87,3 +95,7 @@ supporting_definitions:
     status: "implemented"
     reference: "sops/SOP-010-SupplierAndPurchasingControl.md"
     note: "Supplier model and approved supplier list maintenance are active controls."
+  - item: "Integrated risk management baseline (hazard, failure mode, cybersecurity)"
+    status: "implemented"
+    reference: "sops/SOP-018-RiskManagement.md"
+    note: "Uses one risk process and one risk file structure for software-specific lifecycle control."

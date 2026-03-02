@@ -1,0 +1,36 @@
+version: 1
+analysis_date: "2026-03-02"
+standard:
+  exact_name: "EVS-EN ISO 14971:2019+A11:2021 Medical devices - Application of risk management to medical devices"
+  normative_base: "ISO 14971:2019"
+analysis_scope: "ACME GmbH QMS-Lite risk management process controls"
+summary:
+  implementation_model: "Single integrated risk process for hazards, failure modes, and cybersecurity risks"
+  outstanding_gaps: []
+clause_to_artifact_map:
+  "4.1": ["SOP-018"]
+  "4.2": ["SOP-018", "SOP-005", "SOP-004"]
+  "4.3": ["SOP-011", "matrices/training_matrix.yml"]
+  "4.4": ["SOP-018"]
+  "4.5": ["SOP-018"]
+  "5.1": ["SOP-018"]
+  "5.2": ["SOP-018", "SOP-007"]
+  "5.3": ["SOP-018", "SOP-008"]
+  "5.4": ["SOP-018"]
+  "5.5": ["SOP-018"]
+  "6": ["SOP-018"]
+  "7.1": ["SOP-018"]
+  "7.2": ["SOP-018", "SOP-008", "SOP-009"]
+  "7.3": ["SOP-018"]
+  "7.4": ["SOP-018"]
+  "7.5": ["SOP-018"]
+  "7.6": ["SOP-018"]
+  "8": ["SOP-018"]
+  "9": ["SOP-018", "SOP-004"]
+  "10.1": ["SOP-014", "SOP-018"]
+  "10.2": ["SOP-012", "SOP-013", "SOP-014", "SOP-018"]
+  "10.3": ["SOP-014", "SOP-018"]
+  "10.4": ["SOP-002", "SOP-009", "SOP-018"]
+notes:
+  - "Mapping references the provided 14971 mapping dataset and ISO 14971:2019+A11:2021 clause structure."
+  - "No copyrighted standard text is included; only clause references and implementation decisions."

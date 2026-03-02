@@ -9,7 +9,7 @@
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-02 | R01 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-02 | R01 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-02 | R01 | Published |
-| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-02 | R03 | Published |
+| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-02 | R04 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-02 | R00 | Published |
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-02 | R00 | Published |
@@ -22,6 +22,7 @@
 | SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-02 | R00 | Published |
 | SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-02 | R00 | Published |
 | SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-02 | R00 | Published |
+| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-02 | R00 | Published |
 <!-- PUBLISHED-SOP-INDEX:END -->
 
 ## Company Context
@@ -35,6 +36,7 @@
 - Company and quality intent baseline: `matrices/company_profile.yml`
 - Regulatory scope baseline (CH/EU/US): `matrices/regulatory_market_scope.yml`
 - ISO 13485 gap-analysis summary: `matrices/iso_13485_gap_analysis.yml`
+- ISO 14971 gap-analysis summary: `matrices/iso_14971_gap_analysis.yml`
 - Quality manual section-to-SOP traceability: `matrices/quality_manual_traceability.yml`
 - QMS tooling inventory and validation baseline: `matrices/qms_tooling_inventory.yml`
 - Signer identity registry (full name/title for attestations): `matrices/signer_registry.json`
