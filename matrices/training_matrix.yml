@@ -30,13 +30,15 @@ roles:
       - SOP-016
       - SOP-017
       - SOP-018
+      - SOP-019
     required_revisions:
       SOP-001: R01
       SOP-002: R01
       SOP-003: R01
       SOP-004: R01
-      SOP-005: R04
+      SOP-005: R05
       SOP-018: R00
+      SOP-019: R00
 
   software_engineer:
     users:
@@ -52,6 +54,7 @@ roles:
       - SOP-015
       - SOP-017
       - SOP-018
+      - SOP-019
 
   technical_qms_maintainer:
     users:
@@ -89,6 +92,7 @@ roles:
       - SOP-014
       - SOP-015
       - SOP-018
+      - SOP-019
 
   lead_auditor:
     users:
@@ -109,11 +113,13 @@ roles:
       - SOP-016
       - SOP-017
       - SOP-018
+      - SOP-019
     required_revisions:
       SOP-001: R01
       SOP-003: R01
-      SOP-005: R04
+      SOP-005: R05
       SOP-018: R00
+      SOP-019: R00
 
   management_representative:
     users:
@@ -132,9 +138,11 @@ roles:
       - SOP-016
       - SOP-017
       - SOP-018
+      - SOP-019
     required_revisions:
       SOP-001: R01
       SOP-002: R01
       SOP-004: R01
-      SOP-005: R04
+      SOP-005: R05
       SOP-018: R00
+      SOP-019: R00
