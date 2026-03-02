@@ -133,7 +133,7 @@ jobs:
               "",
               "### Required Completion Workflow",
               "1. Open a PR updating `records/training/user_training_log.yml` to the required revision.",
-              f"2. In the PR body include: `Issue #{'{issue_number}'}`, `**Trainee GitHub Login:** @<github-login>`, `**Training User ID:** {user}`, `**SOP ID:** {sop_id}`.",
+              f"2. In the PR body include: `Issue #<training-issue-number>`, `**Trainee GitHub Login:** @<github-login>`, `**Training User ID:** {user}`, `**SOP ID:** {sop_id}`.",
               "3. The named trainee must approve that PR (enforced by workflow).",
               "4. After merge, complete Part 11 signature collection via bot links (attestation required).",
             ]
