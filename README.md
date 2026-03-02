@@ -41,6 +41,7 @@
 - QMS tooling inventory and validation baseline: `matrices/qms_tooling_inventory.yml`
 - Signer identity registry (full name/title for attestations): `matrices/signer_registry.json`
 - Supplier controls: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
+- Risk management artifacts: `records/risk/risk_management_plan_template.yml`, `records/risk/risk_register_template.yml`
 
 ## Immutable Record Release Tags
 
@@ -113,3 +114,9 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
   - `GITHUB_APP_ID`, `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET`, `GITHUB_APP_PRIVATE_KEY`
   - `SIGNATURE_LINK_SECRET`, `SIGNATURE_STATE_SECRET`
   - optional `GITHUB_APP_INSTALLATION_ID`
+
+## Risk Operations
+
+- `SOP-018` defines one integrated method for hazard-based, failure-mode-based, and cybersecurity risk management.
+- `.github/ISSUE_TEMPLATE/risk_management_plan.yml` provides a structured planning form with required top-down, bottom-up, and cybersecurity inputs.
+- `risk_record_schema_guard.yml` validates `records/risk/*.yml` risk-register structure and score consistency in PRs.
