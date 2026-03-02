@@ -1,0 +1,189 @@
+name: Part 11 Git-Native Signature
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to sign"
+        required: true
+      meaning_of_signature:
+        description: "Meaning of signature (for example: Approved Quality Record)"
+        required: true
+      signer_role:
+        description: "Signer role (for example: Quality Assurance Lead)"
+        required: true
+      auth_method:
+        description: "Authentication method used"
+        required: true
+        type: choice
+        options:
+          - GitHub session re-authenticated
+          - GitHub session + organization SSO
+          - GitHub session + device MFA
+      mfa_assertion:
+        description: "Optional assertion text (for example: mfa-verified)"
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+  id-token: write
+
+jobs:
+  sign_and_attest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR and target hash
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const crypto = require('crypto');
+
+            const prNumber = Number.parseInt(`${{ github.event.inputs.pr_number }}`, 10);
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('pr_number must be a positive integer.');
+              return;
+            }
+
+            const res = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+            const pr = res.data;
+            if (pr.state !== 'closed') {
+              core.setFailed(`PR #${prNumber} must be closed before attestation. Current state: ${pr.state}`);
+              return;
+            }
+
+            const targetCommit = pr.merge_commit_sha || pr.head.sha;
+            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
+            const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
+
+            core.setOutput('pr_number', String(pr.number));
+            core.setOutput('pr_url', pr.html_url);
+            core.setOutput('pr_title', pr.title || '');
+            core.setOutput('target_commit', targetCommit);
+            core.setOutput('target_hash', targetHash);
+            core.setOutput('repo_full', repoFull);
+            core.setOutput('actor_login', context.actor);
+            core.setOutput('actor_id', String(context.payload.sender?.id || '0'));
+
+      - name: Build attestation manifest
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          PR_URL: ${{ steps.pr.outputs.pr_url }}
+          PR_TITLE: ${{ steps.pr.outputs.pr_title }}
+          TARGET_COMMIT: ${{ steps.pr.outputs.target_commit }}
+          TARGET_HASH: ${{ steps.pr.outputs.target_hash }}
+          REPO_FULL: ${{ steps.pr.outputs.repo_full }}
+          ACTOR_LOGIN: ${{ steps.pr.outputs.actor_login }}
+          ACTOR_ID: ${{ steps.pr.outputs.actor_id }}
+          MEANING: ${{ github.event.inputs.meaning_of_signature }}
+          SIGNER_ROLE: ${{ github.event.inputs.signer_role }}
+          AUTH_METHOD: ${{ github.event.inputs.auth_method }}
+          MFA_ASSERTION: ${{ github.event.inputs.mfa_assertion }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          SERVER_URL: ${{ github.server_url }}
+          WORKFLOW: ${{ github.workflow }}
+        with:
+          script: |
+            const fs = require('fs');
+            const crypto = require('crypto');
+
+            const payload = {
+              schema_version: 1,
+              attestation_type: 'part11_git_native_pr_signature',
+              repository: process.env.REPO_FULL,
+              pr_number: Number(process.env.PR_NUMBER),
+              pr_url: process.env.PR_URL,
+              pr_title: process.env.PR_TITLE,
+              target_commit: process.env.TARGET_COMMIT,
+              target_hash: process.env.TARGET_HASH,
+              meaning_of_signature: process.env.MEANING,
+              signer_role: process.env.SIGNER_ROLE,
+              actor_login: process.env.ACTOR_LOGIN,
+              actor_id: Number(process.env.ACTOR_ID || '0'),
+              timestamp_utc: new Date().toISOString(),
+              authentication_assertion: {
+                method: process.env.AUTH_METHOD,
+                mfa_assertion: process.env.MFA_ASSERTION || 'not_provided',
+              },
+              workflow_run: {
+                id: Number(process.env.RUN_ID),
+                attempt: Number(process.env.RUN_ATTEMPT),
+                workflow: process.env.WORKFLOW,
+                url: `${process.env.SERVER_URL}/${process.env.REPO_FULL}/actions/runs/${process.env.RUN_ID}`,
+              },
+            };
+
+            const serialized = `${JSON.stringify(payload, null, 2)}\n`;
+            const sha = crypto.createHash('sha256').update(serialized, 'utf8').digest('hex');
+            payload.attestation_sha256 = sha;
+
+            fs.writeFileSync('signed_attestation.json', `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Keyless sign attestation manifest
+        env:
+          COSIGN_YES: "true"
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature signed_attestation.sig \
+            --output-certificate signed_attestation.pem \
+            signed_attestation.json
+
+      - name: Upload attestation package
+        uses: actions/upload-artifact@v4
+        with:
+          name: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
+          path: |
+            signed_attestation.json
+            signed_attestation.sig
+            signed_attestation.pem
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Post attestation comment to PR
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          TARGET_HASH: ${{ steps.pr.outputs.target_hash }}
+          ARTIFACT_NAME: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
+        with:
+          script: |
+            const fs = require('fs');
+            const prNumber = Number(process.env.PR_NUMBER);
+            const targetHash = process.env.TARGET_HASH;
+            const attestation = JSON.parse(fs.readFileSync('signed_attestation.json', 'utf8'));
+
+            const body = [
+              '<!-- part11-native-attestation -->',
+              '✅ Part 11 Git-Native Signature Recorded',
+              '',
+              `Target hash: \`${targetHash}\``,
+              `Signer: @${attestation.actor_login} (ID: ${attestation.actor_id})`,
+              `Signer role: \`${attestation.signer_role}\``,
+              `Meaning of signature: \`${attestation.meaning_of_signature}\``,
+              `Authentication assertion: \`${attestation.authentication_assertion?.method || 'n/a'}\``,
+              `Attestation SHA256: \`${attestation.attestation_sha256}\``,
+              `Run artifact: \`${process.env.ARTIFACT_NAME}\``,
+              '',
+              '```json',
+              JSON.stringify(attestation, null, 2),
+              '```',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });

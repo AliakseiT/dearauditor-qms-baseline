@@ -8,28 +8,24 @@ permissions:
   contents: read
   issues: write
   pull-requests: write
-  statuses: write
 
 concurrency:
   group: part11-post-merge-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
-  prepare_signature_request:
+  request_native_signatures:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    outputs:
-      issue_number: ${{ steps.parse.outputs.issue_number }}
-      meaning_of_signature: ${{ steps.parse.outputs.meaning_of_signature }}
-      signatory_roles: ${{ steps.parse.outputs.signatory_roles }}
-      required_signatures: ${{ steps.parse.outputs.required_signatures }}
     steps:
-      - name: Parse merged PR body for Issue + signature requirements
+      - name: Parse merged PR signature requirements
         id: parse
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.pull_request.body || '';
+            const crypto = require('crypto');
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
 
             const issueMatch = body.match(/Issue\s+#(\d+)/i);
             if (!issueMatch) {
@@ -55,27 +51,54 @@ jobs:
               required = 1;
             }
 
+            const targetCommit = pr.merge_commit_sha || pr.head.sha;
+            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
+            const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
+
             core.setOutput('issue_number', issueMatch[1]);
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(required));
+            core.setOutput('target_hash', targetHash);
+            core.setOutput('target_commit', targetCommit);
 
-  post_merge_part11_signoff:
-    if: github.event.pull_request.merged == true
-    needs: prepare_signature_request
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - name: Run post-merge Part 11 signature ceremony
-        uses: AliakseiT/part11-action@main
-        with:
-          target_type: pr
-          meaning_of_signature: ${{ needs.prepare_signature_request.outputs.meaning_of_signature }}
-          attestation_mode: pr_comment_mock
-          sign_page_base_url: https://aliakseit.github.io/part11-action/
-          signatory_roles: ${{ needs.prepare_signature_request.outputs.signatory_roles }}
-          required_signatures: ${{ needs.prepare_signature_request.outputs.required_signatures }}
-          poll_timeout_seconds: '5400'
-          poll_interval_seconds: '20'
+      - name: Post Git-native signature request on merged PR
+        uses: actions/github-script@v7
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
+          ROLES: ${{ steps.parse.outputs.signatory_roles }}
+          REQUIRED: ${{ steps.parse.outputs.required_signatures }}
+          TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
+          TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+
+            const body = [
+              '<!-- part11-native-signature-request -->',
+              '🛑 Part 11 Signature Required (Git-Native)',
+              '',
+              `PR: #${pr.number}`,
+              `Target commit: \`${process.env.TARGET_COMMIT}\``,
+              `Target hash: \`${process.env.TARGET_HASH}\``,
+              `Meaning of signature: \`${process.env.MEANING}\``,
+              `Signer role(s): \`${process.env.ROLES}\``,
+              `Required signatures: \`${process.env.REQUIRED}\``,
+              '',
+              'Use workflow-dispatch (no browser PAT entry required):',
+              `1. Open \`${workflowUrl}\``,
+              `2. Run workflow \`Part 11 Git-Native Signature\` with:`,
+              `   - pr_number: \`${pr.number}\``,
+              `   - meaning_of_signature: \`${process.env.MEANING}\``,
+              '   - signer_role: one of required roles',
+              '',
+              'Each signer run adds a cryptographically sealed attestation comment and run artifact.',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body,
+            });

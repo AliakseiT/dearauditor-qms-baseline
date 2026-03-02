@@ -46,7 +46,7 @@ jobs:
             echo "No markdown records changed in this merged PR."
           fi
 
-      - name: Wait for Part 11 validation comment
+      - name: Wait for Git-native Part 11 attestations
         id: part11
         if: steps.records.outputs.has_records == 'true'
         uses: actions/github-script@v7
@@ -55,12 +55,43 @@ jobs:
           POLL_SECONDS: ${{ env.PART11_POLL_SECONDS }}
         with:
           script: |
+            const crypto = require('crypto');
             const timeoutSeconds = Number(process.env.TIMEOUT_SECONDS || "5400");
             const pollSeconds = Number(process.env.POLL_SECONDS || "20");
+            const pr = context.payload.pull_request;
             const prNumber = context.payload.pull_request.number;
+            const mergeSha = pr.merge_commit_sha || context.sha;
+            const expectedTargetHash = crypto
+              .createHash('sha256')
+              .update(`${context.repo.owner}/${context.repo.repo}:${mergeSha}`)
+              .digest('hex');
             const deadline = Date.now() + timeoutSeconds * 1000;
 
-            function extractAttestations(commentBody) {
+            const prBody = pr.body || '';
+            const meaningMatch = prBody.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
+            let requiredMeaning = meaningMatch ? meaningMatch[1].trim() : '';
+            if (!requiredMeaning || requiredMeaning.startsWith('[')) {
+              requiredMeaning = 'Approved Quality Record';
+            }
+
+            const rolesMatch = prBody.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
+            let requiredRolesCsv = rolesMatch ? rolesMatch[1].trim() : '';
+            if (!requiredRolesCsv || requiredRolesCsv.startsWith('[')) {
+              requiredRolesCsv = 'Quality Assurance Lead';
+            }
+            const allowedRoles = requiredRolesCsv
+              .split(/[;,]/)
+              .map((x) => x.trim())
+              .filter(Boolean)
+              .map((x) => x.toLowerCase());
+
+            const sigMatch = prBody.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+            if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
+              requiredSignatures = 1;
+            }
+
+            function extractAttestation(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
               if (!codeMatch || !codeMatch[1]) return null;
               try {
@@ -68,11 +99,6 @@ jobs:
               } catch {
                 return null;
               }
-            }
-
-            function extractTargetHash(commentBody) {
-              const m = commentBody.match(/Target hash:\s*`([a-f0-9]{64})`/i);
-              return m ? m[1] : null;
             }
 
             while (Date.now() < deadline) {
@@ -83,31 +109,47 @@ jobs:
                 per_page: 100
               });
 
-              const validated = comments
-                .filter((c) => (c.user?.login || '').toLowerCase() === 'github-actions[bot]' && (c.body || '').includes('✅ Part 11 Signature(s) Validated'))
+              const candidateComments = comments
+                .filter((c) => (c.body || '').includes('<!-- part11-native-attestation -->'))
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-              if (validated.length > 0) {
-                const latest = validated[validated.length - 1];
-                const targetHash = extractTargetHash(latest.body || '');
-                const attestations = extractAttestations(latest.body || '');
+              const bySigner = new Map();
+              for (const c of candidateComments) {
+                const a = extractAttestation(c.body || '');
+                if (!a) continue;
+                if (String(a.pr_number || '') !== String(prNumber)) continue;
+                if ((a.target_hash || '') !== expectedTargetHash) continue;
+                if ((a.meaning_of_signature || '') !== requiredMeaning) continue;
 
-                if (!targetHash) {
-                  core.warning('Part 11 validated comment found, but target hash is missing.');
-                } else if (!Array.isArray(attestations) || attestations.length === 0) {
-                  core.warning('Part 11 validated comment found, but no JSON attestation array was parsed.');
-                } else {
-                  core.info(`Captured ${attestations.length} validated signature(s) for hash ${targetHash}.`);
-                  core.setOutput('target_hash', targetHash);
-                  core.setOutput('attestations_json', JSON.stringify(attestations));
-                  return;
-                }
+                const roleLower = String(a.signer_role || '').toLowerCase();
+                if (allowedRoles.length > 0 && !allowedRoles.includes(roleLower)) continue;
+
+                const signerKey = String(a.actor_login || '').toLowerCase();
+                if (!signerKey) continue;
+                bySigner.set(signerKey, {
+                  user_id: a.actor_login || '',
+                  actor_id: a.actor_id || 0,
+                  signer_role: a.signer_role || '',
+                  meaning_of_signature: a.meaning_of_signature || '',
+                  timestamp: a.timestamp_utc || c.created_at || '',
+                  attestation_sha256: a.attestation_sha256 || '',
+                });
+              }
+
+              const attestations = Array.from(bySigner.values());
+              if (attestations.length >= requiredSignatures) {
+                core.info(`Captured ${attestations.length} Git-native signature(s) for hash ${expectedTargetHash}.`);
+                core.setOutput('target_hash', expectedTargetHash);
+                core.setOutput('attestations_json', JSON.stringify(attestations));
+                return;
               }
 
               await new Promise((resolve) => setTimeout(resolve, pollSeconds * 1000));
             }
 
-            core.setFailed(`Timed out after ${timeoutSeconds}s waiting for Part 11 validated attestation comment on PR #${prNumber}.`);
+            core.setFailed(
+              `Timed out after ${timeoutSeconds}s waiting for ${requiredSignatures} Git-native Part 11 signature(s) on PR #${prNumber}.`
+            );
 
       - name: Setup Python
         if: steps.records.outputs.has_records == 'true'
