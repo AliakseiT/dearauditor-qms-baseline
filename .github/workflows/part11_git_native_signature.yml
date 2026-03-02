@@ -279,6 +279,20 @@ jobs:
           script: |
             const fs = require('fs');
             const crypto = require('crypto');
+            const registryPath = 'matrices/signer_registry.json';
+
+            let registry = {};
+            if (fs.existsSync(registryPath)) {
+              try {
+                registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+              } catch (error) {
+                core.warning(`Could not parse ${registryPath}: ${error.message}`);
+              }
+            }
+            const registryKey = (process.env.ACTOR_LOGIN || '').toLowerCase();
+            const profile = Object.entries(registry).find(([login]) => login.toLowerCase() === registryKey)?.[1] || {};
+            const signerFullName = String(profile.full_name || '').trim() || process.env.ACTOR_LOGIN;
+            const signerJobTitle = String(profile.job_title || '').trim() || process.env.SIGNER_ROLE;
 
             const payload = {
               schema_version: 1,
@@ -291,6 +305,8 @@ jobs:
               target_hash: process.env.TARGET_HASH,
               meaning_of_signature: process.env.MEANING,
               signer_role: process.env.SIGNER_ROLE,
+              signer_full_name: signerFullName,
+              signer_job_title: signerJobTitle,
               actor_login: process.env.ACTOR_LOGIN,
               actor_id: Number(process.env.ACTOR_ID || '0'),
               timestamp_utc: new Date().toISOString(),
@@ -360,8 +376,9 @@ jobs:
               '✅ Part 11 Git-Native Signature Recorded',
               '',
               `Target hash: \`${targetHash}\``,
-              `Signer: @${attestation.actor_login} (ID: ${attestation.actor_id})`,
-              `Signer role: \`${attestation.signer_role}\``,
+              `Signer: ${attestation.signer_full_name} (@${attestation.actor_login}, ID: ${attestation.actor_id})`,
+              `Signer title: \`${attestation.signer_job_title}\``,
+              `Signer role in workflow: \`${attestation.signer_role}\``,
               `Meaning of signature: \`${attestation.meaning_of_signature}\``,
               `Authentication assertion: \`${attestation.authentication_assertion?.method || 'n/a'}\``,
               `Attestation SHA256: \`${attestation.attestation_sha256}\``,

@@ -37,6 +37,7 @@
 - ISO 13485 gap-analysis summary: `matrices/iso_13485_gap_analysis.yml`
 - Quality manual section-to-SOP traceability: `matrices/quality_manual_traceability.yml`
 - QMS tooling inventory and validation baseline: `matrices/qms_tooling_inventory.yml`
+- Signer identity registry (full name/title for attestations): `matrices/signer_registry.json`
 - Supplier controls: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
 
 ## Immutable Record Release Tags
@@ -55,6 +56,7 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 ## Training Automation
 
 - `auto_training_assign.yml`: opens SOP training issues only when changed SOPs are mapped to at least one role in `matrices/training_matrix.yml`.
+- `matrices/training_matrix.yml` now contains only active GitHub collaborators as users.
 - `sop_training_matrix_guard.yml`: blocks SOP PRs unless training matrix impact is updated and each changed SOP maps to at least one role.
 - `release_training_diff.yml`: on release publish, compares required SOP revisions against `records/training/user_training_log.yml` and opens per-user training delta issues.
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
@@ -70,6 +72,7 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with ready-to-use slash commands.
 - Signers can reply directly on the PR with:
   - `/part11-sign meaning="<meaning>" role="<role>" auth="GitHub session re-authenticated"`
+- `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
 - The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
 - Each signature run creates:
   - PR attestation comment (`<!-- part11-native-attestation -->`)
