@@ -25,7 +25,6 @@ jobs:
     steps:
       - name: Create GitHub App token for signature comments
         id: app_token
-        if: ${{ secrets.SIGNATURE_APP_ID != '' && secrets.SIGNATURE_APP_PRIVATE_KEY != '' }}
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.SIGNATURE_APP_ID }}
@@ -38,7 +37,7 @@ jobs:
         id: parse
         uses: actions/github-script@v7
         with:
-          github-token: ${{ steps.app_token.outputs.token != '' && steps.app_token.outputs.token || github.token }}
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const pr = context.payload.pull_request;
             const body = pr.body || '';
@@ -135,7 +134,7 @@ jobs:
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
           ELIGIBLE_SIGNERS_CSV: ${{ steps.parse.outputs.eligible_signers_csv }}
         with:
-          github-token: ${{ steps.app_token.outputs.token != '' && steps.app_token.outputs.token || github.token }}
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const pr = context.payload.pull_request;
             const crypto = require('crypto');

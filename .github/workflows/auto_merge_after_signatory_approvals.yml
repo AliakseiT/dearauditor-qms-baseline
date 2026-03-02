@@ -17,7 +17,6 @@ jobs:
     steps:
       - name: Create GitHub App token for PR merge/comment
         id: app_token
-        if: ${{ secrets.SIGNATURE_APP_ID != '' && secrets.SIGNATURE_APP_PRIVATE_KEY != '' }}
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.SIGNATURE_APP_ID }}
@@ -29,7 +28,7 @@ jobs:
       - name: Enable auto-merge when assigned reviewers approved
         uses: actions/github-script@v7
         with:
-          github-token: ${{ steps.app_token.outputs.token != '' && steps.app_token.outputs.token || github.token }}
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const crypto = require('crypto');
             const pr = context.payload.pull_request;
