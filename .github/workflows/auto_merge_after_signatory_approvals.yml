@@ -170,9 +170,7 @@ jobs:
                 const targetCommit = merged.sha || fresh.merge_commit_sha || fresh.head?.sha || '';
                 const repoFull = `${context.repo.owner}/${context.repo.repo}`;
                 const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
-                const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
                 const signingPageUrl = 'https://aliakseit.github.io/part11-action/';
-                const defaultAuth = 'GitHub session re-authenticated';
                 const signLinks = finalSigners.map((u, i) => {
                   const role = roles[i] || roles[0] || 'Quality Assurance Lead';
                   const params = new URLSearchParams({
@@ -186,10 +184,6 @@ jobs:
                     signature_index: String(i + 1),
                   });
                   return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
-                });
-                const signCommands = finalSigners.map((u, i) => {
-                  const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                  return `- @${u}: \`/part11-sign meaning="${meaning}" role="${role}" auth="${defaultAuth}"\``;
                 });
 
                 const requestBody = [
@@ -209,12 +203,7 @@ jobs:
                   'Preferred path: open your signer-specific link and complete the signing page:',
                   ...signLinks,
                   '',
-                  'Fallback path: sign by replying on this PR with one of these commands:',
-                  ...signCommands,
-                  '',
-                  'Alternative: workflow-dispatch:',
-                  `1. Open \`${workflowUrl}\``,
-                  `2. Run workflow with pr_number \`${pr.number}\` and matching meaning/role`,
+                  'If the signing page cannot complete, contact QMS admin to inspect workflow logs.',
                 ].join('\n');
 
                 await github.rest.issues.createComment({

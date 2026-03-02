@@ -126,7 +126,6 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const crypto = require('crypto');
-            const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
             const signingPageUrl = 'https://aliakseit.github.io/part11-action/';
             const targetHash = crypto
               .createHash('sha256')
@@ -136,7 +135,6 @@ jobs:
               .split(/[;,]/)
               .map((x) => x.trim())
               .filter(Boolean);
-            const defaultAuth = 'GitHub session re-authenticated';
             const eligibleSigners = (process.env.ELIGIBLE_SIGNERS_CSV || '')
               .split(',')
               .map((x) => x.trim())
@@ -157,12 +155,6 @@ jobs:
                 return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
               })
               : ['- No eligible approved assigned reviewers found.'];
-            const signCommands = eligibleSigners.length > 0
-              ? eligibleSigners.map((u, i) => {
-                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                return `- @${u}: \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${role}\" auth=\"${defaultAuth}\"\``;
-              })
-              : ['- No eligible approved assigned reviewers found.'];
             const body = [
               '<!-- part11-native-signature-request -->',
               '🛑 Part 11 Signature Required (Mock Ceremony)',
@@ -177,12 +169,7 @@ jobs:
               'Preferred path: open your signer-specific link and complete the signing page:',
               ...signLinks,
               '',
-              'Fallback path: sign by replying on this PR with one of these commands:',
-              ...signCommands,
-              '',
-              'Alternative: workflow-dispatch (no browser PAT entry required):',
-              `1. Open \`${workflowUrl}\``,
-              `2. Run workflow \`Part 11 Git-Native Signature\` with pr_number=\`${pr.number}\`, meaning/signer role values above, and auth_method=\`${defaultAuth}\`.`,
+              'If the signing page cannot complete, contact QMS admin to inspect workflow logs.',
             ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,

@@ -161,7 +161,6 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request;
-            const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
             const signingPageUrl = (process.env.SIGNING_PAGE_URL || 'https://aliakseit.github.io/part11-action/').trim();
             const roles = (process.env.ROLES || '')
               .split(/[;,]/)
@@ -172,7 +171,6 @@ jobs:
               .map((x) => x.trim())
               .filter(Boolean);
             const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
-            const defaultAuth = 'GitHub session re-authenticated';
             const signLinks = approvedSigners.length > 0
               ? approvedSigners.map((u, i) => {
                 const role = roles[i] || roles[0] || 'Quality Assurance Lead';
@@ -187,12 +185,6 @@ jobs:
                   signature_index: String(i + 1),
                 });
                 return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
-              })
-              : ['- No eligible approved assigned reviewers found.'];
-            const signCommands = approvedSigners.length > 0
-              ? approvedSigners.map((u, i) => {
-                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                return `- @${u}: \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${role}\" auth=\"${defaultAuth}\"\``;
               })
               : ['- No eligible approved assigned reviewers found.'];
 
@@ -213,18 +205,7 @@ jobs:
               'Preferred path: open your signer-specific link and complete the signing page:',
               ...signLinks,
               '',
-              'Fallback path: sign by replying on this PR with one of these commands:',
-              ...signCommands,
-              '',
-              'Alternative: workflow-dispatch (no browser PAT entry required):',
-              `1. Open \`${workflowUrl}\``,
-              `2. Run workflow \`Part 11 Git-Native Signature\` with:`,
-              `   - pr_number: \`${pr.number}\``,
-              `   - meaning_of_signature: \`${process.env.MEANING}\``,
-              '   - signer_role: one of required roles',
-              `   - auth_method: \`${defaultAuth}\``,
-              '',
-              'Each signer run adds a cryptographically sealed attestation comment and run artifact.',
+              'If the signing page cannot complete, contact QMS admin to inspect workflow logs.',
             ].join('\n');
 
             await github.rest.issues.createComment({
