@@ -312,6 +312,7 @@ jobs:
 
       - name: Upload release bundle evidence
         if: steps.records.outputs.has_records == 'true'
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: qms-record-bundles-${{ github.run_id }}
@@ -319,7 +320,7 @@ jobs:
             record_bundles/
             release_plan.json
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 5
 
       - name: Publish immutable releases to qms-records
         if: steps.records.outputs.has_records == 'true'
