@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R04
+revision: R05
 effective_date: 2026-03-02
 status: Published
 owner_role: qa_lead
@@ -147,12 +147,19 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 3. Risk governance uses a single process for top-down hazards, bottom-up failure modes, and cybersecurity threats.
 4. Product release and post-market decisions require current residual risk evaluation status from the risk management file.
 
+### 8.13 Usability Engineering Standard Adoption
+1. ACME adopts `EVS-EN 62366-1:2015+A1:2020` as the baseline for safety-related usability engineering.
+2. The usability engineering operating procedure is defined in SOP-019 and is part of QMS scope for user-facing products.
+3. Usability engineering records are maintained in Git as a lightweight usability engineering file with explicit links to risk records.
+4. Use-related post-production findings are reviewed and fed back into risk and design controls.
+
 ## 9. Required Records
 - Quality Manual revision and approval log
 - QMS governance meeting minutes and actions
 - Regulatory scope register review record
 - Product dossier approval records for intended use/classification
 - Risk management plan and risk management file references per product
+- Usability engineering file references per product
 - QMS tooling validation/revalidation records
 - Dissemination and feedback records for QMS updates
 
@@ -165,6 +172,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | 4.1.4 | QMS process change impact control | Change impact records and SOP/index/training updates |
 | 4.1.6 | QMS software validation governance | `matrices/qms_tooling_inventory.yml`, `records/validation/qms-tools/*` |
 | ISO 14971 Clauses 4-10 | Integrated lifecycle risk governance | `sops/SOP-018-RiskManagement.md`, `matrices/iso_14971_gap_analysis.yml` |
+| IEC 62366-1 Clauses 4.1.1-5.10 | Usability engineering lifecycle governance | `sops/SOP-019-UsabilityEngineering.md`, `matrices/iec_62366_1_gap_analysis.yml` |
 
 ## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -184,6 +192,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - SOP-016 Quality Metrics and Data Analysis
 - SOP-017 Infrastructure and Maintenance Control
 - SOP-018 Risk Management (ISO 14971)
+- SOP-019 Usability Engineering (IEC 62366-1)
 
 ## 12. Revision History
 | Revision | Effective Date | Change Summary |
@@ -193,3 +202,4 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | R02 | 2026-03-01 | Added exact CH/EU/US regulatory reference baseline, product-specific intended use/infrastructure rules, GitHub-only QMS tooling governance, and supplier-model dependency handling. |
 | R03 | 2026-03-02 | Aligned related-process references to implemented SOP-006..SOP-017 and finalized supplier/infrastructure cross-links. |
 | R04 | 2026-03-02 | Added ISO 14971 adoption and integrated risk governance linkage to SOP-018 and the risk matrix baseline. |
+| R05 | 2026-03-02 | Added IEC 62366-1 adoption and usability engineering governance linkage to SOP-019 and the usability matrix baseline. |
