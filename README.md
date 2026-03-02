@@ -71,8 +71,8 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 
 - On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with signer-specific workflow links.
 - Signature comments are posted via mandatory GitHub App token (`SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`).
-- Signers open the provided workflow link and run `Part 11 Git-Native Signature` with locked PR context values.
-- `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
+- Signers open the provided workflow link, enter only their full legal name, and run `Part 11 Signature Title Page`.
+- `part11_git_native_signature.yml` resolves meaning/role/hash from the locked Part 11 request comment and enriches attestations with signer title from `matrices/signer_registry.json`.
 - The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
 - Each signature run creates:
   - PR attestation comment (`<!-- part11-native-attestation -->`)

@@ -1,4 +1,4 @@
-name: Part 11 Git-Native Signature
+name: Part 11 Signature Title Page
 
 on:
   workflow_dispatch:
@@ -6,23 +6,9 @@ on:
       pr_number:
         description: "Pull request number to sign"
         required: true
-      meaning_of_signature:
-        description: "Meaning of signature (for example: Approved Quality Record)"
+      signer_full_name:
+        description: "Type your full legal name exactly as your signature assertion"
         required: true
-      signer_role:
-        description: "Signer role (for example: Quality Assurance Lead)"
-        required: true
-      auth_method:
-        description: "Authentication method used"
-        required: true
-        type: choice
-        options:
-          - GitHub session re-authenticated
-          - GitHub session + organization SSO
-          - GitHub session + device MFA
-      mfa_assertion:
-        description: "Optional assertion text (for example: mfa-verified)"
-        required: false
   issue_comment:
     types: [created]
 
@@ -69,13 +55,15 @@ jobs:
             let signerRole;
             let authMethod;
             let mfaAssertion;
+            let signerFullName;
 
             if (event === 'workflow_dispatch') {
               prNumber = Number.parseInt(`${{ github.event.inputs.pr_number }}`, 10);
-              meaning = `${{ github.event.inputs.meaning_of_signature }}`.trim();
-              signerRole = `${{ github.event.inputs.signer_role }}`.trim();
-              authMethod = `${{ github.event.inputs.auth_method }}`.trim();
-              mfaAssertion = `${{ github.event.inputs.mfa_assertion }}`.trim();
+              signerFullName = `${{ github.event.inputs.signer_full_name }}`.trim();
+              meaning = '';
+              signerRole = '';
+              authMethod = 'GitHub App workflow dispatch';
+              mfaAssertion = '';
             } else {
               const issue = context.payload.issue;
               const commentBody = (context.payload.comment?.body || '').trim();
@@ -92,6 +80,7 @@ jobs:
               prNumber = Number.parseInt(String(issue.number), 10);
               meaning = extractArg(commentBody, 'meaning');
               signerRole = extractArg(commentBody, 'role');
+              signerFullName = '';
               authMethod = extractArg(commentBody, 'auth') || 'GitHub session re-authenticated';
               mfaAssertion = extractArg(commentBody, 'mfa');
 
@@ -128,13 +117,19 @@ jobs:
               core.setFailed('pr_number must resolve to a positive integer.');
               return;
             }
-            if (!meaning) {
-              core.setFailed('Missing meaning_of_signature. Provide `meaning="..."` in /part11-sign or use workflow_dispatch input.');
+            if (event === 'workflow_dispatch' && !signerFullName) {
+              core.setFailed('signer_full_name is required for workflow_dispatch signatures.');
               return;
             }
-            if (!signerRole) {
-              core.setFailed('Missing signer_role. Provide `role="..."` in /part11-sign or use workflow_dispatch input.');
-              return;
+            if (event !== 'workflow_dispatch') {
+              if (!meaning) {
+                core.setFailed('Missing meaning_of_signature. Provide `meaning="..."` in /part11-sign.');
+                return;
+              }
+              if (!signerRole) {
+                core.setFailed('Missing signer_role. Provide `role="..."` in /part11-sign.');
+                return;
+              }
             }
             if (!authMethod) {
               authMethod = 'GitHub session re-authenticated';
@@ -145,16 +140,17 @@ jobs:
             core.setOutput('signer_role', signerRole);
             core.setOutput('auth_method', authMethod);
             core.setOutput('mfa_assertion', mfaAssertion || '');
+            core.setOutput('signer_full_name', signerFullName || '');
 
       - name: Resolve PR and target hash
         id: pr
         uses: actions/github-script@v7
-        env:
-          PR_NUMBER: ${{ steps.siginput.outputs.pr_number }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const crypto = require('crypto');
+            const inputMeaning = (process.env.INPUT_MEANING || '').trim();
+            const inputSignerRole = (process.env.INPUT_SIGNER_ROLE || '').trim();
 
             const prNumber = Number.parseInt(process.env.PR_NUMBER, 10);
             const res = await github.rest.pulls.get({
@@ -267,6 +263,64 @@ jobs:
               return;
             }
 
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const requestComments = comments
+              .filter((c) => (c.body || '').includes('<!-- part11-native-signature-request -->'))
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            if (requestComments.length === 0) {
+              core.setFailed(`No Part 11 signature request comment found on PR #${prNumber}.`);
+              return;
+            }
+
+            const latestRequestBody = requestComments[requestComments.length - 1].body || '';
+            const meaningMatch = latestRequestBody.match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i)
+              || latestRequestBody.match(/Meaning of signature:\s*`([^`]+)`/i);
+            const requestMeaning = meaningMatch ? meaningMatch[1].trim() : '';
+            const rolesMatch = latestRequestBody.match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i)
+              || latestRequestBody.match(/Signer role\(s\):\s*`([^`]+)`/i);
+            const requestRoles = rolesMatch
+              ? rolesMatch[1].split(/[;,]/).map((x) => x.trim()).filter(Boolean)
+              : [];
+            const eligibleMatch = latestRequestBody.match(/Eligible signers:\s*\*\*([^*]+)\*\*/i);
+            const requestEligibleSigners = eligibleMatch
+              ? Array.from((eligibleMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
+              : [];
+
+            const resolvedMeaning = inputMeaning || requestMeaning;
+            if (!resolvedMeaning) {
+              core.setFailed(`Could not resolve meaning_of_signature for PR #${prNumber}.`);
+              return;
+            }
+            if (inputMeaning && requestMeaning && inputMeaning !== requestMeaning) {
+              core.setFailed(
+                `meaning_of_signature mismatch. Input='${inputMeaning}' request='${requestMeaning}'.`
+              );
+              return;
+            }
+
+            let resolvedSignerRole = inputSignerRole;
+            if (!resolvedSignerRole) {
+              const actorIndex = requestEligibleSigners.length > 0
+                ? requestEligibleSigners.findIndex((x) => x.toLowerCase() === actor.toLowerCase())
+                : allowedSigners.findIndex((x) => x.toLowerCase() === actor.toLowerCase());
+              resolvedSignerRole = (actorIndex >= 0 ? requestRoles[actorIndex] : '') || requestRoles[0] || '';
+            }
+            if (!resolvedSignerRole) {
+              core.setFailed(`Could not resolve signer role for @${context.actor} on PR #${prNumber}.`);
+              return;
+            }
+            if (requestRoles.length > 0 && !requestRoles.map((x) => x.toLowerCase()).includes(resolvedSignerRole.toLowerCase())) {
+              core.setFailed(
+                `Resolved signer role '${resolvedSignerRole}' is not in requested roles: ${requestRoles.join(', ')}.`
+              );
+              return;
+            }
+
             const targetCommit = pr.merge_commit_sha || pr.head.sha;
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
             const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
@@ -280,6 +334,17 @@ jobs:
             core.setOutput('actor_login', context.actor);
             core.setOutput('actor_id', String(context.payload.sender?.id || '0'));
             core.setOutput('allowed_signers_csv', allowedSigners.join(','));
+            core.setOutput('meaning_of_signature', resolvedMeaning);
+            core.setOutput('signer_role', resolvedSignerRole);
+            core.setOutput('auth_method', process.env.INPUT_AUTH_METHOD || 'GitHub App workflow dispatch');
+            core.setOutput('request_comment_id', String(requestComments[requestComments.length - 1].id || ''));
+            core.setOutput('request_comment_url', String(requestComments[requestComments.length - 1].html_url || ''));
+            core.setOutput('request_roles_csv', requestRoles.join(';'));
+        env:
+          PR_NUMBER: ${{ steps.siginput.outputs.pr_number }}
+          INPUT_MEANING: ${{ steps.siginput.outputs.meaning }}
+          INPUT_SIGNER_ROLE: ${{ steps.siginput.outputs.signer_role }}
+          INPUT_AUTH_METHOD: ${{ steps.siginput.outputs.auth_method }}
 
       - name: Build attestation manifest
         uses: actions/github-script@v7
@@ -292,10 +357,13 @@ jobs:
           REPO_FULL: ${{ steps.pr.outputs.repo_full }}
           ACTOR_LOGIN: ${{ steps.pr.outputs.actor_login }}
           ACTOR_ID: ${{ steps.pr.outputs.actor_id }}
-          MEANING: ${{ steps.siginput.outputs.meaning }}
-          SIGNER_ROLE: ${{ steps.siginput.outputs.signer_role }}
-          AUTH_METHOD: ${{ steps.siginput.outputs.auth_method }}
+          MEANING: ${{ steps.pr.outputs.meaning_of_signature }}
+          SIGNER_ROLE: ${{ steps.pr.outputs.signer_role }}
+          AUTH_METHOD: ${{ steps.pr.outputs.auth_method }}
           MFA_ASSERTION: ${{ steps.siginput.outputs.mfa_assertion }}
+          SIGNER_FULL_NAME_ASSERTION: ${{ steps.siginput.outputs.signer_full_name }}
+          REQUEST_COMMENT_ID: ${{ steps.pr.outputs.request_comment_id }}
+          REQUEST_COMMENT_URL: ${{ steps.pr.outputs.request_comment_url }}
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           SERVER_URL: ${{ github.server_url }}
@@ -317,7 +385,16 @@ jobs:
             }
             const registryKey = (process.env.ACTOR_LOGIN || '').toLowerCase();
             const profile = Object.entries(registry).find(([login]) => login.toLowerCase() === registryKey)?.[1] || {};
-            const signerFullName = String(profile.full_name || '').trim() || process.env.ACTOR_LOGIN;
+            const assertedName = String(process.env.SIGNER_FULL_NAME_ASSERTION || '').trim();
+            const expectedName = String(profile.full_name || '').trim();
+            const normalizeName = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+            if (assertedName && expectedName && normalizeName(assertedName) !== normalizeName(expectedName)) {
+              core.setFailed(
+                `Submitted full name '${assertedName}' does not match signer registry for @${process.env.ACTOR_LOGIN} ('${expectedName}').`
+              );
+              return;
+            }
+            const signerFullName = assertedName || expectedName || process.env.ACTOR_LOGIN;
             const signerJobTitle = String(profile.job_title || '').trim() || process.env.SIGNER_ROLE;
 
             const payload = {
@@ -339,6 +416,11 @@ jobs:
               authentication_assertion: {
                 method: process.env.AUTH_METHOD,
                 mfa_assertion: process.env.MFA_ASSERTION || 'not_provided',
+                signer_full_name_asserted: assertedName || 'not_provided',
+              },
+              part11_request_comment: {
+                id: Number(process.env.REQUEST_COMMENT_ID || '0'),
+                url: process.env.REQUEST_COMMENT_URL || '',
               },
               workflow_run: {
                 id: Number(process.env.RUN_ID),
