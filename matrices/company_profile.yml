@@ -1,0 +1,35 @@
+version: 1
+company:
+  legal_name: "ACME GmbH"
+  registered_address:
+    street: "Paradeplatz 8"
+    postal_code: "8001"
+    city: "Zurich"
+    country: "Switzerland"
+  operating_model: "remote-first"
+  regulatory_role: "Manufacturer"
+  product_type: "Healthcare software products; some products may qualify as SaMD"
+  intended_use_policy: "No single intended medical purpose is declared at company level; each product defines intended use, indications, claims, and classification in a product-specific regulatory dossier."
+  infrastructure_policy: "Infrastructure architecture and controls are defined and approved per product dossier; no single shared product infrastructure baseline is imposed at company level."
+  qms_intent:
+    - "Ensure consistent compliance with ISO 13485 and applicable regulatory requirements."
+    - "Maintain product safety and performance through controlled lifecycle processes."
+    - "Provide objective evidence and full traceability for quality decisions."
+quality_policy_statement:
+  approved_by_role: "management_representative"
+  statement: "ACME GmbH commits to delivering safe and effective healthcare software through a risk-based, evidence-driven quality management system and continuous improvement."
+quality_objective_framework:
+  governance_cadence: "quarterly"
+  objectives:
+    - id: "QO-001"
+      objective: "Close CAPA actions on time"
+      metric: "percent_closed_on_or_before_due_date"
+      target: ">=95%"
+    - id: "QO-002"
+      objective: "Complete required SOP training on time"
+      metric: "percent_training_requests_closed_by_due_date"
+      target: ">=98%"
+    - id: "QO-003"
+      objective: "Maintain management review cadence"
+      metric: "reviews_completed_per_plan"
+      target: "100%"
