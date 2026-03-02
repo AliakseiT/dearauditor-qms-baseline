@@ -1,0 +1,49 @@
+version: 2
+analysis_date: "2026-03-02"
+standard:
+  exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
+  normative_base: "ISO 13485:2016"
+analysis_scope: "ACME GmbH QMS-Lite repository controls and SOP corpus"
+summary:
+  covered_clause_groups:
+    - "4.1-4.2"
+    - "5.1-5.6"
+    - "6.2-6.4"
+    - "7.1, 7.3, 7.4"
+    - "8.2, 8.3, 8.4, 8.5"
+  non_applicable_or_product_specific:
+    - clause: "7.5 production/service provision detailed controls"
+      rationale: "Product-specific operational controls are defined in product repositories and dossiers; this repository sets governance baseline only."
+    - clause: "7.6 monitoring and measuring equipment"
+      rationale: "No physical measuring equipment in scope for this software-only baseline; if introduced, product-level SOP/controls are required."
+  outstanding_gaps: []
+clause_to_sop_map:
+  "4.1.4": ["SOP-005", "SOP-009"]
+  "4.1.5": ["SOP-010"]
+  "4.1.6": ["SOP-006", "SOP-005"]
+  "4.2.1": ["SOP-005"]
+  "4.2.2": ["SOP-005"]
+  "4.2.3": ["SOP-007"]
+  "4.2.4": ["SOP-001"]
+  "4.2.5": ["SOP-001"]
+  "5.1": ["SOP-005"]
+  "5.3": ["SOP-005"]
+  "5.4.1": ["SOP-005", "SOP-016"]
+  "5.4.2": ["SOP-005"]
+  "5.5": ["SOP-005", "SOP-011"]
+  "5.6": ["SOP-004"]
+  "6.2": ["SOP-011"]
+  "6.3": ["SOP-017"]
+  "6.4": ["SOP-017"]
+  "7.1": ["SOP-008"]
+  "7.3": ["SOP-008", "SOP-009"]
+  "7.4": ["SOP-010"]
+  "8.2.1": ["SOP-012", "SOP-014"]
+  "8.2.2": ["SOP-012"]
+  "8.2.3": ["SOP-013"]
+  "8.2.4": ["SOP-003"]
+  "8.2.6": ["SOP-014"]
+  "8.3": ["SOP-015"]
+  "8.4": ["SOP-014", "SOP-016"]
+  "8.5.2": ["SOP-002"]
+  "8.5.3": ["SOP-002"]

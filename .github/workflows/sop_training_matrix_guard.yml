@@ -1,0 +1,99 @@
+name: SOP Training Matrix Guard
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - sops/*.md
+      - matrices/training_matrix.yml
+
+permissions:
+  contents: read
+
+jobs:
+  enforce_training_matrix_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate SOP updates are reflected in training matrix
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 <<'PY'
+          import os
+          import re
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          import yaml
+
+          base_sha = os.environ["BASE_SHA"].strip()
+          head_sha = os.environ["HEAD_SHA"].strip()
+
+          changed_files = subprocess.check_output(
+            ["git", "diff", "--name-only", base_sha, head_sha],
+            text=True,
+          ).splitlines()
+          changed_files = [f.strip() for f in changed_files if f.strip()]
+
+          changed_sops = [
+            f for f in changed_files if f.startswith("sops/") and f.endswith(".md")
+          ]
+
+          if not changed_sops:
+            print("No SOP changes; guard passed.")
+            sys.exit(0)
+
+          if "matrices/training_matrix.yml" not in changed_files:
+            print("ERROR: SOP files changed but matrices/training_matrix.yml was not updated.")
+            sys.exit(1)
+
+          matrix_path = Path("matrices/training_matrix.yml")
+          if not matrix_path.exists():
+            print("ERROR: matrices/training_matrix.yml is missing.")
+            sys.exit(1)
+
+          matrix = yaml.safe_load(matrix_path.read_text(encoding="utf-8")) or {}
+          roles = matrix.get("roles", {}) or {}
+
+          sop_to_roles = {}
+          for role_name, role_def in roles.items():
+            for item in role_def.get("required_sops", []) or []:
+              m = re.search(r"(SOP-\d+)", str(item), flags=re.IGNORECASE)
+              if not m:
+                continue
+              sop_id = m.group(1).upper()
+              sop_to_roles.setdefault(sop_id, set()).add(role_name)
+
+          errors = []
+          for sop_path in changed_sops:
+            filename = Path(sop_path).name
+            m = re.search(r"(SOP-\d+)", filename, flags=re.IGNORECASE)
+            if not m:
+              errors.append(f"Cannot parse SOP ID from {sop_path}")
+              continue
+            sop_id = m.group(1).upper()
+            mapped_roles = sop_to_roles.get(sop_id, set())
+            if not mapped_roles:
+              errors.append(f"{sop_id} has no roles mapped in training_matrix.yml")
+
+          if errors:
+            print("ERROR: SOP Training Matrix Guard failed:")
+            for err in errors:
+              print(f" - {err}")
+            sys.exit(1)
+
+          print("SOP Training Matrix Guard passed.")
+          PY
