@@ -57,3 +57,11 @@ Manual:
 CI:
 - merge to `main` changes under `services/signature-worker/**`
 - workflow `Deploy Signature Worker` deploys automatically
+
+## 5. One-Command Bootstrap
+
+From repo root:
+
+- `./services/signature-worker/scripts/bootstrap_env.sh --deploy`
+
+This syncs `.env.local` values to GitHub/Cloudflare and deploys worker.

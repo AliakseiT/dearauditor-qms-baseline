@@ -58,6 +58,20 @@ To add additional IDPs later, keep the same state/context verification and imple
 - Manual: `npm run deploy`
 - CI: `.github/workflows/deploy_signature_worker.yml`
 
+## Bootstrap Helper
+
+Use the bootstrap script to push settings from `.env.local` to GitHub and Cloudflare:
+
+```bash
+./services/signature-worker/scripts/bootstrap_env.sh --deploy
+```
+
+What it does:
+- Upserts repo variable `SIGNATURE_UI_BASE_URL`.
+- Sets repo secrets `SIGNATURE_LINK_SECRET`, `SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY` when values are present.
+- Sets worker secrets from `.env.local`.
+- Writes `.dev.vars` for local `wrangler dev`.
+
 After deploy, set repo variable in `qms-lite`:
 - `SIGNATURE_UI_BASE_URL=https://sign.qms.dearauditor.ch`
 
