@@ -39,19 +39,6 @@ jobs:
           matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
           roles = matrix.get("roles", {}) or {}
 
-          has_part11_block = (
-            re.search(r"\*\*Meaning of Signature:\*\*\s*[^\n]+", body, flags=re.IGNORECASE)
-            or re.search(r"Part\s*11\s*Signature\s*Requirements", body, flags=re.IGNORECASE)
-          )
-          if not has_part11_block:
-            output = Path(os.environ["GITHUB_OUTPUT"])
-            with output.open("a", encoding="utf-8") as fh:
-              fh.write("required_signatures=0\n")
-              fh.write("role_ids=\n")
-              fh.write("roles_raw=\n")
-              fh.write("candidates_csv=\n")
-            raise SystemExit(0)
-
           role_aliases = {
             "quality assurance lead": "qa_lead",
             "qa lead": "qa_lead",
@@ -98,7 +85,7 @@ jobs:
           output = Path(os.environ["GITHUB_OUTPUT"])
           with output.open("a", encoding="utf-8") as fh:
             fh.write(f"required_signatures={required}\n")
-            fh.write(f"required_reviewer_signatures={max(0, required - 1)}\n")
+            fh.write(f"required_reviewer_signatures={max(1, required - 1)}\n")
             fh.write(f"role_ids={','.join(role_ids)}\n")
             fh.write(f"roles_raw={roles_raw}\n")
             fh.write("candidates_csv=" + ",".join(ordered_candidates) + "\n")
@@ -187,13 +174,13 @@ jobs:
             const rolesRaw = process.env.ROLES_RAW || '';
             const lines = [
               marker,
-              '🤖 Auto-assigned Part 11 reviewers from role matrix',
+              '🤖 Auto-assigned reviewers from role matrix',
               '',
               `Signer roles requested: \`${rolesRaw}\``,
               `Mapped role IDs: \`${roleIds.join(', ') || 'none'}\``,
               `Required signatures: \`${required}\``,
               `Author auto-included signer: @${pr.user?.login || 'unknown'}`,
-              `Reviewer signatures required: \`${requiredReviewerSignatures}\``,
+              `Reviewer approvals required: \`${requiredReviewerSignatures}\` (minimum 1 for double-eye principle)`,
               `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
               '',
               'Auto-merge workflow will enable merge only after all assigned reviewers approve.',

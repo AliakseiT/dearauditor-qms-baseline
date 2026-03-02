@@ -33,6 +33,7 @@ roles:
     users:
       - dev_lina
       - dev_marcus
+      - InaTsitovich
       - AliakseiT
     required_sops:
       - SOP-001
@@ -48,6 +49,7 @@ roles:
     users:
       - clin_rina
       - clin_owen
+      - InaTsitovich
       - AliakseiT
     required_sops:
       - SOP-001
@@ -63,6 +65,7 @@ roles:
   lead_auditor:
     users:
       - audit_nora
+      - InaTsitovich
       - AliakseiT
     required_sops:
       - SOP-001
@@ -86,6 +89,7 @@ roles:
   management_representative:
     users:
       - mgmt_eli
+      - InaTsitovich
       - AliakseiT
     required_sops:
       - SOP-001
