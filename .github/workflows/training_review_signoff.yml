@@ -87,37 +87,137 @@ jobs:
             core.setOutput('trainee_user_id', traineeUserId);
             core.setOutput('sop_ids_csv', sopIdsCsv);
 
-  post_close_part11_signoff:
+      - name: Post Git-native signature request comment
+        uses: actions/github-script@v7
+        env:
+          MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
+          ROLES: ${{ steps.parse.outputs.signatory_roles }}
+          REQUIRED: ${{ steps.parse.outputs.required_signatures }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+            const body = [
+              '<!-- part11-native-signature-request -->',
+              '🛑 Part 11 Signature Required (Git-Native, Training Review)',
+              '',
+              `PR: #${pr.number}`,
+              `Meaning of signature: \`${process.env.MEANING}\``,
+              `Signer role(s): \`${process.env.ROLES}\``,
+              `Required signatures: \`${process.env.REQUIRED}\``,
+              '',
+              'Use workflow-dispatch (no browser PAT entry required):',
+              `1. Open \`${workflowUrl}\``,
+              `2. Run workflow \`Part 11 Git-Native Signature\` with pr_number=\`${pr.number}\` and the values above.`,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body,
+            });
+
+  wait_native_part11_signoff:
     if: github.event.pull_request.merged == false && startsWith(github.event.pull_request.base.ref, 'training/review-baseline-')
     needs: prepare_review_signoff
     runs-on: ubuntu-latest
     timeout-minutes: 90
     outputs:
-      target_hash: ${{ steps.signoff.outputs.target_hash }}
-      signed_payload_json: ${{ steps.signoff.outputs.signed_payload_json }}
+      target_hash: ${{ steps.wait.outputs.target_hash }}
+      signed_payload_json: ${{ steps.wait.outputs.signed_payload_json }}
     steps:
-      - name: Run Part 11 signature ceremony on closed review PR
-        id: signoff
-        uses: AliakseiT/part11-action@main
-        with:
-          target_type: pr
-          meaning_of_signature: ${{ needs.prepare_review_signoff.outputs.meaning_of_signature }}
-          attestation_mode: pr_comment_mock
-          sign_page_base_url: https://aliakseit.github.io/part11-action/
-          signatory_roles: ${{ needs.prepare_review_signoff.outputs.signatory_roles }}
-          required_signatures: ${{ needs.prepare_review_signoff.outputs.required_signatures }}
-          poll_timeout_seconds: '5400'
-          poll_interval_seconds: '20'
-          record_type: training
-          record_id: ${{ needs.prepare_review_signoff.outputs.trainee_user_id }}
-          source_repository: ${{ github.repository }}
-          source_pr_number: ${{ github.event.pull_request.number }}
+      - name: Wait for Git-native Part 11 signatures
+        id: wait
+        uses: actions/github-script@v7
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEANING: ${{ needs.prepare_review_signoff.outputs.meaning_of_signature }}
+          ROLES: ${{ needs.prepare_review_signoff.outputs.signatory_roles }}
+          REQUIRED: ${{ needs.prepare_review_signoff.outputs.required_signatures }}
+        with:
+          script: |
+            const crypto = require('crypto');
+            const pr = context.payload.pull_request;
+            const prNumber = pr.number;
+            const expectedTargetHash = crypto
+              .createHash('sha256')
+              .update(`${context.repo.owner}/${context.repo.repo}:${pr.head.sha}`)
+              .digest('hex');
+            const timeoutSeconds = 5400;
+            const pollSeconds = 20;
+            const deadline = Date.now() + timeoutSeconds * 1000;
+
+            const requiredMeaning = process.env.MEANING;
+            const requiredSignatures = Number.parseInt(process.env.REQUIRED || '1', 10) || 1;
+            const allowedRoles = (process.env.ROLES || '')
+              .split(/[;,]/)
+              .map((x) => x.trim().toLowerCase())
+              .filter(Boolean);
+
+            function extractAttestation(commentBody) {
+              const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
+              if (!codeMatch || !codeMatch[1]) return null;
+              try {
+                return JSON.parse(codeMatch[1].trim());
+              } catch {
+                return null;
+              }
+            }
+
+            while (Date.now() < deadline) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+
+              const bySigner = new Map();
+              for (const c of comments) {
+                if (!(c.body || '').includes('<!-- part11-native-attestation -->')) continue;
+                const a = extractAttestation(c.body || '');
+                if (!a) continue;
+                if (String(a.pr_number || '') !== String(prNumber)) continue;
+                if ((a.target_hash || '') !== expectedTargetHash) continue;
+                if ((a.meaning_of_signature || '') !== requiredMeaning) continue;
+                const role = String(a.signer_role || '').toLowerCase();
+                if (allowedRoles.length > 0 && !allowedRoles.includes(role)) continue;
+                const signer = String(a.actor_login || '').toLowerCase();
+                if (!signer) continue;
+                bySigner.set(signer, {
+                  user_id: a.actor_login || '',
+                  actor_id: a.actor_id || 0,
+                  signer_role: a.signer_role || '',
+                  meaning_of_signature: a.meaning_of_signature || '',
+                  timestamp: a.timestamp_utc || c.created_at || '',
+                  attestation_sha256: a.attestation_sha256 || '',
+                });
+              }
+
+              const signedAttestations = Array.from(bySigner.values());
+              if (signedAttestations.length >= requiredSignatures) {
+                const payload = {
+                  schema_version: 1,
+                  attestation_scope: 'training_review_pr',
+                  source_repository: `${context.repo.owner}/${context.repo.repo}`,
+                  source_pull_request: prNumber,
+                  part11_target_hash: expectedTargetHash,
+                  signed_attestations: signedAttestations,
+                };
+                core.setOutput('target_hash', expectedTargetHash);
+                core.setOutput('signed_payload_json', JSON.stringify(payload));
+                return;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, pollSeconds * 1000));
+            }
+
+            core.setFailed(
+              `Timed out after ${timeoutSeconds}s waiting for ${requiredSignatures} Git-native Part 11 signature(s) for training review PR #${prNumber}.`
+            );
 
   publish_training_review_record:
     if: github.event.pull_request.merged == false && startsWith(github.event.pull_request.base.ref, 'training/review-baseline-')
-    needs: [prepare_review_signoff, post_close_part11_signoff]
+    needs: [prepare_review_signoff, wait_native_part11_signoff]
     runs-on: ubuntu-latest
     env:
       TARGET_RECORD_REPO: AliakseiT/qms-records
@@ -143,8 +243,8 @@ jobs:
           TRAINEE_LOGIN: ${{ needs.prepare_review_signoff.outputs.trainee_login }}
           TRAINEE_USER_ID: ${{ needs.prepare_review_signoff.outputs.trainee_user_id }}
           SOP_IDS_CSV: ${{ needs.prepare_review_signoff.outputs.sop_ids_csv }}
-          SIGNED_PAYLOAD_JSON: ${{ needs.post_close_part11_signoff.outputs.signed_payload_json }}
-          TARGET_HASH: ${{ needs.post_close_part11_signoff.outputs.target_hash }}
+          SIGNED_PAYLOAD_JSON: ${{ needs.wait_native_part11_signoff.outputs.signed_payload_json }}
+          TARGET_HASH: ${{ needs.wait_native_part11_signoff.outputs.target_hash }}
         run: |
           python -m pip install --quiet markdown fpdf2
           python <<'PY'
