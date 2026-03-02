@@ -8,17 +8,16 @@ on:
         required: true
         default: "AliakseiT"
       trainee_github_login:
-        description: "GitHub login that must review and approve the training update PR"
+        description: "GitHub login that must review this onboarding review PR"
         required: true
         default: "AliakseiT"
 
 permissions:
   contents: write
   pull-requests: write
-  issues: write
 
 jobs:
-  create_onboarding_pr:
+  create_onboarding_review_pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,7 +30,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Build onboarding training plan
+      - name: Build review metadata from matrix
         id: plan
         env:
           TRAINEE_USER_ID: ${{ github.event.inputs.trainee_user_id }}
@@ -42,6 +41,7 @@ jobs:
           python <<'PY'
           import os
           import re
+          import subprocess
           from pathlib import Path
 
           import yaml
@@ -50,207 +50,89 @@ jobs:
             m = re.search(r"(SOP-\d+)", str(text or ""), flags=re.IGNORECASE)
             return m.group(1).upper() if m else ""
 
-          def parse_revision_rank(revision: str) -> int:
-            m = re.fullmatch(r"R(\d+)", str(revision or "").strip().upper())
-            return int(m.group(1)) if m else -1
-
-          def pick_highest_revision(revisions):
-            ranked = sorted(
-              [str(x).strip().upper() for x in revisions if str(x).strip()],
-              key=parse_revision_rank,
-              reverse=True,
-            )
-            return ranked[0] if ranked else ""
-
-          def parse_readme_index(path: Path):
-            text = path.read_text(encoding="utf-8")
-            start = "<!-- PUBLISHED-SOP-INDEX:START -->"
-            end = "<!-- PUBLISHED-SOP-INDEX:END -->"
-            if start not in text or end not in text:
-              return {}
-            block = text.split(start, 1)[1].split(end, 1)[0]
-            published = {}
-            for line in block.splitlines():
-              row = line.strip()
-              if not row.startswith("|"):
-                continue
-              if row.startswith("| SOP ID ") or row.startswith("|---"):
-                continue
-              cols = [c.strip() for c in row.strip("|").split("|")]
-              if len(cols) < 6:
-                continue
-              sop_id, title, sop_file, _date, revision, _status = cols[:6]
-              if not re.fullmatch(r"SOP-\d+", sop_id):
-                continue
-              published[sop_id] = {
-                "title": title,
-                "file": sop_file,
-                "revision": revision,
-              }
-            return published
-
-          trainee_user_input = os.environ["TRAINEE_USER_ID"].strip()
-          trainee_gh_login = os.environ["TRAINEE_GH_LOGIN"].strip()
+          trainee_user_id = os.environ["TRAINEE_USER_ID"].strip()
+          trainee_login = os.environ["TRAINEE_GH_LOGIN"].strip()
           run_id = os.environ["RUN_ID"].strip()
 
           matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
-          logs_path = Path("records/training/user_training_log.yml")
-          logs = yaml.safe_load(logs_path.read_text(encoding="utf-8")) if logs_path.exists() else {}
-          published = parse_readme_index(Path("README.md"))
-
           roles = matrix.get("roles", {}) or {}
-          users_log = (logs or {}).setdefault("users", {})
-
-          canonical_user = next(
-            (u for u in users_log.keys() if str(u).lower() == trainee_user_input.lower()),
-            trainee_user_input,
-          )
 
           roles_for_user = []
-          required_by_sop = {}
+          required_sops = set()
+
           for role_name, role_def in roles.items():
-            role_users = [str(u).strip() for u in (role_def.get("users", []) or [])]
-            if not any(u.lower() == trainee_user_input.lower() for u in role_users):
+            users = [str(u).strip() for u in (role_def.get("users", []) or []) if str(u).strip()]
+            if not any(u.lower() == trainee_user_id.lower() for u in users):
               continue
 
             roles_for_user.append(role_name)
-            role_required = [str(x).strip() for x in (role_def.get("required_sops", []) or []) if str(x).strip()]
-            role_required_revisions = {
-              extract_sop_id(k): str(v).strip().upper()
-              for k, v in (role_def.get("required_revisions", {}) or {}).items()
-            }
-
-            for item in role_required:
+            for item in (role_def.get("required_sops", []) or []):
               sop_id = extract_sop_id(item)
-              if not sop_id:
-                continue
-              slot = required_by_sop.setdefault(sop_id, {"role_required_revisions": []})
-              role_rev = role_required_revisions.get(sop_id, "")
-              if role_rev:
-                slot["role_required_revisions"].append(role_rev)
+              if sop_id:
+                required_sops.add(sop_id)
 
           if not roles_for_user:
             raise RuntimeError(
-              f"User '{trainee_user_input}' is not mapped to any role in matrices/training_matrix.yml."
+              f"User '{trainee_user_id}' is not mapped to any role in matrices/training_matrix.yml."
             )
-
-          if not required_by_sop:
+          if not required_sops:
             raise RuntimeError(
-              f"User '{trainee_user_input}' has no required SOP entries in mapped roles."
+              f"User '{trainee_user_id}' has no SOPs mapped through role requirements."
             )
 
-          existing_map = users_log.get(canonical_user, {}) or {}
-          new_map = dict(existing_map)
-          rows = []
-          changes = 0
+          first_commit = subprocess.check_output(
+            ["git", "rev-list", "--max-parents=0", "main"],
+            text=True,
+          ).splitlines()[0].strip()
 
-          for sop_id in sorted(required_by_sop.keys()):
-            role_revs = required_by_sop[sop_id]["role_required_revisions"]
-            forced = pick_highest_revision(role_revs)
-            published_rev = (published.get(sop_id, {}) or {}).get("revision", "")
-            target = forced or published_rev
-            if not target:
-              raise RuntimeError(
-                f"Could not resolve target revision for {sop_id}. Add required_revisions or README published index row."
-              )
+          slug = re.sub(r"[^a-z0-9-]+", "-", trainee_user_id.lower()).strip("-") or "user"
+          baseline_branch = f"training/review-baseline-{slug}-{run_id}"
 
-            previous = str(existing_map.get(sop_id, "UNTRAINED")).strip() or "UNTRAINED"
-            source = "matrix.required_revisions" if forced else "README published index"
-            rows.append((sop_id, previous, target, source))
+          pr_title = f"Training review: {trainee_user_id} full QMS state vs initial baseline"
+          roles_csv = ", ".join(sorted(roles_for_user))
+          sop_csv = ", ".join(sorted(required_sops))
 
-            if previous != target:
-              changes += 1
-            new_map[sop_id] = target
-
-          users_log[canonical_user] = new_map
-
-          plan_dir = Path("records/training/plans")
-          plan_dir.mkdir(parents=True, exist_ok=True)
-          plan_file = plan_dir / f"onboarding-{canonical_user.lower()}-{run_id}.md"
-
-          role_csv = ", ".join(sorted(roles_for_user))
-          lines = [
-            f"# Manual Training Onboarding Plan: {canonical_user}",
+          pr_body = [
+            "### Training Review Record",
+            "- [x] This PR is review-only onboarding evidence (do not merge).",
+            f"- [x] Baseline branch points to first commit `{first_commit[:12]}`.",
+            "- [x] Head is `main` to show full current QMS state.",
+            f"- **Trainee GitHub Login:** @{trainee_login}",
+            f"- **Training User ID:** {trainee_user_id}",
+            f"- **Roles In Scope:** {roles_csv}",
+            f"- **SOP IDs In Scope:** {sop_csv}",
             "",
-            f"- Trainee GitHub Login: @{trainee_gh_login}",
-            f"- Roles: {role_csv}",
+            "### Reviewer Task",
+            "1. Review `Files changed` in this PR as full onboarding walkthrough.",
+            "2. Approve this PR as trainee acknowledgement.",
+            "3. Close without merge (review-only artifact).",
             "",
-            "| SOP ID | Previous Revision | Target Revision | Revision Source |",
-            "|---|---|---|---|",
+            "### Part 11 Signature Requirements",
+            "- **Meaning of Signature:** Approved Training Review Acknowledgement",
+            "- **Signer Roles:** Quality Assurance Lead; Management Representative",
+            "- **Required Signatures:** 2",
           ]
-          for sop_id, previous, target, source in rows:
-            lines.append(f"| {sop_id} | {previous} | {target} | {source} |")
-          plan_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-          has_changes = changes > 0
-          if has_changes:
-            logs_path.write_text(
-              yaml.safe_dump(logs, sort_keys=False, allow_unicode=False),
-              encoding="utf-8",
-            )
-
-          branch_slug = re.sub(r"[^a-z0-9-]+", "-", canonical_user.lower()).strip("-") or "user"
-          branch_name = f"training/onboard-{branch_slug}-{run_id}"
-          pr_title = f"Training onboarding: {canonical_user} to latest required SOP revisions"
+          Path("pr_body.md").write_text("\n".join(pr_body) + "\n", encoding="utf-8")
 
           output = Path(os.environ["GITHUB_OUTPUT"])
           with output.open("a", encoding="utf-8") as fh:
-            fh.write(f"has_changes={'true' if has_changes else 'false'}\n")
-            fh.write(f"canonical_user={canonical_user}\n")
-            fh.write(f"trainee_gh_login={trainee_gh_login}\n")
-            fh.write(f"roles_csv={role_csv}\n")
-            fh.write(f"plan_file={plan_file.as_posix()}\n")
-            fh.write(f"branch_name={branch_name}\n")
+            fh.write(f"first_commit={first_commit}\n")
+            fh.write(f"baseline_branch={baseline_branch}\n")
+            fh.write(f"trainee_login={trainee_login}\n")
             fh.write(f"pr_title={pr_title}\n")
+            fh.write(f"roles_csv={roles_csv}\n")
+            fh.write(f"sop_csv={sop_csv}\n")
           PY
 
-      - name: Stop when no training deltas are required
-        if: steps.plan.outputs.has_changes != 'true'
-        run: echo "No training changes required for this user."
-
-      - name: Open onboarding issue
-        id: onboarding_issue
-        if: steps.plan.outputs.has_changes == 'true'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const trainee = `${{ steps.plan.outputs.canonical_user }}`;
-            const planFile = `${{ steps.plan.outputs.plan_file }}`;
-            const roleCsv = `${{ steps.plan.outputs.roles_csv }}`;
-            const traineeLogin = `${{ steps.plan.outputs.trainee_gh_login }}`;
-            const title = `MANUAL TRAINING ONBOARDING: ${trainee}`;
-            const body = [
-              `Manual onboarding training plan generated for \`${trainee}\`.`,
-              ``,
-              `- Trainee GitHub Login: @${traineeLogin}`,
-              `- Roles: ${roleCsv}`,
-              `- Plan file: \`${planFile}\``,
-              ``,
-              `Execution required: merge training log update PR, trainee approval, and post-merge Part 11 signature collection.`,
-            ].join('\n');
-
-            const issue = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title,
-              body,
-              labels: ['training', 'onboarding'],
-            });
-            core.setOutput('issue_number', String(issue.data.number));
-
-      - name: Create branch and commit onboarding training updates
-        if: steps.plan.outputs.has_changes == 'true'
+      - name: Create baseline branch at first commit
         run: |
-          BRANCH="${{ steps.plan.outputs.branch_name }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
-          git add records/training/user_training_log.yml "${{ steps.plan.outputs.plan_file }}"
-          git commit -m "Onboard ${{ steps.plan.outputs.canonical_user }} training baseline to latest SOP revisions"
-          git push --set-upstream origin "$BRANCH"
+          git checkout --detach "${{ steps.plan.outputs.first_commit }}"
+          git checkout -b "${{ steps.plan.outputs.baseline_branch }}"
+          git push --set-upstream origin "${{ steps.plan.outputs.baseline_branch }}"
 
-      - name: Open training onboarding PR + reviewer request
-        if: steps.plan.outputs.has_changes == 'true'
+      - name: Open onboarding review PR
         id: open_pr
         uses: actions/github-script@v7
         with:
@@ -258,26 +140,11 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const branch = `${{ steps.plan.outputs.branch_name }}`;
+            const base = `${{ steps.plan.outputs.baseline_branch }}`;
+            const head = 'main';
             const title = `${{ steps.plan.outputs.pr_title }}`;
-            const traineeLogin = `${{ steps.plan.outputs.trainee_gh_login }}`;
-            const issueNumber = `${{ steps.onboarding_issue.outputs.issue_number }}`;
-            const userId = `${{ steps.plan.outputs.canonical_user }}`;
-            const planFile = `${{ steps.plan.outputs.plan_file }}`;
-
-            const body = [
-              '### Execution Record',
-              `- [x] This PR finalizes the execution of Issue #${issueNumber}.`,
-              '- [x] This PR updates the onboarding trainee training log to latest required SOP revisions.',
-              `- **Trainee GitHub Login:** @${traineeLogin}`,
-              `- **Training User ID:** ${userId}`,
-              `- **Training Plan File:** \`${planFile}\``,
-              '',
-              '### Part 11 Signature Requirements',
-              '- **Meaning of Signature:** Approved Training Record',
-              '- **Signer Roles:** Quality Assurance Lead; Management Representative',
-              '- **Required Signatures:** 2',
-            ].join('\n');
+            const traineeLogin = `${{ steps.plan.outputs.trainee_login }}`;
+            const body = require('fs').readFileSync('pr_body.md', 'utf-8');
 
             async function retry(fn, attempts = 6, delayMs = 3000) {
               let err;
@@ -295,39 +162,25 @@ jobs:
               throw err;
             }
 
-            const existing = await retry(() => github.rest.pulls.list({
-              owner,
-              repo,
-              state: 'open',
-              head: `${owner}:${branch}`,
-              per_page: 1,
-            }));
-
             let pr;
-            if (existing.data.length > 0) {
-              pr = existing.data[0];
-              core.info(`Reusing existing open PR #${pr.number} for branch ${branch}.`);
-            } else {
-              try {
-                const created = await retry(() => github.rest.pulls.create({
-                  owner,
-                  repo,
-                  title,
-                  head: branch,
-                  base: 'main',
-                  body,
-                }));
-                pr = created.data;
-                core.info(`Created PR #${pr.number}: ${pr.html_url}`);
-              } catch (e) {
-                if (e.status === 403) {
-                  core.setFailed(
-                    `PR creation blocked (403). Either enable repository setting 'Allow GitHub Actions to create and approve pull requests' or set secret TRAINING_PR_TOKEN with repo write access. Original error: ${e.message}`
-                  );
-                  return;
-                }
-                throw e;
+            try {
+              const created = await retry(() => github.rest.pulls.create({
+                owner,
+                repo,
+                title,
+                head,
+                base,
+                body,
+              }));
+              pr = created.data;
+            } catch (e) {
+              if (e.status === 403) {
+                core.setFailed(
+                  `PR creation blocked (403). Either enable repository setting 'Allow GitHub Actions to create and approve pull requests' or set secret TRAINING_PR_TOKEN with repo write access. Original error: ${e.message}`
+                );
+                return;
               }
+              throw e;
             }
 
             try {
@@ -335,7 +188,7 @@ jobs:
                 owner,
                 repo,
                 issue_number: pr.number,
-                labels: ['training', 'onboarding'],
+                labels: ['training', 'onboarding', 'review-only'],
               }), 2, 1000);
             } catch (e) {
               core.warning(`Could not add labels: ${e.message}`);
@@ -352,5 +205,6 @@ jobs:
               core.warning(`Could not request reviewer @${traineeLogin}: ${e.message}`);
             }
 
+            core.info(`Created onboarding review PR: ${pr.html_url}`);
             core.setOutput('pr_number', String(pr.number));
             core.setOutput('pr_url', pr.html_url);
