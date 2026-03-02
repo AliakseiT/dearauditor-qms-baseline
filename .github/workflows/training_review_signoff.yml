@@ -241,6 +241,8 @@ jobs:
                 bySigner.set(signer, {
                   user_id: a.actor_login || '',
                   actor_id: a.actor_id || 0,
+                  signer_full_name: a.signer_full_name || a.actor_login || '',
+                  signer_job_title: a.signer_job_title || '',
                   signer_role: a.signer_role || '',
                   meaning_of_signature: a.meaning_of_signature || '',
                   timestamp: a.timestamp_utc || c.created_at || '',
@@ -307,6 +309,7 @@ jobs:
           import json
           import os
           import re
+          import subprocess
           from datetime import datetime, timezone
           from pathlib import Path
 
@@ -349,7 +352,7 @@ jobs:
             "",
             "## Signature Summary",
             *[
-              f"- {x.get('user_id','unknown')} ({x.get('signer_role','unspecified')}) at {x.get('timestamp','n/a')}"
+              f"- {x.get('signer_full_name') or x.get('user_id','unknown')} ({x.get('signer_role','unspecified')}, {x.get('signer_job_title','unspecified')}) at {x.get('timestamp','n/a')}"
               for x in signed_attestations
             ],
             "",
@@ -379,6 +382,20 @@ jobs:
 
           signed_path = out_dir / "signed_attestation.json"
           signed_path.write_text(json.dumps(signed_payload, indent=2) + "\n", encoding="utf-8")
+          part11_title_page_path = out_dir / "part11_title_page.pdf"
+          subprocess.run(
+            [
+              "python",
+              "scripts/generate_part11_title_page.py",
+              "--attestation",
+              str(signed_path),
+              "--output",
+              str(part11_title_page_path),
+              "--record-id",
+              f"{trainee_user_id.lower()}-onboarding-review-pr{pr_number}",
+            ],
+            check=True,
+          )
 
           manifest = {
             "schema_version": 1,
@@ -398,6 +415,7 @@ jobs:
             "part11_signer_count": len(signed_attestations),
             "record_sha256": hashlib.sha256(record_md_path.read_bytes()).hexdigest(),
             "record_pdf_sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+            "part11_title_page_pdf_sha256": hashlib.sha256(part11_title_page_path.read_bytes()).hexdigest(),
             "published_at_utc": now_utc,
           }
           (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -415,6 +433,7 @@ jobs:
             "- `record.pdf`",
             "- `manifest.json`",
             "- `signed_attestation.json`",
+            "- `part11_title_page.pdf`",
           ]) + "\n"
           (out_dir / "release_notes.md").write_text(notes, encoding="utf-8")
           PY
@@ -488,6 +507,7 @@ jobs:
             str(out_dir / "record.pdf"),
             str(out_dir / "manifest.json"),
             str(out_dir / "signed_attestation.json"),
+            str(out_dir / "part11_title_page.pdf"),
           ]
           run_with_retry(create_cmd)
           run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])

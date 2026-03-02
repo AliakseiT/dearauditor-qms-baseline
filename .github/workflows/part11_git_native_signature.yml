@@ -163,15 +163,26 @@ jobs:
               pull_number: prNumber,
               per_page: 100,
             });
-            const latestStateByUser = new Map();
+            const latestReviewByUser = new Map();
             for (const review of reviews) {
               const login = (review.user?.login || '').trim();
               if (!login) continue;
-              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+              latestReviewByUser.set(login.toLowerCase(), {
+                state: String(review.state || '').toUpperCase(),
+                commitId: String(review.commit_id || '').toLowerCase(),
+              });
             }
-            const approvedReviewers = Array.from(latestStateByUser.entries())
-              .filter(([, state]) => state === 'APPROVED')
+            const currentHeadSha = String(pr.head?.sha || '').toLowerCase();
+            const approvedOnHead = Array.from(latestReviewByUser.entries())
+              .filter(([, review]) => review.state === 'APPROVED' && review.commitId === currentHeadSha)
               .map(([login]) => login);
+            const approvedOnHeadSet = new Set(approvedOnHead);
+            if (approvedOnHead.length === 0) {
+              core.setFailed(
+                `PR #${prNumber} has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature generation is blocked.`
+              );
+              return;
+            }
 
             let allowedSigners = [];
             if (pr.merged) {
@@ -209,7 +220,7 @@ jobs:
                 }
               }
               if (reviewerPool.length === 0) {
-                reviewerPool = approvedReviewers;
+                reviewerPool = approvedOnHead;
               }
               if (reviewerPool.length < requiredReviewerSignatures) {
                 core.setFailed(
@@ -217,7 +228,7 @@ jobs:
                 );
                 return;
               }
-              const approvedFromPool = reviewerPool.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+              const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
               if (approvedFromPool.length < requiredReviewerSignatures) {
                 core.setFailed(
                   `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedFromPool.length} reviewer candidate(s) approved.`
@@ -226,8 +237,8 @@ jobs:
               }
               allowedSigners = [authorLogin, ...approvedFromPool.slice(0, requiredReviewerSignatures)];
             } else {
-              const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
-              allowedSigners = approvedRequested.length > 0 ? approvedRequested : approvedReviewers;
+              const approvedRequested = requestedReviewers.filter((login) => approvedOnHeadSet.has(login));
+              allowedSigners = approvedRequested.length > 0 ? approvedRequested : approvedOnHead;
               if (allowedSigners.length === 0) {
                 core.setFailed(`PR #${prNumber} has no approved reviewers eligible to sign yet.`);
                 return;

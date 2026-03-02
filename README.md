@@ -77,6 +77,9 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - Each signature run creates:
   - PR attestation comment (`<!-- part11-native-attestation -->`)
   - Signed attestation artifacts (`signed_attestation.json`, `.sig`, `.pem`)
+- Reusable PDF title-page generator for attestation packages:
+  - `scripts/generate_part11_title_page.py`
+  - Produces `part11_title_page.pdf` with signatory names, roles, titles, and signature timestamps.
 - Record publication workflows wait for required signature count/role/meaning before releasing immutable records.
 
 ## Artifact Quota Control
