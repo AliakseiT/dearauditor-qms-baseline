@@ -181,6 +181,7 @@ jobs:
                     hash: targetHash,
                     meaning,
                     role,
+                    signer: u,
                     required_signatures: String(requiredSignatures),
                     signature_index: String(i + 1),
                   });

@@ -150,6 +150,7 @@ jobs:
                   hash: targetHash,
                   meaning: process.env.MEANING,
                   role,
+                  signer: u,
                   required_signatures: String(process.env.REQUIRED || '1'),
                   signature_index: String(i + 1),
                 });
