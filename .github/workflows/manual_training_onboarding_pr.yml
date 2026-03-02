@@ -268,17 +268,42 @@ jobs:
           - **Required Signatures:** 2
           EOF
 
-          gh pr create \
-            --repo "${{ github.repository }}" \
-            --base "main" \
-            --head "${{ steps.plan.outputs.branch_name }}" \
-            --title "${{ steps.plan.outputs.pr_title }}" \
-            --body-file pr_body.md
+          set +e
+          for i in 1 2 3 4 5 6; do
+            gh pr create \
+              --repo "${{ github.repository }}" \
+              --base "main" \
+              --head "${{ steps.plan.outputs.branch_name }}" \
+              --title "${{ steps.plan.outputs.pr_title }}" \
+              --body-file pr_body.md \
+              --label training \
+              --label onboarding
+            rc=$?
+            if [ "$rc" -eq 0 ]; then
+              exit 0
+            fi
+            echo "gh pr create failed, retry ${i}/6"
+            sleep 4
+          done
+          exit 1
 
       - name: Request trainee reviewer on the onboarding PR
         if: steps.plan.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER="$(gh pr list --repo "${{ github.repository }}" --head "${{ steps.plan.outputs.branch_name }}" --state open --json number --jq '.[0].number')"
-          gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" --add-reviewer "${{ steps.plan.outputs.trainee_gh_login }}"
+          set +e
+          for i in 1 2 3 4 5 6; do
+            PR_NUMBER="$(gh pr list --repo "${{ github.repository }}" --head "${{ steps.plan.outputs.branch_name }}" --state open --json number --jq '.[0].number')"
+            if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
+              gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" --add-reviewer "${{ steps.plan.outputs.trainee_gh_login }}"
+              rc=$?
+              if [ "$rc" -eq 0 ]; then
+                exit 0
+              fi
+            fi
+            echo "reviewer request retry ${i}/6"
+            sleep 4
+          done
+          echo "Could not request reviewer automatically; training_pr_approval_gate will still enforce trainee approval."
+          exit 0
