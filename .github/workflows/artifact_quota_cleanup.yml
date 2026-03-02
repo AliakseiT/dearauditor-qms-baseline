@@ -1,0 +1,85 @@
+name: Artifact Quota Cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: "Delete artifacts older than this many days"
+        required: true
+        default: "5"
+      dry_run:
+        description: "If true, only list deletions"
+        required: true
+        type: choice
+        options:
+          - "false"
+          - "true"
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isDispatch = context.eventName === 'workflow_dispatch';
+            const maxAgeDays = Number.parseInt(
+              isDispatch
+                ? (context.payload.inputs?.max_age_days || '5')
+                : '5',
+              10
+            );
+            const dryRun = isDispatch
+              ? String(context.payload.inputs?.dry_run || 'false').toLowerCase() === 'true'
+              : false;
+
+            if (!Number.isInteger(maxAgeDays) || maxAgeDays < 1) {
+              core.setFailed('max_age_days must be a positive integer.');
+              return;
+            }
+
+            const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
+            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+
+            let deleted = 0;
+            let skipped = 0;
+            for (const a of artifacts) {
+              const created = new Date(a.created_at).getTime();
+              const tooOld = created < cutoff;
+              if (!tooOld && !a.expired) {
+                skipped += 1;
+                continue;
+              }
+
+              const msg = `artifact ${a.id} (${a.name}) created ${a.created_at}`;
+              if (dryRun) {
+                core.info(`[dry-run] would delete ${msg}`);
+              } else {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: a.id,
+                });
+                core.info(`deleted ${msg}`);
+                deleted += 1;
+              }
+            }
+
+            core.summary
+              .addHeading('Artifact Quota Cleanup')
+              .addRaw(`Max age days: ${maxAgeDays}\n`, true)
+              .addRaw(`Dry run: ${dryRun}\n`, true)
+              .addRaw(`Deleted artifacts: ${deleted}\n`, true)
+              .addRaw(`Skipped artifacts: ${skipped}\n`, true)
+              .write();

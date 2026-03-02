@@ -101,9 +101,10 @@ jobs:
 
       - name: Upload immutable WORM bucket mock
         if: steps.records.outputs.has_records == 'true'
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: worm-bucket-mock-${{ github.run_id }}
           path: worm-bucket-mock/
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 5

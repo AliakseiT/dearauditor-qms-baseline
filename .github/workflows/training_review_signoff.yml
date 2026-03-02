@@ -97,6 +97,14 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+            const roles = (process.env.ROLES || '')
+              .split(/[;,]/)
+              .map((x) => x.trim())
+              .filter(Boolean);
+            const defaultAuth = 'GitHub session re-authenticated';
+            const signCommands = roles.length > 0
+              ? roles.map((r) => `- \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${r}\" auth=\"${defaultAuth}\"\``)
+              : [`- \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"Quality Assurance Lead\" auth=\"${defaultAuth}\"\``];
             const body = [
               '<!-- part11-native-signature-request -->',
               '🛑 Part 11 Signature Required (Git-Native, Training Review)',
@@ -106,9 +114,12 @@ jobs:
               `Signer role(s): \`${process.env.ROLES}\``,
               `Required signatures: \`${process.env.REQUIRED}\``,
               '',
-              'Use workflow-dispatch (no browser PAT entry required):',
+              'Fastest path: sign by replying on this PR with one of these commands:',
+              ...signCommands,
+              '',
+              'Alternative: workflow-dispatch (no browser PAT entry required):',
               `1. Open \`${workflowUrl}\``,
-              `2. Run workflow \`Part 11 Git-Native Signature\` with pr_number=\`${pr.number}\` and the values above.`,
+              `2. Run workflow \`Part 11 Git-Native Signature\` with pr_number=\`${pr.number}\`, meaning/signer role values above, and auth_method=\`${defaultAuth}\`.`,
             ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,

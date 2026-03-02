@@ -23,6 +23,8 @@ on:
       mfa_assertion:
         description: "Optional assertion text (for example: mfa-verified)"
         required: false
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
@@ -32,21 +34,112 @@ permissions:
 
 jobs:
   sign_and_attest:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.pull_request != null && github.event.comment.user.login != 'github-actions[bot]' && contains(github.event.comment.body, '/part11-sign'))
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve signature inputs
+        id: siginput
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+
+            function extractArg(text, name) {
+              const re = new RegExp(`${name}="([^"]+)"`, 'i');
+              const m = text.match(re);
+              return m ? m[1].trim() : '';
+            }
+
+            let prNumber;
+            let meaning;
+            let signerRole;
+            let authMethod;
+            let mfaAssertion;
+
+            if (event === 'workflow_dispatch') {
+              prNumber = Number.parseInt(`${{ github.event.inputs.pr_number }}`, 10);
+              meaning = `${{ github.event.inputs.meaning_of_signature }}`.trim();
+              signerRole = `${{ github.event.inputs.signer_role }}`.trim();
+              authMethod = `${{ github.event.inputs.auth_method }}`.trim();
+              mfaAssertion = `${{ github.event.inputs.mfa_assertion }}`.trim();
+            } else {
+              const issue = context.payload.issue;
+              const commentBody = (context.payload.comment?.body || '').trim();
+
+              if (!issue?.pull_request) {
+                core.setFailed('Slash-sign command is only supported on PR comments.');
+                return;
+              }
+              if (!/\/part11-sign\b/i.test(commentBody)) {
+                core.setFailed('Comment does not contain /part11-sign command.');
+                return;
+              }
+
+              prNumber = Number.parseInt(String(issue.number), 10);
+              meaning = extractArg(commentBody, 'meaning');
+              signerRole = extractArg(commentBody, 'role');
+              authMethod = extractArg(commentBody, 'auth') || 'GitHub session re-authenticated';
+              mfaAssertion = extractArg(commentBody, 'mfa');
+
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                per_page: 100,
+              });
+
+              const requests = comments
+                .filter((c) => (c.body || '').includes('<!-- part11-native-signature-request -->'))
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+              if (requests.length > 0) {
+                const latest = requests[requests.length - 1].body || '';
+                if (!meaning) {
+                  const m = latest.match(/Meaning of signature:\s*`([^`]+)`/i);
+                  if (m) meaning = m[1].trim();
+                }
+                if (!signerRole) {
+                  const m = latest.match(/Signer role\(s\):\s*`([^`]+)`/i);
+                  if (m) {
+                    const first = m[1].split(/[;,]/).map((x) => x.trim()).filter(Boolean)[0];
+                    if (first) signerRole = first;
+                  }
+                }
+              }
+            }
+
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('pr_number must resolve to a positive integer.');
+              return;
+            }
+            if (!meaning) {
+              core.setFailed('Missing meaning_of_signature. Provide `meaning="..."` in /part11-sign or use workflow_dispatch input.');
+              return;
+            }
+            if (!signerRole) {
+              core.setFailed('Missing signer_role. Provide `role="..."` in /part11-sign or use workflow_dispatch input.');
+              return;
+            }
+            if (!authMethod) {
+              authMethod = 'GitHub session re-authenticated';
+            }
+
+            core.setOutput('pr_number', String(prNumber));
+            core.setOutput('meaning', meaning);
+            core.setOutput('signer_role', signerRole);
+            core.setOutput('auth_method', authMethod);
+            core.setOutput('mfa_assertion', mfaAssertion || '');
+
       - name: Resolve PR and target hash
         id: pr
         uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ steps.siginput.outputs.pr_number }}
         with:
           script: |
             const crypto = require('crypto');
 
-            const prNumber = Number.parseInt(`${{ github.event.inputs.pr_number }}`, 10);
-            if (!Number.isInteger(prNumber) || prNumber < 1) {
-              core.setFailed('pr_number must be a positive integer.');
-              return;
-            }
-
+            const prNumber = Number.parseInt(process.env.PR_NUMBER, 10);
             const res = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -82,10 +175,10 @@ jobs:
           REPO_FULL: ${{ steps.pr.outputs.repo_full }}
           ACTOR_LOGIN: ${{ steps.pr.outputs.actor_login }}
           ACTOR_ID: ${{ steps.pr.outputs.actor_id }}
-          MEANING: ${{ github.event.inputs.meaning_of_signature }}
-          SIGNER_ROLE: ${{ github.event.inputs.signer_role }}
-          AUTH_METHOD: ${{ github.event.inputs.auth_method }}
-          MFA_ASSERTION: ${{ github.event.inputs.mfa_assertion }}
+          MEANING: ${{ steps.siginput.outputs.meaning }}
+          SIGNER_ROLE: ${{ steps.siginput.outputs.signer_role }}
+          AUTH_METHOD: ${{ steps.siginput.outputs.auth_method }}
+          MFA_ASSERTION: ${{ steps.siginput.outputs.mfa_assertion }}
           RUN_ID: ${{ github.run_id }}
           RUN_ATTEMPT: ${{ github.run_attempt }}
           SERVER_URL: ${{ github.server_url }}
@@ -141,6 +234,7 @@ jobs:
             signed_attestation.json
 
       - name: Upload attestation package
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
@@ -149,7 +243,7 @@ jobs:
             signed_attestation.sig
             signed_attestation.pem
           if-no-files-found: error
-          retention-days: 90
+          retention-days: 5
 
       - name: Post attestation comment to PR
         uses: actions/github-script@v7

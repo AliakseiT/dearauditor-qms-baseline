@@ -61,3 +61,22 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
   - `**Trainee GitHub Login:** @<login>`
 - `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a review-only onboarding PR where base is a branch pinned to the first commit and head is a SOP-only snapshot of current `main`.
 - `training_review_signoff.yml`: when such review-only PR is closed unmerged, enforces trainee approval, runs Part 11 signature collection, and publishes immutable training record assets to `AliakseiT/qms-records`.
+- Attestation:
+  - merged training update PRs use post-merge Part 11 flow.
+  - review-only onboarding PRs use post-close (unmerged) Part 11 flow via `training_review_signoff.yml`.
+
+## Part 11 Git-Native Flow
+
+- On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with ready-to-use slash commands.
+- Signers can reply directly on the PR with:
+  - `/part11-sign meaning="<meaning>" role="<role>" auth="GitHub session re-authenticated"`
+- The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
+- Each signature run creates:
+  - PR attestation comment (`<!-- part11-native-attestation -->`)
+  - Signed attestation artifacts (`signed_attestation.json`, `.sig`, `.pem`)
+- Record publication workflows wait for required signature count/role/meaning before releasing immutable records.
+
+## Artifact Quota Control
+
+- Artifact retention is intentionally short for heavy workflows (5 days).
+- Use `artifact_quota_cleanup.yml` (`workflow_dispatch`) to delete old artifacts when nearing quota.
