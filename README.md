@@ -70,6 +70,8 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 ## Part 11 Git-Native Flow
 
 - On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with ready-to-use slash commands.
+- Signature request comments now include signer-specific one-click links to:
+  - `https://aliakseit.github.io/part11-action/` (pre-filled repository/PR/hash/meaning/role).
 - Signers can reply directly on the PR with:
   - `/part11-sign meaning="<meaning>" role="<role>" auth="GitHub session re-authenticated"`
 - `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.

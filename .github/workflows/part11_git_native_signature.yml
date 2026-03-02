@@ -98,11 +98,13 @@ jobs:
               if (requests.length > 0) {
                 const latest = requests[requests.length - 1].body || '';
                 if (!meaning) {
-                  const m = latest.match(/Meaning of signature:\s*`([^`]+)`/i);
+                  const m = latest.match(/Meaning of signature:\s*`([^`]+)`/i)
+                    || latest.match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i);
                   if (m) meaning = m[1].trim();
                 }
                 if (!signerRole) {
-                  const m = latest.match(/Signer role\(s\):\s*`([^`]+)`/i);
+                  const m = latest.match(/Signer role\(s\):\s*`([^`]+)`/i)
+                    || latest.match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i);
                   if (m) {
                     const first = m[1].split(/[;,]/).map((x) => x.trim()).filter(Boolean)[0];
                     if (first) signerRole = first;

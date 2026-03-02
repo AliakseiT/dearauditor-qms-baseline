@@ -56,6 +56,7 @@ jobs:
         with:
           script: |
             const crypto = require('crypto');
+            const fs = require('fs');
             const timeoutSeconds = Number(process.env.TIMEOUT_SECONDS || "5400");
             const pollSeconds = Number(process.env.POLL_SECONDS || "20");
             const pr = context.payload.pull_request;
@@ -84,6 +85,23 @@ jobs:
               .map((x) => x.trim())
               .filter(Boolean)
               .map((x) => x.toLowerCase());
+            const signerRegistryPath = 'matrices/signer_registry.json';
+            let signerRegistry = {};
+            if (fs.existsSync(signerRegistryPath)) {
+              try {
+                signerRegistry = JSON.parse(fs.readFileSync(signerRegistryPath, 'utf8'));
+              } catch (error) {
+                core.warning(`Could not parse ${signerRegistryPath}: ${error.message}`);
+              }
+            }
+            function resolveSignerProfile(login, fallbackName = '', fallbackTitle = '') {
+              const key = String(login || '').toLowerCase();
+              const profile = Object.entries(signerRegistry).find(([user]) => user.toLowerCase() === key)?.[1] || {};
+              return {
+                fullName: String(profile.full_name || fallbackName || login || '').trim(),
+                jobTitle: String(profile.job_title || fallbackTitle || '').trim(),
+              };
+            }
 
             const sigMatch = prBody.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
             let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
@@ -172,7 +190,7 @@ jobs:
             }
             const allowedSignerSet = new Set([authorLogin, ...approvedFromPool.slice(0, requiredReviewerSignatures)]);
 
-            function extractAttestation(commentBody) {
+            function extractAttestationPayload(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
               if (!codeMatch || !codeMatch[1]) return null;
               try {
@@ -191,32 +209,64 @@ jobs:
               });
 
               const candidateComments = comments
-                .filter((c) => (c.body || '').includes('<!-- part11-native-attestation -->'))
+                .filter((c) =>
+                  (c.body || '').includes('<!-- part11-native-attestation -->') ||
+                  (c.body || '').includes('<!-- PART11_ATTESTATION_V1 -->')
+                )
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
               const bySigner = new Map();
               for (const c of candidateComments) {
-                const a = extractAttestation(c.body || '');
+                const body = c.body || '';
+                const a = extractAttestationPayload(body);
                 if (!a) continue;
-                if (String(a.pr_number || '') !== String(prNumber)) continue;
-                if ((a.target_hash || '') !== expectedTargetHash) continue;
-                if ((a.meaning_of_signature || '') !== requiredMeaning) continue;
+                const isNative = body.includes('<!-- part11-native-attestation -->');
+                const normalized = isNative
+                  ? {
+                      prNumber: String(a.pr_number || ''),
+                      targetHash: String(a.target_hash || ''),
+                      meaning: String(a.meaning_of_signature || ''),
+                      signerRole: String(a.signer_role || ''),
+                      signerLogin: String(a.actor_login || ''),
+                      actorId: Number(a.actor_id || 0),
+                      signerFullName: String(a.signer_full_name || '').trim(),
+                      signerJobTitle: String(a.signer_job_title || '').trim(),
+                      timestamp: String(a.timestamp_utc || c.created_at || ''),
+                      attestationSha256: String(a.attestation_sha256 || ''),
+                    }
+                  : {
+                      prNumber: String(a.pr_number || ''),
+                      targetHash: String(a.commit_hash || ''),
+                      meaning: String(a.meaning_of_signature || ''),
+                      signerRole: String(a.signer_role || ''),
+                      signerLogin: String(a.user_id || ''),
+                      actorId: 0,
+                      signerFullName: '',
+                      signerJobTitle: '',
+                      timestamp: String(a.timestamp || c.created_at || ''),
+                      attestationSha256: String(a.attestation_id || ''),
+                    };
 
-                const roleLower = String(a.signer_role || '').toLowerCase();
+                if (normalized.prNumber !== String(prNumber)) continue;
+                if (normalized.targetHash !== expectedTargetHash) continue;
+                if (normalized.meaning !== requiredMeaning) continue;
+
+                const roleLower = normalized.signerRole.toLowerCase();
                 if (allowedRoles.length > 0 && !allowedRoles.includes(roleLower)) continue;
 
-                const signerKey = String(a.actor_login || '').toLowerCase();
+                const signerKey = normalized.signerLogin.toLowerCase();
                 if (!signerKey) continue;
                 if (!allowedSignerSet.has(signerKey)) continue;
+                const profile = resolveSignerProfile(signerKey, normalized.signerFullName, normalized.signerJobTitle);
                 bySigner.set(signerKey, {
-                  user_id: a.actor_login || '',
-                  actor_id: a.actor_id || 0,
-                  signer_full_name: a.signer_full_name || a.actor_login || '',
-                  signer_job_title: a.signer_job_title || '',
-                  signer_role: a.signer_role || '',
-                  meaning_of_signature: a.meaning_of_signature || '',
-                  timestamp: a.timestamp_utc || c.created_at || '',
-                  attestation_sha256: a.attestation_sha256 || '',
+                  user_id: normalized.signerLogin,
+                  actor_id: normalized.actorId,
+                  signer_full_name: profile.fullName || normalized.signerLogin,
+                  signer_job_title: profile.jobTitle || '',
+                  signer_role: normalized.signerRole,
+                  meaning_of_signature: normalized.meaning,
+                  timestamp: normalized.timestamp,
+                  attestation_sha256: normalized.attestationSha256,
                 });
               }
 

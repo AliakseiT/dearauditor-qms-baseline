@@ -157,10 +157,12 @@ jobs:
           TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
           AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
+          SIGNING_PAGE_URL: https://aliakseit.github.io/part11-action/
         with:
           script: |
             const pr = context.payload.pull_request;
             const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+            const signingPageUrl = (process.env.SIGNING_PAGE_URL || 'https://aliakseit.github.io/part11-action/').trim();
             const roles = (process.env.ROLES || '')
               .split(/[;,]/)
               .map((x) => x.trim())
@@ -171,6 +173,21 @@ jobs:
               .filter(Boolean);
             const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
             const defaultAuth = 'GitHub session re-authenticated';
+            const signLinks = approvedSigners.length > 0
+              ? approvedSigners.map((u, i) => {
+                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                const params = new URLSearchParams({
+                  repo: `${context.repo.owner}/${context.repo.repo}`,
+                  pr: String(pr.number),
+                  hash: process.env.TARGET_HASH,
+                  meaning: process.env.MEANING,
+                  role,
+                  required_signatures: String(process.env.REQUIRED || '1'),
+                  signature_index: String(i + 1),
+                });
+                return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
+              })
+              : ['- No eligible approved assigned reviewers found.'];
             const signCommands = approvedSigners.length > 0
               ? approvedSigners.map((u, i) => {
                 const role = roles[i] || roles[0] || 'Quality Assurance Lead';
@@ -180,19 +197,22 @@ jobs:
 
             const body = [
               '<!-- part11-native-signature-request -->',
-              '🛑 Part 11 Signature Required (Git-Native)',
+              '🛑 Part 11 Signature Required (Mock Ceremony)',
               '',
               `PR: #${pr.number}`,
               `Target commit: \`${process.env.TARGET_COMMIT}\``,
-              `Target hash: \`${process.env.TARGET_HASH}\``,
-              `Meaning of signature: \`${process.env.MEANING}\``,
-              `Signer role(s): \`${process.env.ROLES}\``,
-              `Required signatures: \`${process.env.REQUIRED}\``,
+              `Target hash (merge state): \`${process.env.TARGET_HASH}\``,
+              `Meaning of signature: **${process.env.MEANING}**`,
+              `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
+              `Required signatures: **${process.env.REQUIRED}**`,
               `Reviewer signatures required: \`${process.env.REQUIRED_REVIEWERS}\` (author auto-signs 1)`,
-              `Mandatory author signer: ${authorLogin ? '@' + authorLogin : 'unknown'}`,
-              `Eligible signers: ${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
+              `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
+              `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
-              'Fastest path: sign by replying on this PR with one of these commands:',
+              'Preferred path: open your signer-specific link and complete the signing page:',
+              ...signLinks,
+              '',
+              'Fallback path: sign by replying on this PR with one of these commands:',
               ...signCommands,
               '',
               'Alternative: workflow-dispatch (no browser PAT entry required):',
