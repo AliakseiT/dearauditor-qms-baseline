@@ -90,6 +90,12 @@ jobs:
             if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
               requiredSignatures = 1;
             }
+            const requiredReviewerSignatures = Math.max(0, requiredSignatures - 1);
+            const authorLogin = (pr.user?.login || '').toLowerCase();
+            if (!authorLogin) {
+              core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer matching.`);
+              return;
+            }
 
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -99,8 +105,10 @@ jobs:
             const requestedReviewers = (fresh.requested_reviewers || [])
               .map((r) => (r.login || '').toLowerCase())
               .filter(Boolean);
-            if (requestedReviewers.length === 0) {
-              core.setFailed(`PR #${prNumber} has no assigned reviewers; cannot match Part 11 signer eligibility.`);
+            if (requestedReviewers.length < requiredReviewerSignatures) {
+              core.setFailed(
+                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${requestedReviewers.length} reviewer(s) are assigned.`
+              );
               return;
             }
 
@@ -117,17 +125,13 @@ jobs:
               latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
             }
             const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
-            if (approvedRequested.length === 0) {
-              core.setFailed(`PR #${prNumber} has no approved assigned reviewers; cannot capture Part 11 signatures.`);
-              return;
-            }
-            if (approvedRequested.length < requiredSignatures) {
+            if (approvedRequested.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${prNumber} requires ${requiredSignatures} signature(s), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedRequested.length} assigned reviewer(s) approved.`
               );
               return;
             }
-            const allowedSignerSet = new Set(approvedRequested);
+            const allowedSignerSet = new Set([authorLogin, ...approvedRequested.slice(0, requiredReviewerSignatures)]);
 
             function extractAttestation(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
@@ -176,7 +180,8 @@ jobs:
               }
 
               const attestations = Array.from(bySigner.values());
-              if (attestations.length >= requiredSignatures) {
+              const hasAuthorSignature = bySigner.has(authorLogin);
+              if (attestations.length >= requiredSignatures && hasAuthorSignature) {
                 core.info(`Captured ${attestations.length} Git-native signature(s) for hash ${expectedTargetHash}.`);
                 core.setOutput('target_hash', expectedTargetHash);
                 core.setOutput('attestations_json', JSON.stringify(attestations));
@@ -187,7 +192,7 @@ jobs:
             }
 
             core.setFailed(
-              `Timed out after ${timeoutSeconds}s waiting for ${requiredSignatures} Git-native Part 11 signature(s) on PR #${prNumber}.`
+              `Timed out after ${timeoutSeconds}s waiting for ${requiredSignatures} Git-native Part 11 signature(s) including author @${authorLogin} on PR #${prNumber}.`
             );
 
       - name: Setup Python

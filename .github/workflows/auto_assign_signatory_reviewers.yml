@@ -98,10 +98,24 @@ jobs:
           output = Path(os.environ["GITHUB_OUTPUT"])
           with output.open("a", encoding="utf-8") as fh:
             fh.write(f"required_signatures={required}\n")
+            fh.write(f"required_reviewer_signatures={max(0, required - 1)}\n")
             fh.write(f"role_ids={','.join(role_ids)}\n")
             fh.write(f"roles_raw={roles_raw}\n")
             fh.write("candidates_csv=" + ",".join(ordered_candidates) + "\n")
           PY
+
+      - name: Validate candidate availability
+        env:
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
+          CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
+        run: |
+          required="${REQUIRED_REVIEWER_SIGNATURES:-0}"
+          candidates="${CANDIDATES_CSV:-}"
+          if [ "$required" -gt 0 ] && [ -z "$candidates" ]; then
+            echo "Required reviewer signatures: $required"
+            echo "No reviewer candidates were resolved from role matrix."
+            exit 1
+          fi
 
       - name: Request reviewers from collaborators
         if: steps.plan.outputs.candidates_csv != ''
@@ -109,6 +123,7 @@ jobs:
         env:
           CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
           REQUIRED_SIGNATURES: ${{ steps.plan.outputs.required_signatures }}
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
           ROLE_IDS: ${{ steps.plan.outputs.role_ids }}
           ROLES_RAW: ${{ steps.plan.outputs.roles_raw }}
         with:
@@ -120,6 +135,7 @@ jobs:
               .map((x) => x.trim())
               .filter(Boolean);
             const required = Math.max(1, Number.parseInt(process.env.REQUIRED_SIGNATURES || '1', 10) || 1);
+            const requiredReviewerSignatures = Math.max(0, Number.parseInt(process.env.REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
 
             const collaborators = await github.paginate(github.rest.repos.listCollaborators, {
               owner: context.repo.owner,
@@ -134,18 +150,20 @@ jobs:
               return collaboratorSet.has(key);
             });
 
-            if (eligible.length === 0) {
+            if (requiredReviewerSignatures > 0 && eligible.length === 0) {
               core.warning('No eligible collaborator matched signatory role matrix for reviewer assignment.');
               return;
             }
-            if (eligible.length < required) {
+            if (eligible.length < requiredReviewerSignatures) {
               core.setFailed(
-                `Required signatures is ${required}, but only ${eligible.length} eligible collaborator(s) were found from role matrix.`
+                `Required signatures is ${required} (author auto-signs 1), so ${requiredReviewerSignatures} reviewer signature(s) are required; only ${eligible.length} eligible collaborator(s) were found from role matrix.`
               );
               return;
             }
 
-            const selected = eligible.slice(0, required);
+            const selected = requiredReviewerSignatures > 0
+              ? eligible.slice(0, requiredReviewerSignatures)
+              : [];
 
             const prData = (await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -174,7 +192,9 @@ jobs:
               `Signer roles requested: \`${rolesRaw}\``,
               `Mapped role IDs: \`${roleIds.join(', ') || 'none'}\``,
               `Required signatures: \`${required}\``,
-              `Assigned reviewers: ${selected.map((u) => `@${u}`).join(', ')}`,
+              `Author auto-included signer: @${pr.user?.login || 'unknown'}`,
+              `Reviewer signatures required: \`${requiredReviewerSignatures}\``,
+              `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
               '',
               'Auto-merge workflow will enable merge only after all assigned reviewers approve.',
             ];

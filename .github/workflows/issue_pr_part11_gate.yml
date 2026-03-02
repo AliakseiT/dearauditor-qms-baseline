@@ -50,10 +50,16 @@ jobs:
             if (!Number.isInteger(required) || required < 1) {
               required = 1;
             }
+            const requiredReviewerSignatures = Math.max(0, required - 1);
 
             const targetCommit = pr.merge_commit_sha || pr.head.sha;
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
             const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
+            const authorLogin = (pr.user?.login || '').toLowerCase();
+            if (!authorLogin) {
+              core.setFailed(`PR #${pr.number} author could not be resolved for Part 11 signer list.`);
+              return;
+            }
 
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -63,8 +69,10 @@ jobs:
             const requestedReviewers = (fresh.requested_reviewers || [])
               .map((r) => (r.login || '').toLowerCase())
               .filter(Boolean);
-            if (requestedReviewers.length === 0) {
-              core.setFailed(`PR #${pr.number} has no assigned reviewers; cannot determine eligible Part 11 signers.`);
+            if (requestedReviewers.length < requiredReviewerSignatures) {
+              core.setFailed(
+                `PR #${pr.number} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${requestedReviewers.length} reviewer(s) are assigned.`
+              );
               return;
             }
             const reviews = await github.paginate(github.rest.pulls.listReviews, {
@@ -80,24 +88,24 @@ jobs:
               latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
             }
             const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
-            if (approvedRequested.length === 0) {
-              core.setFailed(`PR #${pr.number} has no approved assigned reviewers; cannot request Part 11 signatures.`);
-              return;
-            }
-            if (approvedRequested.length < required) {
+            if (approvedRequested.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${pr.number} requires ${required} signature(s), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+                `PR #${pr.number} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedRequested.length} assigned reviewer(s) approved.`
               );
               return;
             }
+            const reviewerSigners = approvedRequested.slice(0, requiredReviewerSignatures);
+            const finalSigners = [authorLogin, ...reviewerSigners];
 
             core.setOutput('issue_number', issueMatch[1]);
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(required));
+            core.setOutput('required_reviewer_signatures', String(requiredReviewerSignatures));
             core.setOutput('target_hash', targetHash);
             core.setOutput('target_commit', targetCommit);
-            core.setOutput('approved_signers_csv', approvedRequested.join(','));
+            core.setOutput('author_login', authorLogin);
+            core.setOutput('approved_signers_csv', finalSigners.join(','));
 
       - name: Post Git-native signature request on merged PR
         uses: actions/github-script@v7
@@ -105,8 +113,10 @@ jobs:
           MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
           ROLES: ${{ steps.parse.outputs.signatory_roles }}
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
+          REQUIRED_REVIEWERS: ${{ steps.parse.outputs.required_reviewer_signatures }}
           TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
           TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
+          AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
         with:
           script: |
@@ -120,6 +130,7 @@ jobs:
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
+            const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
             const defaultAuth = 'GitHub session re-authenticated';
             const signCommands = approvedSigners.length > 0
               ? approvedSigners.map((u, i) => {
@@ -138,7 +149,9 @@ jobs:
               `Meaning of signature: \`${process.env.MEANING}\``,
               `Signer role(s): \`${process.env.ROLES}\``,
               `Required signatures: \`${process.env.REQUIRED}\``,
-              `Eligible approver signers: ${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
+              `Reviewer signatures required: \`${process.env.REQUIRED_REVIEWERS}\` (author auto-signs 1)`,
+              `Mandatory author signer: ${authorLogin ? '@' + authorLogin : 'unknown'}`,
+              `Eligible signers: ${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
               '',
               'Fastest path: sign by replying on this PR with one of these commands:',
               ...signCommands,
