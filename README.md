@@ -45,4 +45,5 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
 - `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a user-specific onboarding issue and PR that updates training log entries to latest required/published SOP revisions for all roles assigned to that user.
+  - If PR creation is blocked by token policy, either enable repository setting **Allow GitHub Actions to create and approve pull requests** or set repository secret `TRAINING_PR_TOKEN` (token with repo write scope).
 - Post-merge attestation: training update PRs must include the standard Part 11 fields and complete signature links on the merged PR.

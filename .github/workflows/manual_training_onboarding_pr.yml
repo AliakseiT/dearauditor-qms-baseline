@@ -254,6 +254,7 @@ jobs:
         id: open_pr
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.TRAINING_PR_TOKEN != '' && secrets.TRAINING_PR_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
@@ -307,16 +308,26 @@ jobs:
               pr = existing.data[0];
               core.info(`Reusing existing open PR #${pr.number} for branch ${branch}.`);
             } else {
-              const created = await retry(() => github.rest.pulls.create({
-                owner,
-                repo,
-                title,
-                head: branch,
-                base: 'main',
-                body,
-              }));
-              pr = created.data;
-              core.info(`Created PR #${pr.number}: ${pr.html_url}`);
+              try {
+                const created = await retry(() => github.rest.pulls.create({
+                  owner,
+                  repo,
+                  title,
+                  head: branch,
+                  base: 'main',
+                  body,
+                }));
+                pr = created.data;
+                core.info(`Created PR #${pr.number}: ${pr.html_url}`);
+              } catch (e) {
+                if (e.status === 403) {
+                  core.setFailed(
+                    `PR creation blocked (403). Either enable repository setting 'Allow GitHub Actions to create and approve pull requests' or set secret TRAINING_PR_TOKEN with repo write access. Original error: ${e.message}`
+                  );
+                  return;
+                }
+                throw e;
+              }
             }
 
             try {
