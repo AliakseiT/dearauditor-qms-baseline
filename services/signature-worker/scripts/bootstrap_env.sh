@@ -99,6 +99,16 @@ is_placeholder() {
   return 1
 }
 
+require_non_placeholder_for_deploy() {
+  local key="$1"
+  local val="${!key:-}"
+  if is_placeholder "$val"; then
+    echo "Missing required value for --deploy: ${key}" >&2
+    return 1
+  fi
+  return 0
+}
+
 normalize_private_key() {
   local key="${1:-}"
   if [[ "$key" == *"\\n"* ]]; then
@@ -180,6 +190,15 @@ DEVVARS
 }
 
 write_dev_vars
+
+if [[ "$DO_DEPLOY" -eq 1 ]]; then
+  require_non_placeholder_for_deploy "GITHUB_APP_ID"
+  require_non_placeholder_for_deploy "GITHUB_APP_CLIENT_ID"
+  require_non_placeholder_for_deploy "GITHUB_APP_CLIENT_SECRET"
+  require_non_placeholder_for_deploy "GITHUB_APP_PRIVATE_KEY"
+  require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
+  require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
+fi
 
 if [[ "$SKIP_GH" -eq 0 ]]; then
   require_cmd gh
