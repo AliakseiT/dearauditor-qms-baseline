@@ -7,7 +7,7 @@ on:
     types: [submitted, edited, dismissed]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -133,5 +133,9 @@ jobs:
                 core.info(`Merged PR #${pr.number} directly.`);
               } catch (mergeError) {
                 core.warning(`Direct merge attempt failed for PR #${pr.number}: ${mergeError.message}`);
+                core.setFailed(
+                  `PR #${pr.number} could not be merged by automation. Verify GITHUB_TOKEN write permissions and repository action settings.`
+                );
               }
             }
+            
