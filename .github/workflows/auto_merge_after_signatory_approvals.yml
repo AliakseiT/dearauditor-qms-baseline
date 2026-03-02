@@ -171,7 +171,21 @@ jobs:
                 const repoFull = `${context.repo.owner}/${context.repo.repo}`;
                 const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
                 const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+                const signingPageUrl = 'https://aliakseit.github.io/part11-action/';
                 const defaultAuth = 'GitHub session re-authenticated';
+                const signLinks = finalSigners.map((u, i) => {
+                  const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                  const params = new URLSearchParams({
+                    repo: `${context.repo.owner}/${context.repo.repo}`,
+                    pr: String(pr.number),
+                    hash: targetHash,
+                    meaning,
+                    role,
+                    required_signatures: String(requiredSignatures),
+                    signature_index: String(i + 1),
+                  });
+                  return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
+                });
                 const signCommands = finalSigners.map((u, i) => {
                   const role = roles[i] || roles[0] || 'Quality Assurance Lead';
                   return `- @${u}: \`/part11-sign meaning="${meaning}" role="${role}" auth="${defaultAuth}"\``;
@@ -179,19 +193,22 @@ jobs:
 
                 const requestBody = [
                   '<!-- part11-native-signature-request -->',
-                  '🛑 Part 11 Signature Required (Git-Native)',
+                  '🛑 Part 11 Signature Required (Mock Ceremony)',
                   '',
                   `PR: #${pr.number}`,
                   `Target commit: \`${targetCommit}\``,
-                  `Target hash: \`${targetHash}\``,
-                  `Meaning of signature: \`${meaning}\``,
-                  `Signer role(s): \`${rolesRaw}\``,
-                  `Required signatures: \`${requiredSignatures}\``,
+                  `Target hash (merge state): \`${targetHash}\``,
+                  `Meaning of signature: **${meaning}**`,
+                  `Designated signatory role(s): **${roles.join(', ') || rolesRaw}**`,
+                  `Required signatures: **${requiredSignatures}**`,
                   `Reviewer signatures required: \`${part11RequiredReviewerSignatures}\` (author auto-signs 1)`,
-                  `Mandatory author signer: ${authorLogin ? '@' + authorLogin : 'unknown'}`,
-                  `Eligible signers: ${finalSigners.length > 0 ? finalSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
+                  `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
+                  `Eligible signers: **${finalSigners.length > 0 ? finalSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
                   '',
-                  'Fastest path: sign by replying on this PR with one of these commands:',
+                  'Preferred path: open your signer-specific link and complete the signing page:',
+                  ...signLinks,
+                  '',
+                  'Fallback path: sign by replying on this PR with one of these commands:',
                   ...signCommands,
                   '',
                   'Alternative: workflow-dispatch:',

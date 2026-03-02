@@ -75,15 +75,26 @@ jobs:
               pull_number: pr.number,
               per_page: 100,
             });
-            const latestStateByUser = new Map();
+            const latestReviewByUser = new Map();
             for (const review of reviews) {
               const login = (review.user?.login || '').trim();
               if (!login) continue;
-              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+              latestReviewByUser.set(login.toLowerCase(), {
+                state: String(review.state || '').toUpperCase(),
+                commitId: String(review.commit_id || '').toLowerCase(),
+              });
             }
-            const approvedAll = Array.from(latestStateByUser.entries())
-              .filter(([, state]) => state === 'APPROVED')
+            const currentHeadSha = String(fresh.head?.sha || pr.head?.sha || '').toLowerCase();
+            const approvedOnHead = Array.from(latestReviewByUser.entries())
+              .filter(([, review]) => review.state === 'APPROVED' && review.commitId === currentHeadSha)
               .map(([login]) => login);
+            const approvedOnHeadSet = new Set(approvedOnHead);
+            if (approvedOnHead.length === 0) {
+              core.setFailed(
+                `PR #${pr.number} has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature request was not posted.`
+              );
+              return;
+            }
 
             let reviewerPool = requestedReviewers;
             if (reviewerPool.length === 0) {
@@ -106,7 +117,7 @@ jobs:
               }
             }
             if (reviewerPool.length === 0) {
-              reviewerPool = approvedAll;
+              reviewerPool = approvedOnHead;
             }
             if (reviewerPool.length < requiredReviewerSignatures) {
               core.setFailed(
@@ -115,7 +126,7 @@ jobs:
               return;
             }
 
-            const approvedFromPool = reviewerPool.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+            const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
             if (approvedFromPool.length < requiredReviewerSignatures) {
               core.setFailed(
                 `PR #${pr.number} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedFromPool.length} reviewer candidate(s) approved.`
@@ -146,10 +157,12 @@ jobs:
           TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
           AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
+          SIGNING_PAGE_URL: https://aliakseit.github.io/part11-action/
         with:
           script: |
             const pr = context.payload.pull_request;
             const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+            const signingPageUrl = (process.env.SIGNING_PAGE_URL || 'https://aliakseit.github.io/part11-action/').trim();
             const roles = (process.env.ROLES || '')
               .split(/[;,]/)
               .map((x) => x.trim())
@@ -160,6 +173,21 @@ jobs:
               .filter(Boolean);
             const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
             const defaultAuth = 'GitHub session re-authenticated';
+            const signLinks = approvedSigners.length > 0
+              ? approvedSigners.map((u, i) => {
+                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                const params = new URLSearchParams({
+                  repo: `${context.repo.owner}/${context.repo.repo}`,
+                  pr: String(pr.number),
+                  hash: process.env.TARGET_HASH,
+                  meaning: process.env.MEANING,
+                  role,
+                  required_signatures: String(process.env.REQUIRED || '1'),
+                  signature_index: String(i + 1),
+                });
+                return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
+              })
+              : ['- No eligible approved assigned reviewers found.'];
             const signCommands = approvedSigners.length > 0
               ? approvedSigners.map((u, i) => {
                 const role = roles[i] || roles[0] || 'Quality Assurance Lead';
@@ -169,19 +197,22 @@ jobs:
 
             const body = [
               '<!-- part11-native-signature-request -->',
-              '🛑 Part 11 Signature Required (Git-Native)',
+              '🛑 Part 11 Signature Required (Mock Ceremony)',
               '',
               `PR: #${pr.number}`,
               `Target commit: \`${process.env.TARGET_COMMIT}\``,
-              `Target hash: \`${process.env.TARGET_HASH}\``,
-              `Meaning of signature: \`${process.env.MEANING}\``,
-              `Signer role(s): \`${process.env.ROLES}\``,
-              `Required signatures: \`${process.env.REQUIRED}\``,
+              `Target hash (merge state): \`${process.env.TARGET_HASH}\``,
+              `Meaning of signature: **${process.env.MEANING}**`,
+              `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
+              `Required signatures: **${process.env.REQUIRED}**`,
               `Reviewer signatures required: \`${process.env.REQUIRED_REVIEWERS}\` (author auto-signs 1)`,
-              `Mandatory author signer: ${authorLogin ? '@' + authorLogin : 'unknown'}`,
-              `Eligible signers: ${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
+              `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
+              `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
-              'Fastest path: sign by replying on this PR with one of these commands:',
+              'Preferred path: open your signer-specific link and complete the signing page:',
+              ...signLinks,
+              '',
+              'Fallback path: sign by replying on this PR with one of these commands:',
               ...signCommands,
               '',
               'Alternative: workflow-dispatch (no browser PAT entry required):',

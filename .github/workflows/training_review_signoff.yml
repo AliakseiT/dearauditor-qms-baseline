@@ -125,7 +125,13 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request;
+            const crypto = require('crypto');
             const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+            const signingPageUrl = 'https://aliakseit.github.io/part11-action/';
+            const targetHash = crypto
+              .createHash('sha256')
+              .update(`${context.repo.owner}/${context.repo.repo}:${pr.head.sha}`)
+              .digest('hex');
             const roles = (process.env.ROLES || '')
               .split(/[;,]/)
               .map((x) => x.trim())
@@ -135,6 +141,21 @@ jobs:
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
+            const signLinks = eligibleSigners.length > 0
+              ? eligibleSigners.map((u, i) => {
+                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                const params = new URLSearchParams({
+                  repo: `${context.repo.owner}/${context.repo.repo}`,
+                  pr: String(pr.number),
+                  hash: targetHash,
+                  meaning: process.env.MEANING,
+                  role,
+                  required_signatures: String(process.env.REQUIRED || '1'),
+                  signature_index: String(i + 1),
+                });
+                return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
+              })
+              : ['- No eligible approved assigned reviewers found.'];
             const signCommands = eligibleSigners.length > 0
               ? eligibleSigners.map((u, i) => {
                 const role = roles[i] || roles[0] || 'Quality Assurance Lead';
@@ -143,15 +164,19 @@ jobs:
               : ['- No eligible approved assigned reviewers found.'];
             const body = [
               '<!-- part11-native-signature-request -->',
-              '🛑 Part 11 Signature Required (Git-Native, Training Review)',
+              '🛑 Part 11 Signature Required (Mock Ceremony)',
               '',
               `PR: #${pr.number}`,
-              `Meaning of signature: \`${process.env.MEANING}\``,
-              `Signer role(s): \`${process.env.ROLES}\``,
-              `Required signatures: \`${process.env.REQUIRED}\``,
-              `Eligible approver signers: ${eligibleSigners.length > 0 ? eligibleSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
+              `Target hash (merge state): \`${targetHash}\``,
+              `Meaning of signature: **${process.env.MEANING}**`,
+              `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
+              `Required signatures: **${process.env.REQUIRED}**`,
+              `Eligible signers: **${eligibleSigners.length > 0 ? eligibleSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
-              'Fastest path: sign by replying on this PR with one of these commands:',
+              'Preferred path: open your signer-specific link and complete the signing page:',
+              ...signLinks,
+              '',
+              'Fallback path: sign by replying on this PR with one of these commands:',
               ...signCommands,
               '',
               'Alternative: workflow-dispatch (no browser PAT entry required):',
@@ -185,6 +210,7 @@ jobs:
         with:
           script: |
             const crypto = require('crypto');
+            const fs = require('fs');
             const pr = context.payload.pull_request;
             const prNumber = pr.number;
             const expectedTargetHash = crypto
@@ -206,8 +232,25 @@ jobs:
               .map((x) => x.trim().toLowerCase())
               .filter(Boolean);
             const allowedSignerSet = new Set(allowedSigners);
+            const signerRegistryPath = 'matrices/signer_registry.json';
+            let signerRegistry = {};
+            if (fs.existsSync(signerRegistryPath)) {
+              try {
+                signerRegistry = JSON.parse(fs.readFileSync(signerRegistryPath, 'utf8'));
+              } catch (error) {
+                core.warning(`Could not parse ${signerRegistryPath}: ${error.message}`);
+              }
+            }
+            function resolveSignerProfile(login, fallbackName = '', fallbackTitle = '') {
+              const key = String(login || '').toLowerCase();
+              const profile = Object.entries(signerRegistry).find(([user]) => user.toLowerCase() === key)?.[1] || {};
+              return {
+                fullName: String(profile.full_name || fallbackName || login || '').trim(),
+                jobTitle: String(profile.job_title || fallbackTitle || '').trim(),
+              };
+            }
 
-            function extractAttestation(commentBody) {
+            function extractAttestationPayload(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
               if (!codeMatch || !codeMatch[1]) return null;
               try {
@@ -227,24 +270,54 @@ jobs:
 
               const bySigner = new Map();
               for (const c of comments) {
-                if (!(c.body || '').includes('<!-- part11-native-attestation -->')) continue;
-                const a = extractAttestation(c.body || '');
+                const body = c.body || '';
+                if (!body.includes('<!-- part11-native-attestation -->') && !body.includes('<!-- PART11_ATTESTATION_V1 -->')) continue;
+                const a = extractAttestationPayload(body);
                 if (!a) continue;
-                if (String(a.pr_number || '') !== String(prNumber)) continue;
-                if ((a.target_hash || '') !== expectedTargetHash) continue;
-                if ((a.meaning_of_signature || '') !== requiredMeaning) continue;
-                const role = String(a.signer_role || '').toLowerCase();
+                const isNative = body.includes('<!-- part11-native-attestation -->');
+                const normalized = isNative
+                  ? {
+                      prNumber: String(a.pr_number || ''),
+                      targetHash: String(a.target_hash || ''),
+                      meaning: String(a.meaning_of_signature || ''),
+                      signerRole: String(a.signer_role || ''),
+                      signerLogin: String(a.actor_login || ''),
+                      actorId: Number(a.actor_id || 0),
+                      signerFullName: String(a.signer_full_name || '').trim(),
+                      signerJobTitle: String(a.signer_job_title || '').trim(),
+                      timestamp: String(a.timestamp_utc || c.created_at || ''),
+                      attestationSha256: String(a.attestation_sha256 || ''),
+                    }
+                  : {
+                      prNumber: String(a.pr_number || ''),
+                      targetHash: String(a.commit_hash || ''),
+                      meaning: String(a.meaning_of_signature || ''),
+                      signerRole: String(a.signer_role || ''),
+                      signerLogin: String(a.user_id || ''),
+                      actorId: 0,
+                      signerFullName: '',
+                      signerJobTitle: '',
+                      timestamp: String(a.timestamp || c.created_at || ''),
+                      attestationSha256: String(a.attestation_id || ''),
+                    };
+                if (normalized.prNumber !== String(prNumber)) continue;
+                if (normalized.targetHash !== expectedTargetHash) continue;
+                if (normalized.meaning !== requiredMeaning) continue;
+                const role = normalized.signerRole.toLowerCase();
                 if (allowedRoles.length > 0 && !allowedRoles.includes(role)) continue;
-                const signer = String(a.actor_login || '').toLowerCase();
+                const signer = normalized.signerLogin.toLowerCase();
                 if (!signer) continue;
                 if (allowedSignerSet.size > 0 && !allowedSignerSet.has(signer)) continue;
+                const profile = resolveSignerProfile(signer, normalized.signerFullName, normalized.signerJobTitle);
                 bySigner.set(signer, {
-                  user_id: a.actor_login || '',
-                  actor_id: a.actor_id || 0,
-                  signer_role: a.signer_role || '',
-                  meaning_of_signature: a.meaning_of_signature || '',
-                  timestamp: a.timestamp_utc || c.created_at || '',
-                  attestation_sha256: a.attestation_sha256 || '',
+                  user_id: normalized.signerLogin,
+                  actor_id: normalized.actorId,
+                  signer_full_name: profile.fullName || normalized.signerLogin,
+                  signer_job_title: profile.jobTitle || '',
+                  signer_role: normalized.signerRole,
+                  meaning_of_signature: normalized.meaning,
+                  timestamp: normalized.timestamp,
+                  attestation_sha256: normalized.attestationSha256,
                 });
               }
 
@@ -307,6 +380,7 @@ jobs:
           import json
           import os
           import re
+          import subprocess
           from datetime import datetime, timezone
           from pathlib import Path
 
@@ -349,7 +423,7 @@ jobs:
             "",
             "## Signature Summary",
             *[
-              f"- {x.get('user_id','unknown')} ({x.get('signer_role','unspecified')}) at {x.get('timestamp','n/a')}"
+              f"- {x.get('signer_full_name') or x.get('user_id','unknown')} ({x.get('signer_role','unspecified')}, {x.get('signer_job_title','unspecified')}) at {x.get('timestamp','n/a')}"
               for x in signed_attestations
             ],
             "",
@@ -379,6 +453,20 @@ jobs:
 
           signed_path = out_dir / "signed_attestation.json"
           signed_path.write_text(json.dumps(signed_payload, indent=2) + "\n", encoding="utf-8")
+          part11_title_page_path = out_dir / "part11_title_page.pdf"
+          subprocess.run(
+            [
+              "python",
+              "scripts/generate_part11_title_page.py",
+              "--attestation",
+              str(signed_path),
+              "--output",
+              str(part11_title_page_path),
+              "--record-id",
+              f"{trainee_user_id.lower()}-onboarding-review-pr{pr_number}",
+            ],
+            check=True,
+          )
 
           manifest = {
             "schema_version": 1,
@@ -398,6 +486,7 @@ jobs:
             "part11_signer_count": len(signed_attestations),
             "record_sha256": hashlib.sha256(record_md_path.read_bytes()).hexdigest(),
             "record_pdf_sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+            "part11_title_page_pdf_sha256": hashlib.sha256(part11_title_page_path.read_bytes()).hexdigest(),
             "published_at_utc": now_utc,
           }
           (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
@@ -415,6 +504,7 @@ jobs:
             "- `record.pdf`",
             "- `manifest.json`",
             "- `signed_attestation.json`",
+            "- `part11_title_page.pdf`",
           ]) + "\n"
           (out_dir / "release_notes.md").write_text(notes, encoding="utf-8")
           PY
@@ -488,6 +578,7 @@ jobs:
             str(out_dir / "record.pdf"),
             str(out_dir / "manifest.json"),
             str(out_dir / "signed_attestation.json"),
+            str(out_dir / "part11_title_page.pdf"),
           ]
           run_with_retry(create_cmd)
           run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])
