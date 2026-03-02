@@ -1,0 +1,186 @@
+name: Release Training Diff
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open_training_diff_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build training gap payload
+        id: payload
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+        run: |
+          python -m pip install --quiet pyyaml
+          python <<'PY'
+          import json
+          import os
+          import re
+          from collections import defaultdict
+          from pathlib import Path
+
+          import yaml
+
+          def extract_sop_id(text: str) -> str:
+            m = re.search(r"(SOP-\d+)", str(text or ""), flags=re.IGNORECASE)
+            return m.group(1).upper() if m else ""
+
+          def parse_readme_index(path: Path):
+            text = path.read_text(encoding="utf-8")
+            start = "<!-- PUBLISHED-SOP-INDEX:START -->"
+            end = "<!-- PUBLISHED-SOP-INDEX:END -->"
+            if start not in text or end not in text:
+              return {}
+            block = text.split(start, 1)[1].split(end, 1)[0]
+            published = {}
+            for line in block.splitlines():
+              row = line.strip()
+              if not row.startswith("|"):
+                continue
+              if row.startswith("| SOP ID ") or row.startswith("|---"):
+                continue
+              cols = [c.strip() for c in row.strip("|").split("|")]
+              if len(cols) < 6:
+                continue
+              sop_id, title, sop_file, _date, revision, _status = cols[:6]
+              if not re.fullmatch(r"SOP-\d+", sop_id):
+                continue
+              published[sop_id] = {
+                "title": title,
+                "file": sop_file,
+                "revision": revision,
+              }
+            return published
+
+          matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
+          logs_path = Path("records/training/user_training_log.yml")
+          logs = yaml.safe_load(logs_path.read_text(encoding="utf-8")) if logs_path.exists() else {}
+          published = parse_readme_index(Path("README.md"))
+
+          release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
+          release_url = os.environ.get("RELEASE_URL", "").strip() or ""
+
+          roles = matrix.get("roles", {}) or {}
+          trained_by_user = (logs or {}).get("users", {}) or {}
+
+          gaps = {}
+          users_to_roles = defaultdict(set)
+          for role_name, role_def in roles.items():
+            users = [str(u).strip() for u in (role_def.get("users", []) or []) if str(u).strip()]
+            required_sops = [str(s).strip() for s in (role_def.get("required_sops", []) or []) if str(s).strip()]
+            required_revisions = {extract_sop_id(k): str(v).strip() for k, v in (role_def.get("required_revisions", {}) or {}).items()}
+
+            for user in users:
+              users_to_roles[user].add(role_name)
+              user_trained = trained_by_user.get(user, {}) or {}
+              for required in required_sops:
+                sop_id = extract_sop_id(required)
+                if not sop_id:
+                  continue
+                target_revision = required_revisions.get(sop_id) or (published.get(sop_id, {}) or {}).get("revision", "")
+                if not target_revision:
+                  continue
+
+                previous_revision = str(user_trained.get(sop_id, "UNTRAINED")).strip() or "UNTRAINED"
+                if previous_revision == target_revision:
+                  continue
+
+                key = (user, sop_id, target_revision)
+                if key not in gaps:
+                  gaps[key] = {
+                    "user": user,
+                    "sop_id": sop_id,
+                    "sop_title": (published.get(sop_id, {}) or {}).get("title", ""),
+                    "sop_file": (published.get(sop_id, {}) or {}).get("file", ""),
+                    "from_revision": previous_revision,
+                    "to_revision": target_revision,
+                  }
+
+          entries = []
+          for gap in sorted(gaps.values(), key=lambda x: (x["user"], x["sop_id"])):
+            user = gap["user"]
+            sop_id = gap["sop_id"]
+            title = f"TRAINING DIFF REQUIRED: {user} {sop_id} {gap['from_revision']} -> {gap['to_revision']}"
+            role_list = ", ".join(sorted(users_to_roles.get(user, set()))) or "none"
+            sop_suffix = f" ({gap['sop_title']})" if gap["sop_title"] else ""
+
+            body_lines = [
+              "### Training Release Diff",
+              f"- Trigger release: `{release_tag}`",
+              f"- Trigger release URL: {release_url or 'n/a'}",
+              f"- Training User ID: `{user}`",
+              f"- Roles requiring this training: `{role_list}`",
+              f"- SOP: `{sop_id}`{sop_suffix}",
+              f"- SOP file: `{gap['sop_file'] or 'n/a'}`",
+              f"- Previously trained revision: `{gap['from_revision']}`",
+              f"- Required revision: `{gap['to_revision']}`",
+              "",
+              "### Required Completion Workflow",
+              "1. Open a PR updating `records/training/user_training_log.yml` to the required revision.",
+              f"2. In the PR body include: `Issue #{'{issue_number}'}`, `**Trainee GitHub Login:** @<github-login>`, `**Training User ID:** {user}`, `**SOP ID:** {sop_id}`.",
+              "3. The named trainee must approve that PR (enforced by workflow).",
+              "4. After merge, complete Part 11 signature collection via bot links (attestation required).",
+            ]
+
+            entries.append({
+              "title": title,
+              "body": "\n".join(body_lines),
+              "labels": ["training", "training-diff"],
+            })
+
+          output = os.environ["GITHUB_OUTPUT"]
+          with open(output, "a", encoding="utf-8") as fh:
+            fh.write("entries_json<<EOF\n")
+            fh.write(json.dumps(entries))
+            fh.write("\nEOF\n")
+          PY
+
+      - name: Open training diff issues
+        uses: actions/github-script@v7
+        env:
+          ENTRIES_JSON: ${{ steps.payload.outputs.entries_json }}
+        with:
+          script: |
+            const entries = JSON.parse(process.env.ENTRIES_JSON || '[]');
+            if (entries.length === 0) {
+              core.info('No training deltas found; no issues created.');
+              return;
+            }
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const openTitles = new Set(openIssues.map((i) => i.title));
+
+            for (const entry of entries) {
+              if (openTitles.has(entry.title)) {
+                core.info(`Skipping existing open issue: ${entry.title}`);
+                continue;
+              }
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: entry.title,
+                body: entry.body,
+                labels: entry.labels,
+              });
+            }

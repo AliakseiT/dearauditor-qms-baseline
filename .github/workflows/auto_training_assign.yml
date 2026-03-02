@@ -54,6 +54,7 @@ jobs:
           python <<'PY'
           import json
           import os
+          import re
           from pathlib import Path
           import yaml
 
@@ -67,19 +68,41 @@ jobs:
           roles = matrix.get("roles", {})
           changed_files = [line.strip() for line in changed_path.read_text().splitlines() if line.strip()]
 
+          def extract_sop_id(value: str) -> str:
+            text = str(value or "")
+            m = re.search(r"(SOP-\d+)", text, flags=re.IGNORECASE)
+            return m.group(1).upper() if m else ""
+
+          def normalize_entry(entry: str):
+            entry = str(entry or "").strip()
+            return {
+              "raw": entry,
+              "sop_id": extract_sop_id(entry),
+            }
+
           entries = []
           for sop_file in changed_files:
             sop_name = Path(sop_file).stem
+            sop_id = extract_sop_id(sop_name)
             matched_roles = []
             assignees = set()
             for role_name, role_def in roles.items():
-              required = set(role_def.get("required_sops", []) or [])
-              if sop_name in required or sop_file in required:
+              required = [normalize_entry(x) for x in (role_def.get("required_sops", []) or [])]
+              role_match = any(
+                item["raw"] in {sop_name, sop_file}
+                or (sop_id and item["sop_id"] == sop_id)
+                for item in required
+              )
+              if role_match:
                 matched_roles.append(role_name)
                 for user in role_def.get("users", []) or []:
                   cleaned = str(user).strip().lstrip("@")
                   if cleaned and cleaned != "REPLACE_WITH_GH_USERNAME":
                     assignees.add(cleaned)
+
+            # Skip empty mappings: no roles means no training obligation was defined.
+            if not matched_roles:
+              continue
 
             body = "\n".join([
               f"SOP updated: `{sop_file}`",

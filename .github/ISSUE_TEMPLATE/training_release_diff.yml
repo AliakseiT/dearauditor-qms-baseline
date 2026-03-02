@@ -1,0 +1,58 @@
+name: Training Release Diff
+description: Record a user-specific training gap between prior trained revision and newly released revision.
+title: "TRAINING DIFF REQUIRED: [USER-ID] [SOP-ID] [OLD] -> [NEW]"
+labels:
+  - training
+body:
+  - type: input
+    id: release_tag
+    attributes:
+      label: Trigger Release Tag
+      description: Release that introduced the new required revision.
+      placeholder: qms-baseline-2026.03.02-r01
+    validations:
+      required: true
+  - type: input
+    id: user_id
+    attributes:
+      label: Training User ID
+      description: Internal training user identifier.
+      placeholder: qa_alex
+    validations:
+      required: true
+  - type: input
+    id: trainee_login
+    attributes:
+      label: Trainee GitHub Login
+      description: GitHub login required to approve the training log PR.
+      placeholder: AliakseiT
+    validations:
+      required: true
+  - type: input
+    id: sop_id
+    attributes:
+      label: SOP ID
+      description: SOP requiring retraining.
+      placeholder: SOP-005
+    validations:
+      required: true
+  - type: input
+    id: from_revision
+    attributes:
+      label: Previously Trained Revision
+      placeholder: R01
+    validations:
+      required: true
+  - type: input
+    id: to_revision
+    attributes:
+      label: Required Revision
+      placeholder: R02
+    validations:
+      required: true
+  - type: textarea
+    id: completion_notes
+    attributes:
+      label: Completion Notes
+      description: Link PR and evidence once training is completed.
+      placeholder: PR #__, attestation comment link, reviewer approval link

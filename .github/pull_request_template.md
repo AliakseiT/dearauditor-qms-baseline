@@ -1,6 +1,7 @@
 ### Execution Record
 - [ ] This PR finalizes the execution of Issue #____.
 - [ ] All required Markdown records (CAPA, Audit, or MR) have been committed.
+- [ ] If this PR updates `records/training/**`, include `**Trainee GitHub Login:** @<login>` in the PR body.
 
 ### Part 11 Signature Requirements
 - **Meaning of Signature:** [e.g., Approved Quality Record]

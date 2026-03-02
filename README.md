@@ -37,3 +37,11 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 | Training | `trn-<record-id>-rNN` | `trn-dev-lina-sop-002-r01` |
 | Supplier List / Evaluation | `asl-YYYY.MM.DD-rNN` / `sup-<record-id>-rNN` | `asl-2026.03.01-r01` |
 | Fallback | `record-<record-id>-rNN` | `record-general-note-r01` |
+
+## Training Automation
+
+- `auto_training_assign.yml`: opens SOP training issues only when changed SOPs are mapped to at least one role in `matrices/training_matrix.yml`.
+- `release_training_diff.yml`: on release publish, compares required SOP revisions against `records/training/user_training_log.yml` and opens per-user training delta issues.
+- `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
+  - `**Trainee GitHub Login:** @<login>`
+- Post-merge attestation: training update PRs must include the standard Part 11 fields and complete signature links on the merged PR.

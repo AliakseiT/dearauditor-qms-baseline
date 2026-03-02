@@ -1,0 +1,28 @@
+version: 1
+users:
+  qa_alex:
+    SOP-001: R00
+    SOP-002: R00
+    SOP-003: R00
+    SOP-004: R00
+    SOP-005: R01
+  dev_lina:
+    SOP-001: R00
+    SOP-002: R00
+  dev_marcus:
+    SOP-001: R00
+    SOP-002: R00
+  clin_rina:
+    SOP-001: R00
+    SOP-004: R00
+  clin_owen:
+    SOP-001: R00
+    SOP-004: R00
+  audit_nora:
+    SOP-001: R00
+    SOP-003: R00
+    SOP-005: R01
+  mgmt_eli:
+    SOP-001: R00
+    SOP-004: R00
+    SOP-005: R01
