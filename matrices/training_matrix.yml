@@ -1,11 +1,18 @@
 ---
-version: 2
+version: 3
+users:
+  AliakseiT:
+    full_name: Aliaksei Tsitovich
+    job_title: Management Representative
+  InaTsitovich:
+    full_name: Ina Tsitovich
+    job_title: Quality Assurance Lead
+
 roles:
   qa_lead:
     users:
-    - qa_alex
-    - InaTsitovich
-    - AliakseiT
+      - AliakseiT
+      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-002
@@ -31,9 +38,8 @@ roles:
 
   software_engineer:
     users:
-      - dev_lina
-      - dev_marcus
       - AliakseiT
+      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-002
@@ -46,9 +52,8 @@ roles:
 
   clinical_ops:
     users:
-      - clin_rina
-      - clin_owen
       - AliakseiT
+      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-004
@@ -62,8 +67,8 @@ roles:
 
   lead_auditor:
     users:
-      - audit_nora
       - AliakseiT
+      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-003
@@ -85,8 +90,8 @@ roles:
 
   management_representative:
     users:
-      - mgmt_eli
       - AliakseiT
+      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-002

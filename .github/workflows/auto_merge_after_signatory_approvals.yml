@@ -7,7 +7,7 @@ on:
     types: [submitted, edited, dismissed]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -28,19 +28,19 @@ jobs:
               core.info(`PR #${pr.number} is not open; skipping.`);
               return;
             }
-
-            const body = pr.body || '';
-            const hasPart11Block = /\*\*Meaning of Signature:\*\*/i.test(body) || /Part 11 Signature Requirements/i.test(body);
-            if (!hasPart11Block) {
-              core.info(`PR #${pr.number} has no Part 11 signature block; auto-merge workflow skipped.`);
+            const labels = (pr.labels || []).map((l) => String(l.name || '').toLowerCase());
+            if (labels.includes('review-only')) {
+              core.info(`PR #${pr.number} is marked review-only; auto-merge skipped.`);
               return;
             }
+
+            const body = pr.body || '';
             const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
             let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
             if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
               requiredSignatures = 1;
             }
-            const requiredReviewerApprovals = Math.max(0, requiredSignatures - 1);
+            const requiredReviewerApprovals = Math.max(1, requiredSignatures - 1);
 
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -133,5 +133,9 @@ jobs:
                 core.info(`Merged PR #${pr.number} directly.`);
               } catch (mergeError) {
                 core.warning(`Direct merge attempt failed for PR #${pr.number}: ${mergeError.message}`);
+                core.setFailed(
+                  `PR #${pr.number} could not be merged by automation. Verify GITHUB_TOKEN write permissions and repository action settings.`
+                );
               }
             }
+            
