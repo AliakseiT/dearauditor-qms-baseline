@@ -4,6 +4,7 @@ roles:
   qa_lead:
     users:
     - qa_alex
+    - AliakseiT
     required_sops:
     - SOP-001-DocControl
     - SOP-002-CAPA
@@ -16,6 +17,7 @@ roles:
     users:
     - dev_lina
     - dev_marcus
+    - AliakseiT
     required_sops:
     - SOP-001-DocControl
     - SOP-002-CAPA
@@ -23,12 +25,14 @@ roles:
     users:
     - clin_rina
     - clin_owen
+    - AliakseiT
     required_sops:
     - SOP-001-DocControl
     - SOP-004-ManagementReview
   lead_auditor:
     users:
     - audit_nora
+    - AliakseiT
     required_sops:
     - SOP-001-DocControl
     - SOP-003-InternalAudit
@@ -38,6 +42,7 @@ roles:
   management_representative:
     users:
     - mgmt_eli
+    - AliakseiT
     required_sops:
     - SOP-001-DocControl
     - SOP-004-ManagementReview

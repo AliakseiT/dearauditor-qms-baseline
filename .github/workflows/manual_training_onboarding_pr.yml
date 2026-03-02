@@ -1,0 +1,284 @@
+name: Manual Training Onboarding PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      trainee_user_id:
+        description: "Training user ID as defined in matrices/training_matrix.yml users[]"
+        required: true
+        default: "AliakseiT"
+      trainee_github_login:
+        description: "GitHub login that must review and approve the training update PR"
+        required: true
+        default: "AliakseiT"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  create_onboarding_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build onboarding training plan
+        id: plan
+        env:
+          TRAINEE_USER_ID: ${{ github.event.inputs.trainee_user_id }}
+          TRAINEE_GH_LOGIN: ${{ github.event.inputs.trainee_github_login }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python -m pip install --quiet pyyaml
+          python <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          import yaml
+
+          def extract_sop_id(text: str) -> str:
+            m = re.search(r"(SOP-\d+)", str(text or ""), flags=re.IGNORECASE)
+            return m.group(1).upper() if m else ""
+
+          def parse_revision_rank(revision: str) -> int:
+            m = re.fullmatch(r"R(\d+)", str(revision or "").strip().upper())
+            return int(m.group(1)) if m else -1
+
+          def pick_highest_revision(revisions):
+            ranked = sorted(
+              [str(x).strip().upper() for x in revisions if str(x).strip()],
+              key=parse_revision_rank,
+              reverse=True,
+            )
+            return ranked[0] if ranked else ""
+
+          def parse_readme_index(path: Path):
+            text = path.read_text(encoding="utf-8")
+            start = "<!-- PUBLISHED-SOP-INDEX:START -->"
+            end = "<!-- PUBLISHED-SOP-INDEX:END -->"
+            if start not in text or end not in text:
+              return {}
+            block = text.split(start, 1)[1].split(end, 1)[0]
+            published = {}
+            for line in block.splitlines():
+              row = line.strip()
+              if not row.startswith("|"):
+                continue
+              if row.startswith("| SOP ID ") or row.startswith("|---"):
+                continue
+              cols = [c.strip() for c in row.strip("|").split("|")]
+              if len(cols) < 6:
+                continue
+              sop_id, title, sop_file, _date, revision, _status = cols[:6]
+              if not re.fullmatch(r"SOP-\d+", sop_id):
+                continue
+              published[sop_id] = {
+                "title": title,
+                "file": sop_file,
+                "revision": revision,
+              }
+            return published
+
+          trainee_user_input = os.environ["TRAINEE_USER_ID"].strip()
+          trainee_gh_login = os.environ["TRAINEE_GH_LOGIN"].strip()
+          run_id = os.environ["RUN_ID"].strip()
+
+          matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
+          logs_path = Path("records/training/user_training_log.yml")
+          logs = yaml.safe_load(logs_path.read_text(encoding="utf-8")) if logs_path.exists() else {}
+          published = parse_readme_index(Path("README.md"))
+
+          roles = matrix.get("roles", {}) or {}
+          users_log = (logs or {}).setdefault("users", {})
+
+          canonical_user = next(
+            (u for u in users_log.keys() if str(u).lower() == trainee_user_input.lower()),
+            trainee_user_input,
+          )
+
+          roles_for_user = []
+          required_by_sop = {}
+          for role_name, role_def in roles.items():
+            role_users = [str(u).strip() for u in (role_def.get("users", []) or [])]
+            if not any(u.lower() == trainee_user_input.lower() for u in role_users):
+              continue
+
+            roles_for_user.append(role_name)
+            role_required = [str(x).strip() for x in (role_def.get("required_sops", []) or []) if str(x).strip()]
+            role_required_revisions = {
+              extract_sop_id(k): str(v).strip().upper()
+              for k, v in (role_def.get("required_revisions", {}) or {}).items()
+            }
+
+            for item in role_required:
+              sop_id = extract_sop_id(item)
+              if not sop_id:
+                continue
+              slot = required_by_sop.setdefault(sop_id, {"role_required_revisions": []})
+              role_rev = role_required_revisions.get(sop_id, "")
+              if role_rev:
+                slot["role_required_revisions"].append(role_rev)
+
+          if not roles_for_user:
+            raise RuntimeError(
+              f"User '{trainee_user_input}' is not mapped to any role in matrices/training_matrix.yml."
+            )
+
+          if not required_by_sop:
+            raise RuntimeError(
+              f"User '{trainee_user_input}' has no required SOP entries in mapped roles."
+            )
+
+          existing_map = users_log.get(canonical_user, {}) or {}
+          new_map = dict(existing_map)
+          rows = []
+          changes = 0
+
+          for sop_id in sorted(required_by_sop.keys()):
+            role_revs = required_by_sop[sop_id]["role_required_revisions"]
+            forced = pick_highest_revision(role_revs)
+            published_rev = (published.get(sop_id, {}) or {}).get("revision", "")
+            target = forced or published_rev
+            if not target:
+              raise RuntimeError(
+                f"Could not resolve target revision for {sop_id}. Add required_revisions or README published index row."
+              )
+
+            previous = str(existing_map.get(sop_id, "UNTRAINED")).strip() or "UNTRAINED"
+            source = "matrix.required_revisions" if forced else "README published index"
+            rows.append((sop_id, previous, target, source))
+
+            if previous != target:
+              changes += 1
+            new_map[sop_id] = target
+
+          users_log[canonical_user] = new_map
+
+          plan_dir = Path("records/training/plans")
+          plan_dir.mkdir(parents=True, exist_ok=True)
+          plan_file = plan_dir / f"onboarding-{canonical_user.lower()}-{run_id}.md"
+
+          role_csv = ", ".join(sorted(roles_for_user))
+          lines = [
+            f"# Manual Training Onboarding Plan: {canonical_user}",
+            "",
+            f"- Trainee GitHub Login: @{trainee_gh_login}",
+            f"- Roles: {role_csv}",
+            "",
+            "| SOP ID | Previous Revision | Target Revision | Revision Source |",
+            "|---|---|---|---|",
+          ]
+          for sop_id, previous, target, source in rows:
+            lines.append(f"| {sop_id} | {previous} | {target} | {source} |")
+          plan_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+          has_changes = changes > 0
+          if has_changes:
+            logs_path.write_text(
+              yaml.safe_dump(logs, sort_keys=False, allow_unicode=False),
+              encoding="utf-8",
+            )
+
+          branch_slug = re.sub(r"[^a-z0-9-]+", "-", canonical_user.lower()).strip("-") or "user"
+          branch_name = f"training/onboard-{branch_slug}-{run_id}"
+          pr_title = f"Training onboarding: {canonical_user} to latest required SOP revisions"
+
+          output = Path(os.environ["GITHUB_OUTPUT"])
+          with output.open("a", encoding="utf-8") as fh:
+            fh.write(f"has_changes={'true' if has_changes else 'false'}\n")
+            fh.write(f"canonical_user={canonical_user}\n")
+            fh.write(f"trainee_gh_login={trainee_gh_login}\n")
+            fh.write(f"roles_csv={role_csv}\n")
+            fh.write(f"plan_file={plan_file.as_posix()}\n")
+            fh.write(f"branch_name={branch_name}\n")
+            fh.write(f"pr_title={pr_title}\n")
+          PY
+
+      - name: Stop when no training deltas are required
+        if: steps.plan.outputs.has_changes != 'true'
+        run: echo "No training changes required for this user."
+
+      - name: Open onboarding issue
+        id: onboarding_issue
+        if: steps.plan.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const trainee = `${{ steps.plan.outputs.canonical_user }}`;
+            const planFile = `${{ steps.plan.outputs.plan_file }}`;
+            const roleCsv = `${{ steps.plan.outputs.roles_csv }}`;
+            const traineeLogin = `${{ steps.plan.outputs.trainee_gh_login }}`;
+            const title = `MANUAL TRAINING ONBOARDING: ${trainee}`;
+            const body = [
+              `Manual onboarding training plan generated for \`${trainee}\`.`,
+              ``,
+              `- Trainee GitHub Login: @${traineeLogin}`,
+              `- Roles: ${roleCsv}`,
+              `- Plan file: \`${planFile}\``,
+              ``,
+              `Execution required: merge training log update PR, trainee approval, and post-merge Part 11 signature collection.`,
+            ].join('\n');
+
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['training', 'onboarding'],
+            });
+            core.setOutput('issue_number', String(issue.data.number));
+
+      - name: Create branch and commit onboarding training updates
+        if: steps.plan.outputs.has_changes == 'true'
+        run: |
+          BRANCH="${{ steps.plan.outputs.branch_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add records/training/user_training_log.yml "${{ steps.plan.outputs.plan_file }}"
+          git commit -m "Onboard ${{ steps.plan.outputs.canonical_user }} training baseline to latest SOP revisions"
+          git push --set-upstream origin "$BRANCH"
+
+      - name: Open training onboarding PR
+        if: steps.plan.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat > pr_body.md <<'EOF'
+          ### Execution Record
+          - [x] This PR finalizes the execution of Issue #${{ steps.onboarding_issue.outputs.issue_number }}.
+          - [x] This PR updates the onboarding trainee training log to latest required SOP revisions.
+          - **Trainee GitHub Login:** @${{ steps.plan.outputs.trainee_gh_login }}
+          - **Training User ID:** ${{ steps.plan.outputs.canonical_user }}
+          - **Training Plan File:** `${{ steps.plan.outputs.plan_file }}`
+
+          ### Part 11 Signature Requirements
+          - **Meaning of Signature:** Approved Training Record
+          - **Signer Roles:** Quality Assurance Lead; Management Representative
+          - **Required Signatures:** 2
+          EOF
+
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --base "main" \
+            --head "${{ steps.plan.outputs.branch_name }}" \
+            --title "${{ steps.plan.outputs.pr_title }}" \
+            --body-file pr_body.md
+
+      - name: Request trainee reviewer on the onboarding PR
+        if: steps.plan.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="$(gh pr list --repo "${{ github.repository }}" --head "${{ steps.plan.outputs.branch_name }}" --state open --json number --jq '.[0].number')"
+          gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" --add-reviewer "${{ steps.plan.outputs.trainee_gh_login }}"

@@ -44,4 +44,5 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - `release_training_diff.yml`: on release publish, compares required SOP revisions against `records/training/user_training_log.yml` and opens per-user training delta issues.
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
+- `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a user-specific onboarding issue and PR that updates training log entries to latest required/published SOP revisions for all roles assigned to that user.
 - Post-merge attestation: training update PRs must include the standard Part 11 fields and complete signature links on the merged PR.
