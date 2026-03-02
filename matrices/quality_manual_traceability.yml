@@ -1,4 +1,4 @@
-version: 1
+version: 2
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
@@ -7,50 +7,65 @@ regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
 quality_manual_sections:
   - section_id: QM-01
-    section_name: "Organization context, scope, and QMS process map"
+    section_name: "QMS context, scope, and process map"
     iso_clauses: ["4.1", "4.2.1", "4.2.2"]
     controlling_sops: ["SOP-005", "SOP-001"]
     status: "implemented"
   - section_id: QM-02
-    section_name: "Quality policy and objectives"
-    iso_clauses: ["5.3", "5.4.1", "5.4.2"]
-    controlling_sops: ["SOP-005", "SOP-004", "SOP-016"]
-    status: "partial_pending_sop_016"
-  - section_id: QM-03
-    section_name: "Responsibility, authority, and communication"
-    iso_clauses: ["5.5.1", "5.5.2", "5.5.3"]
-    controlling_sops: ["SOP-005", "SOP-011"]
-    status: "partial_pending_sop_011"
-  - section_id: QM-04
-    section_name: "Documented information governance"
+    section_name: "Documented information control"
     iso_clauses: ["4.2.4", "4.2.5"]
     controlling_sops: ["SOP-001"]
     status: "implemented"
+  - section_id: QM-03
+    section_name: "Management commitment, policy, objectives"
+    iso_clauses: ["5.1", "5.3", "5.4.1", "5.4.2"]
+    controlling_sops: ["SOP-004", "SOP-005", "SOP-016"]
+    status: "implemented"
+  - section_id: QM-04
+    section_name: "Responsibility, authority, communication"
+    iso_clauses: ["5.5.1", "5.5.2", "5.5.3"]
+    controlling_sops: ["SOP-005", "SOP-011"]
+    status: "implemented"
   - section_id: QM-05
-    section_name: "Management review governance"
+    section_name: "Management review"
     iso_clauses: ["5.6.1", "5.6.2", "5.6.3"]
-    controlling_sops: ["SOP-004", "SOP-005"]
+    controlling_sops: ["SOP-004"]
     status: "implemented"
   - section_id: QM-06
+    section_name: "Human resources and competence"
+    iso_clauses: ["6.2"]
+    controlling_sops: ["SOP-011"]
+    status: "implemented"
+  - section_id: QM-07
+    section_name: "Infrastructure and work environment"
+    iso_clauses: ["6.3", "6.4"]
+    controlling_sops: ["SOP-017"]
+    status: "implemented"
+  - section_id: QM-08
     section_name: "Design and development controls"
     iso_clauses: ["7.1", "7.3"]
-    controlling_sops: ["SOP-008", "SOP-009"]
-    status: "pending_open_prs"
-  - section_id: QM-07
-    section_name: "Supplier and outsourced process control"
+    controlling_sops: ["SOP-008", "SOP-009", "SOP-007"]
+    status: "implemented"
+  - section_id: QM-09
+    section_name: "Purchasing and outsourced process control"
     iso_clauses: ["4.1.5", "7.4"]
     controlling_sops: ["SOP-010"]
-    status: "pending_open_prs"
-  - section_id: QM-08
-    section_name: "Feedback, complaint, and incident handling"
+    status: "implemented"
+  - section_id: QM-10
+    section_name: "Feedback, complaint, and incident processes"
     iso_clauses: ["8.2.1", "8.2.2", "8.2.3"]
-    controlling_sops: ["SOP-012", "SOP-013"]
-    status: "pending_open_prs"
-  - section_id: QM-09
-    section_name: "Monitoring, analysis, CAPA, and improvement"
-    iso_clauses: ["8.2.5", "8.2.6", "8.4", "8.5"]
-    controlling_sops: ["SOP-002", "SOP-014", "SOP-015", "SOP-016"]
-    status: "partial_pending_open_prs"
+    controlling_sops: ["SOP-012", "SOP-013", "SOP-014"]
+    status: "implemented"
+  - section_id: QM-11
+    section_name: "Internal audit, monitoring, and analysis"
+    iso_clauses: ["8.2.4", "8.2.6", "8.4"]
+    controlling_sops: ["SOP-003", "SOP-014", "SOP-016"]
+    status: "implemented"
+  - section_id: QM-12
+    section_name: "Nonconformity, CAPA, and improvement"
+    iso_clauses: ["8.3", "8.5.1", "8.5.2", "8.5.3"]
+    controlling_sops: ["SOP-015", "SOP-002"]
+    status: "implemented"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -65,10 +80,10 @@ supporting_definitions:
     reference: "matrices/qms_tooling_inventory.yml"
     note: "QMS digital tooling is currently GitHub-only."
   - item: "Infrastructure control baseline"
-    status: "required_per_product"
-    reference: "product repository docs/architecture/*"
-    note: "Each product defines its own infrastructure controls and evidence."
+    status: "implemented_with_product_specific_extensions"
+    reference: "sops/SOP-017-InfrastructureAndMaintenanceControl.md"
+    note: "Company baseline exists; each product maintains runtime-specific controls in product dossier."
   - item: "Supplier criticality and approved supplier lifecycle model"
-    status: "deferred_until_sop_010"
-    reference: "SOP-010 Supplier and Purchasing Control"
-    note: "Will be finalized in the supplier management SOP implementation."
+    status: "implemented"
+    reference: "sops/SOP-010-SupplierAndPurchasingControl.md"
+    note: "Supplier model and approved supplier list maintenance are active controls."

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R02
-effective_date: 2026-03-01
+revision: R03
+effective_date: 2026-03-02
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -29,7 +29,7 @@ related_issue: "#1"
 Define how ACME GmbH establishes, maintains, governs, and improves the Quality Management System (QMS) and Quality Manual for healthcare software products, including products that qualify as software as a medical device (SaMD).
 
 ## 2. Scope
-Applies to all QMS processes, records, and personnel roles involved in design, development, release, post-market activities, supplier control, and management oversight for ACME GmbH.
+Applies to all QMS processes, records, and personnel roles involved in design, development, release, post-market activities, supplier control, infrastructure governance, and management oversight.
 
 ## 3. Company Context
 - Legal Entity: ACME GmbH
@@ -123,11 +123,11 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 ### 8.8 Infrastructure Definition Rule
 1. Product infrastructure architecture and controls are defined per product dossier.
 2. This SOP does not impose a single shared product infrastructure baseline.
-3. Product dossiers must include infrastructure responsibilities and continuity expectations.
+3. Shared lifecycle infrastructure controls are defined in SOP-017.
 
-### 8.9 Supplier Model Dependency
-1. Supplier criticality and approved-supplier lifecycle controls are finalized in SOP-010.
-2. Until SOP-010 is approved, supplier governance operates under interim quality agreement and escalation controls.
+### 8.9 Supplier Lifecycle Governance
+1. Supplier qualification, approved supplier list control, and re-evaluation are defined in SOP-010.
+2. Supplier decisions with quality impact are reviewed in governance meetings.
 
 ### 8.10 Change Management Interface
 1. Any QMS process change is assessed for impact on compliance obligations, product risk controls, existing SOPs, and training matrix mappings.
@@ -160,11 +160,21 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 
 ## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
+- SOP-002 Corrective and Preventive Action (CAPA)
 - SOP-003 Internal Audit
 - SOP-004 Management Review
-- SOP-009 Change Management (planned)
-- SOP-010 Supplier and Purchasing Control (planned)
-- SOP-011 Competence, Training, and Awareness (planned)
+- SOP-006 Software Validation (QMS Tools)
+- SOP-007 Medical Device File Control
+- SOP-008 Design and Development Control
+- SOP-009 Change Management
+- SOP-010 Supplier and Purchasing Control
+- SOP-011 Competence, Training, and Awareness
+- SOP-012 Feedback and Complaint Handling
+- SOP-013 Regulatory Incident Reporting
+- SOP-014 Post-Market Surveillance
+- SOP-015 Nonconforming Product Control
+- SOP-016 Quality Metrics and Data Analysis
+- SOP-017 Infrastructure and Maintenance Control
 
 ## 12. Revision History
 | Revision | Effective Date | Change Summary |
@@ -172,3 +182,4 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | R00 | 2026-03-01 | Initial release (skeleton content). |
 | R01 | 2026-03-01 | Expanded to full operating procedure with ACME GmbH context and governance controls. |
 | R02 | 2026-03-01 | Added exact CH/EU/US regulatory reference baseline, product-specific intended use/infrastructure rules, GitHub-only QMS tooling governance, and supplier-model dependency handling. |
+| R03 | 2026-03-02 | Aligned related-process references to implemented SOP-006..SOP-017 and finalized supplier/infrastructure cross-links. |

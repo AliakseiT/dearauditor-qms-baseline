@@ -1,0 +1,25 @@
+template_version: 1
+record_type: supplier_vetting
+required_fields:
+  supplier_id: "SUP-XXXX"
+  supplier_name: ""
+  service_description: ""
+  criticality: "critical|major|minor"
+  jurisdictional_impact: []
+  quality_agreement_required: true
+  information_security_review:
+    status: "pending|approved|rejected"
+    reviewer: ""
+    review_date: "YYYY-MM-DD"
+  business_continuity_review:
+    status: "pending|approved|rejected"
+    reviewer: ""
+    review_date: "YYYY-MM-DD"
+  compliance_history_review:
+    status: "pending|approved|rejected"
+    findings: []
+  approval:
+    decision: "pending|approved|rejected"
+    approver_role: "management_representative"
+    approved_on: "YYYY-MM-DD"
+  next_review_due: "YYYY-MM-DD"

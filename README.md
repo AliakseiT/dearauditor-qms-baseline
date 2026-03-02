@@ -5,11 +5,23 @@
 <!-- PUBLISHED-SOP-INDEX:START -->
 | SOP ID | SOP Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| SOP-001 | Document Control | sops/SOP-001-DocControl.md | 2026-03-01 | R00 | Published |
-| SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-01 | R00 | Published |
-| SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-01 | R00 | Published |
-| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-01 | R00 | Published |
-| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-01 | R02 | Published |
+| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-02 | R01 | Published |
+| SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-02 | R01 | Published |
+| SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-02 | R01 | Published |
+| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-02 | R01 | Published |
+| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-02 | R03 | Published |
+| SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published |
+| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-02 | R00 | Published |
+| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-02 | R00 | Published |
+| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-02 | R00 | Published |
+| SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-02 | R00 | Published |
+| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-02 | R00 | Published |
+| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-02 | R00 | Published |
+| SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-02 | R00 | Published |
+| SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-02 | R00 | Published |
+| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-02 | R00 | Published |
+| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-02 | R00 | Published |
+| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-02 | R00 | Published |
 <!-- PUBLISHED-SOP-INDEX:END -->
 
 ## Company Context
@@ -22,8 +34,10 @@
 ## QMS Baseline References
 - Company and quality intent baseline: `matrices/company_profile.yml`
 - Regulatory scope baseline (CH/EU/US): `matrices/regulatory_market_scope.yml`
+- ISO 13485 gap-analysis summary: `matrices/iso_13485_gap_analysis.yml`
 - Quality manual section-to-SOP traceability: `matrices/quality_manual_traceability.yml`
 - QMS tooling inventory and validation baseline: `matrices/qms_tooling_inventory.yml`
+- Supplier controls: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
 
 ## Immutable Record Release Tags
 
@@ -41,14 +55,9 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 ## Training Automation
 
 - `auto_training_assign.yml`: opens SOP training issues only when changed SOPs are mapped to at least one role in `matrices/training_matrix.yml`.
+- `sop_training_matrix_guard.yml`: blocks SOP PRs unless training matrix impact is updated and each changed SOP maps to at least one role.
 - `release_training_diff.yml`: on release publish, compares required SOP revisions against `records/training/user_training_log.yml` and opens per-user training delta issues.
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
-- `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a **review-only** onboarding PR where base is a branch pinned to the first commit and head is `main`, so trainee reviews full current QMS state.
-  - PR body includes in-scope roles and SOP IDs from `matrices/training_matrix.yml`.
-  - PR diff is restricted to `sops/**` using an SOP snapshot head branch.
-  - If PR creation is blocked by token policy, either enable repository setting **Allow GitHub Actions to create and approve pull requests** or set repository secret `TRAINING_PR_TOKEN` (token with repo write scope).
+- `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a review-only onboarding PR where base is a branch pinned to the first commit and head is a SOP-only snapshot of current `main`.
 - `training_review_signoff.yml`: when such review-only PR is closed unmerged, enforces trainee approval, runs Part 11 signature collection, and publishes immutable training record assets to `AliakseiT/qms-records`.
-- Attestation:
-  - merged training update PRs use post-merge Part 11 flow.
-  - review-only onboarding PRs use post-close (unmerged) Part 11 flow via `training_review_signoff.yml`.

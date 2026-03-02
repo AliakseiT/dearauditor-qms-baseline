@@ -1,0 +1,12 @@
+version: 1
+last_updated: "2026-03-02"
+owner_role: management_representative
+suppliers:
+  - supplier_id: SUP-0001
+    supplier_name: GitHub, Inc.
+    service_description: Source control, issue/PR workflow, CI/CD automation platform
+    criticality: critical
+    approval_status: approved
+    approved_on: "2026-03-02"
+    next_review_due: "2027-03-02"
+    quality_agreement_reference: "N/A (standard cloud terms + internal control overlay)"
