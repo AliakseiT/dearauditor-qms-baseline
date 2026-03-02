@@ -69,11 +69,9 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 
 ## Part 11 Git-Native Flow
 
-- On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with ready-to-use slash commands.
-- Signature request comments now include signer-specific one-click links to:
-  - `https://aliakseit.github.io/part11-action/` (pre-filled repository/PR/hash/meaning/role).
-- Signers can reply directly on the PR with:
-  - `/part11-sign meaning="<meaning>" role="<role>" auth="GitHub session re-authenticated"`
+- On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with signer-specific workflow links.
+- Signature comments are posted via GitHub App token when configured (`SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`), with automatic fallback to `GITHUB_TOKEN`.
+- Signers open the provided workflow link and run `Part 11 Git-Native Signature` with locked PR context values.
 - `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
 - The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
 - Each signature run creates:
@@ -88,3 +86,10 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 
 - Artifact retention is intentionally short for heavy workflows (5 days).
 - Use `artifact_quota_cleanup.yml` (`workflow_dispatch`) to delete old artifacts when nearing quota.
+
+## Repository Secrets (Part 11)
+
+- `SIGNATURE_APP_ID`: GitHub App ID used by signature workflows.
+- `SIGNATURE_APP_PRIVATE_KEY`: GitHub App private key (PEM) for installation token minting.
+- `QMS_RECORDS_TOKEN`: PAT used only for publishing immutable record releases to `AliakseiT/qms-records`.
+- `PART11_COMMENT_TOKEN`: optional legacy fallback for PR comment posting; not required when GitHub App secrets are present.

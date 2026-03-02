@@ -146,23 +146,24 @@ jobs:
             core.setOutput('author_login', authorLogin);
             core.setOutput('approved_signers_csv', finalSigners.join(','));
 
+      - name: Create GitHub App token for signature comments
+        id: app_token
+        if: ${{ secrets.SIGNATURE_APP_ID != '' && secrets.SIGNATURE_APP_PRIVATE_KEY != '' }}
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SIGNATURE_APP_ID }}
+          private-key: ${{ secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
       - name: Post Git-native signature request on merged PR
         uses: actions/github-script@v7
-        env:
-          MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
-          ROLES: ${{ steps.parse.outputs.signatory_roles }}
-          REQUIRED: ${{ steps.parse.outputs.required_signatures }}
-          REQUIRED_REVIEWERS: ${{ steps.parse.outputs.required_reviewer_signatures }}
-          TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
-          TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
-          AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
-          APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
-          SIGNING_PAGE_URL: https://aliakseit.github.io/part11-action/
         with:
+          github-token: ${{ steps.app_token.outputs.token != '' && steps.app_token.outputs.token || github.token }}
           script: |
             const pr = context.payload.pull_request;
             const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
-            const signingPageUrl = (process.env.SIGNING_PAGE_URL || 'https://aliakseit.github.io/part11-action/').trim();
             const roles = (process.env.ROLES || '')
               .split(/[;,]/)
               .map((x) => x.trim())
@@ -173,31 +174,23 @@ jobs:
               .filter(Boolean);
             const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
             const defaultAuth = 'GitHub session re-authenticated';
-            const signLinks = approvedSigners.length > 0
+
+            const runLinks = approvedSigners.length > 0
               ? approvedSigners.map((u, i) => {
                 const role = roles[i] || roles[0] || 'Quality Assurance Lead';
                 const params = new URLSearchParams({
-                  repo: `${context.repo.owner}/${context.repo.repo}`,
-                  pr: String(pr.number),
-                  hash: process.env.TARGET_HASH,
-                  meaning: process.env.MEANING,
-                  role,
-                  required_signatures: String(process.env.REQUIRED || '1'),
-                  signature_index: String(i + 1),
+                  pr_number: String(pr.number),
+                  meaning_of_signature: process.env.MEANING,
+                  signer_role: role,
+                  auth_method: defaultAuth,
                 });
-                return `- @${u} (${role}): [Open Signing Page](${signingPageUrl}?${params.toString()})`;
-              })
-              : ['- No eligible approved assigned reviewers found.'];
-            const signCommands = approvedSigners.length > 0
-              ? approvedSigners.map((u, i) => {
-                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                return `- @${u}: \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${role}\" auth=\"${defaultAuth}\"\``;
+                return `- @${u} (${role}): [Open Signature Workflow](${workflowUrl}?${params.toString()})`;
               })
               : ['- No eligible approved assigned reviewers found.'];
 
             const body = [
               '<!-- part11-native-signature-request -->',
-              '🛑 Part 11 Signature Required (Mock Ceremony)',
+              '🛑 Part 11 Signature Required (GitHub App Flow)',
               '',
               `PR: #${pr.number}`,
               `Target commit: \`${process.env.TARGET_COMMIT}\``,
@@ -209,21 +202,10 @@ jobs:
               `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
-              'Preferred path: open your signer-specific link and complete the signing page:',
-              ...signLinks,
+              'Open your signer link and run `Part 11 Git-Native Signature` using the locked values shown above:',
+              ...runLinks,
               '',
-              'Fallback path: sign by replying on this PR with one of these commands:',
-              ...signCommands,
-              '',
-              'Alternative: workflow-dispatch (no browser PAT entry required):',
-              `1. Open \`${workflowUrl}\``,
-              `2. Run workflow \`Part 11 Git-Native Signature\` with:`,
-              `   - pr_number: \`${pr.number}\``,
-              `   - meaning_of_signature: \`${process.env.MEANING}\``,
-              '   - signer_role: one of required roles',
-              `   - auth_method: \`${defaultAuth}\``,
-              '',
-              'Each signer run adds a cryptographically sealed attestation comment and run artifact.',
+              `Workflow page: ${workflowUrl}`,
             ].join('\n');
 
             await github.rest.issues.createComment({
@@ -232,3 +214,12 @@ jobs:
               issue_number: pr.number,
               body,
             });
+        env:
+          MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
+          ROLES: ${{ steps.parse.outputs.signatory_roles }}
+          REQUIRED: ${{ steps.parse.outputs.required_signatures }}
+          REQUIRED_REVIEWERS: ${{ steps.parse.outputs.required_reviewer_signatures }}
+          TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
+          TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
+          AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
+          APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
