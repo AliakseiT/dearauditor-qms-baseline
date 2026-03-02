@@ -3,7 +3,6 @@ version: 2
 roles:
   qa_lead:
     users:
-    - qa_alex
     - InaTsitovich
     - AliakseiT
     required_sops:
@@ -31,8 +30,6 @@ roles:
 
   software_engineer:
     users:
-      - dev_lina
-      - dev_marcus
       - InaTsitovich
       - AliakseiT
     required_sops:
@@ -47,8 +44,6 @@ roles:
 
   clinical_ops:
     users:
-      - clin_rina
-      - clin_owen
       - InaTsitovich
       - AliakseiT
     required_sops:
@@ -64,7 +59,6 @@ roles:
 
   lead_auditor:
     users:
-      - audit_nora
       - InaTsitovich
       - AliakseiT
     required_sops:
@@ -88,7 +82,6 @@ roles:
 
   management_representative:
     users:
-      - mgmt_eli
       - InaTsitovich
       - AliakseiT
     required_sops:
