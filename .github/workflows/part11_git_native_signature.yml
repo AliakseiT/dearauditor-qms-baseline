@@ -32,6 +32,9 @@ permissions:
   pull-requests: read
   id-token: write
 
+env:
+  UPLOAD_ATTESTATION_ARTIFACT: "false"
+
 jobs:
   sign_and_attest:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.pull_request != null && github.event.comment.user.login != 'github-actions[bot]' && contains(github.event.comment.body, '/part11-sign'))
@@ -151,6 +154,70 @@ jobs:
               return;
             }
 
+            const requestedReviewers = (pr.requested_reviewers || [])
+              .map((r) => (r.login || '').toLowerCase())
+              .filter(Boolean);
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+            const latestStateByUser = new Map();
+            for (const review of reviews) {
+              const login = (review.user?.login || '').trim();
+              if (!login) continue;
+              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+            }
+
+            let allowedSigners = [];
+            if (pr.merged) {
+              const prBody = pr.body || '';
+              const sigMatch = prBody.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+              let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+              if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
+                requiredSignatures = 1;
+              }
+              const requiredReviewerSignatures = Math.max(0, requiredSignatures - 1);
+              const authorLogin = (pr.user?.login || '').toLowerCase();
+              if (!authorLogin) {
+                core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer eligibility.`);
+                return;
+              }
+              if (requestedReviewers.length < requiredReviewerSignatures) {
+                core.setFailed(
+                  `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${requestedReviewers.length} reviewer(s) are assigned.`
+                );
+                return;
+              }
+              const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+              if (approvedRequested.length < requiredReviewerSignatures) {
+                core.setFailed(
+                  `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+                );
+                return;
+              }
+              allowedSigners = [authorLogin, ...approvedRequested.slice(0, requiredReviewerSignatures)];
+            } else {
+              const approvedReviewers = Array.from(latestStateByUser.entries())
+                .filter(([, state]) => state === 'APPROVED')
+                .map(([login]) => login);
+              const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+              allowedSigners = approvedRequested.length > 0 ? approvedRequested : approvedReviewers;
+              if (allowedSigners.length === 0) {
+                core.setFailed(`PR #${prNumber} has no approved reviewers eligible to sign yet.`);
+                return;
+              }
+            }
+
+            const actor = (context.actor || '').toLowerCase();
+            if (!allowedSigners.includes(actor)) {
+              core.setFailed(
+                `@${context.actor} is not an eligible signer for PR #${prNumber}. Eligible signers: ${allowedSigners.map((x) => '@' + x).join(', ')}`
+              );
+              return;
+            }
+
             const targetCommit = pr.merge_commit_sha || pr.head.sha;
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
             const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
@@ -163,6 +230,7 @@ jobs:
             core.setOutput('repo_full', repoFull);
             core.setOutput('actor_login', context.actor);
             core.setOutput('actor_id', String(context.payload.sender?.id || '0'));
+            core.setOutput('allowed_signers_csv', allowedSigners.join(','));
 
       - name: Build attestation manifest
         uses: actions/github-script@v7
@@ -234,6 +302,7 @@ jobs:
             signed_attestation.json
 
       - name: Upload attestation package
+        if: env.UPLOAD_ATTESTATION_ARTIFACT == 'true'
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
@@ -251,12 +320,16 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
           TARGET_HASH: ${{ steps.pr.outputs.target_hash }}
           ARTIFACT_NAME: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
+          UPLOAD_ATTESTATION_ARTIFACT: ${{ env.UPLOAD_ATTESTATION_ARTIFACT }}
         with:
           script: |
             const fs = require('fs');
             const prNumber = Number(process.env.PR_NUMBER);
             const targetHash = process.env.TARGET_HASH;
             const attestation = JSON.parse(fs.readFileSync('signed_attestation.json', 'utf8'));
+            const artifactLine = process.env.UPLOAD_ATTESTATION_ARTIFACT === 'true'
+              ? `Run artifact: \`${process.env.ARTIFACT_NAME}\``
+              : 'Run artifact: disabled (`UPLOAD_ATTESTATION_ARTIFACT=false`)';
 
             const body = [
               '<!-- part11-native-attestation -->',
@@ -268,7 +341,7 @@ jobs:
               `Meaning of signature: \`${attestation.meaning_of_signature}\``,
               `Authentication assertion: \`${attestation.authentication_assertion?.method || 'n/a'}\``,
               `Attestation SHA256: \`${attestation.attestation_sha256}\``,
-              `Run artifact: \`${process.env.ARTIFACT_NAME}\``,
+              artifactLine,
               '',
               '```json',
               JSON.stringify(attestation, null, 2),

@@ -21,6 +21,7 @@ jobs:
       trainee_login: ${{ steps.parse.outputs.trainee_login }}
       trainee_user_id: ${{ steps.parse.outputs.trainee_user_id }}
       sop_ids_csv: ${{ steps.parse.outputs.sop_ids_csv }}
+      eligible_signers_csv: ${{ steps.parse.outputs.eligible_signers_csv }}
     steps:
       - name: Parse review PR body and validate trainee approval
         id: parse
@@ -80,12 +81,37 @@ jobs:
               return;
             }
 
+            const fresh = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            })).data;
+            const requestedReviewers = (fresh.requested_reviewers || [])
+              .map((r) => (r.login || '').toLowerCase())
+              .filter(Boolean);
+            if (requestedReviewers.length === 0) {
+              core.setFailed(`Training review PR #${pr.number} has no assigned reviewers; cannot determine eligible Part 11 signers.`);
+              return;
+            }
+            const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+            if (approvedRequested.length === 0) {
+              core.setFailed(`Training review PR #${pr.number} has no approved assigned reviewers for Part 11 signing.`);
+              return;
+            }
+            if (approvedRequested.length < required) {
+              core.setFailed(
+                `Training review PR #${pr.number} requires ${required} signature(s), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+              );
+              return;
+            }
+
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(required));
             core.setOutput('trainee_login', traineeLogin);
             core.setOutput('trainee_user_id', traineeUserId);
             core.setOutput('sop_ids_csv', sopIdsCsv);
+            core.setOutput('eligible_signers_csv', approvedRequested.join(','));
 
       - name: Post Git-native signature request comment
         uses: actions/github-script@v7
@@ -93,6 +119,7 @@ jobs:
           MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
           ROLES: ${{ steps.parse.outputs.signatory_roles }}
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
+          ELIGIBLE_SIGNERS_CSV: ${{ steps.parse.outputs.eligible_signers_csv }}
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -102,9 +129,16 @@ jobs:
               .map((x) => x.trim())
               .filter(Boolean);
             const defaultAuth = 'GitHub session re-authenticated';
-            const signCommands = roles.length > 0
-              ? roles.map((r) => `- \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${r}\" auth=\"${defaultAuth}\"\``)
-              : [`- \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"Quality Assurance Lead\" auth=\"${defaultAuth}\"\``];
+            const eligibleSigners = (process.env.ELIGIBLE_SIGNERS_CSV || '')
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean);
+            const signCommands = eligibleSigners.length > 0
+              ? eligibleSigners.map((u, i) => {
+                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                return `- @${u}: \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${role}\" auth=\"${defaultAuth}\"\``;
+              })
+              : ['- No eligible approved assigned reviewers found.'];
             const body = [
               '<!-- part11-native-signature-request -->',
               '🛑 Part 11 Signature Required (Git-Native, Training Review)',
@@ -113,6 +147,7 @@ jobs:
               `Meaning of signature: \`${process.env.MEANING}\``,
               `Signer role(s): \`${process.env.ROLES}\``,
               `Required signatures: \`${process.env.REQUIRED}\``,
+              `Eligible approver signers: ${eligibleSigners.length > 0 ? eligibleSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
               '',
               'Fastest path: sign by replying on this PR with one of these commands:',
               ...signCommands,
@@ -144,6 +179,7 @@ jobs:
           MEANING: ${{ needs.prepare_review_signoff.outputs.meaning_of_signature }}
           ROLES: ${{ needs.prepare_review_signoff.outputs.signatory_roles }}
           REQUIRED: ${{ needs.prepare_review_signoff.outputs.required_signatures }}
+          ALLOWED_SIGNERS_CSV: ${{ needs.prepare_review_signoff.outputs.eligible_signers_csv }}
         with:
           script: |
             const crypto = require('crypto');
@@ -163,6 +199,11 @@ jobs:
               .split(/[;,]/)
               .map((x) => x.trim().toLowerCase())
               .filter(Boolean);
+            const allowedSigners = (process.env.ALLOWED_SIGNERS_CSV || '')
+              .split(',')
+              .map((x) => x.trim().toLowerCase())
+              .filter(Boolean);
+            const allowedSignerSet = new Set(allowedSigners);
 
             function extractAttestation(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
@@ -194,6 +235,7 @@ jobs:
                 if (allowedRoles.length > 0 && !allowedRoles.includes(role)) continue;
                 const signer = String(a.actor_login || '').toLowerCase();
                 if (!signer) continue;
+                if (allowedSignerSet.size > 0 && !allowedSignerSet.has(signer)) continue;
                 bySigner.set(signer, {
                   user_id: a.actor_login || '',
                   actor_id: a.actor_id || 0,

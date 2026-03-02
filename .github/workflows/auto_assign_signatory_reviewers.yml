@@ -1,0 +1,223 @@
+name: Auto Assign Signatory Reviewers
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, ready_for_review, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  assign_reviewers:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build reviewer candidates from role matrix
+        id: plan
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          import yaml
+
+          body = os.environ.get("PR_BODY") or ""
+          matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
+          roles = matrix.get("roles", {}) or {}
+
+          has_part11_block = (
+            re.search(r"\*\*Meaning of Signature:\*\*\s*[^\n]+", body, flags=re.IGNORECASE)
+            or re.search(r"Part\s*11\s*Signature\s*Requirements", body, flags=re.IGNORECASE)
+          )
+          if not has_part11_block:
+            output = Path(os.environ["GITHUB_OUTPUT"])
+            with output.open("a", encoding="utf-8") as fh:
+              fh.write("required_signatures=0\n")
+              fh.write("role_ids=\n")
+              fh.write("roles_raw=\n")
+              fh.write("candidates_csv=\n")
+            raise SystemExit(0)
+
+          role_aliases = {
+            "quality assurance lead": "qa_lead",
+            "qa lead": "qa_lead",
+            "management representative": "management_representative",
+            "lead auditor": "lead_auditor",
+            "clinical ops": "clinical_ops",
+            "clinical operations": "clinical_ops",
+            "software engineer": "software_engineer",
+          }
+
+          def normalize_role_label(text: str) -> str:
+            cleaned = re.sub(r"\s+", " ", (text or "").strip().lower())
+            return role_aliases.get(cleaned, cleaned)
+
+          roles_match = re.search(r"\*\*Signer Roles:\*\*\s*([^\n]+)", body, flags=re.IGNORECASE)
+          roles_raw = roles_match.group(1).strip() if roles_match else "Quality Assurance Lead"
+          if not roles_raw or roles_raw.startswith("["):
+            roles_raw = "Quality Assurance Lead"
+
+          role_tokens = [t.strip() for t in re.split(r"[;,]", roles_raw) if t.strip()]
+          role_ids = [normalize_role_label(t) for t in role_tokens]
+          role_ids = [r for r in role_ids if r in roles]
+          if not role_ids and "qa_lead" in roles:
+            role_ids = ["qa_lead"]
+
+          sig_match = re.search(r"\*\*Required Signatures:\*\*\s*([^\n]+)", body, flags=re.IGNORECASE)
+          required = int(sig_match.group(1).strip()) if sig_match and sig_match.group(1).strip().isdigit() else 1
+          if required < 1:
+            required = 1
+
+          ordered_candidates = []
+          seen = set()
+          for role_id in role_ids:
+            for u in roles.get(role_id, {}).get("users", []) or []:
+              login = str(u).strip().lstrip("@")
+              if not login or login.lower() == "replace_with_gh_username":
+                continue
+              key = login.lower()
+              if key in seen:
+                continue
+              seen.add(key)
+              ordered_candidates.append(login)
+
+          output = Path(os.environ["GITHUB_OUTPUT"])
+          with output.open("a", encoding="utf-8") as fh:
+            fh.write(f"required_signatures={required}\n")
+            fh.write(f"required_reviewer_signatures={max(0, required - 1)}\n")
+            fh.write(f"role_ids={','.join(role_ids)}\n")
+            fh.write(f"roles_raw={roles_raw}\n")
+            fh.write("candidates_csv=" + ",".join(ordered_candidates) + "\n")
+          PY
+
+      - name: Validate candidate availability
+        env:
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
+          CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
+        run: |
+          required="${REQUIRED_REVIEWER_SIGNATURES:-0}"
+          candidates="${CANDIDATES_CSV:-}"
+          if [ "$required" -gt 0 ] && [ -z "$candidates" ]; then
+            echo "Required reviewer signatures: $required"
+            echo "No reviewer candidates were resolved from role matrix."
+            exit 1
+          fi
+
+      - name: Request reviewers from collaborators
+        if: steps.plan.outputs.candidates_csv != ''
+        uses: actions/github-script@v7
+        env:
+          CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
+          REQUIRED_SIGNATURES: ${{ steps.plan.outputs.required_signatures }}
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
+          ROLE_IDS: ${{ steps.plan.outputs.role_ids }}
+          ROLES_RAW: ${{ steps.plan.outputs.roles_raw }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const author = (pr.user?.login || '').toLowerCase();
+            const candidates = (process.env.CANDIDATES_CSV || '')
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean);
+            const required = Math.max(1, Number.parseInt(process.env.REQUIRED_SIGNATURES || '1', 10) || 1);
+            const requiredReviewerSignatures = Math.max(0, Number.parseInt(process.env.REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
+
+            const collaborators = await github.paginate(github.rest.repos.listCollaborators, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+
+            const collaboratorSet = new Set(collaborators.map((c) => (c.login || '').toLowerCase()));
+            const eligible = candidates.filter((login) => {
+              const key = login.toLowerCase();
+              if (key === author) return false;
+              return collaboratorSet.has(key);
+            });
+
+            if (requiredReviewerSignatures > 0 && eligible.length === 0) {
+              core.warning('No eligible collaborator matched signatory role matrix for reviewer assignment.');
+              return;
+            }
+            if (eligible.length < requiredReviewerSignatures) {
+              core.setFailed(
+                `Required signatures is ${required} (author auto-signs 1), so ${requiredReviewerSignatures} reviewer signature(s) are required; only ${eligible.length} eligible collaborator(s) were found from role matrix.`
+              );
+              return;
+            }
+
+            const selected = requiredReviewerSignatures > 0
+              ? eligible.slice(0, requiredReviewerSignatures)
+              : [];
+
+            const prData = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            })).data;
+            const alreadyRequested = new Set((prData.requested_reviewers || []).map((r) => (r.login || '').toLowerCase()));
+            const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
+
+            if (toRequest.length > 0) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                reviewers: toRequest,
+              });
+            }
+
+            const marker = '<!-- part11-auto-reviewers -->';
+            const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
+            const rolesRaw = process.env.ROLES_RAW || '';
+            const lines = [
+              marker,
+              '🤖 Auto-assigned Part 11 reviewers from role matrix',
+              '',
+              `Signer roles requested: \`${rolesRaw}\``,
+              `Mapped role IDs: \`${roleIds.join(', ') || 'none'}\``,
+              `Required signatures: \`${required}\``,
+              `Author auto-included signer: @${pr.user?.login || 'unknown'}`,
+              `Reviewer signatures required: \`${requiredReviewerSignatures}\``,
+              `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
+              '',
+              'Auto-merge workflow will enable merge only after all assigned reviewers approve.',
+            ];
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]');
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: lines.join('\n'),
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: lines.join('\n'),
+              });
+            }
