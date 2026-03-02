@@ -369,12 +369,13 @@ jobs:
 
       - name: Post attestation comment to PR
         uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PART11_COMMENT_TOKEN != '' && secrets.PART11_COMMENT_TOKEN || secrets.GITHUB_TOKEN }}
         env:
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
           TARGET_HASH: ${{ steps.pr.outputs.target_hash }}
           ARTIFACT_NAME: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
           UPLOAD_ATTESTATION_ARTIFACT: ${{ env.UPLOAD_ATTESTATION_ARTIFACT }}
-        with:
           script: |
             const fs = require('fs');
             const prNumber = Number(process.env.PR_NUMBER);
@@ -402,9 +403,19 @@ jobs:
               '```',
             ].join('\n');
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body,
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            } catch (error) {
+              if (error.status === 403) {
+                core.setFailed(
+                  'Could not post attestation comment (403). Either set repository Actions Workflow permissions to Read and write, or define secret PART11_COMMENT_TOKEN with comment access.'
+                );
+                return;
+              }
+              throw error;
+            }

@@ -74,6 +74,7 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
   - `https://aliakseit.github.io/part11-action/` (pre-filled repository/PR/hash/meaning/role).
 - Signers can reply directly on the PR with:
   - `/part11-sign meaning="<meaning>" role="<role>" auth="GitHub session re-authenticated"`
+- If repository Actions default workflow permission is `read`, set secret `PART11_COMMENT_TOKEN` (repo-scoped token with issue/PR comment write) for posting attestation comments.
 - `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
 - The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
 - Each signature run creates:
