@@ -249,61 +249,97 @@ jobs:
           git commit -m "Onboard ${{ steps.plan.outputs.canonical_user }} training baseline to latest SOP revisions"
           git push --set-upstream origin "$BRANCH"
 
-      - name: Open training onboarding PR
+      - name: Open training onboarding PR + reviewer request
         if: steps.plan.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cat > pr_body.md <<'EOF'
-          ### Execution Record
-          - [x] This PR finalizes the execution of Issue #${{ steps.onboarding_issue.outputs.issue_number }}.
-          - [x] This PR updates the onboarding trainee training log to latest required SOP revisions.
-          - **Trainee GitHub Login:** @${{ steps.plan.outputs.trainee_gh_login }}
-          - **Training User ID:** ${{ steps.plan.outputs.canonical_user }}
-          - **Training Plan File:** `${{ steps.plan.outputs.plan_file }}`
+        id: open_pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branch = `${{ steps.plan.outputs.branch_name }}`;
+            const title = `${{ steps.plan.outputs.pr_title }}`;
+            const traineeLogin = `${{ steps.plan.outputs.trainee_gh_login }}`;
+            const issueNumber = `${{ steps.onboarding_issue.outputs.issue_number }}`;
+            const userId = `${{ steps.plan.outputs.canonical_user }}`;
+            const planFile = `${{ steps.plan.outputs.plan_file }}`;
 
-          ### Part 11 Signature Requirements
-          - **Meaning of Signature:** Approved Training Record
-          - **Signer Roles:** Quality Assurance Lead; Management Representative
-          - **Required Signatures:** 2
-          EOF
+            const body = [
+              '### Execution Record',
+              `- [x] This PR finalizes the execution of Issue #${issueNumber}.`,
+              '- [x] This PR updates the onboarding trainee training log to latest required SOP revisions.',
+              `- **Trainee GitHub Login:** @${traineeLogin}`,
+              `- **Training User ID:** ${userId}`,
+              `- **Training Plan File:** \`${planFile}\``,
+              '',
+              '### Part 11 Signature Requirements',
+              '- **Meaning of Signature:** Approved Training Record',
+              '- **Signer Roles:** Quality Assurance Lead; Management Representative',
+              '- **Required Signatures:** 2',
+            ].join('\n');
 
-          set +e
-          for i in 1 2 3 4 5 6; do
-            gh pr create \
-              --repo "${{ github.repository }}" \
-              --base "main" \
-              --head "${{ steps.plan.outputs.branch_name }}" \
-              --title "${{ steps.plan.outputs.pr_title }}" \
-              --body-file pr_body.md \
-              --label training \
-              --label onboarding
-            rc=$?
-            if [ "$rc" -eq 0 ]; then
-              exit 0
-            fi
-            echo "gh pr create failed, retry ${i}/6"
-            sleep 4
-          done
-          exit 1
+            async function retry(fn, attempts = 6, delayMs = 3000) {
+              let err;
+              for (let i = 1; i <= attempts; i++) {
+                try {
+                  return await fn();
+                } catch (e) {
+                  err = e;
+                  core.warning(`Attempt ${i}/${attempts} failed: ${e.message}`);
+                  if (i < attempts) {
+                    await new Promise((resolve) => setTimeout(resolve, delayMs));
+                  }
+                }
+              }
+              throw err;
+            }
 
-      - name: Request trainee reviewer on the onboarding PR
-        if: steps.plan.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set +e
-          for i in 1 2 3 4 5 6; do
-            PR_NUMBER="$(gh pr list --repo "${{ github.repository }}" --head "${{ steps.plan.outputs.branch_name }}" --state open --json number --jq '.[0].number')"
-            if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
-              gh pr edit "$PR_NUMBER" --repo "${{ github.repository }}" --add-reviewer "${{ steps.plan.outputs.trainee_gh_login }}"
-              rc=$?
-              if [ "$rc" -eq 0 ]; then
-                exit 0
-              fi
-            fi
-            echo "reviewer request retry ${i}/6"
-            sleep 4
-          done
-          echo "Could not request reviewer automatically; training_pr_approval_gate will still enforce trainee approval."
-          exit 0
+            const existing = await retry(() => github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:${branch}`,
+              per_page: 1,
+            }));
+
+            let pr;
+            if (existing.data.length > 0) {
+              pr = existing.data[0];
+              core.info(`Reusing existing open PR #${pr.number} for branch ${branch}.`);
+            } else {
+              const created = await retry(() => github.rest.pulls.create({
+                owner,
+                repo,
+                title,
+                head: branch,
+                base: 'main',
+                body,
+              }));
+              pr = created.data;
+              core.info(`Created PR #${pr.number}: ${pr.html_url}`);
+            }
+
+            try {
+              await retry(() => github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: pr.number,
+                labels: ['training', 'onboarding'],
+              }), 2, 1000);
+            } catch (e) {
+              core.warning(`Could not add labels: ${e.message}`);
+            }
+
+            try {
+              await retry(() => github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number: pr.number,
+                reviewers: [traineeLogin],
+              }), 2, 1000);
+            } catch (e) {
+              core.warning(`Could not request reviewer @${traineeLogin}: ${e.message}`);
+            }
+
+            core.setOutput('pr_number', String(pr.number));
+            core.setOutput('pr_url', pr.html_url);
