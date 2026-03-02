@@ -55,12 +55,49 @@ jobs:
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
             const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
 
+            const fresh = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            })).data;
+            const requestedReviewers = (fresh.requested_reviewers || [])
+              .map((r) => (r.login || '').toLowerCase())
+              .filter(Boolean);
+            if (requestedReviewers.length === 0) {
+              core.setFailed(`PR #${pr.number} has no assigned reviewers; cannot determine eligible Part 11 signers.`);
+              return;
+            }
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const latestStateByUser = new Map();
+            for (const review of reviews) {
+              const login = (review.user?.login || '').trim();
+              if (!login) continue;
+              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+            }
+            const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+            if (approvedRequested.length === 0) {
+              core.setFailed(`PR #${pr.number} has no approved assigned reviewers; cannot request Part 11 signatures.`);
+              return;
+            }
+            if (approvedRequested.length < required) {
+              core.setFailed(
+                `PR #${pr.number} requires ${required} signature(s), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+              );
+              return;
+            }
+
             core.setOutput('issue_number', issueMatch[1]);
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(required));
             core.setOutput('target_hash', targetHash);
             core.setOutput('target_commit', targetCommit);
+            core.setOutput('approved_signers_csv', approvedRequested.join(','));
 
       - name: Post Git-native signature request on merged PR
         uses: actions/github-script@v7
@@ -70,6 +107,7 @@ jobs:
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
           TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
           TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
+          APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -78,10 +116,17 @@ jobs:
               .split(/[;,]/)
               .map((x) => x.trim())
               .filter(Boolean);
+            const approvedSigners = (process.env.APPROVED_SIGNERS_CSV || '')
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean);
             const defaultAuth = 'GitHub session re-authenticated';
-            const signCommands = roles.length > 0
-              ? roles.map((r) => `- \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${r}\" auth=\"${defaultAuth}\"\``)
-              : [`- \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"Quality Assurance Lead\" auth=\"${defaultAuth}\"\``];
+            const signCommands = approvedSigners.length > 0
+              ? approvedSigners.map((u, i) => {
+                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                return `- @${u}: \`/part11-sign meaning=\"${process.env.MEANING}\" role=\"${role}\" auth=\"${defaultAuth}\"\``;
+              })
+              : ['- No eligible approved assigned reviewers found.'];
 
             const body = [
               '<!-- part11-native-signature-request -->',
@@ -93,6 +138,7 @@ jobs:
               `Meaning of signature: \`${process.env.MEANING}\``,
               `Signer role(s): \`${process.env.ROLES}\``,
               `Required signatures: \`${process.env.REQUIRED}\``,
+              `Eligible approver signers: ${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
               '',
               'Fastest path: sign by replying on this PR with one of these commands:',
               ...signCommands,

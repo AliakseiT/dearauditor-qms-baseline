@@ -3,8 +3,9 @@ version: 2
 roles:
   qa_lead:
     users:
-      - qa_alex
-      - AliakseiT
+    - qa_alex
+    - InaTsitovich
+    - AliakseiT
     required_sops:
       - SOP-001
       - SOP-002

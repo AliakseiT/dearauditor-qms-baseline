@@ -91,6 +91,44 @@ jobs:
               requiredSignatures = 1;
             }
 
+            const fresh = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            })).data;
+            const requestedReviewers = (fresh.requested_reviewers || [])
+              .map((r) => (r.login || '').toLowerCase())
+              .filter(Boolean);
+            if (requestedReviewers.length === 0) {
+              core.setFailed(`PR #${prNumber} has no assigned reviewers; cannot match Part 11 signer eligibility.`);
+              return;
+            }
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+            const latestStateByUser = new Map();
+            for (const review of reviews) {
+              const login = (review.user?.login || '').trim();
+              if (!login) continue;
+              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+            }
+            const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+            if (approvedRequested.length === 0) {
+              core.setFailed(`PR #${prNumber} has no approved assigned reviewers; cannot capture Part 11 signatures.`);
+              return;
+            }
+            if (approvedRequested.length < requiredSignatures) {
+              core.setFailed(
+                `PR #${prNumber} requires ${requiredSignatures} signature(s), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+              );
+              return;
+            }
+            const allowedSignerSet = new Set(approvedRequested);
+
             function extractAttestation(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
               if (!codeMatch || !codeMatch[1]) return null;
@@ -126,6 +164,7 @@ jobs:
 
                 const signerKey = String(a.actor_login || '').toLowerCase();
                 if (!signerKey) continue;
+                if (!allowedSignerSet.has(signerKey)) continue;
                 bySigner.set(signerKey, {
                   user_id: a.actor_login || '',
                   actor_id: a.actor_id || 0,
