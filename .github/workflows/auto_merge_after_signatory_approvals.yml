@@ -19,6 +19,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const crypto = require('crypto');
             const pr = context.payload.pull_request;
             if (!pr) {
               core.info('No pull request context; skipping.');
@@ -47,6 +48,7 @@ jobs:
               repo: context.repo.repo,
               pull_number: pr.number,
             })).data;
+            const headSha = (fresh.head?.sha || '').toLowerCase();
 
             const requested = (fresh.requested_reviewers || []).map((r) => r.login).filter(Boolean);
 
@@ -57,16 +59,23 @@ jobs:
               per_page: 100,
             });
 
-            const latestStateByUser = new Map();
+            const latestReviewByUser = new Map();
             for (const review of reviews) {
               const login = (review.user?.login || '').trim();
               if (!login) continue;
-              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+              latestReviewByUser.set(login.toLowerCase(), {
+                state: String(review.state || '').toUpperCase(),
+                commitId: String(review.commit_id || '').toLowerCase(),
+              });
             }
 
-            const approvedReviewers = Array.from(latestStateByUser.entries())
-              .filter(([, state]) => state === 'APPROVED')
+            const approvedReviewers = Array.from(latestReviewByUser.entries())
+              .filter(([, review]) => review.state === 'APPROVED')
               .map(([login]) => login);
+            const approvedOnHead = Array.from(latestReviewByUser.entries())
+              .filter(([, review]) => review.state === 'APPROVED' && review.commitId === headSha)
+              .map(([login]) => login);
+            const approvedOnHeadSet = new Set(approvedOnHead);
 
             let reviewerPool = requested.map((x) => String(x || '').toLowerCase()).filter(Boolean);
             if (reviewerPool.length === 0) {
@@ -90,7 +99,7 @@ jobs:
               }
             }
             if (reviewerPool.length === 0) {
-              reviewerPool = approvedReviewers;
+              reviewerPool = approvedOnHead;
             }
             if (reviewerPool.length < requiredReviewerApprovals) {
               core.info(
@@ -100,8 +109,12 @@ jobs:
             }
 
             const requiredReviewers = reviewerPool.slice(0, requiredReviewerApprovals);
-            const pending = requiredReviewers.filter((login) => latestStateByUser.get(login.toLowerCase()) !== 'APPROVED');
+            const pending = requiredReviewers.filter((login) => !approvedOnHeadSet.has(login.toLowerCase()));
             if (pending.length > 0) {
+              const stale = requiredReviewers.filter((login) => approvedReviewers.includes(login.toLowerCase()) && !approvedOnHeadSet.has(login.toLowerCase()));
+              if (stale.length > 0) {
+                core.info(`Found stale approvals on older commits from: ${stale.map((x) => '@' + x).join(', ')}`);
+              }
               core.info(`Waiting for approvals from: ${pending.map((x) => '@' + x).join(', ')}`);
               return;
             }
@@ -124,13 +137,75 @@ jobs:
             } catch (error) {
               core.warning(`Could not enable auto-merge via GraphQL: ${error.message}`);
               try {
-                await github.rest.pulls.merge({
+                const merged = await github.rest.pulls.merge({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
                   merge_method: 'squash',
                 });
                 core.info(`Merged PR #${pr.number} directly.`);
+
+                const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
+                let meaning = meaningMatch ? meaningMatch[1].trim() : '';
+                if (!meaning || meaning.startsWith('[')) {
+                  meaning = 'Approved Quality Record';
+                }
+
+                const rolesMatch = body.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
+                let rolesRaw = rolesMatch ? rolesMatch[1].trim() : '';
+                if (!rolesRaw || rolesRaw.startsWith('[')) {
+                  rolesRaw = 'Quality Assurance Lead';
+                }
+                const roles = rolesRaw
+                  .split(/[;,]/)
+                  .map((x) => x.trim())
+                  .filter(Boolean);
+
+                const part11RequiredReviewerSignatures = Math.max(0, requiredSignatures - 1);
+                const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
+                const authorLogin = (pr.user?.login || '').toLowerCase();
+                const reviewerSigners = approvedFromPool.slice(0, part11RequiredReviewerSignatures);
+                const finalSigners = [authorLogin, ...reviewerSigners];
+
+                const targetCommit = merged.sha || fresh.merge_commit_sha || fresh.head?.sha || '';
+                const repoFull = `${context.repo.owner}/${context.repo.repo}`;
+                const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
+                const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+                const defaultAuth = 'GitHub session re-authenticated';
+                const signCommands = finalSigners.map((u, i) => {
+                  const role = roles[i] || roles[0] || 'Quality Assurance Lead';
+                  return `- @${u}: \`/part11-sign meaning="${meaning}" role="${role}" auth="${defaultAuth}"\``;
+                });
+
+                const requestBody = [
+                  '<!-- part11-native-signature-request -->',
+                  '🛑 Part 11 Signature Required (Git-Native)',
+                  '',
+                  `PR: #${pr.number}`,
+                  `Target commit: \`${targetCommit}\``,
+                  `Target hash: \`${targetHash}\``,
+                  `Meaning of signature: \`${meaning}\``,
+                  `Signer role(s): \`${rolesRaw}\``,
+                  `Required signatures: \`${requiredSignatures}\``,
+                  `Reviewer signatures required: \`${part11RequiredReviewerSignatures}\` (author auto-signs 1)`,
+                  `Mandatory author signer: ${authorLogin ? '@' + authorLogin : 'unknown'}`,
+                  `Eligible signers: ${finalSigners.length > 0 ? finalSigners.map((x) => '@' + x).join(', ') : 'none found'}`,
+                  '',
+                  'Fastest path: sign by replying on this PR with one of these commands:',
+                  ...signCommands,
+                  '',
+                  'Alternative: workflow-dispatch:',
+                  `1. Open \`${workflowUrl}\``,
+                  `2. Run workflow with pr_number \`${pr.number}\` and matching meaning/role`,
+                ].join('\n');
+
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: requestBody,
+                });
+                core.info(`Posted fallback Part 11 signature request on merged PR #${pr.number}.`);
               } catch (mergeError) {
                 core.warning(`Direct merge attempt failed for PR #${pr.number}: ${mergeError.message}`);
                 core.setFailed(
