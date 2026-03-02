@@ -1,0 +1,340 @@
+name: Training Review Sign-Off
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  prepare_review_signoff:
+    if: github.event.pull_request.merged == false && startsWith(github.event.pull_request.base.ref, 'training/review-baseline-')
+    runs-on: ubuntu-latest
+    outputs:
+      meaning_of_signature: ${{ steps.parse.outputs.meaning_of_signature }}
+      signatory_roles: ${{ steps.parse.outputs.signatory_roles }}
+      required_signatures: ${{ steps.parse.outputs.required_signatures }}
+      trainee_login: ${{ steps.parse.outputs.trainee_login }}
+      trainee_user_id: ${{ steps.parse.outputs.trainee_user_id }}
+      sop_ids_csv: ${{ steps.parse.outputs.sop_ids_csv }}
+    steps:
+      - name: Parse review PR body and validate trainee approval
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+
+            const traineeLoginMatch = body.match(/\*\*Trainee GitHub Login:\*\*\s*@?([A-Za-z0-9-]+)/i);
+            if (!traineeLoginMatch) {
+              core.setFailed('Missing `**Trainee GitHub Login:** @<login>` in review PR body.');
+              return;
+            }
+            const traineeLogin = traineeLoginMatch[1];
+
+            const traineeUserIdMatch = body.match(/\*\*Training User ID:\*\*\s*([^\n]+)/i);
+            const traineeUserId = traineeUserIdMatch ? traineeUserIdMatch[1].trim() : traineeLogin;
+
+            const sopIdsMatch = body.match(/\*\*SOP IDs In Scope:\*\*\s*([^\n]+)/i);
+            const sopIdsCsv = sopIdsMatch ? sopIdsMatch[1].trim() : '';
+
+            const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
+            let meaning = meaningMatch ? meaningMatch[1].trim() : '';
+            if (!meaning || meaning.startsWith('[')) {
+              meaning = 'Approved Training Review Acknowledgement';
+            }
+
+            const rolesMatch = body.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
+            let roles = rolesMatch ? rolesMatch[1].trim() : '';
+            if (!roles || roles.startsWith('[')) {
+              roles = 'Quality Assurance Lead; Management Representative';
+            }
+
+            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            let required = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 2;
+            if (!Number.isInteger(required) || required < 1) {
+              required = 2;
+            }
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+
+            const latestStateByUser = new Map();
+            for (const review of reviews) {
+              const login = (review.user?.login || '').trim();
+              if (!login) continue;
+              latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
+            }
+            const traineeState = latestStateByUser.get(traineeLogin.toLowerCase()) || '';
+            if (traineeState !== 'APPROVED') {
+              core.setFailed(`Closed training review PR requires approval from @${traineeLogin}. Current state: ${traineeState || 'none'}.`);
+              return;
+            }
+
+            core.setOutput('meaning_of_signature', meaning);
+            core.setOutput('signatory_roles', roles);
+            core.setOutput('required_signatures', String(required));
+            core.setOutput('trainee_login', traineeLogin);
+            core.setOutput('trainee_user_id', traineeUserId);
+            core.setOutput('sop_ids_csv', sopIdsCsv);
+
+  post_close_part11_signoff:
+    if: github.event.pull_request.merged == false && startsWith(github.event.pull_request.base.ref, 'training/review-baseline-')
+    needs: prepare_review_signoff
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      target_hash: ${{ steps.signoff.outputs.target_hash }}
+      signed_payload_json: ${{ steps.signoff.outputs.signed_payload_json }}
+    steps:
+      - name: Run Part 11 signature ceremony on closed review PR
+        id: signoff
+        uses: AliakseiT/part11-action@main
+        with:
+          target_type: pr
+          meaning_of_signature: ${{ needs.prepare_review_signoff.outputs.meaning_of_signature }}
+          attestation_mode: pr_comment_mock
+          sign_page_base_url: https://aliakseit.github.io/part11-action/
+          signatory_roles: ${{ needs.prepare_review_signoff.outputs.signatory_roles }}
+          required_signatures: ${{ needs.prepare_review_signoff.outputs.required_signatures }}
+          poll_timeout_seconds: '5400'
+          poll_interval_seconds: '20'
+          record_type: training
+          record_id: ${{ needs.prepare_review_signoff.outputs.trainee_user_id }}
+          source_repository: ${{ github.repository }}
+          source_pr_number: ${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish_training_review_record:
+    if: github.event.pull_request.merged == false && startsWith(github.event.pull_request.base.ref, 'training/review-baseline-')
+    needs: [prepare_review_signoff, post_close_part11_signoff]
+    runs-on: ubuntu-latest
+    env:
+      TARGET_RECORD_REPO: AliakseiT/qms-records
+      TARGET_RECORD_BRANCH: main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build immutable training review package
+        env:
+          SOURCE_REPO: ${{ github.repository }}
+          SOURCE_PR_NUMBER: ${{ github.event.pull_request.number }}
+          SOURCE_PR_URL: ${{ github.event.pull_request.html_url }}
+          SOURCE_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          SOURCE_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SOURCE_CLOSED_AT: ${{ github.event.pull_request.closed_at }}
+          TRAINEE_LOGIN: ${{ needs.prepare_review_signoff.outputs.trainee_login }}
+          TRAINEE_USER_ID: ${{ needs.prepare_review_signoff.outputs.trainee_user_id }}
+          SOP_IDS_CSV: ${{ needs.prepare_review_signoff.outputs.sop_ids_csv }}
+          SIGNED_PAYLOAD_JSON: ${{ needs.post_close_part11_signoff.outputs.signed_payload_json }}
+          TARGET_HASH: ${{ needs.post_close_part11_signoff.outputs.target_hash }}
+        run: |
+          python -m pip install --quiet markdown fpdf2
+          python <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          import markdown as md
+          from fpdf import FPDF
+
+          source_repo = os.environ["SOURCE_REPO"].strip()
+          pr_number = os.environ["SOURCE_PR_NUMBER"].strip()
+          pr_url = os.environ["SOURCE_PR_URL"].strip()
+          base_ref = os.environ["SOURCE_BASE_REF"].strip()
+          head_ref = os.environ["SOURCE_HEAD_REF"].strip()
+          head_sha = os.environ["SOURCE_HEAD_SHA"].strip()
+          closed_at = os.environ["SOURCE_CLOSED_AT"].strip()
+          trainee_login = os.environ["TRAINEE_LOGIN"].strip()
+          trainee_user_id = os.environ["TRAINEE_USER_ID"].strip()
+          sop_ids_csv = os.environ.get("SOP_IDS_CSV", "").strip()
+          target_hash = os.environ.get("TARGET_HASH", "").strip()
+
+          signed_payload = json.loads(os.environ["SIGNED_PAYLOAD_JSON"])
+          signed_attestations = signed_payload.get("signed_attestations", []) or []
+
+          sop_ids = [x.strip() for x in sop_ids_csv.split(",") if x.strip()]
+          now_utc = datetime.now(timezone.utc).isoformat()
+
+          record_md = "\n".join([
+            f"# Training Review Record: {trainee_user_id}",
+            "",
+            "- Record Type: Training Review (review-only PR, no merge)",
+            f"- Source Repository: `{source_repo}`",
+            f"- Source PR: `#{pr_number}` ({pr_url})",
+            f"- Source Base Branch: `{base_ref}`",
+            f"- Source Head Branch: `{head_ref}`",
+            f"- Source Head SHA: `{head_sha}`",
+            f"- PR Closed At: `{closed_at}`",
+            f"- Trainee GitHub Login: `@{trainee_login}`",
+            f"- Training User ID: `{trainee_user_id}`",
+            f"- SOP IDs In Scope: `{', '.join(sop_ids) if sop_ids else 'n/a'}`",
+            f"- Part 11 Target Hash: `{target_hash}`",
+            f"- Signatures Captured: `{len(signed_attestations)}`",
+            "",
+            "## Signature Summary",
+            *[
+              f"- {x.get('user_id','unknown')} ({x.get('signer_role','unspecified')}) at {x.get('timestamp','n/a')}"
+              for x in signed_attestations
+            ],
+            "",
+            f"- Record Published At UTC: `{now_utc}`",
+          ]) + "\n"
+
+          out_dir = Path("training_review_package")
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          record_md_path = out_dir / "record.md"
+          record_md_path.write_text(record_md, encoding="utf-8")
+
+          html = md.markdown(record_md)
+          plain = re.sub(r"<[^>]+>", "", html)
+          lines = plain.splitlines() or [""]
+
+          pdf = FPDF()
+          pdf.set_auto_page_break(auto=True, margin=15)
+          pdf.add_page()
+          pdf.set_font("Helvetica", size=11)
+          for raw_line in lines:
+            line = raw_line.replace("\t", "    ")
+            pdf.multi_cell(0, 6, line if line else " ", new_x="LMARGIN", new_y="NEXT")
+
+          pdf_path = out_dir / "record.pdf"
+          pdf.output(str(pdf_path))
+
+          signed_path = out_dir / "signed_attestation.json"
+          signed_path.write_text(json.dumps(signed_payload, indent=2) + "\n", encoding="utf-8")
+
+          manifest = {
+            "schema_version": 1,
+            "record_type": "training",
+            "record_subtype": "review_only_pr",
+            "record_id": f"{trainee_user_id.lower()}-onboarding-review-pr{pr_number}",
+            "source_repository": source_repo,
+            "source_pull_request": int(pr_number),
+            "source_pull_request_url": pr_url,
+            "source_base_ref": base_ref,
+            "source_head_ref": head_ref,
+            "source_head_sha": head_sha,
+            "trainee_github_login": trainee_login,
+            "trainee_user_id": trainee_user_id,
+            "sop_ids_in_scope": sop_ids,
+            "part11_target_hash": target_hash,
+            "part11_signer_count": len(signed_attestations),
+            "record_sha256": hashlib.sha256(record_md_path.read_bytes()).hexdigest(),
+            "record_pdf_sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+            "published_at_utc": now_utc,
+          }
+          (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+          notes = "\n".join([
+            "# Immutable Training Review Record",
+            "",
+            f"- Source PR: `#{pr_number}`",
+            f"- Trainee: `@{trainee_login}` (`{trainee_user_id}`)",
+            f"- SOP scope: `{', '.join(sop_ids) if sop_ids else 'n/a'}`",
+            f"- Part 11 signatures: `{len(signed_attestations)}`",
+            "",
+            "Assets:",
+            "- `record.md`",
+            "- `record.pdf`",
+            "- `manifest.json`",
+            "- `signed_attestation.json`",
+          ]) + "\n"
+          (out_dir / "release_notes.md").write_text(notes, encoding="utf-8")
+          PY
+
+      - name: Publish immutable training review release
+        env:
+          GH_TOKEN: ${{ secrets.QMS_RECORDS_TOKEN }}
+          TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
+          TARGET_BRANCH: ${{ env.TARGET_RECORD_BRANCH }}
+          TRAINEE_USER_ID: ${{ needs.prepare_review_signoff.outputs.trainee_user_id }}
+          SOURCE_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "QMS_RECORDS_TOKEN is required to publish immutable training review records."
+            exit 1
+          fi
+
+          python <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          import time
+          from pathlib import Path
+
+          target_repo = os.environ["TARGET_REPO"].strip()
+          target_branch = os.environ["TARGET_BRANCH"].strip()
+          trainee_user_id = os.environ["TRAINEE_USER_ID"].strip()
+          pr_number = os.environ["SOURCE_PR_NUMBER"].strip()
+
+          slug = re.sub(r"[^a-z0-9]+", "-", trainee_user_id.lower()).strip("-") or "user"
+          base_tag = f"trn-{slug}-onboarding-review-pr{pr_number}"
+          prefix = f"{base_tag}-r"
+
+          def run_with_retry(cmd, attempts=5, sleep_seconds=3, allow_404=False):
+            last = None
+            for _ in range(attempts):
+              proc = subprocess.run(cmd, text=True, capture_output=True)
+              if proc.returncode == 0:
+                return proc.stdout
+              stderr = (proc.stderr or "") + (proc.stdout or "")
+              if allow_404 and ("HTTP 404" in stderr or "Not Found" in stderr):
+                return None
+              last = stderr.strip()
+              time.sleep(sleep_seconds)
+            raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{last}")
+
+          refs_raw = run_with_retry(
+            ["gh", "api", f"repos/{target_repo}/git/matching-refs/tags/{prefix}"],
+            allow_404=True,
+          )
+          refs = json.loads(refs_raw) if refs_raw else []
+
+          max_rev = 0
+          for ref in refs:
+            ref_name = ref.get("ref", "")
+            m = re.search(r"-r(\d+)$", ref_name)
+            if m:
+              max_rev = max(max_rev, int(m.group(1)))
+
+          tag = f"{base_tag}-r{max_rev + 1:02d}"
+          out_dir = Path("training_review_package")
+          create_cmd = [
+            "gh", "release", "create", tag,
+            "--repo", target_repo,
+            "--target", target_branch,
+            "--title", f"TRN Record: {trainee_user_id} onboarding review PR #{pr_number}",
+            "--notes-file", str(out_dir / "release_notes.md"),
+            "--draft",
+            str(out_dir / "record.md"),
+            str(out_dir / "record.pdf"),
+            str(out_dir / "manifest.json"),
+            str(out_dir / "signed_attestation.json"),
+          ]
+          run_with_retry(create_cmd)
+          run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])
+          print(f"Published immutable training review release: {target_repo}@{tag}")
+          PY

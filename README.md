@@ -46,5 +46,9 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
   - `**Trainee GitHub Login:** @<login>`
 - `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a **review-only** onboarding PR where base is a branch pinned to the first commit and head is `main`, so trainee reviews full current QMS state.
   - PR body includes in-scope roles and SOP IDs from `matrices/training_matrix.yml`.
+  - PR diff is restricted to `sops/**` using an SOP snapshot head branch.
   - If PR creation is blocked by token policy, either enable repository setting **Allow GitHub Actions to create and approve pull requests** or set repository secret `TRAINING_PR_TOKEN` (token with repo write scope).
-- Post-merge attestation: training update PRs must include the standard Part 11 fields and complete signature links on the merged PR.
+- `training_review_signoff.yml`: when such review-only PR is closed unmerged, enforces trainee approval, runs Part 11 signature collection, and publishes immutable training record assets to `AliakseiT/qms-records`.
+- Attestation:
+  - merged training update PRs use post-merge Part 11 flow.
+  - review-only onboarding PRs use post-close (unmerged) Part 11 flow via `training_review_signoff.yml`.

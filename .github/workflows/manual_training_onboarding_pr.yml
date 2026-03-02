@@ -87,8 +87,9 @@ jobs:
 
           slug = re.sub(r"[^a-z0-9-]+", "-", trainee_user_id.lower()).strip("-") or "user"
           baseline_branch = f"training/review-baseline-{slug}-{run_id}"
+          snapshot_branch = f"training/review-sops-{slug}-{run_id}"
 
-          pr_title = f"Training review: {trainee_user_id} full QMS state vs initial baseline"
+          pr_title = f"Training review: {trainee_user_id} SOP set vs initial baseline"
           roles_csv = ", ".join(sorted(roles_for_user))
           sop_csv = ", ".join(sorted(required_sops))
 
@@ -96,14 +97,14 @@ jobs:
             "### Training Review Record",
             "- [x] This PR is review-only onboarding evidence (do not merge).",
             f"- [x] Baseline branch points to first commit `{first_commit[:12]}`.",
-            "- [x] Head is `main` to show full current QMS state.",
+            "- [x] Head is SOP-only snapshot branch (generated from current `main`).",
             f"- **Trainee GitHub Login:** @{trainee_login}",
             f"- **Training User ID:** {trainee_user_id}",
             f"- **Roles In Scope:** {roles_csv}",
             f"- **SOP IDs In Scope:** {sop_csv}",
             "",
             "### Reviewer Task",
-            "1. Review `Files changed` in this PR as full onboarding walkthrough.",
+            "1. Review SOP changes in `Files changed` as onboarding walkthrough.",
             "2. Approve this PR as trainee acknowledgement.",
             "3. Close without merge (review-only artifact).",
             "",
@@ -118,21 +119,39 @@ jobs:
           with output.open("a", encoding="utf-8") as fh:
             fh.write(f"first_commit={first_commit}\n")
             fh.write(f"baseline_branch={baseline_branch}\n")
+            fh.write(f"snapshot_branch={snapshot_branch}\n")
             fh.write(f"trainee_login={trainee_login}\n")
             fh.write(f"pr_title={pr_title}\n")
             fh.write(f"roles_csv={roles_csv}\n")
             fh.write(f"sop_csv={sop_csv}\n")
           PY
 
-      - name: Create baseline branch at first commit
+      - name: Create baseline and SOP snapshot branches
+        id: branches
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Baseline branch at first commit (immutable reference).
           git checkout --detach "${{ steps.plan.outputs.first_commit }}"
           git checkout -b "${{ steps.plan.outputs.baseline_branch }}"
           git push --set-upstream origin "${{ steps.plan.outputs.baseline_branch }}"
 
+          # SOP-only snapshot branch from same baseline with current main SOP content.
+          git checkout -b "${{ steps.plan.outputs.snapshot_branch }}"
+          git checkout main -- sops
+          git add sops
+          if git diff --cached --quiet; then
+            echo "No SOP delta between baseline and main; onboarding review PR not required."
+            echo "has_snapshot=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "Create SOP snapshot for onboarding review"
+          git push --set-upstream origin "${{ steps.plan.outputs.snapshot_branch }}"
+          echo "has_snapshot=true" >> "$GITHUB_OUTPUT"
+
       - name: Open onboarding review PR
+        if: steps.branches.outputs.has_snapshot == 'true'
         id: open_pr
         uses: actions/github-script@v7
         with:
@@ -141,7 +160,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const base = `${{ steps.plan.outputs.baseline_branch }}`;
-            const head = 'main';
+            const head = `${{ steps.plan.outputs.snapshot_branch }}`;
             const title = `${{ steps.plan.outputs.pr_title }}`;
             const traineeLogin = `${{ steps.plan.outputs.trainee_login }}`;
             const body = require('fs').readFileSync('pr_body.md', 'utf-8');
@@ -208,3 +227,7 @@ jobs:
             core.info(`Created onboarding review PR: ${pr.html_url}`);
             core.setOutput('pr_number', String(pr.number));
             core.setOutput('pr_url', pr.html_url);
+
+      - name: Skip message when no SOP snapshot delta
+        if: steps.branches.outputs.has_snapshot != 'true'
+        run: echo "No SOP delta detected; review-only onboarding PR was not created."
