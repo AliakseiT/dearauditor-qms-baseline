@@ -169,6 +169,9 @@ jobs:
               if (!login) continue;
               latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
             }
+            const approvedReviewers = Array.from(latestStateByUser.entries())
+              .filter(([, state]) => state === 'APPROVED')
+              .map(([login]) => login);
 
             let allowedSigners = [];
             if (pr.merged) {
@@ -184,24 +187,45 @@ jobs:
                 core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer eligibility.`);
                 return;
               }
-              if (requestedReviewers.length < requiredReviewerSignatures) {
+
+              let reviewerPool = requestedReviewers;
+              if (reviewerPool.length === 0) {
+                const marker = '<!-- part11-auto-reviewers -->';
+                const comments = await github.paginate(github.rest.issues.listComments, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  per_page: 100,
+                });
+                const markerComments = comments
+                  .filter((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]')
+                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                if (markerComments.length > 0) {
+                  const latestBody = markerComments[markerComments.length - 1].body || '';
+                  const lineMatch = latestBody.match(/Assigned reviewers:\s*([^\n]+)/i);
+                  reviewerPool = lineMatch
+                    ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
+                    : [];
+                }
+              }
+              if (reviewerPool.length === 0) {
+                reviewerPool = approvedReviewers;
+              }
+              if (reviewerPool.length < requiredReviewerSignatures) {
                 core.setFailed(
-                  `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${requestedReviewers.length} reviewer(s) are assigned.`
+                  `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
                 );
                 return;
               }
-              const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
-              if (approvedRequested.length < requiredReviewerSignatures) {
+              const approvedFromPool = reviewerPool.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+              if (approvedFromPool.length < requiredReviewerSignatures) {
                 core.setFailed(
-                  `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+                  `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedFromPool.length} reviewer candidate(s) approved.`
                 );
                 return;
               }
-              allowedSigners = [authorLogin, ...approvedRequested.slice(0, requiredReviewerSignatures)];
+              allowedSigners = [authorLogin, ...approvedFromPool.slice(0, requiredReviewerSignatures)];
             } else {
-              const approvedReviewers = Array.from(latestStateByUser.entries())
-                .filter(([, state]) => state === 'APPROVED')
-                .map(([login]) => login);
               const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
               allowedSigners = approvedRequested.length > 0 ? approvedRequested : approvedReviewers;
               if (allowedSigners.length === 0) {

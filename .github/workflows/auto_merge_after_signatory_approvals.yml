@@ -49,12 +49,6 @@ jobs:
             })).data;
 
             const requested = (fresh.requested_reviewers || []).map((r) => r.login).filter(Boolean);
-            if (requested.length < requiredReviewerApprovals) {
-              core.info(
-                `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) (author auto-signs 1), but only ${requested.length} reviewer(s) are assigned.`
-              );
-              return;
-            }
 
             const reviews = await github.paginate(github.rest.pulls.listReviews, {
               owner: context.repo.owner,
@@ -70,7 +64,42 @@ jobs:
               latestStateByUser.set(login.toLowerCase(), String(review.state || '').toUpperCase());
             }
 
-            const requiredReviewers = requested.slice(0, requiredReviewerApprovals);
+            const approvedReviewers = Array.from(latestStateByUser.entries())
+              .filter(([, state]) => state === 'APPROVED')
+              .map(([login]) => login);
+
+            let reviewerPool = requested.map((x) => String(x || '').toLowerCase()).filter(Boolean);
+            if (reviewerPool.length === 0) {
+              const marker = '<!-- part11-auto-reviewers -->';
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                per_page: 100,
+              });
+              const markerComments = comments
+                .filter((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]')
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+              if (markerComments.length > 0) {
+                const latestBody = markerComments[markerComments.length - 1].body || '';
+                const lineMatch = latestBody.match(/Assigned reviewers:\s*([^\n]+)/i);
+                const parsed = lineMatch
+                  ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
+                  : [];
+                reviewerPool = parsed.filter(Boolean);
+              }
+            }
+            if (reviewerPool.length === 0) {
+              reviewerPool = approvedReviewers;
+            }
+            if (reviewerPool.length < requiredReviewerApprovals) {
+              core.info(
+                `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
+              );
+              return;
+            }
+
+            const requiredReviewers = reviewerPool.slice(0, requiredReviewerApprovals);
             const pending = requiredReviewers.filter((login) => latestStateByUser.get(login.toLowerCase()) !== 'APPROVED');
             if (pending.length > 0) {
               core.info(`Waiting for approvals from: ${pending.map((x) => '@' + x).join(', ')}`);
@@ -85,7 +114,7 @@ jobs:
             try {
               await github.graphql(
                 `mutation($pullRequestId: ID!) {
-                  enablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId, mergeMethod: MERGE}) {
+                  enablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId, mergeMethod: SQUASH}) {
                     pullRequest { number }
                   }
                 }`,
@@ -99,7 +128,7 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
-                  merge_method: 'merge',
+                  merge_method: 'squash',
                 });
                 core.info(`Merged PR #${pr.number} directly.`);
               } catch (mergeError) {

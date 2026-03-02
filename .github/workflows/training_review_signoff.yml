@@ -89,18 +89,20 @@ jobs:
             const requestedReviewers = (fresh.requested_reviewers || [])
               .map((r) => (r.login || '').toLowerCase())
               .filter(Boolean);
-            if (requestedReviewers.length === 0) {
-              core.setFailed(`Training review PR #${pr.number} has no assigned reviewers; cannot determine eligible Part 11 signers.`);
-              return;
-            }
-            const approvedRequested = requestedReviewers.filter((login) => latestStateByUser.get(login) === 'APPROVED');
-            if (approvedRequested.length === 0) {
-              core.setFailed(`Training review PR #${pr.number} has no approved assigned reviewers for Part 11 signing.`);
-              return;
-            }
-            if (approvedRequested.length < required) {
+            const approvedAll = Array.from(latestStateByUser.entries())
+              .filter(([, state]) => state === 'APPROVED')
+              .map(([login]) => login);
+            const reviewerPool = requestedReviewers.length > 0 ? requestedReviewers : approvedAll;
+            if (reviewerPool.length < required) {
               core.setFailed(
-                `Training review PR #${pr.number} requires ${required} signature(s), but only ${approvedRequested.length} assigned reviewer(s) approved.`
+                `Training review PR #${pr.number} requires ${required} signature(s), but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
+              );
+              return;
+            }
+            const approvedFromPool = reviewerPool.filter((login) => latestStateByUser.get(login) === 'APPROVED');
+            if (approvedFromPool.length < required) {
+              core.setFailed(
+                `Training review PR #${pr.number} requires ${required} signature(s), but only ${approvedFromPool.length} reviewer candidate(s) approved.`
               );
               return;
             }
@@ -111,7 +113,7 @@ jobs:
             core.setOutput('trainee_login', traineeLogin);
             core.setOutput('trainee_user_id', traineeUserId);
             core.setOutput('sop_ids_csv', sopIdsCsv);
-            core.setOutput('eligible_signers_csv', approvedRequested.join(','));
+            core.setOutput('eligible_signers_csv', approvedFromPool.slice(0, required).join(','));
 
       - name: Post Git-native signature request comment
         uses: actions/github-script@v7
