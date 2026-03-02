@@ -1,0 +1,32 @@
+version: 1
+record_type: hazard_related_use_scenarios
+product_id: ACME-GENERIC-SAMD
+scenarios:
+  - scenario_id: USC-001
+    scenario_description: User receives recommendation after incomplete symptom capture
+    user_profile: trained_patient
+    preconditions:
+      - symptom capture interrupted
+    use_steps:
+      - user opens recommendation screen
+      - system prompts context confirmation
+      - user decides whether to continue or escalate
+    hazardous_situation: Recommendation viewed with missing context
+    possible_harm: Delayed appropriate care-seeking
+    linked_risk_ids:
+      - RISK-001
+    selected_for_summative: true
+  - scenario_id: USC-002
+    scenario_description: Clinician reviews recommendation after potential data tampering alert
+    user_profile: healthcare_professional
+    preconditions:
+      - integrity alert raised
+    use_steps:
+      - clinician reviews alert
+      - clinician validates data source
+      - clinician decides to trust or discard output
+    hazardous_situation: Reliance on potentially tampered input
+    possible_harm: Incorrect clinical action
+    linked_risk_ids:
+      - RISK-003
+    selected_for_summative: true

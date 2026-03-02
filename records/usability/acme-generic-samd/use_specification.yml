@@ -1,0 +1,24 @@
+version: 1
+record_type: use_specification
+product_id: ACME-GENERIC-SAMD
+intended_users:
+  - healthcare_professional
+  - trained_patient
+use_environments:
+  - home
+  - outpatient_clinic
+operating_context:
+  primary_tasks:
+    - record symptom and voice input
+    - review generated recommendation summary
+  safety_critical_tasks:
+    - confirm recommendation context before acting
+    - escalate when system signals uncertainty
+reasonably_foreseeable_misuse:
+  - user skips context confirmation and acts on incomplete output
+  - user enters incorrect patient context
+assumptions_and_constraints:
+  - internet connectivity may be intermittent
+  - users have varying digital literacy
+source_references:
+  - docs/regulatory/intended_use.md

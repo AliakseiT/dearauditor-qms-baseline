@@ -1,0 +1,17 @@
+version: 1
+record_type: usability_file_index
+product_id: ""
+product_name: ""
+maintainer_role: clinical_ops
+last_updated: "YYYY-MM-DD"
+current_state:
+  use_specification: "records/usability/<product-id>/use_specification.yml"
+  ui_safety_characteristics: "records/usability/<product-id>/ui_safety_characteristics.yml"
+  hazard_related_use_scenarios: "records/usability/<product-id>/hazard_related_use_scenarios.yml"
+  formative_evaluation_log: "records/usability/<product-id>/formative_evaluation_log.yml"
+  summative_evaluation_record: "records/usability/<product-id>/summative_evaluation_record.yml"
+  uoup_evaluation: "records/usability/<product-id>/uoup_evaluation.yml"
+  post_production_usability_review: "records/usability/<product-id>/post_production_usability_review.yml"
+risk_linkage:
+  risk_register_reference: "records/risk/<product-risk-register>.yml"
+  linked_risk_ids: []

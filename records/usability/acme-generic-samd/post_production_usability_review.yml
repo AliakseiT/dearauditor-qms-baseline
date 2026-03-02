@@ -1,0 +1,22 @@
+version: 1
+record_type: post_production_usability_review
+product_id: ACME-GENERIC-SAMD
+review_period:
+  from: "2026-01-01"
+  to: "2026-03-02"
+inputs:
+  complaints: []
+  incidents: []
+  support_signals:
+    - SUPPORT-044: users requested clearer uncertainty wording
+  vulnerability_or_security_signals:
+    - SEC-ALERT-UNAUTH-MOD
+findings_summary:
+  - no critical unresolved use-related signals
+required_updates:
+  usability_file_updates:
+    - refine uncertainty warning microcopy in next iteration
+  risk_updates: []
+  design_or_labeling_updates:
+    - CHANGE-UI-030
+review_outcome: action_required

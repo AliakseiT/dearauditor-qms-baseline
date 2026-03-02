@@ -1,0 +1,12 @@
+version: 1
+record_type: formative_evaluation_log
+product_id: ACME-GENERIC-SAMD
+evaluations:
+  - study_id: FORM-001
+    date: "2026-03-02"
+    scenario_id: USC-001
+    participant_profile: trained_patient
+    observed_use_error: Participant attempted to bypass context confirmation
+    severity: high
+    disposition: mitigated
+    action_reference: CHANGE-UI-024

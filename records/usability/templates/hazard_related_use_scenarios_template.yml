@@ -1,0 +1,13 @@
+version: 1
+record_type: hazard_related_use_scenarios
+product_id: ""
+scenarios:
+  - scenario_id: "USC-001"
+    scenario_description: ""
+    user_profile: ""
+    preconditions: []
+    use_steps: []
+    hazardous_situation: ""
+    possible_harm: ""
+    linked_risk_ids: []
+    selected_for_summative: true

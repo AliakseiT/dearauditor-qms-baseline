@@ -1,0 +1,11 @@
+version: 1
+record_type: use_specification
+product_id: ""
+intended_users: []
+use_environments: []
+operating_context:
+  primary_tasks: []
+  safety_critical_tasks: []
+reasonably_foreseeable_misuse: []
+assumptions_and_constraints: []
+source_references: []

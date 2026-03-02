@@ -1,0 +1,19 @@
+version: 1
+record_type: ui_safety_characteristics
+product_id: ACME-GENERIC-SAMD
+characteristics:
+  - ui_characteristic_id: UIC-001
+    description: Mandatory context confirmation dialog before recommendation display
+    related_task: Confirm recommendation context
+    potential_use_error: User accepts recommendation without reviewing context
+    linked_risk_ids:
+      - RISK-001
+    acceptance_criteria: Confirmation step cannot be skipped in normal flow
+  - ui_characteristic_id: UIC-002
+    description: Prominent uncertainty warning and escalation action
+    related_task: Escalate uncertain output
+    potential_use_error: User treats uncertain output as definitive
+    linked_risk_ids:
+      - RISK-001
+      - RISK-002
+    acceptance_criteria: Warning shown and escalation action available in one tap

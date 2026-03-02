@@ -1,0 +1,17 @@
+version: 1
+record_type: post_production_usability_review
+product_id: ""
+review_period:
+  from: "YYYY-MM-DD"
+  to: "YYYY-MM-DD"
+inputs:
+  complaints: []
+  incidents: []
+  support_signals: []
+  vulnerability_or_security_signals: []
+findings_summary: []
+required_updates:
+  usability_file_updates: []
+  risk_updates: []
+  design_or_labeling_updates: []
+review_outcome: "no_action|action_required"

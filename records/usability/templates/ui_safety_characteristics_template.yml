@@ -1,0 +1,10 @@
+version: 1
+record_type: ui_safety_characteristics
+product_id: ""
+characteristics:
+  - ui_characteristic_id: "UIC-001"
+    description: ""
+    related_task: ""
+    potential_use_error: ""
+    linked_risk_ids: []
+    acceptance_criteria: ""

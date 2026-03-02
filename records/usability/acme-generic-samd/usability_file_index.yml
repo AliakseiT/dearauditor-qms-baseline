@@ -1,0 +1,20 @@
+version: 1
+record_type: usability_file_index
+product_id: ACME-GENERIC-SAMD
+product_name: ACME Generic User-Facing SaMD
+maintainer_role: clinical_ops
+last_updated: "2026-03-02"
+current_state:
+  use_specification: "records/usability/acme-generic-samd/use_specification.yml"
+  ui_safety_characteristics: "records/usability/acme-generic-samd/ui_safety_characteristics.yml"
+  hazard_related_use_scenarios: "records/usability/acme-generic-samd/hazard_related_use_scenarios.yml"
+  formative_evaluation_log: "records/usability/acme-generic-samd/formative_evaluation_log.yml"
+  summative_evaluation_record: "records/usability/acme-generic-samd/summative_evaluation_record.yml"
+  uoup_evaluation: "records/usability/acme-generic-samd/uoup_evaluation.yml"
+  post_production_usability_review: "records/usability/acme-generic-samd/post_production_usability_review.yml"
+risk_linkage:
+  risk_register_reference: "records/risk/acme-generic-samd-risk-register.yml"
+  linked_risk_ids:
+    - RISK-001
+    - RISK-002
+    - RISK-003

@@ -1,0 +1,14 @@
+version: 1
+record_type: summative_evaluation_record
+product_id: ""
+study_id: "SUM-001"
+execution_date: "YYYY-MM-DD"
+participant_profiles: []
+validated_scenarios: []
+result_summary:
+  passed_scenarios: 0
+  failed_scenarios: 0
+  critical_use_errors_observed: 0
+conclusion_acceptability: "acceptable|not_acceptable"
+residual_use_risk_statement: ""
+follow_up_actions: []

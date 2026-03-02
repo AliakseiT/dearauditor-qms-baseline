@@ -1,0 +1,119 @@
+name: Usability File Guard
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - records/usability/**/*.yml
+      - .github/ISSUE_TEMPLATE/usability_engineering_plan.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate_usability_records:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate usability record structure
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 <<'PY'
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          import yaml
+
+          base_sha = os.environ["BASE_SHA"].strip()
+          head_sha = os.environ["HEAD_SHA"].strip()
+
+          changed_all = subprocess.check_output(
+            ["git", "diff", "--name-only", base_sha, head_sha],
+            text=True,
+          ).splitlines()
+          changed = [
+            c.strip()
+            for c in changed_all
+            if c.strip().startswith("records/usability/") and c.strip().endswith(".yml")
+          ]
+
+          if not changed:
+            print("No usability yaml changes; guard passed.")
+            sys.exit(0)
+
+          errors = []
+
+          def parse_yaml(path):
+            try:
+              return yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+            except Exception as exc:
+              errors.append(f"{path}: yaml parse error: {exc}")
+              return {}
+
+          for file_path in changed:
+            path = Path(file_path)
+            if not path.exists():
+              continue
+            doc = parse_yaml(file_path)
+            record_type = str(doc.get("record_type", "")).strip()
+
+            if path.name == "usability_file_index.yml":
+              for key in ["version", "record_type", "product_id", "current_state", "risk_linkage"]:
+                if key not in doc:
+                  errors.append(f"{file_path}: missing '{key}'")
+              if record_type != "usability_file_index":
+                errors.append(f"{file_path}: record_type must be usability_file_index")
+
+              required_refs = [
+                "use_specification",
+                "ui_safety_characteristics",
+                "hazard_related_use_scenarios",
+                "formative_evaluation_log",
+                "summative_evaluation_record",
+                "post_production_usability_review",
+              ]
+              current_state = doc.get("current_state", {}) or {}
+              for ref in required_refs:
+                if ref not in current_state:
+                  errors.append(f"{file_path}: current_state missing '{ref}'")
+                  continue
+                target = str(current_state.get(ref) or "").strip()
+                if target and target.lower() != "n/a" and not Path(target).exists():
+                  errors.append(f"{file_path}: referenced file does not exist: {target}")
+
+            if path.name == "formative_evaluation_log.yml":
+              evals = doc.get("evaluations", []) or []
+              if not isinstance(evals, list) or len(evals) == 0:
+                errors.append(f"{file_path}: evaluations must be a non-empty list")
+              for i, entry in enumerate(evals, start=1):
+                for key in ["study_id", "scenario_id", "participant_profile", "observed_use_error", "disposition"]:
+                  if key not in (entry or {}):
+                    errors.append(f"{file_path} evaluations[{i}]: missing '{key}'")
+
+            if path.name == "summative_evaluation_record.yml":
+              for key in ["study_id", "validated_scenarios", "result_summary", "conclusion_acceptability"]:
+                if key not in doc:
+                  errors.append(f"{file_path}: missing '{key}'")
+
+          if errors:
+            print("ERROR: Usability file validation failed:")
+            for err in errors:
+              print(f" - {err}")
+            sys.exit(1)
+
+          print("Usability file guard passed.")
+          PY

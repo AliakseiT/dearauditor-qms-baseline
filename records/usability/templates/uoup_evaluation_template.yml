@@ -1,0 +1,12 @@
+version: 1
+record_type: uoup_evaluation
+product_id: ""
+applicable: false
+uoup_elements: []
+post_production_evidence_reviewed: []
+identified_gaps: []
+compensating_controls: []
+residual_risk_statement: ""
+approval:
+  approver_role: qa_lead
+  approved_on: "YYYY-MM-DD"

@@ -1,0 +1,74 @@
+name: Usability Engineering Plan
+description: Plan IEC 62366-1 usability engineering activities for a product/release.
+title: "USABILITY PLAN: <product/release>"
+labels:
+  - usability
+  - human-factors
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_spec
+    attributes:
+      label: Use Specification Summary
+      description: Intended users, environments, critical tasks, foreseeable misuse.
+    validations:
+      required: true
+
+  - type: textarea
+    id: hazard_use_scenarios
+    attributes:
+      label: Hazard-Related Use Scenarios
+      description: List scenarios and linked risk IDs.
+      placeholder: |
+        - Scenario ID:
+          Hazardous situation:
+          Possible harm:
+          Linked risk IDs:
+    validations:
+      required: true
+
+  - type: textarea
+    id: formative_plan
+    attributes:
+      label: Formative Evaluation Plan
+      description: Planned iterations, participant profiles, and decision criteria.
+    validations:
+      required: true
+
+  - type: textarea
+    id: summative_plan
+    attributes:
+      label: Summative Evaluation Plan
+      description: Validation scenarios, participant profile, pass/fail criteria.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: uoup
+    attributes:
+      label: UI of Unknown Provenance (UOUP)
+      options:
+        - Not applicable
+        - Applicable and evaluated
+        - Applicable and pending evaluation
+    validations:
+      required: true
+
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      placeholder: |
+        - Usability file index updated
+        - Formative evidence recorded
+        - Summative conclusion documented
+        - Linked risk records updated
+    validations:
+      required: true

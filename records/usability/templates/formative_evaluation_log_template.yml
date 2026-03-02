@@ -1,0 +1,12 @@
+version: 1
+record_type: formative_evaluation_log
+product_id: ""
+evaluations:
+  - study_id: "FORM-001"
+    date: "YYYY-MM-DD"
+    scenario_id: "USC-001"
+    participant_profile: ""
+    observed_use_error: ""
+    severity: "low|medium|high"
+    disposition: "open|mitigated|accepted_with_rationale"
+    action_reference: ""

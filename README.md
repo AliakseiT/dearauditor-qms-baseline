@@ -44,6 +44,7 @@
 - Signer identity registry (full name/title for attestations): `matrices/signer_registry.json`
 - Supplier controls: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
 - Risk management artifacts: `records/risk/risk_management_plan_template.yml`, `records/risk/risk_register_template.yml`
+- Usability engineering artifacts: `records/usability/templates/*`, `records/usability/acme-generic-samd/usability_file_index.yml`
 
 ## Immutable Record Release Tags
 
@@ -122,3 +123,9 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - `SOP-018` defines one integrated method for hazard-based, failure-mode-based, and cybersecurity risk management.
 - `.github/ISSUE_TEMPLATE/risk_management_plan.yml` provides a structured planning form with required top-down, bottom-up, and cybersecurity inputs.
 - `risk_record_schema_guard.yml` validates `records/risk/*.yml` risk-register structure and score consistency in PRs.
+
+## Usability Operations
+
+- `SOP-019` defines the lightweight IEC 62366-1 usability engineering process and required file structure.
+- `.github/ISSUE_TEMPLATE/usability_engineering_plan.yml` captures use specification, hazard-related scenarios, and formative/summative plans.
+- `usability_file_guard.yml` validates minimal structure and reference integrity for usability-file records in `records/usability/**`.

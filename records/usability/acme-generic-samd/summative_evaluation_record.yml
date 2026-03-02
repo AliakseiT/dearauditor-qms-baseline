@@ -1,0 +1,19 @@
+version: 1
+record_type: summative_evaluation_record
+product_id: ACME-GENERIC-SAMD
+study_id: SUM-001
+execution_date: "2026-03-02"
+participant_profiles:
+  - trained_patient
+  - healthcare_professional
+validated_scenarios:
+  - USC-001
+  - USC-002
+result_summary:
+  passed_scenarios: 2
+  failed_scenarios: 0
+  critical_use_errors_observed: 0
+conclusion_acceptability: acceptable
+residual_use_risk_statement: Residual use-related risk acceptable with current UI controls and safety information.
+follow_up_actions:
+  - monitor post-production signals for context-confirmation workarounds
