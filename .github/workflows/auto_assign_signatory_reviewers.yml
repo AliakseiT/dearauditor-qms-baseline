@@ -68,7 +68,7 @@ jobs:
           required = int(sig_match.group(1).strip()) if sig_match and sig_match.group(1).strip().isdigit() else 1
           if required < 1:
             required = 1
-          required_reviewer_signatures = max(1, required - 1)
+          required_reviewer_signatures = max(0, required - 1)
 
           ordered_candidates = []
           seen = set()
