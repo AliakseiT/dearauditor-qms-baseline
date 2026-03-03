@@ -5,6 +5,8 @@ standard:
 additional_standards:
   - exact_name: "EVS-EN ISO 14971:2019+A11:2021 Medical devices - Application of risk management to medical devices"
     normative_base: "ISO 14971:2019"
+  - exact_name: "EVS-EN 62366-1:2015+A1:2020 Medical devices - Part 1: Application of usability engineering to medical devices"
+    normative_base: "IEC 62366-1:2015+A1:2020"
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
@@ -74,6 +76,11 @@ quality_manual_sections:
     iso_clauses: ["ISO 14971 4-10"]
     controlling_sops: ["SOP-018", "SOP-008", "SOP-014"]
     status: "implemented"
+  - section_id: QM-14
+    section_name: "Usability engineering for safety-related user interface"
+    iso_clauses: ["IEC 62366-1 4.1.1-5.10"]
+    controlling_sops: ["SOP-019", "SOP-018", "SOP-008"]
+    status: "implemented"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -99,3 +106,7 @@ supporting_definitions:
     status: "implemented"
     reference: "sops/SOP-018-RiskManagement.md"
     note: "Uses one risk process and one risk file structure for software-specific lifecycle control."
+  - item: "Usability engineering baseline and usability file model"
+    status: "implemented"
+    reference: "sops/SOP-019-UsabilityEngineering.md"
+    note: "Maintains a lightweight Git-native usability engineering file linked to risk records."
