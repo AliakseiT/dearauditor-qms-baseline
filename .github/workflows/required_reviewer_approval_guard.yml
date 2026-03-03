@@ -2,7 +2,7 @@ name: Required Reviewer Approval Guard
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited, ready_for_review, review_requested]
+    types: [synchronize]
   pull_request_review:
     types: [submitted, edited, dismissed]
 
