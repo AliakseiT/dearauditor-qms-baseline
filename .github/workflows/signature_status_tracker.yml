@@ -1,0 +1,331 @@
+name: Signature Status Tracker
+
+on:
+  pull_request:
+    types: [closed]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: signature-status-board
+  cancel-in-progress: false
+
+jobs:
+  refresh_signature_board:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request != null && (
+        contains(github.event.comment.body, '<!-- signature-native-signature-request -->') ||
+        contains(github.event.comment.body, '<!-- part11-native-signature-request -->') ||
+        contains(github.event.comment.body, '<!-- signature-native-attestation -->') ||
+        contains(github.event.comment.body, '<!-- part11-native-attestation -->') ||
+        contains(github.event.comment.body, '<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+        contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->')
+      ))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and publish signature board issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = context.repo;
+            const BOARD_TITLE = 'Signature Status Board';
+            const BOARD_MARKER = '<!-- signature-status-board -->';
+            const HORIZON_DAYS = 45;
+            const MAX_CLOSED_PRS = 120;
+
+            function normalizeLogin(v) {
+              return String(v || '').trim().replace(/^@+/, '').toLowerCase();
+            }
+
+            function uniq(arr) {
+              return Array.from(new Set(arr));
+            }
+
+            function parseRequiredSignaturesFromBody(body) {
+              const m = String(body || '').match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+              if (!m) return 0;
+              const n = Number.parseInt(String(m[1] || '').trim(), 10);
+              return Number.isInteger(n) && n > 0 ? n : 0;
+            }
+
+            function parseJsonBlock(commentBody) {
+              const m = String(commentBody || '').match(/```(?:json)?\s*([\s\S]*?)```/i);
+              if (!m || !m[1]) return null;
+              try {
+                return JSON.parse(m[1]);
+              } catch {
+                return null;
+              }
+            }
+
+            function parseRequestComment(body, url) {
+              const txt = String(body || '');
+              const targetHash = (txt.match(/Target hash \(merge state\):\s*`([a-f0-9]{64})`/i) || [])[1] || '';
+              const required = Number.parseInt((txt.match(/Required signatures:\s*\*\*([0-9]+)\*\*/i) || [])[1] || '', 10);
+              const requiredSignatures = Number.isInteger(required) && required > 0 ? required : 0;
+
+              const eligibleLine = (txt.match(/Eligible signers:\s*\*\*([^*]+)\*\*/i) || [])[1] || '';
+              const eligibleSigners = uniq(Array.from(eligibleLine.matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => normalizeLogin(m[1]))).filter(Boolean);
+
+              const links = {};
+              for (const m of txt.matchAll(/-\s*@([A-Za-z0-9-]+)[^\n]*\]\((https?:\/\/[^)]+)\)/g)) {
+                const login = normalizeLogin(m[1]);
+                if (login) links[login] = m[2];
+              }
+
+              return {
+                url,
+                targetHash: targetHash.toLowerCase(),
+                requiredSignatures,
+                eligibleSigners,
+                links,
+              };
+            }
+
+            async function getOrCreateBoardIssue() {
+              const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+                owner: repo.owner,
+                repo: repo.repo,
+                state: 'open',
+                per_page: 100,
+              });
+              const existing = openIssues.find((i) => !i.pull_request && String(i.title || '') === BOARD_TITLE);
+              if (existing) return existing;
+
+              const created = await github.rest.issues.create({
+                owner: repo.owner,
+                repo: repo.repo,
+                title: BOARD_TITLE,
+                body: `${BOARD_MARKER}\nInitializing signature board...`,
+              });
+              return created.data;
+            }
+
+            async function evaluatePr(pr) {
+              const prNumber = pr.number;
+              const [comments, files] = await Promise.all([
+                github.paginate(github.rest.issues.listComments, {
+                  owner: repo.owner,
+                  repo: repo.repo,
+                  issue_number: prNumber,
+                  per_page: 100,
+                }),
+                github.paginate(github.rest.pulls.listFiles, {
+                  owner: repo.owner,
+                  repo: repo.repo,
+                  pull_number: prNumber,
+                  per_page: 100,
+                }),
+              ]);
+
+              const paths = files.map((f) => String(f.filename || ''));
+              const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+              const policyReasons = [];
+              if (hasPath('sops/')) policyReasons.push('SOP files (/sops)');
+              if (hasPath('records/')) policyReasons.push('records (/records)');
+              if (hasPath('records/management-reviews/')) policyReasons.push('management review records (/records/management-reviews)');
+              if (hasPath('matrices/')) policyReasons.push('matrix/role files (/matrices)');
+
+              const explicitRequired = parseRequiredSignaturesFromBody(pr.body || '');
+              const baseRequiredReviewers = explicitRequired > 0 ? Math.max(0, explicitRequired - 1) : 0;
+              const policyRequiredReviewers = policyReasons.length > 0 ? 1 : 0;
+              const requiredReviewers = Math.max(baseRequiredReviewers, policyRequiredReviewers);
+              const signatureRequired = explicitRequired > 0 || policyReasons.length > 0;
+              const computedRequiredSignatures = signatureRequired
+                ? Math.max(explicitRequired || 1, requiredReviewers + 1)
+                : 0;
+
+              const requestComments = comments
+                .filter((c) => {
+                  const b = String(c.body || '');
+                  return b.includes('<!-- signature-native-signature-request -->') || b.includes('<!-- part11-native-signature-request -->');
+                })
+                .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
+
+              const latestRequest = requestComments.length > 0 ? requestComments[requestComments.length - 1] : null;
+              const request = latestRequest
+                ? parseRequestComment(latestRequest.body || '', latestRequest.html_url || '')
+                : null;
+
+              const requiredSignatures = request?.requiredSignatures || computedRequiredSignatures;
+              const eligibleSigners = (request?.eligibleSigners || []).filter(Boolean);
+              const targetHash = (request?.targetHash || '').toLowerCase();
+
+              const signedBy = new Set();
+              for (const c of comments) {
+                const body = String(c.body || '');
+                const hasNative = body.includes('<!-- signature-native-attestation -->') || body.includes('<!-- part11-native-attestation -->');
+                const hasWorker = body.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') || body.includes('<!-- PART11_ATTESTATION_V1 -->');
+                if (!hasNative && !hasWorker) continue;
+
+                const payload = parseJsonBlock(body);
+                if (!payload || typeof payload !== 'object') continue;
+
+                let signer = '';
+                let hash = '';
+                if (hasNative) {
+                  signer = normalizeLogin(payload.actor_login);
+                  hash = String(payload.target_hash || '').toLowerCase();
+                } else {
+                  signer = normalizeLogin(payload.user_id);
+                  hash = String(payload.commit_hash || '').toLowerCase();
+                }
+                if (!signer) continue;
+                if (targetHash && hash && hash !== targetHash) continue;
+                signedBy.add(signer);
+              }
+
+              const signedEligible = eligibleSigners.filter((s) => signedBy.has(s));
+              const capturedCount = eligibleSigners.length > 0 ? signedEligible.length : signedBy.size;
+              const missingSigners = eligibleSigners.filter((s) => !signedBy.has(s));
+
+              const missingWithLinks = missingSigners.map((login) => ({
+                login,
+                link: request?.links?.[login] || '',
+              }));
+
+              const blockedNoRequest = signatureRequired && !request;
+              const outstanding = signatureRequired && (
+                blockedNoRequest ||
+                (eligibleSigners.length > 0 ? missingSigners.length > 0 : capturedCount < requiredSignatures)
+              );
+
+              const status = !signatureRequired ? 'NOT_REQUIRED' : (outstanding ? 'OUTSTANDING' : 'COMPLETE');
+
+              return {
+                number: prNumber,
+                url: pr.html_url,
+                title: pr.title,
+                status,
+                signatureRequired,
+                policyReasons,
+                requiredSignatures,
+                capturedCount,
+                requestUrl: request?.url || '',
+                blockedNoRequest,
+                missingWithLinks,
+                mergedAt: pr.merged_at || '',
+              };
+            }
+
+            const closed = await github.paginate(github.rest.pulls.list, {
+              owner: repo.owner,
+              repo: repo.repo,
+              state: 'closed',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 100,
+            });
+
+            const horizonMs = HORIZON_DAYS * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const candidates = closed
+              .filter((p) => p.merged_at && (now - Date.parse(p.merged_at)) <= horizonMs)
+              .slice(0, MAX_CLOSED_PRS);
+
+            const results = [];
+            const errors = [];
+            for (const pr of candidates) {
+              try {
+                results.push(await evaluatePr(pr));
+              } catch (err) {
+                errors.push({ number: pr.number, url: pr.html_url, message: err.message });
+              }
+            }
+
+            const outstanding = results.filter((r) => r.status === 'OUTSTANDING');
+            const blocked = outstanding.filter((r) => r.blockedNoRequest);
+            const complete = results.filter((r) => r.status === 'COMPLETE').slice(0, 25);
+            const notRequired = results.filter((r) => r.status === 'NOT_REQUIRED').slice(0, 25);
+
+            const lines = [
+              BOARD_MARKER,
+              `# ${BOARD_TITLE}`,
+              '',
+              `Updated: ${new Date().toISOString()}`,
+              `Evaluated merged PRs (last ${HORIZON_DAYS} days): ${results.length}`,
+              '',
+              'Summary:',
+              `- Outstanding: **${outstanding.length}**`,
+              `- Complete: **${results.filter((r) => r.status === 'COMPLETE').length}**`,
+              `- Not required: **${results.filter((r) => r.status === 'NOT_REQUIRED').length}**`,
+              '',
+              'Policy scope requiring signatures: changes in `/sops`, `/records` (including management reviews), or `/matrices`.',
+              '',
+              '## Outstanding Signatures',
+            ];
+
+            if (outstanding.length === 0) {
+              lines.push('- None');
+            } else {
+              for (const r of outstanding) {
+                const missing = r.missingWithLinks.length > 0
+                  ? r.missingWithLinks.map((m) => m.link ? `@${m.login} ([sign](${m.link}))` : `@${m.login}`).join(', ')
+                  : 'unknown (request missing or signer list unavailable)';
+                lines.push(`- [#${r.number}](${r.url}) ${r.title}`);
+                lines.push(`  - Required/Captured: ${r.requiredSignatures}/${r.capturedCount}`);
+                lines.push(`  - Missing: ${missing}`);
+                if (r.requestUrl) lines.push(`  - Request: ${r.requestUrl}`);
+                if (r.blockedNoRequest) lines.push('  - Blocked: signature request comment is missing.');
+              }
+            }
+
+            lines.push('');
+            lines.push('## Blocked (Request Missing)');
+            if (blocked.length === 0) {
+              lines.push('- None');
+            } else {
+              for (const r of blocked) {
+                lines.push(`- [#${r.number}](${r.url}) ${r.title}`);
+              }
+            }
+
+            lines.push('');
+            lines.push('## Complete Signatures (Recent)');
+            if (complete.length === 0) {
+              lines.push('- None');
+            } else {
+              for (const r of complete) {
+                lines.push(`- [#${r.number}](${r.url}) ${r.title}`);
+              }
+            }
+
+            lines.push('');
+            lines.push('## Signature Not Required (Recent)');
+            if (notRequired.length === 0) {
+              lines.push('- None');
+            } else {
+              for (const r of notRequired) {
+                lines.push(`- [#${r.number}](${r.url}) ${r.title}`);
+              }
+            }
+
+            if (errors.length > 0) {
+              lines.push('');
+              lines.push('## Evaluation Errors');
+              for (const e of errors) {
+                lines.push(`- [#${e.number}](${e.url}): ${e.message}`);
+              }
+            }
+
+            const boardIssue = await getOrCreateBoardIssue();
+            await github.rest.issues.update({
+              owner: repo.owner,
+              repo: repo.repo,
+              issue_number: boardIssue.number,
+              title: BOARD_TITLE,
+              body: lines.join('\n'),
+            });
+
+            core.info(`Updated signature board issue #${boardIssue.number}`);
