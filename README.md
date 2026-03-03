@@ -74,6 +74,7 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - Signers open the link, enter only full legal name, and complete GitHub OAuth login.
 - Worker verifies signer eligibility against the latest PR signature request comment and posts attestation (`<!-- PART11_ATTESTATION_V1 -->`) directly to PR.
 - Signature comments are posted via mandatory GitHub App token (`SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`).
+- `required_reviewer_approval_guard.yml` enforces at least one non-author approval on the current PR head SHA (except `review-only` PRs).
 - `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
 - The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
 - Cloudflare signer flow creates PR attestation comment (`<!-- PART11_ATTESTATION_V1 -->`) directly from worker backend.
