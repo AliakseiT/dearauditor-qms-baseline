@@ -1,0 +1,46 @@
+version: 1
+record_type: risk_management_plan
+required_fields:
+  plan_id: "RMP-<product>-<yyyy-mm>"
+  product_id: ""
+  product_name: ""
+  intended_use_reference: "docs/regulatory/intended_use.md"
+  lifecycle_scope:
+    - design
+    - development
+    - verification_validation
+    - release
+    - production_post_production
+  responsible_roles:
+    qa_lead: ""
+    engineering_owner: ""
+    clinical_ops: ""
+    management_representative: ""
+  risk_acceptability:
+    method: "severity_x_probability"
+    severity_scale:
+      S1: negligible
+      S2: minor
+      S3: moderate
+      S4: serious
+      S5: critical
+    probability_scale:
+      P1: remote
+      P2: low
+      P3: occasional
+      P4: probable
+      P5: frequent_or_credible
+    decision_thresholds:
+      acceptable_max_score: 4
+      alp_or_justification_range: "5-9"
+      not_acceptable_min_score: 10
+  overall_residual_risk_evaluation_method: "aggregate_review_by_release_and_quarter"
+  post_production_inputs:
+    - complaints
+    - incidents
+    - cybersecurity_vulnerabilities
+    - reliability_metrics
+  review_cadence: "quarterly_and_at_major_release"
+  approval:
+    approver_role: management_representative
+    approved_on: "YYYY-MM-DD"

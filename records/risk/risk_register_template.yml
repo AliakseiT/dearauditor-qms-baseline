@@ -1,0 +1,37 @@
+version: 1
+record_type: risk_register
+product_id: ""
+assessment_scope: ""
+scoring_model:
+  formula: "score = severity * probability"
+  severity_scale: [1, 2, 3, 4, 5]
+  probability_scale: [1, 2, 3, 4, 5]
+entries:
+  - risk_id: "RISK-001"
+    source_type: hazard_top_down
+    hazard_or_threat: ""
+    sequence_of_events: []
+    hazardous_situation: ""
+    possible_harm: ""
+    initial_risk:
+      severity: 1
+      probability: 1
+      score: 1
+      rationale: ""
+    controls:
+      - control_id: "CTRL-001"
+        control_type: inherent_safety_by_design
+        description: ""
+        implementation_reference: ""
+        effectiveness_verification_reference: ""
+    residual_risk:
+      severity: 1
+      probability: 1
+      score: 1
+      rationale: ""
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements: []
+      tests: []
+      monitoring: []

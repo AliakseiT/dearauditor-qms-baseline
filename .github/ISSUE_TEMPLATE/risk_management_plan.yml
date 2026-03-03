@@ -1,0 +1,83 @@
+name: Risk Management Plan
+description: Plan risk analysis/evaluation/control for a product or major change.
+title: "RISK PLAN: <product/change>"
+labels:
+  - risk-management
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product or subsystem identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Assessment Scope
+      description: Boundaries and assumptions for this risk activity.
+    validations:
+      required: true
+
+  - type: textarea
+    id: top_down_hazards
+    attributes:
+      label: Top-Down Hazards
+      description: Primary hazards/hazardous situations identified from intended use and misuse.
+      placeholder: |
+        - Hazard:
+          Hazardous situation:
+          Possible harm:
+    validations:
+      required: true
+
+  - type: textarea
+    id: bottom_up_failures
+    attributes:
+      label: Bottom-Up Failure Modes
+      description: Software/component/user-workflow failures and resulting hazards.
+      placeholder: |
+        - Failure mode:
+          Sequence of events:
+          Possible harm:
+    validations:
+      required: true
+
+  - type: textarea
+    id: cybersecurity_threats
+    attributes:
+      label: Cybersecurity Threat Scenarios
+      description: Threats that can create hazardous situations and harm.
+      placeholder: |
+        - Threat:
+          Attack path:
+          Hazardous situation:
+          Possible harm:
+    validations:
+      required: true
+
+  - type: dropdown
+    id: risk_review_trigger
+    attributes:
+      label: Trigger Type
+      options:
+        - New Product
+        - Major Change
+        - Post-Market Signal
+        - Vulnerability/Incident
+    validations:
+      required: true
+
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be complete for closure.
+      placeholder: |
+        - Risk register updated
+        - Controls implemented and verified
+        - Residual risk reviewed and approved
+    validations:
+      required: true

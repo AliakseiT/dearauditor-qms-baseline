@@ -1,0 +1,122 @@
+version: 1
+record_type: risk_register
+product_id: ACME-GENERIC-SAMD
+assessment_scope: "Generic healthcare software baseline; product-specific intended use is defined per product dossier."
+scoring_model:
+  formula: "score = severity * probability"
+  severity_scale: [1, 2, 3, 4, 5]
+  probability_scale: [1, 2, 3, 4, 5]
+entries:
+  - risk_id: RISK-001
+    source_type: hazard_top_down
+    hazard_or_threat: "Incorrect therapeutic recommendation output"
+    sequence_of_events:
+      - "Invalid assumption in decision logic"
+      - "User receives incorrect recommendation"
+    hazardous_situation: "User relies on incorrect recommendation"
+    possible_harm: "Delayed or inappropriate clinical action"
+    initial_risk:
+      severity: 4
+      probability: 3
+      score: 12
+      rationale: "Potentially serious health impact with occasional credible occurrence before controls."
+    controls:
+      - control_id: CTRL-001
+        control_type: inherent_safety_by_design
+        description: "Clinical rule constraints and conservative boundary checks"
+        implementation_reference: "REQ-CLIN-018"
+        effectiveness_verification_reference: "TEST-CLIN-044"
+      - control_id: CTRL-002
+        control_type: protective_measure
+        description: "Out-of-range output detection and fallback-safe response"
+        implementation_reference: "REQ-SAFE-009"
+        effectiveness_verification_reference: "TEST-SAFE-022"
+    residual_risk:
+      severity: 4
+      probability: 1
+      score: 4
+      rationale: "Residual risk acceptable under plan criteria with verified controls."
+    benefit_risk_needed: false
+    status: closed
+    evidence_links:
+      requirements: ["REQ-CLIN-018", "REQ-SAFE-009"]
+      tests: ["TEST-CLIN-044", "TEST-SAFE-022"]
+      monitoring: ["PMS-SIGNAL-THERA-01"]
+
+  - risk_id: RISK-002
+    source_type: failure_mode_bottom_up
+    hazard_or_threat: "Audio parser crash on malformed input"
+    sequence_of_events:
+      - "Malformed payload reaches parser"
+      - "Unhandled exception terminates processing"
+    hazardous_situation: "Required output unavailable when expected"
+    possible_harm: "Missed clinical follow-up prompt"
+    initial_risk:
+      severity: 3
+      probability: 4
+      score: 12
+      rationale: "Frequent malformed input observed during test campaign."
+    controls:
+      - control_id: CTRL-003
+        control_type: inherent_safety_by_design
+        description: "Defensive parsing and strict schema validation"
+        implementation_reference: "REQ-ENG-052"
+        effectiveness_verification_reference: "TEST-ENG-100"
+      - control_id: CTRL-004
+        control_type: protective_measure
+        description: "Graceful fallback and retry with explicit user alert"
+        implementation_reference: "REQ-UX-031"
+        effectiveness_verification_reference: "TEST-UX-017"
+    residual_risk:
+      severity: 3
+      probability: 2
+      score: 6
+      rationale: "Reduced but monitored; additional robustness backlog item remains."
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements: ["REQ-ENG-052", "REQ-UX-031"]
+      tests: ["TEST-ENG-100", "TEST-UX-017"]
+      monitoring: ["OPS-CRASHRATE-AUDIO"]
+
+  - risk_id: RISK-003
+    source_type: cybersecurity_threat
+    hazard_or_threat: "Unauthorized modification of symptom data via API abuse"
+    sequence_of_events:
+      - "Compromised credentials used on API"
+      - "Symptom entries are altered"
+      - "Downstream logic receives falsified input"
+    hazardous_situation: "System output based on tampered data"
+    possible_harm: "Incorrect clinical recommendation"
+    initial_risk:
+      severity: 5
+      probability: 3
+      score: 15
+      rationale: "High severity due to direct impact on decision quality."
+    controls:
+      - control_id: CTRL-005
+        control_type: protective_measure
+        description: "MFA and short-lived tokens for privileged operations"
+        implementation_reference: "REQ-SEC-004"
+        effectiveness_verification_reference: "TEST-SEC-010"
+      - control_id: CTRL-006
+        control_type: protective_measure
+        description: "Write-path integrity checks with tamper-evident audit trail"
+        implementation_reference: "REQ-SEC-011"
+        effectiveness_verification_reference: "TEST-SEC-024"
+      - control_id: CTRL-007
+        control_type: information_for_safety
+        description: "Operational playbook for credential compromise response"
+        implementation_reference: "OPS-SEC-PLAYBOOK-01"
+        effectiveness_verification_reference: "DRILL-SEC-2026-01"
+    residual_risk:
+      severity: 5
+      probability: 1
+      score: 5
+      rationale: "Residual risk requires ongoing monitoring and quarterly review."
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements: ["REQ-SEC-004", "REQ-SEC-011"]
+      tests: ["TEST-SEC-010", "TEST-SEC-024"]
+      monitoring: ["SEC-ALERT-UNAUTH-MOD"]

@@ -65,12 +65,14 @@ roles:
       - SOP-009
       - SOP-015
       - SOP-017
+      - SOP-018
     required_revisions:
       SOP-001: R01
       SOP-002: R01
       SOP-006: R01
       SOP-009: R01
       SOP-017: R01
+      SOP-018: R00
 
   clinical_ops:
     users:
