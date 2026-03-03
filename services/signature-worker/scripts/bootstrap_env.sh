@@ -28,6 +28,8 @@ Options:
 Expected env keys in .env.local:
   PUBLIC_BASE_URL
   GITHUB_REPO
+  CLOUDFLARE_API_TOKEN
+  CLOUDFLARE_ACCOUNT_ID
   GITHUB_APP_ID
   GITHUB_APP_CLIENT_ID
   GITHUB_APP_CLIENT_SECRET
@@ -207,6 +209,8 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   upsert_repo_variable "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
   set_repo_secret_if_present "$GH_REPO" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_repo_secret_if_present "$GH_REPO" "SIGNATURE_APP_ID" "${GITHUB_APP_ID:-}"
+  set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"
+  set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_ACCOUNT_ID" "${CLOUDFLARE_ACCOUNT_ID:-}"
 
   local_private_key="$(normalize_private_key "${GITHUB_APP_PRIVATE_KEY:-}")"
   set_repo_secret_if_present "$GH_REPO" "SIGNATURE_APP_PRIVATE_KEY" "$local_private_key"
