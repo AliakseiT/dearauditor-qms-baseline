@@ -130,8 +130,10 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
     redirect.searchParams.set("client_id", env.GITHUB_APP_CLIENT_ID);
     redirect.searchParams.set("redirect_uri", `${stripTrailingSlash(env.PUBLIC_BASE_URL)}/auth/callback`);
     redirect.searchParams.set("state", stateToken);
-    redirect.searchParams.set("scope", "read:user user:email");
+    redirect.searchParams.set("scope", "read:user");
     redirect.searchParams.set("allow_signup", "false");
+    redirect.searchParams.set("prompt", "select_account");
+    redirect.searchParams.set("login", context.signer);
     return Response.redirect(redirect.toString(), 302);
   }
 

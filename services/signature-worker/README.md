@@ -7,6 +7,7 @@ Cloudflare Worker that hosts the Part 11 signing UI and OAuth callback backend f
 - Serves signer-facing title page at `GET /sign`.
 - Accepts only cryptographically signed link context from QMS workflows.
 - Runs GitHub OAuth login for signer identity confirmation.
+- Uses minimal GitHub identity scope (`read:user`) and forces account-selection prompt (`prompt=select_account`).
 - Validates signer eligibility against the latest PR signature request comment.
 - Posts immutable attestation comment back to the PR (`<!-- PART11_ATTESTATION_V1 -->`).
 
