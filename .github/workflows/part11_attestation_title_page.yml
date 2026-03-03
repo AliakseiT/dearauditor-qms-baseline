@@ -17,7 +17,9 @@ jobs:
   render_title_page:
     if: >-
       github.event.issue.pull_request != null &&
-      (contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+      (contains(github.event.comment.body, '<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+      contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+      contains(github.event.comment.body, '<!-- signature-native-attestation -->') ||
       contains(github.event.comment.body, '<!-- part11-native-attestation -->'))
     runs-on: ubuntu-latest
     steps:
@@ -90,8 +92,8 @@ jobs:
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
             const body = [
-              '<!-- part11-title-page-artifact -->',
-              '📄 Part 11 title-page PDF generated for this signature attestation.',
+              '<!-- signature-title-page-artifact -->',
+              '📄 Signature title-page PDF generated for this attestation.',
               `Source attestation comment: #${sourceCommentId}`,
               `Artifact: \`${artifactName}\``,
               `Run: ${runUrl}`,

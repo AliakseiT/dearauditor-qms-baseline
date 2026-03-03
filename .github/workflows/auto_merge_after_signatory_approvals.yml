@@ -53,7 +53,7 @@ jobs:
             if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
               requiredSignatures = 1;
             }
-            const requiredReviewerApprovals = Math.max(1, requiredSignatures - 1);
+            const baseRequiredReviewerApprovals = Math.max(0, requiredSignatures - 1);
 
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -63,6 +63,21 @@ jobs:
             const headSha = (fresh.head?.sha || '').toLowerCase();
 
             const requested = (fresh.requested_reviewers || []).map((r) => r.login).filter(Boolean);
+            const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const paths = changedFiles.map((f) => String(f.filename || ''));
+            const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const coapprovalReasons = [];
+            if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
+            if (hasPath('records/')) coapprovalReasons.push('records (/records)');
+            if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
+            if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
+            const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
+            const requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
 
             const reviews = await github.paginate(github.rest.pulls.listReviews, {
               owner: context.repo.owner,
@@ -91,7 +106,8 @@ jobs:
 
             let reviewerPool = requested.map((x) => String(x || '').toLowerCase()).filter(Boolean);
             if (reviewerPool.length === 0) {
-              const marker = '<!-- part11-auto-reviewers -->';
+              const marker = '<!-- signature-auto-reviewers -->';
+              const legacyMarker = '<!-- part11-auto-reviewers -->';
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -99,7 +115,7 @@ jobs:
                 per_page: 100,
               });
               const markerComments = comments
-                .filter((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]')
+                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]')
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
               if (markerComments.length > 0) {
                 const latestBody = markerComments[markerComments.length - 1].body || '';
@@ -115,7 +131,7 @@ jobs:
             }
             if (reviewerPool.length < requiredReviewerApprovals) {
               core.info(
-                `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
+                `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.${coapprovalReasons.length > 0 ? ` Co-approval scope matched: ${coapprovalReasons.join('; ')}` : ''}`
               );
               return;
             }
@@ -173,10 +189,11 @@ jobs:
                   .map((x) => x.trim())
                   .filter(Boolean);
 
-                const part11RequiredReviewerSignatures = Math.max(0, requiredSignatures - 1);
+                const requiredReviewerSignatures = requiredReviewerApprovals;
+                const requiredSignaturesForRequest = Math.max(requiredSignatures, requiredReviewerSignatures + 1);
                 const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
                 const authorLogin = (pr.user?.login || '').toLowerCase();
-                const reviewerSigners = approvedFromPool.slice(0, part11RequiredReviewerSignatures);
+                const reviewerSigners = approvedFromPool.slice(0, requiredReviewerSignatures);
                 const finalSigners = [authorLogin, ...reviewerSigners];
 
                 const targetCommit = merged.sha || fresh.merge_commit_sha || fresh.head?.sha || '';
@@ -211,7 +228,7 @@ jobs:
                     meaning,
                     role,
                     signer: u.toLowerCase(),
-                    required_signatures: String(requiredSignatures),
+                    required_signatures: String(requiredSignaturesForRequest),
                     signature_index: String(i + 1),
                     exp: String(expirationEpoch),
                   };
@@ -219,16 +236,18 @@ jobs:
                 });
 
                 const requestBody = [
-                  '<!-- part11-native-signature-request -->',
-                  '🛑 Part 11 Signature Required (GitHub App Flow)',
+                  '<!-- signature-native-signature-request -->',
+                  '🛑 Signature Required (GitHub App Flow)',
                   '',
                   `PR: #${pr.number}`,
                   `Target commit: \`${targetCommit}\``,
                   `Target hash (merge state): \`${targetHash}\``,
                   `Meaning of signature: **${meaning}**`,
                   `Designated signatory role(s): **${roles.join(', ') || rolesRaw}**`,
-                  `Required signatures: **${requiredSignatures}**`,
-                  `Reviewer signatures required: \`${part11RequiredReviewerSignatures}\` (author auto-signs 1)`,
+                  `Required signatures: **${requiredSignaturesForRequest}**`,
+                  `Reviewer signatures required: \`${requiredReviewerSignatures}\` (author auto-signs 1)`,
+                  'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), records (`/records`, including management reviews), or matrix/role files (`/matrices`).',
+                  `Co-approval scope matched: ${coapprovalReasons.length > 0 ? coapprovalReasons.join('; ') : 'none'}`,
                   `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
                   `Eligible signers: **${finalSigners.length > 0 ? finalSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
                   '',
@@ -244,7 +263,7 @@ jobs:
                   issue_number: pr.number,
                   body: requestBody,
                 });
-                core.info(`Posted fallback Part 11 signature request on merged PR #${pr.number}.`);
+                core.info(`Posted fallback signature request on merged PR #${pr.number}.`);
               } catch (mergeError) {
                 core.warning(`Direct merge attempt failed for PR #${pr.number}: ${mergeError.message}`);
                 core.setFailed(

@@ -92,7 +92,10 @@ jobs:
               });
 
               const requests = comments
-                .filter((c) => (c.body || '').includes('<!-- part11-native-signature-request -->'))
+                .filter((c) => {
+                  const body = c.body || '';
+                  return body.includes('<!-- signature-native-signature-request -->') || body.includes('<!-- part11-native-signature-request -->');
+                })
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
               if (requests.length > 0) {
@@ -211,7 +214,8 @@ jobs:
 
               let reviewerPool = requestedReviewers;
               if (reviewerPool.length === 0) {
-                const marker = '<!-- part11-auto-reviewers -->';
+                const marker = '<!-- signature-auto-reviewers -->';
+                const legacyMarker = '<!-- part11-auto-reviewers -->';
                 const comments = await github.paginate(github.rest.issues.listComments, {
                   owner: context.repo.owner,
                   repo: context.repo.repo,
@@ -219,7 +223,7 @@ jobs:
                   per_page: 100,
                 });
                 const markerComments = comments
-                  .filter((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]')
+                  .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]')
                   .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
                 if (markerComments.length > 0) {
                   const latestBody = markerComments[markerComments.length - 1].body || '';
@@ -270,7 +274,10 @@ jobs:
               per_page: 100,
             });
             const requestComments = comments
-              .filter((c) => (c.body || '').includes('<!-- part11-native-signature-request -->'))
+              .filter((c) => {
+                const body = c.body || '';
+                return body.includes('<!-- signature-native-signature-request -->') || body.includes('<!-- part11-native-signature-request -->');
+              })
               .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
             if (requestComments.length === 0) {
               core.setFailed(`No Part 11 signature request comment found on PR #${prNumber}.`);
@@ -454,7 +461,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
-          name: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
+          name: signature-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
           path: |
             signed_attestation.json
             signed_attestation.sig
@@ -467,7 +474,7 @@ jobs:
         env:
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
           TARGET_HASH: ${{ steps.pr.outputs.target_hash }}
-          ARTIFACT_NAME: part11-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
+          ARTIFACT_NAME: signature-native-attestation-pr${{ steps.pr.outputs.pr_number }}-${{ github.run_id }}
           UPLOAD_ATTESTATION_ARTIFACT: ${{ env.UPLOAD_ATTESTATION_ARTIFACT }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
@@ -481,8 +488,8 @@ jobs:
               : 'Run artifact: disabled (`UPLOAD_ATTESTATION_ARTIFACT=false`)';
 
             const body = [
-              '<!-- part11-native-attestation -->',
-              '✅ Part 11 Git-Native Signature Recorded',
+              '<!-- signature-native-attestation -->',
+              '✅ Git-native signature recorded',
               '',
               `Target hash: \`${targetHash}\``,
               `Signer: ${attestation.signer_full_name} (@${attestation.actor_login}, ID: ${attestation.actor_id})`,

@@ -32,6 +32,14 @@ jobs:
               return;
             }
 
+            const body = pr.body || '';
+            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+            if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
+              requiredSignatures = 1;
+            }
+            const baseRequiredReviewerApprovals = Math.max(0, requiredSignatures - 1);
+
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -51,6 +59,26 @@ jobs:
             const headSha = String(fresh.head?.sha || '').toLowerCase();
             if (!headSha) {
               core.setFailed(`Could not resolve PR #${pr.number} head SHA.`);
+              return;
+            }
+
+            const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const paths = changedFiles.map((f) => String(f.filename || ''));
+            const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const coapprovalReasons = [];
+            if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
+            if (hasPath('records/')) coapprovalReasons.push('records (/records)');
+            if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
+            if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
+            const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
+            const requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
+            if (requiredReviewerApprovals === 0) {
+              core.info(`PR #${pr.number} does not require non-author approval for current scope.`);
               return;
             }
 
@@ -84,13 +112,14 @@ jobs:
               })
               .map(([login]) => login);
 
-            if (approvedNonAuthorOnHead.length < 1) {
+            if (approvedNonAuthorOnHead.length < requiredReviewerApprovals) {
               const staleApprovals = Array.from(latestByUser.entries())
                 .filter(([login, review]) => login !== author && review.state === 'APPROVED' && review.commitId !== headSha)
                 .map(([login]) => '@' + login);
               core.setFailed(
                 [
-                  `PR #${pr.number} requires at least one non-author approval on current head ${headSha}.`,
+                  `PR #${pr.number} requires ${requiredReviewerApprovals} non-author approval(s) on current head ${headSha}.`,
+                  coapprovalReasons.length > 0 ? `Co-approval scope matched: ${coapprovalReasons.join('; ')}` : '',
                   staleApprovals.length > 0 ? `Stale approvals on older commits: ${staleApprovals.join(', ')}` : 'No valid non-author approvals found.',
                 ].join(' ')
               );
