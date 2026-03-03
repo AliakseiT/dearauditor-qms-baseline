@@ -12,7 +12,7 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: read
+  pull-requests: write
 
 concurrency:
   group: signature-status-board
@@ -43,6 +43,18 @@ jobs:
             const BOARD_MARKER = '<!-- signature-status-board -->';
             const HORIZON_DAYS = 45;
             const MAX_CLOSED_PRS = 120;
+            const SIGNATURE_STATE_LABELS = [
+              'signature/outstanding',
+              'signature/complete',
+              'signature/not-required',
+              'signature/blocked',
+            ];
+            const LABEL_META = {
+              'signature/outstanding': { color: 'D73A49', description: 'Required signatures are still outstanding.' },
+              'signature/complete': { color: '1A7F37', description: 'All required signatures are captured.' },
+              'signature/not-required': { color: '6E7781', description: 'This PR does not require signatures by policy.' },
+              'signature/blocked': { color: 'B60205', description: 'Signature required but request comment is missing.' },
+            };
 
             function normalizeLogin(v) {
               return String(v || '').trim().replace(/^@+/, '').toLowerCase();
@@ -110,6 +122,62 @@ jobs:
                 body: `${BOARD_MARKER}\nInitializing signature board...`,
               });
               return created.data;
+            }
+
+            async function ensureStateLabelsExist() {
+              for (const name of SIGNATURE_STATE_LABELS) {
+                try {
+                  await github.rest.issues.getLabel({
+                    owner: repo.owner,
+                    repo: repo.repo,
+                    name,
+                  });
+                } catch (err) {
+                  if (err.status === 404) {
+                    const meta = LABEL_META[name];
+                    await github.rest.issues.createLabel({
+                      owner: repo.owner,
+                      repo: repo.repo,
+                      name,
+                      color: meta.color,
+                      description: meta.description,
+                    });
+                    continue;
+                  }
+                  throw err;
+                }
+              }
+            }
+
+            async function syncStateLabel(prNumber, targetLabel) {
+              const current = await github.paginate(github.rest.issues.listLabelsOnIssue, {
+                owner: repo.owner,
+                repo: repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+              const currentNames = current.map((l) => String(l.name || ''));
+              const toRemove = currentNames.filter((name) => SIGNATURE_STATE_LABELS.includes(name) && name !== targetLabel);
+              for (const name of toRemove) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: repo.owner,
+                    repo: repo.repo,
+                    issue_number: prNumber,
+                    name,
+                  });
+                } catch (err) {
+                  if (err.status !== 404) throw err;
+                }
+              }
+              if (!currentNames.includes(targetLabel)) {
+                await github.rest.issues.addLabels({
+                  owner: repo.owner,
+                  repo: repo.repo,
+                  issue_number: prNumber,
+                  labels: [targetLabel],
+                });
+              }
             }
 
             async function evaluatePr(pr) {
@@ -202,6 +270,9 @@ jobs:
               );
 
               const status = !signatureRequired ? 'NOT_REQUIRED' : (outstanding ? 'OUTSTANDING' : 'COMPLETE');
+              const stateLabel = blockedNoRequest
+                ? 'signature/blocked'
+                : (!signatureRequired ? 'signature/not-required' : (outstanding ? 'signature/outstanding' : 'signature/complete'));
 
               return {
                 number: prNumber,
@@ -216,6 +287,7 @@ jobs:
                 blockedNoRequest,
                 missingWithLinks,
                 mergedAt: pr.merged_at || '',
+                stateLabel,
               };
             }
 
@@ -236,9 +308,12 @@ jobs:
 
             const results = [];
             const errors = [];
+            await ensureStateLabelsExist();
             for (const pr of candidates) {
               try {
-                results.push(await evaluatePr(pr));
+                const result = await evaluatePr(pr);
+                results.push(result);
+                await syncStateLabel(result.number, result.stateLabel);
               } catch (err) {
                 errors.push({ number: pr.number, url: pr.html_url, message: err.message });
               }
@@ -260,8 +335,10 @@ jobs:
               `- Outstanding: **${outstanding.length}**`,
               `- Complete: **${results.filter((r) => r.status === 'COMPLETE').length}**`,
               `- Not required: **${results.filter((r) => r.status === 'NOT_REQUIRED').length}**`,
+              `- Blocked: **${blocked.length}**`,
               '',
               'Policy scope requiring signatures: changes in `/sops`, `/records` (including management reviews), or `/matrices`.',
+              'PRs are auto-labeled with one state label: `signature/outstanding`, `signature/complete`, `signature/not-required`, or `signature/blocked`.',
               '',
               '## Outstanding Signatures',
             ];
