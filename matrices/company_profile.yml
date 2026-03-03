@@ -13,6 +13,7 @@ company:
   infrastructure_policy: "Infrastructure architecture and controls are defined and approved per product dossier; no single shared product infrastructure baseline is imposed at company level."
   qms_intent:
     - "Ensure consistent compliance with ISO 13485 and applicable regulatory requirements."
+    - "Apply ISO 14971 risk management across the software lifecycle, including cybersecurity-related harms."
     - "Maintain product safety and performance through controlled lifecycle processes."
     - "Provide objective evidence and full traceability for quality decisions."
 quality_policy_statement:
