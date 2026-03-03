@@ -50,6 +50,25 @@ roles:
       - SOP-015
       - SOP-017
 
+  technical_qms_maintainer:
+    users:
+      - AliakseiT
+    required_sops:
+      - SOP-001
+      - SOP-002
+      - SOP-006
+      - SOP-007
+      - SOP-008
+      - SOP-009
+      - SOP-015
+      - SOP-017
+    required_revisions:
+      SOP-001: R01
+      SOP-002: R01
+      SOP-006: R01
+      SOP-009: R01
+      SOP-017: R01
+
   clinical_ops:
     users:
       - AliakseiT
