@@ -2,7 +2,7 @@ name: Auto Merge After Assigned Approvals
 
 on:
   pull_request:
-    types: [opened, edited, reopened, ready_for_review, synchronize]
+    types: [synchronize]
   pull_request_review:
     types: [submitted, edited, dismissed]
 
