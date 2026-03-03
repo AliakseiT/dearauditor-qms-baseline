@@ -69,14 +69,15 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 
 ## Part 11 Git-Native Flow
 
-- On merged PRs, `issue_pr_part11_gate.yml` posts a signature-request comment with signer-specific workflow links.
+- On merged PRs, `issue_pr_part11_gate.yml` posts signer-specific links to the Cloudflare `signature-worker` title page.
+- The link payload is signed by GitHub Actions (`SIGNATURE_LINK_SECRET`) and verified by worker backend before any OAuth step.
+- Signers open the link, enter only full legal name, and complete GitHub OAuth login.
+- Worker verifies signer eligibility against the latest PR signature request comment and posts attestation (`<!-- PART11_ATTESTATION_V1 -->`) directly to PR.
 - Signature comments are posted via mandatory GitHub App token (`SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`).
-- Signers open the provided workflow link, enter only their full legal name, and run `Part 11 Signature Title Page`.
-- `part11_git_native_signature.yml` resolves meaning/role/hash from the locked Part 11 request comment and enriches attestations with signer title from `matrices/signer_registry.json`.
+- `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
 - The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
-- Each signature run creates:
-  - PR attestation comment (`<!-- part11-native-attestation -->`)
-  - Signed attestation artifacts (`signed_attestation.json`, `.sig`, `.pem`)
+- Cloudflare signer flow creates PR attestation comment (`<!-- PART11_ATTESTATION_V1 -->`) directly from worker backend.
+- Optional fallback workflow (`part11_git_native_signature.yml`) still supports in-GitHub attestation comments (`<!-- part11-native-attestation -->`) and signed artifacts (`signed_attestation.json`, `.sig`, `.pem`).
 - Reusable PDF title-page generator for attestation packages:
   - `scripts/generate_part11_title_page.py`
   - Produces `part11_title_page.pdf` with signatory names, roles, titles, and signature timestamps.
@@ -91,4 +92,21 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 
 - `SIGNATURE_APP_ID`: GitHub App ID used by signature workflows.
 - `SIGNATURE_APP_PRIVATE_KEY`: GitHub App private key (PEM) for installation token minting.
+- `SIGNATURE_LINK_SECRET`: shared HMAC key used to sign `/sign` links in Actions and verify them in worker backend.
 - `QMS_RECORDS_TOKEN`: PAT used only for publishing immutable record releases to `AliakseiT/qms-records`.
+- `CLOUDFLARE_API_TOKEN`: token used by `deploy_signature_worker.yml`.
+- `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account identifier for worker deploy.
+
+## Repository Variables (Part 11)
+
+- `SIGNATURE_UI_BASE_URL`: external signer UI origin, for example `https://sign.qms.dearauditor.ch`.
+
+## Signature Worker Service
+
+- Service source: `services/signature-worker/`
+- Setup guide: `services/signature-worker/SETUP.md`
+- Deploy workflow: `.github/workflows/deploy_signature_worker.yml`
+- Worker runtime secrets are configured in Cloudflare Worker settings:
+  - `GITHUB_APP_ID`, `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET`, `GITHUB_APP_PRIVATE_KEY`
+  - `SIGNATURE_LINK_SECRET`, `SIGNATURE_STATE_SECRET`
+  - optional `GITHUB_APP_INSTALLATION_ID`

@@ -1,0 +1,9 @@
+name = "signature-worker"
+main = "src/index.ts"
+compatibility_date = "2026-03-02"
+workers_dev = true
+
+[vars]
+PUBLIC_BASE_URL = "https://sign.qms.dearauditor.ch"
+DEFAULT_OAUTH_PROVIDER = "github"
+ALLOWED_OAUTH_PROVIDERS = "github"

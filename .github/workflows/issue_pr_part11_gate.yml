@@ -161,8 +161,18 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            const crypto = require('crypto');
             const pr = context.payload.pull_request;
-            const workflowUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/workflows/part11_git_native_signature.yml`;
+            const signingBaseUrl = (process.env.SIGNATURE_UI_BASE_URL || '').trim().replace(/\/+$/g, '');
+            const linkSecret = (process.env.SIGNATURE_LINK_SECRET || '').trim();
+            if (!signingBaseUrl) {
+              core.setFailed('Missing SIGNATURE_UI_BASE_URL variable. Configure repository variable SIGNATURE_UI_BASE_URL.');
+              return;
+            }
+            if (!linkSecret) {
+              core.setFailed('Missing SIGNATURE_LINK_SECRET secret. Configure repository secret SIGNATURE_LINK_SECRET.');
+              return;
+            }
             const roles = (process.env.ROLES || '')
               .split(/[;,]/)
               .map((x) => x.trim())
@@ -172,14 +182,32 @@ jobs:
               .map((x) => x.trim())
               .filter(Boolean);
             const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
+            const expirationEpoch = Math.floor(Date.now() / 1000) + (12 * 60 * 60);
+            const canonicalize = (map) => Object.keys(map).sort().map((k) => `${k}=${map[k]}`).join('&');
+            const buildLink = (payload) => {
+              const sig = crypto
+                .createHmac('sha256', linkSecret)
+                .update(canonicalize(payload))
+                .digest('hex');
+              const params = new URLSearchParams({ ...payload, sig });
+              return `${signingBaseUrl}/sign?${params.toString()}`;
+            };
 
             const runLinks = approvedSigners.length > 0
               ? approvedSigners.map((u, i) => {
                 const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                const params = new URLSearchParams({
-                  pr_number: String(pr.number),
-                });
-                return `- @${u} (${role}): [Open Signature Title Page](${workflowUrl}?${params.toString()})`;
+                const payload = {
+                  repo: `${context.repo.owner}/${context.repo.repo}`,
+                  pr: String(pr.number),
+                  hash: process.env.TARGET_HASH,
+                  meaning: process.env.MEANING,
+                  role,
+                  signer: u.toLowerCase(),
+                  required_signatures: String(process.env.REQUIRED || '1'),
+                  signature_index: String(i + 1),
+                  exp: String(expirationEpoch),
+                };
+                return `- @${u} (${role}): [Open Signature Title Page](${buildLink(payload)})`;
               })
               : ['- No eligible approved assigned reviewers found.'];
 
@@ -197,10 +225,10 @@ jobs:
               `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
-              'Open your signer link, enter only your full legal name, then run `Part 11 Signature Title Page`:',
+              'Open your signer link, enter only your full legal name, and complete GitHub login to sign:',
               ...runLinks,
               '',
-              `Workflow page: ${workflowUrl}`,
+              `Signature service: ${signingBaseUrl}/sign`,
             ].join('\n');
 
             await github.rest.issues.createComment({
@@ -218,3 +246,5 @@ jobs:
           TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
           AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
+          SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
+          SIGNATURE_LINK_SECRET: ${{ secrets.SIGNATURE_LINK_SECRET }}
