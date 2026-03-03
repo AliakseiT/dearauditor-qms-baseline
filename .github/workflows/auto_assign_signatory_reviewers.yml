@@ -68,7 +68,7 @@ jobs:
           required = int(sig_match.group(1).strip()) if sig_match and sig_match.group(1).strip().isdigit() else 1
           if required < 1:
             required = 1
-          required_reviewer_signatures = max(1, required - 1)
+          required_reviewer_signatures = max(0, required - 1)
 
           ordered_candidates = []
           seen = set()
@@ -92,9 +92,39 @@ jobs:
             fh.write("candidates_csv=" + ",".join(ordered_candidates) + "\n")
           PY
 
+      - name: Detect co-approval policy from changed paths
+        id: policy
+        uses: actions/github-script@v7
+        env:
+          BASE_REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const paths = files.map((f) => String(f.filename || ''));
+            const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const reasons = [];
+            if (hasPath('sops/')) reasons.push('SOP files (/sops)');
+            if (hasPath('records/')) reasons.push('records (/records)');
+            if (hasPath('records/management-reviews/')) reasons.push('management review records (/records/management-reviews)');
+            if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');
+
+            const baseRequired = Math.max(0, Number.parseInt(process.env.BASE_REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
+            const policyMin = reasons.length > 0 ? 1 : 0;
+            const effectiveRequired = Math.max(baseRequired, policyMin);
+
+            core.setOutput('coapproval_required', reasons.length > 0 ? 'true' : 'false');
+            core.setOutput('coapproval_reasons', reasons.join('; '));
+            core.setOutput('effective_required_reviewer_signatures', String(effectiveRequired));
+
       - name: Validate candidate availability
         env:
-          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
           CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
         run: |
           required="${REQUIRED_REVIEWER_SIGNATURES:-0}"
@@ -111,9 +141,11 @@ jobs:
         env:
           CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
           REQUIRED_SIGNATURES: ${{ steps.plan.outputs.required_signatures }}
-          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
           ROLE_IDS: ${{ steps.plan.outputs.role_ids }}
           ROLES_RAW: ${{ steps.plan.outputs.roles_raw }}
+          COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
+          COAPPROVAL_REASONS: ${{ steps.policy.outputs.coapproval_reasons }}
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -170,17 +202,22 @@ jobs:
               });
             }
 
-            const marker = '<!-- part11-auto-reviewers -->';
+            const marker = '<!-- signature-auto-reviewers -->';
+            const legacyMarker = '<!-- part11-auto-reviewers -->';
             const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
             const rolesRaw = process.env.ROLES_RAW || '';
+            const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
+            const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
             const lines = [
               marker,
-              '🤖 Auto-assigned Part 11 reviewers from role matrix',
+              '🤖 Auto-assigned signature reviewers from role matrix',
               '',
               `Signer roles requested: \`${rolesRaw}\``,
               `Mapped role IDs: \`${roleIds.join(', ') || 'none'}\``,
-              `Required signatures (if Part 11 block present): \`${required}\``,
+              `Required signatures: \`${required}\``,
               `Author auto-included signer: @${pr.user?.login || 'unknown'}`,
+              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), records (`/records`, including management reviews), or matrix/role files (`/matrices`).',
+              `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
               `Minimum reviewer approvals required for merge: \`${requiredReviewerSignatures}\``,
               `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
               '',
@@ -193,7 +230,10 @@ jobs:
               issue_number: pr.number,
               per_page: 100,
             });
-            const existing = comments.find((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]');
+            const existing = comments.find((c) => {
+              const body = c.body || '';
+              return (body.includes(marker) || body.includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]';
+            });
             if (existing) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,

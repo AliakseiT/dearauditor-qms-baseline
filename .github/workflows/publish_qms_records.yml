@@ -153,7 +153,8 @@ jobs:
 
             let reviewerPool = requestedReviewers;
             if (reviewerPool.length === 0) {
-              const marker = '<!-- part11-auto-reviewers -->';
+              const marker = '<!-- signature-auto-reviewers -->';
+              const legacyMarker = '<!-- part11-auto-reviewers -->';
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -161,7 +162,7 @@ jobs:
                 per_page: 100,
               });
               const markerComments = comments
-                .filter((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]')
+                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]')
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
               if (markerComments.length > 0) {
                 const latestBody = markerComments[markerComments.length - 1].body || '';
@@ -210,7 +211,9 @@ jobs:
 
               const candidateComments = comments
                 .filter((c) =>
+                  (c.body || '').includes('<!-- signature-native-attestation -->') ||
                   (c.body || '').includes('<!-- part11-native-attestation -->') ||
+                  (c.body || '').includes('<!-- SIGNATURE_ATTESTATION_V1 -->') ||
                   (c.body || '').includes('<!-- PART11_ATTESTATION_V1 -->')
                 )
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
@@ -220,7 +223,7 @@ jobs:
                 const body = c.body || '';
                 const a = extractAttestationPayload(body);
                 if (!a) continue;
-                const isNative = body.includes('<!-- part11-native-attestation -->');
+                const isNative = body.includes('<!-- signature-native-attestation -->') || body.includes('<!-- part11-native-attestation -->');
                 const normalized = isNative
                   ? {
                       prNumber: String(a.pr_number || ''),

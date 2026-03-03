@@ -230,7 +230,7 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
   };
 
   const body = [
-    "<!-- PART11_ATTESTATION_V1 -->",
+    "<!-- SIGNATURE_ATTESTATION_V1 -->",
     "```json",
     JSON.stringify(attestation, null, 2),
     "```",
@@ -451,10 +451,13 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
   );
 
   const requestComments = comments
-    .filter((c) => (c.body || "").includes("<!-- part11-native-signature-request -->"))
+    .filter((c) => {
+      const body = c.body || "";
+      return body.includes("<!-- signature-native-signature-request -->") || body.includes("<!-- part11-native-signature-request -->");
+    })
     .sort((a, b) => Date.parse(a.created_at || "") - Date.parse(b.created_at || ""));
   if (requestComments.length === 0) {
-    throw new Error(`No Part 11 signature request comment found on PR #${prNumber}.`);
+    throw new Error(`No signature request comment found on PR #${prNumber}.`);
   }
 
   const latest = requestComments[requestComments.length - 1];
@@ -524,7 +527,7 @@ async function findExistingAttestation(ctx: SignatureContext, signer: string, to
 
   for (const c of comments) {
     const body = c.body || "";
-    if (!body.includes("<!-- PART11_ATTESTATION_V1 -->")) continue;
+    if (!body.includes("<!-- SIGNATURE_ATTESTATION_V1 -->") && !body.includes("<!-- PART11_ATTESTATION_V1 -->")) continue;
     const match = body.match(/```json\s*([\s\S]*?)```/i);
     if (!match || !match[1]) continue;
     try {

@@ -108,7 +108,7 @@ jobs:
             "2. Approve this PR as trainee acknowledgement.",
             "3. Close without merge (review-only artifact).",
             "",
-            "### Part 11 Signature Requirements",
+            "### Signature Requirements",
             "- **Meaning of Signature:** Approved Training Review Acknowledgement",
             "- **Signer Roles:** Quality Assurance Lead; Management Representative",
             "- **Required Signatures:** 2",

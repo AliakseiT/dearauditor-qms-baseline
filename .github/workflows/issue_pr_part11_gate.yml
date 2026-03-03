@@ -50,7 +50,7 @@ jobs:
             if (!Number.isInteger(required) || required < 1) {
               required = 1;
             }
-            const requiredReviewerSignatures = Math.max(0, required - 1);
+            const baseRequiredReviewerSignatures = Math.max(0, required - 1);
 
             const targetCommit = pr.merge_commit_sha || pr.head.sha;
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
@@ -66,6 +66,22 @@ jobs:
               repo: context.repo.repo,
               pull_number: pr.number,
             })).data;
+            const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const paths = changedFiles.map((f) => String(f.filename || ''));
+            const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const coapprovalReasons = [];
+            if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
+            if (hasPath('records/')) coapprovalReasons.push('records (/records)');
+            if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
+            if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
+            const policyMinimumReviewerSignatures = coapprovalReasons.length > 0 ? 1 : 0;
+            const requiredReviewerSignatures = Math.max(baseRequiredReviewerSignatures, policyMinimumReviewerSignatures);
+            const requiredSignaturesForRequest = Math.max(required, requiredReviewerSignatures + 1);
             const requestedReviewers = (fresh.requested_reviewers || [])
               .map((r) => (r.login || '').toLowerCase())
               .filter(Boolean);
@@ -98,7 +114,8 @@ jobs:
 
             let reviewerPool = requestedReviewers;
             if (reviewerPool.length === 0) {
-              const marker = '<!-- part11-auto-reviewers -->';
+              const marker = '<!-- signature-auto-reviewers -->';
+              const legacyMarker = '<!-- part11-auto-reviewers -->';
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -106,7 +123,7 @@ jobs:
                 per_page: 100,
               });
               const markerComments = comments
-                .filter((c) => (c.body || '').includes(marker) && (c.user?.login || '') === 'github-actions[bot]')
+                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]')
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
               if (markerComments.length > 0) {
                 const latestBody = markerComments[markerComments.length - 1].body || '';
@@ -121,7 +138,7 @@ jobs:
             }
             if (reviewerPool.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${pr.number} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
+                `PR #${pr.number} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.${coapprovalReasons.length > 0 ? ` Co-approval scope matched: ${coapprovalReasons.join('; ')}` : ''}`
               );
               return;
             }
@@ -139,12 +156,13 @@ jobs:
             core.setOutput('issue_number', issueMatch[1]);
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
-            core.setOutput('required_signatures', String(required));
+            core.setOutput('required_signatures', String(requiredSignaturesForRequest));
             core.setOutput('required_reviewer_signatures', String(requiredReviewerSignatures));
             core.setOutput('target_hash', targetHash);
             core.setOutput('target_commit', targetCommit);
             core.setOutput('author_login', authorLogin);
             core.setOutput('approved_signers_csv', finalSigners.join(','));
+            core.setOutput('coapproval_reasons', coapprovalReasons.join('; '));
 
       - name: Create GitHub App token for signature comments
         id: app_token
@@ -211,9 +229,10 @@ jobs:
               })
               : ['- No eligible approved assigned reviewers found.'];
 
+            const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
             const body = [
-              '<!-- part11-native-signature-request -->',
-              '🛑 Part 11 Signature Required (GitHub App Flow)',
+              '<!-- signature-native-signature-request -->',
+              '🛑 Signature Required (GitHub App Flow)',
               '',
               `PR: #${pr.number}`,
               `Target commit: \`${process.env.TARGET_COMMIT}\``,
@@ -222,6 +241,8 @@ jobs:
               `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
               `Required signatures: **${process.env.REQUIRED}**`,
               `Reviewer signatures required: \`${process.env.REQUIRED_REVIEWERS}\` (author auto-signs 1)`,
+              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), records (`/records`, including management reviews), or matrix/role files (`/matrices`).',
+              `Co-approval scope matched: ${coapprovalReasons || 'none'}`,
               `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
@@ -246,5 +267,6 @@ jobs:
           TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
           AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
+          COAPPROVAL_REASONS: ${{ steps.parse.outputs.coapproval_reasons }}
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
           SIGNATURE_LINK_SECRET: ${{ secrets.SIGNATURE_LINK_SECRET }}

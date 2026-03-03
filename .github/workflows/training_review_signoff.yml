@@ -190,8 +190,8 @@ jobs:
               })
               : ['- No eligible approved assigned reviewers found.'];
             const body = [
-              '<!-- part11-native-signature-request -->',
-              '🛑 Part 11 Signature Required (GitHub App Flow)',
+              '<!-- signature-native-signature-request -->',
+              '🛑 Signature Required (GitHub App Flow)',
               '',
               `PR: #${pr.number}`,
               `Target hash (merge state): \`${targetHash}\``,
@@ -293,10 +293,15 @@ jobs:
               const bySigner = new Map();
               for (const c of comments) {
                 const body = c.body || '';
-                if (!body.includes('<!-- part11-native-attestation -->') && !body.includes('<!-- PART11_ATTESTATION_V1 -->')) continue;
+                if (
+                  !body.includes('<!-- signature-native-attestation -->') &&
+                  !body.includes('<!-- part11-native-attestation -->') &&
+                  !body.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') &&
+                  !body.includes('<!-- PART11_ATTESTATION_V1 -->')
+                ) continue;
                 const a = extractAttestationPayload(body);
                 if (!a) continue;
-                const isNative = body.includes('<!-- part11-native-attestation -->');
+                const isNative = body.includes('<!-- signature-native-attestation -->') || body.includes('<!-- part11-native-attestation -->');
                 const normalized = isNative
                   ? {
                       prNumber: String(a.pr_number || ''),

@@ -1,0 +1,3 @@
+wrangler-account.json
+.wrangler/
+services/signature-worker/.wrangler/
