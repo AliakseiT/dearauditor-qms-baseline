@@ -615,8 +615,8 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 function pemToArrayBuffer(pem: string): ArrayBuffer {
   const cleaned = pem
-    .replace(/-----BEGIN PRIVATE KEY-----/g, "")
-    .replace(/-----END PRIVATE KEY-----/g, "")
+    .replace(/-----BEGIN [A-Z ]*PRIVATE KEY-----/g, "")
+    .replace(/-----END [A-Z ]*PRIVATE KEY-----/g, "")
     .replace(/\\n/g, "\n")
     .replace(/\s+/g, "");
   const bytes = base64ToBytes(cleaned);
