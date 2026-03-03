@@ -1,0 +1,102 @@
+name: Required Reviewer Approval Guard
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited, ready_for_review, review_requested]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  approval_guard:
+    if: github.event.pull_request != null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require non-author approval on current head
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.info('No pull request context; skipping.');
+              return;
+            }
+            if (pr.draft) {
+              core.info(`PR #${pr.number} is draft; guard deferred.`);
+              return;
+            }
+
+            const labels = (pr.labels || []).map((l) => String(l.name || '').toLowerCase());
+            if (labels.includes('review-only')) {
+              core.info(`PR #${pr.number} is labeled review-only; non-author approval guard skipped.`);
+              return;
+            }
+
+            const fresh = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            })).data;
+
+            if (fresh.state !== 'open') {
+              core.info(`PR #${pr.number} is ${fresh.state}; guard skipped.`);
+              return;
+            }
+
+            const author = String(fresh.user?.login || '').toLowerCase();
+            if (!author) {
+              core.setFailed(`Could not resolve PR #${pr.number} author.`);
+              return;
+            }
+            const headSha = String(fresh.head?.sha || '').toLowerCase();
+            if (!headSha) {
+              core.setFailed(`Could not resolve PR #${pr.number} head SHA.`);
+              return;
+            }
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+
+            const latestByUser = new Map();
+            for (const review of reviews) {
+              const login = String(review.user?.login || '').trim().toLowerCase();
+              if (!login) continue;
+              const submittedAt = Date.parse(review.submitted_at || review.submittedAt || review.updated_at || review.created_at || 0) || 0;
+              const current = latestByUser.get(login);
+              if (!current || submittedAt >= current.submittedAt) {
+                latestByUser.set(login, {
+                  state: String(review.state || '').toUpperCase(),
+                  commitId: String(review.commit_id || '').toLowerCase(),
+                  submittedAt,
+                });
+              }
+            }
+
+            const approvedNonAuthorOnHead = Array.from(latestByUser.entries())
+              .filter(([login, review]) => {
+                if (login === author) return false;
+                if (review.state !== 'APPROVED') return false;
+                return review.commitId === headSha;
+              })
+              .map(([login]) => login);
+
+            if (approvedNonAuthorOnHead.length < 1) {
+              const staleApprovals = Array.from(latestByUser.entries())
+                .filter(([login, review]) => login !== author && review.state === 'APPROVED' && review.commitId !== headSha)
+                .map(([login]) => '@' + login);
+              core.setFailed(
+                [
+                  `PR #${pr.number} requires at least one non-author approval on current head ${headSha}.`,
+                  staleApprovals.length > 0 ? `Stale approvals on older commits: ${staleApprovals.join(', ')}` : 'No valid non-author approvals found.',
+                ].join(' ')
+              );
+              return;
+            }
+
+            core.info(`Approval guard passed for PR #${pr.number}; valid approvers: ${approvedNonAuthorOnHead.map((x) => '@' + x).join(', ')}`);
