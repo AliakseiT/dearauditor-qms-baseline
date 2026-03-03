@@ -1,0 +1,105 @@
+name: Part 11 Attestation Title Page
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: write
+  contents: read
+  issues: write
+
+concurrency:
+  group: part11-title-page-comment-${{ github.event.comment.id }}
+  cancel-in-progress: false
+
+jobs:
+  render_title_page:
+    if: >-
+      github.event.issue.pull_request != null &&
+      (contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+      contains(github.event.comment.body, '<!-- part11-native-attestation -->'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract attestation JSON from PR comment
+        id: extract
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          body = os.environ.get("COMMENT_BODY", "")
+          pr_number = os.environ.get("PR_NUMBER", "")
+          comment_id = os.environ.get("COMMENT_ID", "")
+
+          block = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", body, flags=re.DOTALL | re.IGNORECASE)
+          if not block:
+            raise SystemExit("Could not find JSON code block in attestation comment.")
+
+          payload = json.loads(block.group(1))
+          Path("signed_attestation.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+          record_id = f"PR-{pr_number}-COMMENT-{comment_id}"
+          artifact_name = f"part11-title-page-pr{pr_number}-c{comment_id}"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+            fh.write(f"record_id={record_id}\n")
+            fh.write(f"artifact_name={artifact_name}\n")
+          PY
+
+      - name: Install PDF dependency
+        run: python -m pip install --quiet fpdf2
+
+      - name: Generate Part 11 title-page PDF
+        run: |
+          python scripts/generate_part11_title_page.py \
+            --attestation signed_attestation.json \
+            --output part11_title_page.pdf \
+            --record-id "${{ steps.extract.outputs.record_id }}"
+
+      - name: Upload title-page package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.extract.outputs.artifact_name }}
+          path: |
+            part11_title_page.pdf
+            signed_attestation.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Comment PR with artifact pointer
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          ARTIFACT_NAME: ${{ steps.extract.outputs.artifact_name }}
+        with:
+          script: |
+            const prNumber = Number(process.env.PR_NUMBER);
+            const sourceCommentId = process.env.COMMENT_ID;
+            const artifactName = process.env.ARTIFACT_NAME;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = [
+              '<!-- part11-title-page-artifact -->',
+              '📄 Part 11 title-page PDF generated for this signature attestation.',
+              `Source attestation comment: #${sourceCommentId}`,
+              `Artifact: \`${artifactName}\``,
+              `Run: ${runUrl}`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });
