@@ -94,18 +94,37 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - Artifact retention is intentionally short for heavy workflows (5 days).
 - Use `artifact_quota_cleanup.yml` (`workflow_dispatch`) to delete old artifacts when nearing quota.
 
+## QMS Handbook Publication (Internal Read-Only)
+
+- Target repository: `AliakseiT/qms-handbook` (private).
+- Publisher workflow: `.github/workflows/publish_qms_handbook.yml`.
+- Trigger modes:
+  - push to `main` when SOPs/index/training matrix change
+  - release published
+  - manual `workflow_dispatch`
+- Publication outputs:
+  - `published/latest/qms_handbook.md`
+  - `published/latest/qms_handbook.html`
+  - `published/latest/qms_handbook.pdf`
+  - `published/latest/publish_manifest.json`
+  - release snapshots under `published/releases/<publish_id>/`
+- Local bootstrap helper for the handbook repo:
+  - `scripts/bootstrap_qms_handbook_repo.sh`
+
 ## Repository Secrets (Part 11)
 
 - `SIGNATURE_APP_ID`: GitHub App ID used by signature workflows.
 - `SIGNATURE_APP_PRIVATE_KEY`: GitHub App private key (PEM) for installation token minting.
 - `SIGNATURE_LINK_SECRET`: shared HMAC key used to sign `/sign` links in Actions and verify them in worker backend.
 - `QMS_RECORDS_TOKEN`: PAT used only for publishing immutable record releases to `AliakseiT/qms-records`.
+- `QMS_HANDBOOK_TOKEN`: PAT used only for publishing internal read-only handbook bundles to `AliakseiT/qms-handbook`.
 - `CLOUDFLARE_API_TOKEN`: token used by `deploy_signature_worker.yml`.
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account identifier for worker deploy.
 
 ## Repository Variables (Part 11)
 
 - `SIGNATURE_UI_BASE_URL`: external signer UI origin, for example `https://sign.qms.dearauditor.ch`.
+- `TARGET_HANDBOOK_REPO` is defined in workflow env (default `AliakseiT/qms-handbook`) and can be adjusted in `.github/workflows/publish_qms_handbook.yml`.
 
 ## Signature Worker Service
 

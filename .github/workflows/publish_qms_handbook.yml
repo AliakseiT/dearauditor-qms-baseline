@@ -1,0 +1,177 @@
+name: Publish QMS Handbook
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_id:
+        description: "Optional publish identifier (for example qms-2026.03-r01)"
+        required: false
+  push:
+    branches: [main]
+    paths:
+      - "sops/**/*.md"
+      - "sops/*.md"
+      - "README.md"
+      - "matrices/training_matrix.yml"
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  TARGET_HANDBOOK_REPO: AliakseiT/qms-handbook
+  TARGET_HANDBOOK_BRANCH: main
+
+jobs:
+  publish_handbook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve publish metadata
+        id: meta
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            PUBLISH_ID="${{ github.event.release.tag_name }}"
+          elif [ -n "${{ inputs.publish_id }}" ]; then
+            PUBLISH_ID="${{ inputs.publish_id }}"
+          else
+            PUBLISH_ID="main-${GITHUB_SHA:0:12}"
+          fi
+          echo "publish_id=${PUBLISH_ID}" >> "$GITHUB_OUTPUT"
+          echo "source_ref=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "source_repo=${GITHUB_REPOSITORY}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build handbook bundle
+        run: |
+          python -m pip install --quiet markdown pyyaml fpdf2
+          python scripts/build_qms_handbook.py \
+            --repo-root . \
+            --output-dir handbook_build \
+            --source-ref "${{ steps.meta.outputs.source_ref }}" \
+            --source-repo "${{ steps.meta.outputs.source_repo }}"
+
+      - name: Publish bundle to handbook repository
+        env:
+          GH_TOKEN: ${{ secrets.QMS_HANDBOOK_TOKEN }}
+          TARGET_REPO: ${{ env.TARGET_HANDBOOK_REPO }}
+          TARGET_BRANCH: ${{ env.TARGET_HANDBOOK_BRANCH }}
+          PUBLISH_ID: ${{ steps.meta.outputs.publish_id }}
+          SOURCE_REPO: ${{ steps.meta.outputs.source_repo }}
+          SOURCE_REF: ${{ steps.meta.outputs.source_ref }}
+        shell: bash
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "Missing QMS_HANDBOOK_TOKEN secret. Configure a PAT with write access to ${TARGET_REPO}."
+            exit 1
+          fi
+
+          rm -rf handbook_repo
+          git clone --branch "${TARGET_BRANCH}" "https://x-access-token:${GH_TOKEN}@github.com/${TARGET_REPO}.git" handbook_repo
+
+          mkdir -p handbook_repo/published/latest
+          mkdir -p "handbook_repo/published/releases/${PUBLISH_ID}"
+
+          cp handbook_build/qms_handbook.md handbook_repo/published/latest/
+          cp handbook_build/qms_handbook.html handbook_repo/published/latest/
+          cp handbook_build/qms_handbook.pdf handbook_repo/published/latest/
+          cp handbook_build/publish_manifest.json handbook_repo/published/latest/
+
+          cp handbook_build/qms_handbook.md "handbook_repo/published/releases/${PUBLISH_ID}/"
+          cp handbook_build/qms_handbook.html "handbook_repo/published/releases/${PUBLISH_ID}/"
+          cp handbook_build/qms_handbook.pdf "handbook_repo/published/releases/${PUBLISH_ID}/"
+          cp handbook_build/publish_manifest.json "handbook_repo/published/releases/${PUBLISH_ID}/"
+
+          python <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          import os
+
+          repo = Path("handbook_repo")
+          releases_root = repo / "published" / "releases"
+          latest_manifest_path = repo / "published" / "latest" / "publish_manifest.json"
+          latest_manifest = json.loads(latest_manifest_path.read_text(encoding="utf-8"))
+
+          releases = []
+          if releases_root.exists():
+              for child in sorted([p for p in releases_root.iterdir() if p.is_dir()], reverse=True):
+                  manifest = child / "publish_manifest.json"
+                  if not manifest.exists():
+                      continue
+                  data = json.loads(manifest.read_text(encoding="utf-8"))
+                  releases.append(
+                      {
+                          "publish_id": child.name,
+                          "generated_at_utc": data.get("generated_at_utc", ""),
+                          "source_ref": data.get("source_ref", ""),
+                          "sop_count": data.get("sop_count", 0),
+                      }
+                  )
+
+          index = {
+              "schema_version": 1,
+              "updated_at_utc": datetime.now(timezone.utc).isoformat(),
+              "latest_publish_id": os.environ["PUBLISH_ID"],
+              "latest": {
+                  "generated_at_utc": latest_manifest.get("generated_at_utc", ""),
+                  "source_repository": latest_manifest.get("source_repository", ""),
+                  "source_ref": latest_manifest.get("source_ref", ""),
+                  "sop_count": latest_manifest.get("sop_count", 0),
+              },
+              "releases": releases,
+          }
+          (repo / "published" / "index.json").write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
+
+          readme = "\n".join(
+              [
+                  "# QMS Handbook",
+                  "",
+                  "Private read-only publication repository for internal QMS reading and training.",
+                  "",
+                  "## Latest Publication",
+                  "",
+                  f"- Publish ID: `{os.environ['PUBLISH_ID']}`",
+                  f"- Source repository: `{os.environ['SOURCE_REPO']}`",
+                  f"- Source reference: `{os.environ['SOURCE_REF']}`",
+                  f"- SOP count: `{latest_manifest.get('sop_count', 0)}`",
+                  "",
+                  "Latest assets:",
+                  "- `published/latest/qms_handbook.md`",
+                  "- `published/latest/qms_handbook.html`",
+                  "- `published/latest/qms_handbook.pdf`",
+                  "- `published/latest/publish_manifest.json`",
+                  "- `published/index.json`",
+                  "",
+                  "Release snapshots are stored under `published/releases/<publish_id>/`.",
+              ]
+          ) + "\n"
+          (repo / "README.md").write_text(readme, encoding="utf-8")
+          PY
+
+          pushd handbook_repo >/dev/null
+          git config user.name "qms-lite-sign[bot]"
+          git config user.email "qms-lite-sign[bot]@users.noreply.github.com"
+          git add README.md published/
+          if git diff --cached --quiet; then
+            echo "No handbook publication changes to commit."
+            exit 0
+          fi
+          git commit -m "Publish QMS handbook ${PUBLISH_ID} from ${SOURCE_REF:0:12}"
+          git push origin "${TARGET_BRANCH}"
+          popd >/dev/null
+
+      - name: Summarize publication
+        run: |
+          echo "Published handbook to ${TARGET_HANDBOOK_REPO} (${TARGET_HANDBOOK_BRANCH})"
+          echo "Publish ID: ${{ steps.meta.outputs.publish_id }}"
