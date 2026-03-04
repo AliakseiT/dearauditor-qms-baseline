@@ -5,9 +5,13 @@ on:
     types: [created]
 
 permissions:
-  actions: write
   contents: read
   issues: write
+  pull-requests: read
+
+env:
+  TARGET_RECORD_REPO: AliakseiT/qms-records
+  TARGET_RECORD_BRANCH: main
 
 concurrency:
   group: part11-title-page-comment-${{ github.event.comment.id }}
@@ -26,82 +30,348 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract attestation JSON from PR comment
-        id: extract
-        env:
-          COMMENT_BODY: ${{ github.event.comment.body }}
-          PR_NUMBER: ${{ github.event.issue.number }}
-          COMMENT_ID: ${{ github.event.comment.id }}
-        run: |
-          python - <<'PY'
-          import json
-          import os
-          import re
-          from pathlib import Path
+      - name: Aggregate signature context from PR comments
+        id: aggregate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
 
-          body = os.environ.get("COMMENT_BODY", "")
-          pr_number = os.environ.get("PR_NUMBER", "")
-          comment_id = os.environ.get("COMMENT_ID", "")
+            const prNumber = Number(context.payload.issue?.number || 0);
+            if (!prNumber) {
+              core.setFailed('Missing PR number in issue comment event.');
+              return;
+            }
 
-          block = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", body, flags=re.DOTALL | re.IGNORECASE)
-          if not block:
-            raise SystemExit("Could not find JSON code block in attestation comment.")
+            const sourceComment = context.payload.comment || {};
+            const sourceBody = String(sourceComment.body || '');
 
-          payload = json.loads(block.group(1))
-          Path("signed_attestation.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+            function parseJsonBlock(body) {
+              const m = String(body || '').match(/```(?:json)?\s*([\s\S]*?)```/i);
+              if (!m || !m[1]) return null;
+              try {
+                return JSON.parse(m[1]);
+              } catch {
+                return null;
+              }
+            }
 
-          record_id = f"PR-{pr_number}-COMMENT-{comment_id}"
-          artifact_name = f"part11-title-page-pr{pr_number}-c{comment_id}"
+            function normalizeAttestation(body, payload) {
+              if (!payload || typeof payload !== 'object') return null;
+              const isNative = String(body || '').includes('<!-- signature-native-attestation -->') || String(body || '').includes('<!-- part11-native-attestation -->');
+              if (isNative) {
+                return {
+                  user_id: String(payload.actor_login || '').trim(),
+                  signer_full_name: String(payload.signer_full_name || '').trim(),
+                  signer_job_title: String(payload.signer_job_title || '').trim(),
+                  signer_role: String(payload.signer_role || '').trim(),
+                  meaning_of_signature: String(payload.meaning_of_signature || '').trim(),
+                  target_hash: String(payload.target_hash || '').trim().toLowerCase(),
+                  timestamp: String(payload.timestamp_utc || '').trim(),
+                  attestation_sha256: String(payload.attestation_sha256 || '').trim(),
+                };
+              }
+              return {
+                user_id: String(payload.user_id || '').trim(),
+                signer_full_name: String(payload.signer_full_name || '').trim(),
+                signer_job_title: String(payload.signer_job_title || '').trim(),
+                signer_role: String(payload.signer_role || '').trim(),
+                meaning_of_signature: String(payload.meaning_of_signature || '').trim(),
+                target_hash: String(payload.commit_hash || '').trim().toLowerCase(),
+                timestamp: String(payload.timestamp || '').trim(),
+                attestation_sha256: String(payload.attestation_id || '').trim(),
+              };
+            }
 
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
-            fh.write(f"record_id={record_id}\n")
-            fh.write(f"artifact_name={artifact_name}\n")
-          PY
+            function parseRequiredSignatures(requestBody) {
+              const m = String(requestBody || '').match(/Required signatures:\s*\*\*([0-9]+)\*\*/i);
+              const n = m ? Number.parseInt(m[1], 10) : 1;
+              return Number.isInteger(n) && n > 0 ? n : 1;
+            }
 
-      - name: Install PDF dependency
-        run: python -m pip install --quiet fpdf2
+            function parseMeaning(requestBody) {
+              const m = String(requestBody || '').match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i)
+                || String(requestBody || '').match(/Meaning of signature:\s*`([^`]+)`/i);
+              return m ? String(m[1] || '').trim() : '';
+            }
 
-      - name: Generate Part 11 title-page PDF
+            const sourcePayload = parseJsonBlock(sourceBody);
+            if (!sourcePayload) {
+              core.setFailed('Could not parse attestation JSON from triggering comment.');
+              return;
+            }
+            const sourceNorm = normalizeAttestation(sourceBody, sourcePayload);
+            if (!sourceNorm) {
+              core.setFailed('Could not normalize triggering attestation payload.');
+              return;
+            }
+
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            })).data;
+            const authorLogin = String(pr.user?.login || '').toLowerCase();
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const requestComments = comments
+              .filter((c) => {
+                const b = String(c.body || '');
+                return b.includes('<!-- signature-native-signature-request -->') || b.includes('<!-- part11-native-signature-request -->');
+              })
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
+            const latestRequest = requestComments.length > 0 ? requestComments[requestComments.length - 1] : null;
+            const requiredSignatures = parseRequiredSignatures(latestRequest?.body || '');
+            const requestMeaning = parseMeaning(latestRequest?.body || '');
+
+            const expectedHash = sourceNorm.target_hash || '';
+            const expectedMeaning = sourceNorm.meaning_of_signature || requestMeaning || 'Approved Quality Record';
+
+            const attestationComments = comments
+              .filter((c) => {
+                const b = String(c.body || '');
+                return b.includes('<!-- signature-native-attestation -->') ||
+                  b.includes('<!-- part11-native-attestation -->') ||
+                  b.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+                  b.includes('<!-- PART11_ATTESTATION_V1 -->');
+              })
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
+
+            const bySigner = new Map();
+            for (const c of attestationComments) {
+              const payload = parseJsonBlock(c.body || '');
+              if (!payload) continue;
+              const norm = normalizeAttestation(c.body || '', payload);
+              if (!norm) continue;
+              if (expectedHash && norm.target_hash && norm.target_hash !== expectedHash) continue;
+              if (expectedMeaning && norm.meaning_of_signature && norm.meaning_of_signature !== expectedMeaning) continue;
+              const signerKey = String(norm.user_id || '').trim().toLowerCase();
+              if (!signerKey) continue;
+              bySigner.set(signerKey, {
+                user_id: norm.user_id,
+                signer_full_name: norm.signer_full_name,
+                signer_job_title: norm.signer_job_title,
+                signer_role: norm.signer_role,
+                meaning_of_signature: norm.meaning_of_signature || expectedMeaning,
+                timestamp: norm.timestamp || String(c.created_at || ''),
+                attestation_sha256: norm.attestation_sha256,
+              });
+            }
+
+            const signers = Array.from(bySigner.values()).sort((a, b) => {
+              const ta = Date.parse(a.timestamp || 0) || 0;
+              const tb = Date.parse(b.timestamp || 0) || 0;
+              return ta - tb;
+            });
+
+            const capturedSignatures = signers.length;
+            const hasAuthor = authorLogin ? signers.some((s) => String(s.user_id || '').toLowerCase() === authorLogin) : true;
+            const allRequiredCollected = capturedSignatures >= requiredSignatures && hasAuthor;
+            const hashShort = (expectedHash || 'nohash').slice(0, 12);
+            const recordId = `PR-${prNumber}-H${hashShort}`;
+
+            const aggregate = {
+              schema_version: 1,
+              attestation_scope: 'pr_signature_ceremony',
+              source_repository: `${context.repo.owner}/${context.repo.repo}`,
+              source_pull_request: prNumber,
+              source_pr_title: String(pr.title || ''),
+              source_pr_url: String(pr.html_url || ''),
+              source_attestation_comment_id: Number(sourceComment.id || 0),
+              source_attestation_comment_url: String(sourceComment.html_url || ''),
+              part11_target_hash: expectedHash,
+              meaning_of_signature: expectedMeaning,
+              required_signatures: requiredSignatures,
+              captured_signatures: capturedSignatures,
+              all_required_collected: allRequiredCollected,
+              request_comment_url: String(latestRequest?.html_url || ''),
+              captured_at_utc: new Date().toISOString(),
+              signed_attestations: signers,
+            };
+
+            fs.writeFileSync('signed_attestation.json', `${JSON.stringify(aggregate, null, 2)}\n`, 'utf8');
+
+            core.setOutput('record_id', recordId);
+            core.setOutput('hash_short', hashShort);
+            core.setOutput('required_signatures', String(requiredSignatures));
+            core.setOutput('captured_signatures', String(capturedSignatures));
+            core.setOutput('all_required_collected', allRequiredCollected ? 'true' : 'false');
+
+      - name: Install render dependencies
+        run: python -m pip install --quiet fpdf2 pillow
+
+      - name: Generate signature title-page PDF and PNG
         run: |
           python scripts/generate_part11_title_page.py \
             --attestation signed_attestation.json \
             --output part11_title_page.pdf \
-            --record-id "${{ steps.extract.outputs.record_id }}"
+            --output-png part11_title_page.png \
+            --record-id "${{ steps.aggregate.outputs.record_id }}"
 
-      - name: Upload title-page package artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.extract.outputs.artifact_name }}
-          path: |
-            part11_title_page.pdf
-            signed_attestation.json
-          if-no-files-found: error
-          retention-days: 30
+      - name: Publish immutable signature page release
+        id: publish
+        env:
+          GH_TOKEN: ${{ secrets.QMS_RECORDS_TOKEN }}
+          TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
+          TARGET_BRANCH: ${{ env.TARGET_RECORD_BRANCH }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          HASH_SHORT: ${{ steps.aggregate.outputs.hash_short }}
+          REQUIRED_SIGNATURES: ${{ steps.aggregate.outputs.required_signatures }}
+          CAPTURED_SIGNATURES: ${{ steps.aggregate.outputs.captured_signatures }}
+          ALL_REQUIRED_COLLECTED: ${{ steps.aggregate.outputs.all_required_collected }}
+        shell: bash
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "QMS_RECORDS_TOKEN is required to publish signature page assets to ${TARGET_REPO}."
+            exit 1
+          fi
 
-      - name: Comment PR with artifact pointer
+          python <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          import time
+          from pathlib import Path
+
+          target_repo = os.environ["TARGET_REPO"].strip()
+          target_branch = os.environ["TARGET_BRANCH"].strip()
+          pr_number = os.environ["PR_NUMBER"].strip()
+          hash_short = os.environ["HASH_SHORT"].strip() or "nohash"
+          required = os.environ["REQUIRED_SIGNATURES"].strip() or "1"
+          captured = os.environ["CAPTURED_SIGNATURES"].strip() or "0"
+          complete = os.environ["ALL_REQUIRED_COLLECTED"].strip().lower() == "true"
+
+          base_tag = f"sig-pr{pr_number}-h{hash_short}"
+          prefix = f"{base_tag}-r"
+
+          attestation = json.loads(Path("signed_attestation.json").read_text(encoding="utf-8"))
+          notes = "\n".join([
+            "# Immutable Signature Page",
+            "",
+            f"- Source repository: `{attestation.get('source_repository', 'n/a')}`",
+            f"- Source PR: `#{attestation.get('source_pull_request', 'n/a')}`",
+            f"- Change title: `{attestation.get('source_pr_title', 'n/a')}`",
+            f"- Meaning of signature: `{attestation.get('meaning_of_signature', 'n/a')}`",
+            f"- Target hash: `{attestation.get('part11_target_hash', 'n/a')}`",
+            f"- Required/Captured signatures: `{required}/{captured}`",
+            f"- Completion status: `{'complete' if complete else 'pending'}`",
+            "",
+            "Assets:",
+            "- `part11_title_page.png`",
+            "- `part11_title_page.pdf`",
+            "- `signed_attestation.json`",
+          ]) + "\n"
+          Path("release_notes.md").write_text(notes, encoding="utf-8")
+
+          def run_with_retry(cmd, attempts=5, sleep_seconds=3, allow_404=False):
+            last = None
+            for _ in range(attempts):
+              proc = subprocess.run(cmd, text=True, capture_output=True)
+              if proc.returncode == 0:
+                return proc.stdout
+              stderr = (proc.stderr or "") + (proc.stdout or "")
+              if allow_404 and ("HTTP 404" in stderr or "Not Found" in stderr):
+                return None
+              last = stderr.strip()
+              time.sleep(sleep_seconds)
+            raise RuntimeError(f"Command failed: {' '.join(cmd)}\\n{last}")
+
+          refs_raw = run_with_retry(
+            ["gh", "api", f"repos/{target_repo}/git/matching-refs/tags/{prefix}"],
+            allow_404=True,
+          )
+          refs = json.loads(refs_raw) if refs_raw else []
+
+          max_rev = 0
+          for ref in refs:
+            ref_name = ref.get("ref", "")
+            m = re.search(r"-r(\\d+)$", ref_name)
+            if m:
+              max_rev = max(max_rev, int(m.group(1)))
+
+          tag = f"{base_tag}-r{max_rev + 1:02d}"
+
+          create_cmd = [
+            "gh", "release", "create", tag,
+            "--repo", target_repo,
+            "--target", target_branch,
+            "--title", f"Signature Page: PR #{pr_number}",
+            "--notes-file", "release_notes.md",
+            "--draft",
+            "part11_title_page.png",
+            "part11_title_page.pdf",
+            "signed_attestation.json",
+          ]
+          run_with_retry(create_cmd)
+          run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])
+
+          release_json = run_with_retry(["gh", "api", f"repos/{target_repo}/releases/tags/{tag}"])
+          rel = json.loads(release_json)
+          assets = {a.get("name", ""): a.get("browser_download_url", "") for a in rel.get("assets", [])}
+
+          out = Path(os.environ["GITHUB_OUTPUT"])
+          with out.open("a", encoding="utf-8") as fh:
+            fh.write(f"tag={tag}\\n")
+            fh.write(f"release_url={rel.get('html_url', '')}\\n")
+            fh.write(f"png_url={assets.get('part11_title_page.png', '')}\\n")
+            fh.write(f"pdf_url={assets.get('part11_title_page.pdf', '')}\\n")
+            fh.write(f"json_url={assets.get('signed_attestation.json', '')}\\n")
+          PY
+
+      - name: Comment PR with signature page preview
         uses: actions/github-script@v7
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
-          COMMENT_ID: ${{ github.event.comment.id }}
-          ARTIFACT_NAME: ${{ steps.extract.outputs.artifact_name }}
+          SOURCE_COMMENT_ID: ${{ github.event.comment.id }}
+          RELEASE_URL: ${{ steps.publish.outputs.release_url }}
+          PNG_URL: ${{ steps.publish.outputs.png_url }}
+          PDF_URL: ${{ steps.publish.outputs.pdf_url }}
+          JSON_URL: ${{ steps.publish.outputs.json_url }}
+          REQUIRED_SIGNATURES: ${{ steps.aggregate.outputs.required_signatures }}
+          CAPTURED_SIGNATURES: ${{ steps.aggregate.outputs.captured_signatures }}
+          ALL_REQUIRED_COLLECTED: ${{ steps.aggregate.outputs.all_required_collected }}
         with:
           script: |
             const prNumber = Number(process.env.PR_NUMBER);
-            const sourceCommentId = process.env.COMMENT_ID;
-            const artifactName = process.env.ARTIFACT_NAME;
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const sourceCommentId = process.env.SOURCE_COMMENT_ID;
+            const releaseUrl = process.env.RELEASE_URL || '';
+            const pngUrl = process.env.PNG_URL || '';
+            const pdfUrl = process.env.PDF_URL || '';
+            const jsonUrl = process.env.JSON_URL || '';
+            const required = process.env.REQUIRED_SIGNATURES || '1';
+            const captured = process.env.CAPTURED_SIGNATURES || '0';
+            const complete = (process.env.ALL_REQUIRED_COLLECTED || '').toLowerCase() === 'true';
 
-            const body = [
-              '<!-- signature-title-page-artifact -->',
-              '📄 Signature title-page PDF generated for this attestation.',
+            const lines = [
+              '<!-- signature-title-page-published -->',
+              '📄 Signature page published',
               `Source attestation comment: #${sourceCommentId}`,
-              `Artifact: \`${artifactName}\``,
-              `Run: ${runUrl}`,
-            ].join('\n');
+              `Required/Captured signatures: ${required}/${captured}`,
+              `Ceremony status: ${complete ? 'complete' : 'pending additional signatures'}`,
+              releaseUrl ? `Immutable release: ${releaseUrl}` : 'Immutable release: n/a',
+              '',
+            ];
+
+            if (pngUrl) {
+              lines.push(`![Signature page preview](${pngUrl})`);
+              lines.push('');
+            }
+
+            lines.push('Assets:');
+            lines.push(`- PNG: ${pngUrl || 'n/a'}`);
+            lines.push(`- PDF: ${pdfUrl || 'n/a'}`);
+            lines.push(`- JSON: ${jsonUrl || 'n/a'}`);
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body,
+              body: lines.join('\n'),
             });
