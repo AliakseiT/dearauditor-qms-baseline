@@ -7,7 +7,7 @@ on:
       - records/**/*.md
 
 permissions:
-  contents: read
+  contents: write
   issues: read
   pull-requests: read
 
@@ -16,7 +16,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
-      TARGET_RECORD_REPO: AliakseiT/qms-records
+      TARGET_RECORD_REPO: ${{ github.repository }}
       TARGET_RECORD_BRANCH: main
       PART11_TIMEOUT_SECONDS: "5400"
       PART11_POLL_SECONDS: "20"
@@ -480,16 +480,17 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-      - name: Publish immutable releases to qms-records
+      - name: Publish immutable record releases
         if: steps.records.outputs.has_records == 'true'
         env:
-          GH_TOKEN: ${{ secrets.QMS_RECORDS_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
           TARGET_BRANCH: ${{ env.TARGET_RECORD_BRANCH }}
+          TARGET_REF: ${{ steps.records.outputs.merge_sha }}
         shell: bash
         run: |
           if [ -z "${GH_TOKEN}" ]; then
-            echo "QMS_RECORDS_TOKEN is required to publish immutable releases in ${TARGET_REPO}."
+            echo "GitHub token is required to publish immutable releases in ${TARGET_REPO}."
             exit 1
           fi
 
@@ -504,6 +505,7 @@ jobs:
           import os
           target_repo = os.environ["TARGET_REPO"].strip()
           target_branch = os.environ["TARGET_BRANCH"].strip()
+          target_ref = os.environ.get("TARGET_REF", "").strip() or target_branch
 
           def run_with_retry(cmd, attempts=5, sleep_seconds=3, allow_404=False):
             last = None
@@ -549,7 +551,7 @@ jobs:
             create_cmd = [
               "gh", "release", "create", tag,
               "--repo", target_repo,
-              "--target", target_branch,
+              "--target", target_ref,
               "--title", entry["title"],
               "--notes-file", notes_file,
               "--draft",

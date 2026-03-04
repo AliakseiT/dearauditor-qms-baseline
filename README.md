@@ -47,7 +47,7 @@
 
 ## Immutable Record Release Tags
 
-QMS execution records are published as immutable releases in `AliakseiT/qms-records`.
+QMS execution records are published as immutable releases in this repository (`AliakseiT/qms-lite`) on the relevant PR target commit/hash.
 
 | Record Type | Tag Pattern | Example |
 |---|---|---|
@@ -67,7 +67,7 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
 - `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a review-only onboarding PR where base is a branch pinned to the first commit and head is a SOP-only snapshot of current `main`.
-- `training_review_signoff.yml`: when such review-only PR is closed unmerged, enforces trainee approval, runs Part 11 signature collection, and publishes immutable training record assets to `AliakseiT/qms-records`.
+- `training_review_signoff.yml`: when such review-only PR is closed unmerged, enforces trainee approval, runs Part 11 signature collection, and publishes immutable training record assets as releases in `AliakseiT/qms-lite`.
 - Attestation:
   - merged training update PRs use post-merge Part 11 flow.
   - review-only onboarding PRs use post-close (unmerged) Part 11 flow via `training_review_signoff.yml`.
@@ -99,7 +99,6 @@ QMS execution records are published as immutable releases in `AliakseiT/qms-reco
 - `SIGNATURE_APP_ID`: GitHub App ID used by signature workflows.
 - `SIGNATURE_APP_PRIVATE_KEY`: GitHub App private key (PEM) for installation token minting.
 - `SIGNATURE_LINK_SECRET`: shared HMAC key used to sign `/sign` links in Actions and verify them in worker backend.
-- `QMS_RECORDS_TOKEN`: PAT used only for publishing immutable record releases to `AliakseiT/qms-records`.
 - `CLOUDFLARE_API_TOKEN`: token used by `deploy_signature_worker.yml`.
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account identifier for worker deploy.
 

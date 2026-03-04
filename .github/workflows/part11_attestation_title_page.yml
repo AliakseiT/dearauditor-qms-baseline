@@ -5,12 +5,12 @@ on:
     types: [created]
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: read
 
 env:
-  TARGET_RECORD_REPO: AliakseiT/qms-records
+  TARGET_RECORD_REPO: ${{ github.repository }}
   TARGET_RECORD_BRANCH: main
 
 concurrency:
@@ -77,6 +77,7 @@ jobs:
                   signer_job_title: String(payload.signer_job_title || '').trim(),
                   signer_role: String(payload.signer_role || '').trim(),
                   meaning_of_signature: String(payload.meaning_of_signature || '').trim(),
+                  target_commit: String(payload.target_commit || '').trim(),
                   target_hash: String(payload.target_hash || '').trim().toLowerCase(),
                   timestamp: String(payload.timestamp_utc || '').trim(),
                   attestation_sha256: String(payload.attestation_sha256 || '').trim(),
@@ -88,6 +89,7 @@ jobs:
                 signer_job_title: String(payload.signer_job_title || '').trim(),
                 signer_role: String(payload.signer_role || '').trim(),
                 meaning_of_signature: String(payload.meaning_of_signature || '').trim(),
+                target_commit: String(payload.target_commit || '').trim(),
                 target_hash: String(payload.commit_hash || '').trim().toLowerCase(),
                 timestamp: String(payload.timestamp || '').trim(),
                 attestation_sha256: String(payload.attestation_id || '').trim(),
@@ -186,6 +188,7 @@ jobs:
             const allRequiredCollected = capturedSignatures >= requiredSignatures && hasAuthor;
             const hashShort = (expectedHash || 'nohash').slice(0, 12);
             const recordId = `PR-${prNumber}-H${hashShort}`;
+            const sourceTargetCommit = String(pr.merge_commit_sha || pr.head?.sha || sourceNorm.target_commit || '').trim();
 
             const aggregate = {
               schema_version: 1,
@@ -194,6 +197,7 @@ jobs:
               source_pull_request: prNumber,
               source_pr_title: String(pr.title || ''),
               source_pr_url: String(pr.html_url || ''),
+              source_target_commit: sourceTargetCommit,
               source_attestation_comment_id: Number(sourceComment.id || 0),
               source_attestation_comment_url: String(sourceComment.html_url || ''),
               part11_target_hash: expectedHash,
@@ -213,24 +217,25 @@ jobs:
             core.setOutput('required_signatures', String(requiredSignatures));
             core.setOutput('captured_signatures', String(capturedSignatures));
             core.setOutput('all_required_collected', allRequiredCollected ? 'true' : 'false');
+            core.setOutput('source_target_commit', sourceTargetCommit);
 
       - name: Install render dependencies
-        run: python -m pip install --quiet fpdf2 pillow
+        run: python -m pip install --quiet fpdf2
 
-      - name: Generate signature title-page PDF and PNG
+      - name: Generate signature title-page PDF
         run: |
           python scripts/generate_part11_title_page.py \
             --attestation signed_attestation.json \
             --output part11_title_page.pdf \
-            --output-png part11_title_page.png \
             --record-id "${{ steps.aggregate.outputs.record_id }}"
 
       - name: Publish immutable signature page release
         id: publish
         env:
-          GH_TOKEN: ${{ secrets.QMS_RECORDS_TOKEN }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
           TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
           TARGET_BRANCH: ${{ env.TARGET_RECORD_BRANCH }}
+          TARGET_REF: ${{ steps.aggregate.outputs.source_target_commit }}
           PR_NUMBER: ${{ github.event.issue.number }}
           HASH_SHORT: ${{ steps.aggregate.outputs.hash_short }}
           REQUIRED_SIGNATURES: ${{ steps.aggregate.outputs.required_signatures }}
@@ -239,7 +244,7 @@ jobs:
         shell: bash
         run: |
           if [ -z "${GH_TOKEN}" ]; then
-            echo "QMS_RECORDS_TOKEN is required to publish signature page assets to ${TARGET_REPO}."
+            echo "GitHub token is required to publish signature page assets to ${TARGET_REPO}."
             exit 1
           fi
 
@@ -253,6 +258,7 @@ jobs:
 
           target_repo = os.environ["TARGET_REPO"].strip()
           target_branch = os.environ["TARGET_BRANCH"].strip()
+          target_ref = os.environ.get("TARGET_REF", "").strip() or target_branch
           pr_number = os.environ["PR_NUMBER"].strip()
           hash_short = os.environ["HASH_SHORT"].strip() or "nohash"
           required = os.environ["REQUIRED_SIGNATURES"].strip() or "1"
@@ -271,11 +277,11 @@ jobs:
             f"- Change title: `{attestation.get('source_pr_title', 'n/a')}`",
             f"- Meaning of signature: `{attestation.get('meaning_of_signature', 'n/a')}`",
             f"- Target hash: `{attestation.get('part11_target_hash', 'n/a')}`",
+            f"- Target ref: `{target_ref}`",
             f"- Required/Captured signatures: `{required}/{captured}`",
             f"- Completion status: `{'complete' if complete else 'pending'}`",
             "",
             "Assets:",
-            "- `part11_title_page.png`",
             "- `part11_title_page.pdf`",
             "- `signed_attestation.json`",
           ]) + "\n"
@@ -312,11 +318,10 @@ jobs:
           create_cmd = [
             "gh", "release", "create", tag,
             "--repo", target_repo,
-            "--target", target_branch,
+            "--target", target_ref,
             "--title", f"Signature Page: PR #{pr_number}",
             "--notes-file", "release_notes.md",
             "--draft",
-            "part11_title_page.png",
             "part11_title_page.pdf",
             "signed_attestation.json",
           ]
@@ -331,7 +336,6 @@ jobs:
           with out.open("a", encoding="utf-8") as fh:
             fh.write(f"tag={tag}\\n")
             fh.write(f"release_url={rel.get('html_url', '')}\\n")
-            fh.write(f"png_url={assets.get('part11_title_page.png', '')}\\n")
             fh.write(f"pdf_url={assets.get('part11_title_page.pdf', '')}\\n")
             fh.write(f"json_url={assets.get('signed_attestation.json', '')}\\n")
           PY
@@ -340,50 +344,27 @@ jobs:
         uses: actions/github-script@v7
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
-          SOURCE_COMMENT_ID: ${{ github.event.comment.id }}
           RELEASE_URL: ${{ steps.publish.outputs.release_url }}
-          PNG_URL: ${{ steps.publish.outputs.png_url }}
           PDF_URL: ${{ steps.publish.outputs.pdf_url }}
-          JSON_URL: ${{ steps.publish.outputs.json_url }}
-          REQUIRED_SIGNATURES: ${{ steps.aggregate.outputs.required_signatures }}
-          CAPTURED_SIGNATURES: ${{ steps.aggregate.outputs.captured_signatures }}
-          ALL_REQUIRED_COLLECTED: ${{ steps.aggregate.outputs.all_required_collected }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const prNumber = Number(process.env.PR_NUMBER);
-            const sourceCommentId = process.env.SOURCE_COMMENT_ID;
             const releaseUrl = process.env.RELEASE_URL || '';
-            const pngUrl = process.env.PNG_URL || '';
             const pdfUrl = process.env.PDF_URL || '';
-            const jsonUrl = process.env.JSON_URL || '';
-            const required = process.env.REQUIRED_SIGNATURES || '1';
-            const captured = process.env.CAPTURED_SIGNATURES || '0';
-            const complete = (process.env.ALL_REQUIRED_COLLECTED || '').toLowerCase() === 'true';
-
-            const lines = [
-              '<!-- signature-title-page-published -->',
-              '📄 Signature page published',
-              `Source attestation comment: #${sourceCommentId}`,
-              `Required/Captured signatures: ${required}/${captured}`,
-              `Ceremony status: ${complete ? 'complete' : 'pending additional signatures'}`,
-              releaseUrl ? `Immutable release: ${releaseUrl}` : 'Immutable release: n/a',
-              '',
-            ];
-
-            if (pngUrl) {
-              lines.push(`![Signature page preview](${pngUrl})`);
-              lines.push('');
+            if (!releaseUrl || !pdfUrl) {
+              core.setFailed('Signature page release was published but release or PDF URL is missing.');
+              return;
             }
-
-            lines.push('Assets:');
-            lines.push(`- PNG: ${pngUrl || 'n/a'}`);
-            lines.push(`- PDF: ${pdfUrl || 'n/a'}`);
-            lines.push(`- JSON: ${jsonUrl || 'n/a'}`);
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: lines.join('\n'),
+              body: [
+                '<!-- signature-title-page-published -->',
+                '📄 Signature page published.',
+                `Release: ${releaseUrl}`,
+                `PDF: ${pdfUrl}`,
+              ].join('\n'),
             });
