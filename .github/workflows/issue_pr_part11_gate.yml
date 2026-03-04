@@ -26,12 +26,7 @@ jobs:
             const crypto = require('crypto');
             const pr = context.payload.pull_request;
             const body = pr.body || '';
-
             const issueMatch = body.match(/Issue\s+#(\d+)/i);
-            if (!issueMatch) {
-              core.setFailed('Execution Record must reference an Issue number (e.g., "Issue #12").');
-              return;
-            }
 
             const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
             let meaning = meaningMatch ? meaningMatch[1].trim() : '';
@@ -74,6 +69,11 @@ jobs:
             });
             const paths = changedFiles.map((f) => String(f.filename || ''));
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const requiresExecutionIssueRef = paths.some((p) => p.startsWith('records/') && p.endsWith('.md'));
+            if (requiresExecutionIssueRef && !issueMatch) {
+              core.setFailed('Execution record PRs must reference an Issue number in PR body (e.g., "Issue #12").');
+              return;
+            }
             const coapprovalReasons = [];
             if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
             if (hasPath('records/')) coapprovalReasons.push('records (/records)');
@@ -153,7 +153,7 @@ jobs:
             const reviewerSigners = approvedFromPool.slice(0, requiredReviewerSignatures);
             const finalSigners = [authorLogin, ...reviewerSigners];
 
-            core.setOutput('issue_number', issueMatch[1]);
+            core.setOutput('issue_number', issueMatch ? issueMatch[1] : '');
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(requiredSignaturesForRequest));
