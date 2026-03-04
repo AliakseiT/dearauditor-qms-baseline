@@ -209,8 +209,8 @@ jobs:
               const baseRequiredReviewers = explicitRequired > 0 ? Math.max(0, explicitRequired - 1) : 0;
               const policyRequiredReviewers = policyReasons.length > 0 ? 1 : 0;
               const requiredReviewers = Math.max(baseRequiredReviewers, policyRequiredReviewers);
-              const signatureRequired = explicitRequired > 0 || policyReasons.length > 0;
-              const computedRequiredSignatures = signatureRequired
+              const policySignatureRequired = explicitRequired > 0 || policyReasons.length > 0;
+              const computedRequiredSignatures = policySignatureRequired
                 ? Math.max(explicitRequired || 1, requiredReviewers + 1)
                 : 0;
 
@@ -226,7 +226,7 @@ jobs:
                 ? parseRequestComment(latestRequest.body || '', latestRequest.html_url || '')
                 : null;
 
-              const requiredSignatures = request?.requiredSignatures || computedRequiredSignatures;
+              const signatureRequested = Boolean(request);
               const eligibleSigners = (request?.eligibleSigners || []).filter(Boolean);
               const targetHash = (request?.targetHash || '').toLowerCase();
 
@@ -257,13 +257,23 @@ jobs:
               const signedEligible = eligibleSigners.filter((s) => signedBy.has(s));
               const capturedCount = eligibleSigners.length > 0 ? signedEligible.length : signedBy.size;
               const missingSigners = eligibleSigners.filter((s) => !signedBy.has(s));
+              const hasAttestationEvidence = signedBy.size > 0;
+
+              const signatureRequired = policySignatureRequired || signatureRequested || hasAttestationEvidence;
+              let requiredSignatures = request?.requiredSignatures || 0;
+              if (requiredSignatures <= 0) {
+                requiredSignatures = computedRequiredSignatures;
+              }
+              if (signatureRequired && requiredSignatures <= 0) {
+                requiredSignatures = Math.max(capturedCount, 1);
+              }
 
               const missingWithLinks = missingSigners.map((login) => ({
                 login,
                 link: request?.links?.[login] || '',
               }));
 
-              const blockedNoRequest = signatureRequired && !request;
+              const blockedNoRequest = policySignatureRequired && !request;
               const outstanding = signatureRequired && (
                 blockedNoRequest ||
                 (eligibleSigners.length > 0 ? missingSigners.length > 0 : capturedCount < requiredSignatures)
