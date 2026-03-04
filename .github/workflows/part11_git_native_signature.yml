@@ -190,12 +190,6 @@ jobs:
               .filter(([, review]) => review.state === 'APPROVED' && review.commitId === currentHeadSha)
               .map(([login]) => login);
             const approvedOnHeadSet = new Set(approvedOnHead);
-            if (approvedOnHead.length === 0) {
-              core.setFailed(
-                `PR #${prNumber} has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature generation is blocked.`
-              );
-              return;
-            }
 
             let allowedSigners = [];
             if (pr.merged) {
@@ -209,6 +203,12 @@ jobs:
               const authorLogin = (pr.user?.login || '').toLowerCase();
               if (!authorLogin) {
                 core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer eligibility.`);
+                return;
+              }
+              if (requiredReviewerSignatures > 0 && approvedOnHead.length === 0) {
+                core.setFailed(
+                  `PR #${prNumber} requires reviewer signatures, but has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature generation is blocked.`
+                );
                 return;
               }
 
@@ -251,6 +251,12 @@ jobs:
               }
               allowedSigners = [authorLogin, ...approvedFromPool.slice(0, requiredReviewerSignatures)];
             } else {
+              if (approvedOnHead.length === 0) {
+                core.setFailed(
+                  `PR #${prNumber} has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature generation is blocked.`
+                );
+                return;
+              }
               const approvedRequested = requestedReviewers.filter((login) => approvedOnHeadSet.has(login));
               allowedSigners = approvedRequested.length > 0 ? approvedRequested : approvedOnHead;
               if (allowedSigners.length === 0) {

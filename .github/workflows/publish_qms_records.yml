@@ -144,9 +144,9 @@ jobs:
               .filter(([, review]) => review.state === 'APPROVED' && review.commitId === currentHeadSha)
               .map(([login]) => login);
             const approvedOnHeadSet = new Set(approvedOnHead);
-            if (approvedOnHead.length === 0) {
+            if (requiredReviewerSignatures > 0 && approvedOnHead.length === 0) {
               core.setFailed(
-                `PR #${prNumber} has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Record publishing is blocked.`
+                `PR #${prNumber} requires reviewer signatures, but has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Record publishing is blocked.`
               );
               return;
             }

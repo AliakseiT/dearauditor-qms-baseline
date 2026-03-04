@@ -105,9 +105,9 @@ jobs:
               .filter(([, review]) => review.state === 'APPROVED' && review.commitId === currentHeadSha)
               .map(([login]) => login);
             const approvedOnHeadSet = new Set(approvedOnHead);
-            if (approvedOnHead.length === 0) {
+            if (requiredReviewerSignatures > 0 && approvedOnHead.length === 0) {
               core.setFailed(
-                `PR #${pr.number} has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature request was not posted.`
+                `PR #${pr.number} requires reviewer signatures, but has no valid approval on current head commit ${currentHeadSha || '(unknown)'}. Signature request was not posted.`
               );
               return;
             }
