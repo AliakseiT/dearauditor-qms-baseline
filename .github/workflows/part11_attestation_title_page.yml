@@ -30,10 +30,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Create GitHub App token for PR API operations
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SIGNATURE_APP_ID }}
+          private-key: ${{ secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
       - name: Aggregate signature context from PR comments
         id: aggregate
         uses: actions/github-script@v7
         with:
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const fs = require('fs');
 
@@ -338,6 +349,7 @@ jobs:
           CAPTURED_SIGNATURES: ${{ steps.aggregate.outputs.captured_signatures }}
           ALL_REQUIRED_COLLECTED: ${{ steps.aggregate.outputs.all_required_collected }}
         with:
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const prNumber = Number(process.env.PR_NUMBER);
             const sourceCommentId = process.env.SOURCE_COMMENT_ID;
