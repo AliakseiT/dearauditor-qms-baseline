@@ -1,5 +1,5 @@
-name: Part 11 Signature Title Page
-run-name: Part11 signature fallback (manual) PR #${{ github.event.inputs.pr_number }}
+name: Manual Signature Attestation (Fallback)
+run-name: Manual signature fallback PR #${{ github.event.inputs.pr_number }}
 
 on:
   workflow_dispatch:
@@ -22,6 +22,7 @@ env:
 
 jobs:
   sign_and_attest:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for signature processing
@@ -40,100 +41,19 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
-            const event = context.eventName;
-
-            function extractArg(text, name) {
-              const re = new RegExp(`${name}="([^"]+)"`, 'i');
-              const m = text.match(re);
-              return m ? m[1].trim() : '';
-            }
-
-            let prNumber;
-            let meaning;
-            let signerRole;
-            let authMethod;
-            let mfaAssertion;
-            let signerFullName;
-
-            if (event === 'workflow_dispatch') {
-              prNumber = Number.parseInt(`${{ github.event.inputs.pr_number }}`, 10);
-              signerFullName = `${{ github.event.inputs.signer_full_name }}`.trim();
-              meaning = '';
-              signerRole = '';
-              authMethod = 'GitHub App workflow dispatch';
-              mfaAssertion = '';
-            } else {
-              const issue = context.payload.issue;
-              const commentBody = (context.payload.comment?.body || '').trim();
-
-              if (!issue?.pull_request) {
-                core.setFailed('Slash-sign command is only supported on PR comments.');
-                return;
-              }
-              if (!/\/part11-sign\b/i.test(commentBody)) {
-                core.setFailed('Comment does not contain /part11-sign command.');
-                return;
-              }
-
-              prNumber = Number.parseInt(String(issue.number), 10);
-              meaning = extractArg(commentBody, 'meaning');
-              signerRole = extractArg(commentBody, 'role');
-              signerFullName = '';
-              authMethod = extractArg(commentBody, 'auth') || 'GitHub session re-authenticated';
-              mfaAssertion = extractArg(commentBody, 'mfa');
-
-              const comments = await github.paginate(github.rest.issues.listComments, {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issue.number,
-                per_page: 100,
-              });
-
-              const requests = comments
-                .filter((c) => {
-                  const body = c.body || '';
-                  return body.includes('<!-- signature-native-signature-request -->') || body.includes('<!-- part11-native-signature-request -->');
-                })
-                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-              if (requests.length > 0) {
-                const latest = requests[requests.length - 1].body || '';
-                if (!meaning) {
-                  const m = latest.match(/Meaning of signature:\s*`([^`]+)`/i)
-                    || latest.match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i);
-                  if (m) meaning = m[1].trim();
-                }
-                if (!signerRole) {
-                  const m = latest.match(/Signer role\(s\):\s*`([^`]+)`/i)
-                    || latest.match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i);
-                  if (m) {
-                    const first = m[1].split(/[;,]/).map((x) => x.trim()).filter(Boolean)[0];
-                    if (first) signerRole = first;
-                  }
-                }
-              }
-            }
-
+            const prNumber = Number.parseInt(`${{ github.event.inputs.pr_number }}`, 10);
+            const signerFullName = `${{ github.event.inputs.signer_full_name }}`.trim();
+            const meaning = '';
+            const signerRole = '';
+            const authMethod = 'GitHub App workflow dispatch';
+            const mfaAssertion = '';
             if (!Number.isInteger(prNumber) || prNumber < 1) {
               core.setFailed('pr_number must resolve to a positive integer.');
               return;
             }
-            if (event === 'workflow_dispatch' && !signerFullName) {
+            if (!signerFullName) {
               core.setFailed('signer_full_name is required for workflow_dispatch signatures.');
               return;
-            }
-            if (event !== 'workflow_dispatch') {
-              if (!meaning) {
-                core.setFailed('Missing meaning_of_signature. Provide `meaning="..."` in /part11-sign.');
-                return;
-              }
-              if (!signerRole) {
-                core.setFailed('Missing signer_role. Provide `role="..."` in /part11-sign.');
-                return;
-              }
-            }
-            if (!authMethod) {
-              authMethod = 'GitHub session re-authenticated';
             }
 
             core.setOutput('pr_number', String(prNumber));
