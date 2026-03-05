@@ -302,32 +302,10 @@ jobs:
               [
                 "",
                 "### Required Completion Workflow",
-                "1. Open one PR updating `records/training/user_training_log.yml` for this user across all listed SOPs.",
-                f"2. In the PR body include: `Issue #<this-issue-number>`, `**Trainee GitHub Login:** @{user}`, and list all SOP revisions updated.",
-                "3. Obtain required approval and complete signature collection on the training PR.",
-                "",
-                "### Machine Payload",
-                "```json",
-                json.dumps(
-                  {
-                    "release_tag": release_tag,
-                    "release_url": release_url,
-                    "user": user,
-                    "mode": "onboarding" if onboarding_mode else "incremental",
-                    "sop_deltas": [
-                      {
-                        "sop_id": g["sop_id"],
-                        "from_revision": g["from_revision"],
-                        "to_revision": g["to_revision"],
-                        "sop_file": g["sop_file"],
-                        "diff_url": g["diff_url"],
-                      }
-                      for g in gaps
-                    ],
-                  },
-                  indent=2,
-                ),
-                "```",
+                "1. Review each SOP delta link in this issue and check every checkbox in `SOP Delta Checklist`.",
+                "2. When all checkboxes are completed, automation posts a signature request comment for this issue.",
+                "3. Open the generated signature link, authenticate, and complete signature.",
+                "4. The issue closes automatically after valid signature attestation is posted.",
               ]
             )
 
@@ -336,6 +314,7 @@ jobs:
                 "title": title,
                 "body": "\n".join(lines),
                 "labels": ["training", "training-diff"],
+                "assignees": [user],
               }
             )
 
@@ -378,5 +357,6 @@ jobs:
                 title: entry.title,
                 body: entry.body,
                 labels: entry.labels,
+                assignees: entry.assignees || [],
               });
             }

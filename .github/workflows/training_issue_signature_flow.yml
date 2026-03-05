@@ -1,0 +1,260 @@
+name: Training Issue Signature Flow
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: training-issue-signature-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  request_signature_on_checklist_completion:
+    if: >-
+      github.event_name == 'issues' &&
+      github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token for issue updates
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SIGNATURE_APP_ID }}
+          private-key: ${{ secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Post signature request when checklist is complete
+        uses: actions/github-script@v7
+        env:
+          SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
+          SIGNATURE_LINK_SECRET: ${{ secrets.SIGNATURE_LINK_SECRET }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const crypto = require('crypto');
+            const issue = context.payload.issue;
+            const labels = (issue.labels || []).map((l) => (l.name || '').toLowerCase());
+            if (!labels.includes('training-diff')) {
+              core.info(`Issue #${issue.number} is not training-diff; skipping.`);
+              return;
+            }
+
+            const body = String(issue.body || '');
+            const sectionMatch = body.match(/### SOP Delta Checklist([\s\S]*?)(?:\n###\s|\n##\s|$)/i);
+            if (!sectionMatch) {
+              core.info(`Issue #${issue.number} has no SOP Delta Checklist section; skipping.`);
+              return;
+            }
+            const checklistSection = sectionMatch[1] || '';
+            const totalTasks = (checklistSection.match(/^- \[(?: |x|X)\] .+$/gm) || []).length;
+            const openTasks = (checklistSection.match(/^- \[ \] .+$/gm) || []).length;
+            if (totalTasks === 0) {
+              core.info(`Issue #${issue.number} has no checklist items; skipping.`);
+              return;
+            }
+            if (openTasks > 0) {
+              core.info(`Issue #${issue.number} still has ${openTasks}/${totalTasks} unchecked items; skipping signature request.`);
+              return;
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              per_page: 100,
+            });
+            const hasRequest = comments.some((c) => String(c.body || '').includes('<!-- training-signature-request -->'));
+            const hasAttestation = comments.some((c) => {
+              const b = String(c.body || '');
+              return b.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+                b.includes('<!-- PART11_ATTESTATION_V1 -->') ||
+                b.includes('<!-- signature-native-attestation -->') ||
+                b.includes('<!-- part11-native-attestation -->');
+            });
+            if (hasRequest || hasAttestation) {
+              core.info(`Issue #${issue.number} already has signature request/attestation; skipping.`);
+              return;
+            }
+
+            const markerMatch = body.match(/training-diff-consolidated:user=([A-Za-z0-9-]+)/i);
+            const markerUser = markerMatch ? markerMatch[1].toLowerCase() : '';
+            let trainee = ((issue.assignees || [])[0]?.login || '').toLowerCase();
+
+            if (!trainee && markerUser) {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees: [markerUser],
+              });
+              trainee = markerUser;
+              core.info(`Assigned issue #${issue.number} to @${markerUser} from marker metadata.`);
+            }
+            if (!trainee) {
+              core.setFailed(`Issue #${issue.number} has no assignee and no training marker user; cannot create signature request.`);
+              return;
+            }
+
+            const signingBaseUrl = (process.env.SIGNATURE_UI_BASE_URL || '').trim().replace(/\/+$/g, '');
+            const linkSecret = (process.env.SIGNATURE_LINK_SECRET || '').trim();
+            if (!signingBaseUrl) {
+              core.setFailed('Missing SIGNATURE_UI_BASE_URL variable.');
+              return;
+            }
+            if (!linkSecret) {
+              core.setFailed('Missing SIGNATURE_LINK_SECRET secret.');
+              return;
+            }
+
+            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
+            const bodyHash = crypto.createHash('sha256').update(body).digest('hex');
+            const targetHash = crypto.createHash('sha256').update(`${repoFull}:training_issue:${issue.number}:${bodyHash}`).digest('hex');
+            const meaning = 'Completed QMS Training Review';
+            const role = 'Trained Personnel';
+            const requiredSignatures = '1';
+            const signatureIndex = '1';
+            const expirationEpoch = Math.floor(Date.now() / 1000) + (12 * 60 * 60);
+
+            const payload = {
+              repo: repoFull,
+              pr: String(issue.number),
+              hash: targetHash,
+              meaning,
+              role,
+              signer: trainee,
+              required_signatures: requiredSignatures,
+              signature_index: signatureIndex,
+              exp: String(expirationEpoch),
+            };
+            const canonical = Object.keys(payload).sort().map((k) => `${k}=${payload[k]}`).join('&');
+            const sig = crypto.createHmac('sha256', linkSecret).update(canonical).digest('hex');
+            const link = `${signingBaseUrl}/sign?${new URLSearchParams({ ...payload, sig }).toString()}`;
+
+            const requestBody = [
+              '<!-- training-signature-request -->',
+              '<!-- signature-native-signature-request -->',
+              '🛑 Signature Required',
+              '',
+              `Issue: #${issue.number}`,
+              `Target hash (merge state): \`${targetHash}\``,
+              `Meaning of signature: **${meaning}**`,
+              `Designated signatory role(s): **${role}**`,
+              `Required signatures: **${requiredSignatures}**`,
+              `Eligible signers: **@${trainee}**`,
+              '',
+              `- @${trainee}: [Open Signature Title Page](${link})`,
+              '',
+              `Signature service: ${signingBaseUrl}/sign`,
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: requestBody,
+            });
+
+  close_training_issue_after_signature:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request == null &&
+      (contains(github.event.comment.body, '<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+       contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+       contains(github.event.comment.body, '<!-- signature-native-attestation -->') ||
+       contains(github.event.comment.body, '<!-- part11-native-attestation -->'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token for issue updates
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SIGNATURE_APP_ID }}
+          private-key: ${{ secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Validate attestation and close issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const issue = context.payload.issue;
+            const labels = (issue.labels || []).map((l) => (l.name || '').toLowerCase());
+            if (!labels.includes('training-diff')) {
+              core.info(`Issue #${issue.number} is not training-diff; skipping.`);
+              return;
+            }
+
+            const body = String(issue.body || '');
+            const sectionMatch = body.match(/### SOP Delta Checklist([\s\S]*?)(?:\n###\s|\n##\s|$)/i);
+            if (!sectionMatch) {
+              core.info(`Issue #${issue.number} has no SOP Delta Checklist section; skipping.`);
+              return;
+            }
+            const checklistSection = sectionMatch[1] || '';
+            const openTasks = (checklistSection.match(/^- \[ \] .+$/gm) || []).length;
+            if (openTasks > 0) {
+              core.info(`Issue #${issue.number} still has unchecked checklist items; cannot close.`);
+              return;
+            }
+
+            const commentBody = String(context.payload.comment?.body || '');
+            const jsonMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
+            if (!jsonMatch || !jsonMatch[1]) {
+              core.info(`Issue #${issue.number} attestation comment did not contain JSON payload; skipping.`);
+              return;
+            }
+
+            let parsed;
+            try {
+              parsed = JSON.parse(jsonMatch[1]);
+            } catch {
+              core.info(`Issue #${issue.number} attestation JSON parsing failed; skipping.`);
+              return;
+            }
+
+            const expectedRepo = `${context.repo.owner}/${context.repo.repo}`.toLowerCase();
+            const attRepo = String(parsed.repository || '').toLowerCase();
+            const attNumber = Number.parseInt(String(parsed.pr_number || ''), 10);
+            if (attRepo !== expectedRepo || attNumber !== issue.number) {
+              core.info(`Issue #${issue.number} attestation target mismatch; skipping close.`);
+              return;
+            }
+
+            const markerMatch = body.match(/training-diff-consolidated:user=([A-Za-z0-9-]+)/i);
+            const markerUser = markerMatch ? markerMatch[1].toLowerCase() : '';
+            const assigneeUser = ((issue.assignees || [])[0]?.login || '').toLowerCase();
+            const expectedSigner = assigneeUser || markerUser;
+            const signer = String(parsed.user_id || parsed.actor_login || '').toLowerCase();
+            if (expectedSigner && signer !== expectedSigner) {
+              core.info(`Issue #${issue.number} signer mismatch (@${signer} != @${expectedSigner}); skipping close.`);
+              return;
+            }
+
+            if (String(issue.state || '').toLowerCase() !== 'open') {
+              core.info(`Issue #${issue.number} already closed.`);
+              return;
+            }
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed',
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: '<!-- training-signature-complete -->\n✅ Training checklist signed. Issue closed automatically.',
+            });
