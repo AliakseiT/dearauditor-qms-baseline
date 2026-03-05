@@ -32,7 +32,7 @@ jobs:
           HORIZON_DAYS: '45'
           MAX_CLOSED_PRS: '150'
         with:
-          github-token: ${{ secrets.PROJECT_AUTOMATION_TOKEN || github.token }}
+          github-token: ${{ github.token }}
           script: |
             const repo = context.repo;
             const projectNumber = Number(process.env.PROJECT_NUMBER || '1');
@@ -404,54 +404,58 @@ jobs:
               await syncStateLabel(result.number, result.stateLabel);
             }
 
-            let project;
-            try {
-              project = await getProjectV2(repo.owner, projectNumber);
-            } catch (err) {
-              const msg = String(err?.message || err || '');
-              if (msg.includes('INSUFFICIENT_SCOPES') || msg.includes('read:project')) {
-                throw new Error(
-                  'Project sync requires a token with project scopes. Configure repository secret PROJECT_AUTOMATION_TOKEN with scopes: repo, read:project, project.'
-                );
-              }
-              throw err;
-            }
-            const statusField = (project.fields?.nodes || []).find((f) => String(f.name || '').toLowerCase() === 'status');
-            if (!statusField || !statusField.id) {
-              throw new Error(`Project ${project.url} does not have a Status field.`);
-            }
-
-            const todoOptionId = pickStatusOptionId(statusField, ['Todo', 'To do', 'Backlog', 'Inbox', 'Ready']);
-            const doneOptionId = pickStatusOptionId(statusField, ['Done', 'Complete', 'Closed']);
-            if (!todoOptionId || !doneOptionId) {
-              throw new Error(`Project ${project.url} Status field must include Todo/Done-like options.`);
-            }
-
-            const existingItems = await listProjectItems(project.id);
-            const itemByContentId = new Map(existingItems.map((x) => [x.contentId, x.itemId]));
-
             const openIssues = await github.paginate(github.rest.issues.listForRepo, {
               owner: repo.owner,
               repo: repo.repo,
               state: 'open',
               per_page: 100,
             });
-
             const issueTargets = openIssues.filter((i) => !i.pull_request);
-            for (const issue of issueTargets) {
-              const itemId = await ensureProjectItem(project.id, issue.node_id, itemByContentId);
-              await setProjectStatus(project.id, itemId, statusField.id, todoOptionId);
-            }
-
             const prTargets = prResults.filter((r) => r.signatureRequired || r.stateLabel === 'signature/not-required');
-            for (const pr of prTargets) {
-              const full = await github.rest.pulls.get({ owner: repo.owner, repo: repo.repo, pull_number: pr.number });
-              const contentId = full.data.node_id;
-              const itemId = await ensureProjectItem(project.id, contentId, itemByContentId);
-              const optionId = (pr.stateLabel === 'signature/outstanding' || pr.stateLabel === 'signature/blocked')
-                ? todoOptionId
-                : doneOptionId;
-              await setProjectStatus(project.id, itemId, statusField.id, optionId);
-            }
 
-            core.info(`Synced Project #${projectNumber} (${project.url}): ${issueTargets.length} open issues + ${prTargets.length} merged PRs.`);
+            try {
+              const project = await getProjectV2(repo.owner, projectNumber);
+              const statusField = (project.fields?.nodes || []).find((f) => String(f.name || '').toLowerCase() === 'status');
+              if (!statusField || !statusField.id) {
+                core.warning(`Project ${project.url} has no Status field. Skipping board sync.`);
+                core.info(`Labels synced only: ${prResults.length} merged PRs evaluated.`);
+                return;
+              }
+
+              // Keep lane logic intentionally simple.
+              const todoOptionId = pickStatusOptionId(statusField, ['Todo', 'To do', 'Backlog', 'Inbox', 'Ready']);
+              const doneOptionId = pickStatusOptionId(statusField, ['Done', 'Complete', 'Closed']);
+              if (!todoOptionId || !doneOptionId) {
+                core.warning(`Project ${project.url} Status field must include Todo/Done-like options. Skipping board sync.`);
+                core.info(`Labels synced only: ${prResults.length} merged PRs evaluated.`);
+                return;
+              }
+
+              const existingItems = await listProjectItems(project.id);
+              const itemByContentId = new Map(existingItems.map((x) => [x.contentId, x.itemId]));
+
+              for (const issue of issueTargets) {
+                const itemId = await ensureProjectItem(project.id, issue.node_id, itemByContentId);
+                await setProjectStatus(project.id, itemId, statusField.id, todoOptionId);
+              }
+
+              for (const pr of prTargets) {
+                const full = await github.rest.pulls.get({ owner: repo.owner, repo: repo.repo, pull_number: pr.number });
+                const contentId = full.data.node_id;
+                const itemId = await ensureProjectItem(project.id, contentId, itemByContentId);
+                const optionId = (pr.stateLabel === 'signature/outstanding' || pr.stateLabel === 'signature/blocked')
+                  ? todoOptionId
+                  : doneOptionId;
+                await setProjectStatus(project.id, itemId, statusField.id, optionId);
+              }
+
+              core.info(`Synced Project #${projectNumber} (${project.url}): ${issueTargets.length} open issues + ${prTargets.length} merged PRs.`);
+            } catch (err) {
+              const msg = String(err?.message || err || '');
+              if (msg.includes('INSUFFICIENT_SCOPES') || msg.includes('read:project') || msg.includes('Resource not accessible')) {
+                core.warning('Project sync skipped (insufficient project scope/access for github.token). Signature labels were still updated.');
+                core.info(`Labels synced only: ${prResults.length} merged PRs evaluated.`);
+                return;
+              }
+              throw err;
+            }
