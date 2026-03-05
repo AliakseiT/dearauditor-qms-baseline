@@ -67,9 +67,9 @@
   <text x="62" y="515" class="node-text">Training PR Approval Gate (for records/training/** PRs)</text>
   <text x="62" y="535" class="small">training_pr_approval_gate.yml</text>
 
-  <path class="arrow" d="M300 156 L430 156 L430 280" />
-  <path class="arrow" d="M300 156 L175 156 L175 280" />
-  <path class="arrow" d="M430 177 L430 350" />
+  <path class="arrow" d="M175 177 L175 280" />
+  <path class="arrow" d="M430 177 L430 280" />
+  <path class="arrow" d="M430 336 L430 350" />
 
   <!-- Signature / publication panel -->
   <rect class="panel" x="620" y="230" width="560" height="500" />
@@ -95,7 +95,7 @@
   <text x="922" y="560" class="node-text">Signature Status Tracker</text>
   <text x="922" y="580" class="small">signature_status_tracker.yml</text>
 
-  <path class="arrow" d="M780 177 L780 285" />
+  <path class="arrow" d="M670 177 L670 285" />
   <path class="arrow" d="M900 349 L900 365" />
   <path class="arrow" d="M900 437 L900 455" />
   <path class="arrow" d="M770 519 L770 535" />
@@ -125,11 +125,11 @@
   <text x="1242" y="630" class="node-text">Manual Training Onboarding PR Creator</text>
   <text x="1242" y="650" class="small">manual_training_onboarding_pr.yml</text>
 
-  <path class="arrow" d="M950 156 L1370 156 L1370 285" />
+  <path class="arrow" d="M945 177 L945 220 L1490 220 L1490 285" />
   <path class="arrow" d="M1490 349 L1490 365" />
   <path class="arrow dashed" d="M1490 429 L1490 445" />
   <path class="arrow" d="M1490 589 L1490 525" />
-  <path class="arrow" d="M1440 177 L1440 605" />
+  <path class="arrow" d="M1445 177 L1445 215 L1760 215 L1760 637 L1750 637" />
 
   <!-- Platform / ops panel -->
   <rect class="panel" x="30" y="760" width="860" height="260" />
