@@ -84,7 +84,8 @@ jobs:
               return;
             }
 
-            const markerMatch = body.match(/training-diff-consolidated:user=([A-Za-z0-9-]+)/i);
+            const markerMatch = body.match(/training-release:user=([A-Za-z0-9-]+)/i)
+              || body.match(/training-diff-consolidated:user=([A-Za-z0-9-]+)/i);
             const markerUser = markerMatch ? markerMatch[1].toLowerCase() : '';
             let trainee = ((issue.assignees || [])[0]?.login || '').toLowerCase();
 
@@ -230,7 +231,8 @@ jobs:
               return;
             }
 
-            const markerMatch = body.match(/training-diff-consolidated:user=([A-Za-z0-9-]+)/i);
+            const markerMatch = body.match(/training-release:user=([A-Za-z0-9-]+)/i)
+              || body.match(/training-diff-consolidated:user=([A-Za-z0-9-]+)/i);
             const markerUser = markerMatch ? markerMatch[1].toLowerCase() : '';
             const assigneeUser = ((issue.assignees || [])[0]?.login || '').toLowerCase();
             const expectedSigner = assigneeUser || markerUser;
