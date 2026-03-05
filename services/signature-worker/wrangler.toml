@@ -3,6 +3,11 @@ main = "src/index.ts"
 compatibility_date = "2026-03-02"
 workers_dev = true
 
+[[kv_namespaces]]
+binding = "PIN_KV"
+id = "REPLACE_WITH_PIN_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID"
+
 [vars]
 PUBLIC_BASE_URL = "https://sign.qms.dearauditor.ch"
 DEFAULT_OAUTH_PROVIDER = "github"
