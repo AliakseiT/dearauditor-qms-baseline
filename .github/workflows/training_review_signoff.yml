@@ -200,7 +200,7 @@ jobs:
               `Required signatures: **${process.env.REQUIRED}**`,
               `Eligible signers: **${eligibleSigners.length > 0 ? eligibleSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               '',
-              'Open your signer link, enter only your full legal name, and complete GitHub login to sign:',
+              'Open your signer link and complete GitHub login + PIN to sign:',
               ...runLinks,
               '',
               `Signature service: ${signingBaseUrl}/sign`,
