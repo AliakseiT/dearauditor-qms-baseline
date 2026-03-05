@@ -88,10 +88,10 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 - `required_reviewer_approval_guard.yml` enforces at least one non-author approval on the current PR head SHA (except `review-only` PRs).
 - `part11_git_native_signature.yml` is manual fallback (`workflow_dispatch`) only.
 - Cloudflare signer flow creates PR attestation comment (`<!-- PART11_ATTESTATION_V1 -->`) directly from worker backend.
-- Optional fallback workflow (`part11_git_native_signature.yml`) still supports in-GitHub attestation comments (`<!-- part11-native-attestation -->`) and signed artifacts (`signed_attestation.json`, `.sig`, `.pem`).
+- Optional fallback workflow (`part11_git_native_signature.yml`) posts in-GitHub native attestation comments (`<!-- signature-native-attestation -->`) and signed artifacts (`signed_attestation.json`, `.sig`, `.pem`).
 - Reusable PDF title-page generator for attestation packages:
   - `scripts/generate_part11_title_page.py`
-  - Produces `part11_title_page.pdf` with signatory names, roles, titles, and signature timestamps.
+  - Produces `Electronic_Signature_Certificate_PR{n}.pdf` with signatory names, roles, titles, and signature timestamps.
 - Record publication workflows wait for required signature count/role/meaning before releasing immutable records.
 
 ## Attention Board
