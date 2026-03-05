@@ -2,7 +2,7 @@ name: Training Legacy Cleanup
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 permissions:
   issues: write
@@ -22,7 +22,7 @@ jobs:
           repositories: |
             ${{ github.event.repository.name }}
 
-      - name: Close legacy per-SOP training issues
+      - name: Close legacy/non-QMS training issues
         uses: actions/github-script@v7
         with:
           github-token: ${{ steps.app_token.outputs.token }}
@@ -32,11 +32,29 @@ jobs:
             const labels = (issue.labels || []).map((l) => String(l.name || '').toLowerCase());
             const isTraining = labels.includes('training-diff');
             const isLegacyPerSop = /^TRAINING DIFF REQUIRED:\s+.+\s+SOP-\d+\s+/i.test(title);
+            const consolidatedMatch = title.match(/^TRAINING REQUIRED:\s+.+\s+\(([^)]+)\)\s*$/i);
+            const releaseTagInTitle = consolidatedMatch ? String(consolidatedMatch[1] || '').trim() : '';
+            const isQmsTrainingTag = /^QMS-\d{4}-\d{2}-\d{2}-R\d{2}$/i.test(releaseTagInTitle);
+            const isNonQmsConsolidated = Boolean(releaseTagInTitle) && !isQmsTrainingTag;
 
-            if (!isTraining || !isLegacyPerSop) {
-              core.info(`Issue #${issue.number} is not a legacy per-SOP training issue.`);
+            if (!isTraining || (!isLegacyPerSop && !isNonQmsConsolidated)) {
+              core.info(`Issue #${issue.number} is not a legacy/non-QMS training issue.`);
               return;
             }
+
+            const assignees = (issue.assignees || []).map((a) => String(a.login || '').trim()).filter(Boolean);
+            if (assignees.length > 0) {
+              await github.rest.issues.removeAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                assignees,
+              });
+            }
+
+            const reason = isLegacyPerSop
+              ? 'legacy per-SOP training issue format is deprecated'
+              : `training issue was triggered by non-QMS release tag \`${releaseTagInTitle}\``;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -44,8 +62,9 @@ jobs:
               issue_number: issue.number,
               body: [
                 '<!-- training-legacy-cleanup -->',
-                '⛔ Closed automatically: legacy per-SOP training issue format is deprecated.',
+                `⛔ Closed automatically: ${reason}.`,
                 'Use consolidated per-user training issues created only for `QMS-YYYY-MM-DD-RNN` releases.',
+                'Assignees were removed before closing to avoid stale personal queues.',
               ].join('\n'),
             });
 
