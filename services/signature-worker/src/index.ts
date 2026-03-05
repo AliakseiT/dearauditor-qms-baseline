@@ -2,14 +2,13 @@ interface Env {
   PUBLIC_BASE_URL: string;
   DEFAULT_OAUTH_PROVIDER?: string;
   ALLOWED_OAUTH_PROVIDERS?: string;
-  GITHUB_APP_ID: string;
-  GITHUB_APP_CLIENT_ID: string;
-  GITHUB_APP_CLIENT_SECRET: string;
-  GITHUB_APP_PRIVATE_KEY: string;
-  GITHUB_APP_INSTALLATION_ID?: string;
+  GITHUB_OAUTH_CLIENT_ID: string;
+  GITHUB_OAUTH_CLIENT_SECRET: string;
+  GITHUB_REPO_TOKEN: string;
   SIGNATURE_LINK_SECRET: string;
   SIGNATURE_STATE_SECRET: string;
   GITHUB_API_BASE_URL?: string;
+  PIN_KV: KVNamespace;
 }
 
 interface SignatureContext {
@@ -24,10 +23,26 @@ interface SignatureContext {
   exp: string;
 }
 
-interface SignedState {
+interface OAuthState {
+  type: "oauth";
   provider: string;
   full_name: string;
   ctx: SignatureContext;
+  iat: number;
+  exp_state: number;
+  nonce: string;
+}
+
+interface PinSessionState {
+  type: "pin_session";
+  full_name: string;
+  ctx: SignatureContext;
+  signer_login: string;
+  signer_id: number;
+  signer_job_title: string;
+  request_comment_id: number;
+  request_comment_url: string;
+  auth_method: string;
   iat: number;
   exp_state: number;
   nonce: string;
@@ -39,6 +54,13 @@ interface GithubUser {
   name?: string | null;
 }
 
+interface GithubEmail {
+  email: string;
+  verified: boolean;
+  primary: boolean;
+  visibility?: string | null;
+}
+
 interface SignatureRequestMeta {
   commentId: number;
   commentUrl: string;
@@ -48,8 +70,30 @@ interface SignatureRequestMeta {
   eligibleSigners: string[];
 }
 
+interface PinRecord {
+  version: "1";
+  github_user_id: number;
+  github_login: string;
+  pin_hash_sha256: string;
+  created_at_epoch: number;
+  expires_at_epoch: number;
+}
+
+interface PinStatus {
+  active: boolean;
+  expiringSoon: boolean;
+  expiresAtEpoch: number | null;
+  createdAtEpoch: number | null;
+  hash: string | null;
+  missingOrExpired: boolean;
+}
+
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const HTML_HEADERS = { "content-type": "text/html; charset=utf-8" };
+const PIN_TTL_SECONDS = 5184000; // 60 days
+const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const PIN_EXPLANATION_TEXT =
+  "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -71,6 +115,12 @@ export default {
       }
       if (path === "/auth/callback" && request.method === "GET") {
         return handleAuthCallback(request, env);
+      }
+      if (path === "/pin/complete" && request.method === "POST") {
+        return handlePinComplete(request, env);
+      }
+      if (path === "/api/pin/status" && request.method === "POST") {
+        return handlePinStatusApi(request, env);
       }
 
       return html(renderErrorPage("Not Found", "Unknown route."), 404);
@@ -115,7 +165,8 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
     throw new Error("Full legal name is required.");
   }
 
-  const state: SignedState = {
+  const state: OAuthState = {
+    type: "oauth",
     provider,
     full_name: fullName,
     ctx: context,
@@ -123,21 +174,21 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
     exp_state: nowEpoch() + 10 * 60,
     nonce: randomHex(12),
   };
-  const stateToken = await signState(state, env.SIGNATURE_STATE_SECRET);
+  const stateToken = await signToken(state, env.SIGNATURE_STATE_SECRET);
 
   if (provider === "github") {
     const redirect = new URL("https://github.com/login/oauth/authorize");
-    redirect.searchParams.set("client_id", env.GITHUB_APP_CLIENT_ID);
+    redirect.searchParams.set("client_id", env.GITHUB_OAUTH_CLIENT_ID);
     redirect.searchParams.set("redirect_uri", `${stripTrailingSlash(env.PUBLIC_BASE_URL)}/auth/callback`);
     redirect.searchParams.set("state", stateToken);
-    redirect.searchParams.set("scope", "read:user");
+    redirect.searchParams.set("scope", "user:email");
     redirect.searchParams.set("allow_signup", "false");
     redirect.searchParams.set("prompt", "select_account");
     redirect.searchParams.set("login", context.signer);
     return Response.redirect(redirect.toString(), 302);
   }
 
-  throw new Error(`Provider '${provider}' is not yet implemented.`);
+  throw new Error(`Provider '${provider}' is not implemented.`);
 }
 
 async function handleAuthCallback(request: Request, env: Env): Promise<Response> {
@@ -146,21 +197,25 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
   const url = new URL(request.url);
   const code = (url.searchParams.get("code") || "").trim();
   const stateToken = (url.searchParams.get("state") || "").trim();
+  const apiMode = url.searchParams.get("format") === "json";
   if (!code || !stateToken) {
     throw new Error("Missing OAuth callback parameters.");
   }
 
-  const state = await verifyState(stateToken, env.SIGNATURE_STATE_SECRET);
+  const state = (await verifyToken(stateToken, env.SIGNATURE_STATE_SECRET)) as OAuthState;
+  if (state.type !== "oauth") {
+    throw new Error("Invalid OAuth state payload.");
+  }
   if (state.exp_state < nowEpoch()) {
     throw new Error("Sign session expired. Open your PR signing link again.");
   }
-
   if (state.provider !== "github") {
-    throw new Error(`Provider '${state.provider}' is not yet implemented.`);
+    throw new Error(`Provider '${state.provider}' is not implemented.`);
   }
 
   const userToken = await exchangeGithubCode(code, env);
   const user = await githubGet<GithubUser>("/user", userToken, env);
+  const emails = await githubGet<GithubEmail[]>("/user/emails", userToken, env);
   const signerLogin = String(user.login || "").toLowerCase();
   if (!signerLogin) {
     throw new Error("Unable to resolve GitHub user login.");
@@ -172,11 +227,16 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     );
   }
 
-  const appToken = await getRepoInstallationToken(state.ctx.repo, env);
-  const requestMeta = await resolveLatestRequestComment(state.ctx.repo, Number.parseInt(state.ctx.pr, 10), appToken, env);
+  const hasVerifiedEmail = Array.isArray(emails) && emails.some((e) => e && e.verified === true);
+  if (!hasVerifiedEmail) {
+    throw new Error("GitHub account does not have a verified email. Cannot proceed with signature.");
+  }
+
+  const repoToken = env.GITHUB_REPO_TOKEN;
+  const requestMeta = await resolveLatestRequestComment(state.ctx.repo, Number.parseInt(state.ctx.pr, 10), repoToken, env);
   validateRequestAgainstContext(requestMeta, state.ctx);
 
-  const duplicate = await findExistingAttestation(state.ctx, signerLogin, appToken, env);
+  const duplicate = await findExistingAttestation(state.ctx, signerLogin, repoToken, env);
   if (duplicate) {
     return html(renderSuccessPage({
       repo: state.ctx.repo,
@@ -189,10 +249,11 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
       timestamp: new Date().toISOString(),
       attestationId: duplicate.attestation_id,
       alreadySigned: true,
+      pinExpiringSoon: false,
     }), 200);
   }
 
-  const signerProfile = await readSignerProfile(state.ctx.repo, signerLogin, appToken, env);
+  const signerProfile = await readSignerProfile(state.ctx.repo, signerLogin, repoToken, env);
   const expectedName = (signerProfile.full_name || "").trim();
   if (expectedName && normalizeName(expectedName) !== normalizeName(state.full_name)) {
     throw new Error(
@@ -200,70 +261,222 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     );
   }
 
-  const timestamp = new Date().toISOString();
-  const attestationId = randomHex(16);
-  const attestation = {
-    version: "PART11-CF-WORKER-V1",
-    mode: "cloudflare_worker_github_oauth",
-    repository: state.ctx.repo,
-    pr_number: Number.parseInt(state.ctx.pr, 10),
-    commit_hash: state.ctx.hash,
-    meaning_of_signature: state.ctx.meaning,
-    signer_role: state.ctx.role,
-    signer_full_name: state.full_name,
-    signer_job_title: signerProfile.job_title || "",
-    user_id: signerLogin,
-    actor_id: Number(user.id || 0),
-    timestamp,
-    attestation_id: attestationId,
-    required_signatures: Number.parseInt(state.ctx.required_signatures, 10),
-    signature_index: Number.parseInt(state.ctx.signature_index, 10),
+  const pinStatus = await getPinStatus(env, Number(user.id || 0), signerLogin);
+  const sessionState: PinSessionState = {
+    type: "pin_session",
+    full_name: state.full_name,
+    ctx: state.ctx,
+    signer_login: signerLogin,
+    signer_id: Number(user.id || 0),
+    signer_job_title: String(signerProfile.job_title || "").trim(),
     request_comment_id: requestMeta.commentId,
     request_comment_url: requestMeta.commentUrl,
-    auth_method: "GitHub OAuth via QMS Lite Sign App",
-    linked_to_record: {
-      type: "pull_request",
-      number: Number.parseInt(state.ctx.pr, 10),
-      repo: state.ctx.repo,
-      hash: state.ctx.hash,
-    },
+    auth_method: "GitHub OAuth App (identity) + QMS PIN",
+    iat: nowEpoch(),
+    exp_state: nowEpoch() + 10 * 60,
+    nonce: randomHex(12),
   };
+  const sessionToken = await signToken(sessionState, env.SIGNATURE_STATE_SECRET);
 
-  const body = [
-    "<!-- SIGNATURE_ATTESTATION_V1 -->",
-    "```json",
-    JSON.stringify(attestation, null, 2),
-    "```",
-  ].join("\n");
+  if (apiMode || wantsJson(request)) {
+    return json({
+      ok: true,
+      requires_pin_setup: !pinStatus.active,
+      pin_missing_or_expired: pinStatus.missingOrExpired,
+      pin_expiring_soon: pinStatus.expiringSoon,
+      pin_expires_at_epoch: pinStatus.expiresAtEpoch,
+      pin_policy: {
+        ttl_seconds: PIN_TTL_SECONDS,
+        warning_window_seconds: PIN_WARNING_SECONDS,
+      },
+      qms_pin_explanation: PIN_EXPLANATION_TEXT,
+      session_token: sessionToken,
+    });
+  }
 
-  await githubPost(
-    `/repos/${state.ctx.repo}/issues/${state.ctx.pr}/comments`,
-    appToken,
-    { body },
-    env
-  );
+  if (!pinStatus.active) {
+    return html(renderPinSetupPage(sessionState, sessionToken), 200);
+  }
+  return html(renderPinVerifyPage(sessionState, sessionToken, pinStatus.expiringSoon, pinStatus.expiresAtEpoch), 200);
+}
+
+async function handlePinComplete(request: Request, env: Env): Promise<Response> {
+  assertBaseConfig(env);
+  const form = await request.formData();
+
+  const sessionToken = String(form.get("session_token") || "").trim();
+  const mode = String(form.get("mode") || "verify").trim().toLowerCase();
+  const pin = String(form.get("pin") || "").trim();
+  const pinConfirm = String(form.get("pin_confirm") || "").trim();
+  const responseFormat = String(form.get("response_format") || "").trim().toLowerCase();
+
+  if (!sessionToken) {
+    throw new Error("Missing signature PIN session token.");
+  }
+
+  const session = (await verifyToken(sessionToken, env.SIGNATURE_STATE_SECRET)) as PinSessionState;
+  if (session.type !== "pin_session") {
+    throw new Error("Invalid PIN session token.");
+  }
+  if (session.exp_state < nowEpoch()) {
+    throw new Error("PIN session expired. Restart signing from the PR link.");
+  }
+
+  const pinStatusBefore = await getPinStatus(env, session.signer_id, session.signer_login);
+  const setupRequired = !pinStatusBefore.active;
+
+  if (!/^\d{6}$/.test(pin)) {
+    throw new Error("PIN must be exactly 6 digits.");
+  }
+
+  if (setupRequired || mode === "setup") {
+    if (!/^\d{6}$/.test(pinConfirm)) {
+      throw new Error("PIN confirmation must be exactly 6 digits.");
+    }
+    if (pin !== pinConfirm) {
+      throw new Error("PIN and confirmation do not match.");
+    }
+    await writePinRecord(env, session.signer_id, session.signer_login, pin);
+  } else {
+    if (!pinStatusBefore.hash) {
+      throw new Error("PIN record not found. Please set up a new PIN.");
+    }
+    const inputHash = await sha256Hex(pin);
+    if (!timingSafeEqual(inputHash, pinStatusBefore.hash)) {
+      throw new Error("Invalid PIN.");
+    }
+  }
+
+  const pinStatusAfter = await getPinStatus(env, session.signer_id, session.signer_login);
+
+  const duplicate = await findExistingAttestation(session.ctx, session.signer_login, env.GITHUB_REPO_TOKEN, env);
+  let attestationId = duplicate?.attestation_id || "";
+  let timestamp = new Date().toISOString();
+  let alreadySigned = Boolean(duplicate);
+
+  if (!duplicate) {
+    const attestation = {
+      version: "PART11-CF-WORKER-V2",
+      mode: "cloudflare_worker_github_oauth_pin",
+      repository: session.ctx.repo,
+      pr_number: Number.parseInt(session.ctx.pr, 10),
+      commit_hash: session.ctx.hash,
+      meaning_of_signature: session.ctx.meaning,
+      signer_role: session.ctx.role,
+      signer_full_name: session.full_name,
+      signer_job_title: session.signer_job_title || "",
+      user_id: session.signer_login,
+      actor_id: Number(session.signer_id || 0),
+      timestamp,
+      attestation_id: randomHex(16),
+      required_signatures: Number.parseInt(session.ctx.required_signatures, 10),
+      signature_index: Number.parseInt(session.ctx.signature_index, 10),
+      request_comment_id: session.request_comment_id,
+      request_comment_url: session.request_comment_url,
+      auth_method: session.auth_method,
+      pin_verified: true,
+      pin_expiring_soon: pinStatusAfter.expiringSoon,
+      linked_to_record: {
+        type: "pull_request",
+        number: Number.parseInt(session.ctx.pr, 10),
+        repo: session.ctx.repo,
+        hash: session.ctx.hash,
+      },
+    };
+    attestationId = attestation.attestation_id;
+
+    const body = [
+      "<!-- SIGNATURE_ATTESTATION_V1 -->",
+      "```json",
+      JSON.stringify(attestation, null, 2),
+      "```",
+    ].join("\n");
+
+    await githubPost(
+      `/repos/${session.ctx.repo}/issues/${session.ctx.pr}/comments`,
+      env.GITHUB_REPO_TOKEN,
+      { body },
+      env
+    );
+  }
+
+  const wantsJsonResponse = responseFormat === "json" || wantsJson(request);
+  if (wantsJsonResponse) {
+    return json({
+      ok: true,
+      already_signed: alreadySigned,
+      attestation_id: attestationId,
+      pin_expiring_soon: pinStatusAfter.expiringSoon,
+      pin_expires_at_epoch: pinStatusAfter.expiresAtEpoch,
+      pin_policy: {
+        ttl_seconds: PIN_TTL_SECONDS,
+        warning_window_seconds: PIN_WARNING_SECONDS,
+      },
+      pr_number: Number.parseInt(session.ctx.pr, 10),
+      repository: session.ctx.repo,
+      signer: session.signer_login,
+      timestamp,
+    });
+  }
 
   return html(renderSuccessPage({
-    repo: state.ctx.repo,
-    pr: state.ctx.pr,
-    hash: state.ctx.hash,
-    meaning: state.ctx.meaning,
-    role: state.ctx.role,
-    signer: signerLogin,
-    signerFullName: state.full_name,
+    repo: session.ctx.repo,
+    pr: session.ctx.pr,
+    hash: session.ctx.hash,
+    meaning: session.ctx.meaning,
+    role: session.ctx.role,
+    signer: session.signer_login,
+    signerFullName: session.full_name,
     timestamp,
     attestationId,
-    alreadySigned: false,
+    alreadySigned,
+    pinExpiringSoon: pinStatusAfter.expiringSoon,
   }), 200);
+}
+
+async function handlePinStatusApi(request: Request, env: Env): Promise<Response> {
+  assertBaseConfig(env);
+  const contentType = request.headers.get("content-type") || "";
+  let sessionToken = "";
+
+  if (contentType.includes("application/json")) {
+    const body = (await request.json()) as { session_token?: string };
+    sessionToken = String(body.session_token || "").trim();
+  } else {
+    const form = await request.formData();
+    sessionToken = String(form.get("session_token") || "").trim();
+  }
+
+  if (!sessionToken) {
+    return json({ ok: false, error: "missing_session_token" }, 400);
+  }
+
+  const session = (await verifyToken(sessionToken, env.SIGNATURE_STATE_SECRET)) as PinSessionState;
+  if (session.type !== "pin_session") {
+    return json({ ok: false, error: "invalid_session_token" }, 400);
+  }
+
+  const pinStatus = await getPinStatus(env, session.signer_id, session.signer_login);
+  return json({
+    ok: true,
+    requires_pin_setup: !pinStatus.active,
+    pin_missing_or_expired: pinStatus.missingOrExpired,
+    pin_expiring_soon: pinStatus.expiringSoon,
+    pin_expires_at_epoch: pinStatus.expiresAtEpoch,
+    pin_policy: {
+      ttl_seconds: PIN_TTL_SECONDS,
+      warning_window_seconds: PIN_WARNING_SECONDS,
+    },
+    qms_pin_explanation: PIN_EXPLANATION_TEXT,
+  });
 }
 
 function assertBaseConfig(env: Env): void {
   const required = [
     "PUBLIC_BASE_URL",
-    "GITHUB_APP_ID",
-    "GITHUB_APP_CLIENT_ID",
-    "GITHUB_APP_CLIENT_SECRET",
-    "GITHUB_APP_PRIVATE_KEY",
+    "GITHUB_OAUTH_CLIENT_ID",
+    "GITHUB_OAUTH_CLIENT_SECRET",
+    "GITHUB_REPO_TOKEN",
     "SIGNATURE_LINK_SECRET",
     "SIGNATURE_STATE_SECRET",
   ] as const;
@@ -272,6 +485,9 @@ function assertBaseConfig(env: Env): void {
     if (!value) {
       throw new Error(`Missing required configuration: ${key}`);
     }
+  }
+  if (!env.PIN_KV) {
+    throw new Error("Missing required KV binding: PIN_KV");
   }
 }
 
@@ -354,24 +570,34 @@ function canonicalString(map: Record<string, string>): string {
     .join("&");
 }
 
-async function signState(payload: SignedState, secret: string): Promise<string> {
+async function signToken(payload: OAuthState | PinSessionState, secret: string): Promise<string> {
   const encoded = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
   const signature = await hmacHexAsync(encoded, secret);
   return `${encoded}.${signature}`;
 }
 
-async function verifyState(token: string, secret: string): Promise<SignedState> {
+async function verifyToken(token: string, secret: string): Promise<OAuthState | PinSessionState> {
   const parts = token.split(".");
-  if (parts.length !== 2) throw new Error("Invalid state token.");
+  if (parts.length !== 2) throw new Error("Invalid token.");
   const [encoded, sig] = parts;
   const expected = await hmacHexAsync(encoded, secret);
   if (!timingSafeEqual(expected, sig.toLowerCase())) {
-    throw new Error("Invalid state signature.");
+    throw new Error("Invalid token signature.");
   }
-  const bytes = base64UrlDecode(encoded);
-  const parsed = JSON.parse(new TextDecoder().decode(bytes)) as SignedState;
-  if (!parsed?.ctx || !parsed?.full_name || !parsed?.provider) {
-    throw new Error("Invalid state payload.");
+  let bytes: Uint8Array;
+  try {
+    bytes = base64UrlDecode(encoded);
+  } catch {
+    throw new Error("Invalid token encoding.");
+  }
+  let parsed: OAuthState | PinSessionState;
+  try {
+    parsed = JSON.parse(new TextDecoder().decode(bytes)) as OAuthState | PinSessionState;
+  } catch {
+    throw new Error("Invalid token payload.");
+  }
+  if (!parsed || typeof parsed !== "object" || !("type" in parsed) || !("ctx" in parsed)) {
+    throw new Error("Invalid token payload.");
   }
   return parsed;
 }
@@ -384,8 +610,8 @@ async function exchangeGithubCode(code: string, env: Env): Promise<string> {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      client_id: env.GITHUB_APP_CLIENT_ID,
-      client_secret: env.GITHUB_APP_CLIENT_SECRET,
+      client_id: env.GITHUB_OAUTH_CLIENT_ID,
+      client_secret: env.GITHUB_OAUTH_CLIENT_SECRET,
       code,
       redirect_uri: `${stripTrailingSlash(env.PUBLIC_BASE_URL)}/auth/callback`,
     }),
@@ -400,47 +626,6 @@ async function exchangeGithubCode(code: string, env: Env): Promise<string> {
     );
   }
   return payload.access_token;
-}
-
-async function getRepoInstallationToken(repo: string, env: Env): Promise<string> {
-  const appJwt = await buildGithubAppJwt(env.GITHUB_APP_ID, env.GITHUB_APP_PRIVATE_KEY);
-  let installationId = Number.parseInt(String(env.GITHUB_APP_INSTALLATION_ID || ""), 10);
-
-  if (!Number.isFinite(installationId) || installationId < 1) {
-    const installation = await githubGet<{ id: number }>(`/repos/${repo}/installation`, appJwt, env, true);
-    installationId = Number(installation.id);
-  }
-
-  const tokenRes = await githubPost<{ token: string }>(
-    `/app/installations/${installationId}/access_tokens`,
-    appJwt,
-    {},
-    env,
-    true
-  );
-  if (!tokenRes.token) throw new Error("Failed to mint GitHub App installation token.");
-  return tokenRes.token;
-}
-
-async function buildGithubAppJwt(appId: string, privateKeyPem: string): Promise<string> {
-  const now = nowEpoch();
-  const header = { alg: "RS256", typ: "JWT" };
-  const payload = { iat: now - 30, exp: now + 9 * 60, iss: appId };
-
-  const headerB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(header)));
-  const payloadB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
-  const data = `${headerB64}.${payloadB64}`;
-
-  const key = await crypto.subtle.importKey(
-    "pkcs8",
-    pemToArrayBuffer(privateKeyPem),
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(data));
-  const signatureB64 = base64UrlEncode(new Uint8Array(signature));
-  return `${data}.${signatureB64}`;
 }
 
 async function resolveLatestRequestComment(repo: string, prNumber: number, token: string, env: Env): Promise<SignatureRequestMeta> {
@@ -549,10 +734,98 @@ async function findExistingAttestation(ctx: SignatureContext, signer: string, to
   return null;
 }
 
-async function githubGet<T>(path: string, token: string, env: Env, asAppJwt = false): Promise<T> {
+async function getPinStatus(env: Env, githubUserId: number, githubLogin: string): Promise<PinStatus> {
+  if (!Number.isFinite(githubUserId) || githubUserId < 1) {
+    throw new Error("Unable to resolve GitHub user ID for PIN lookup.");
+  }
+  const raw = await env.PIN_KV.get(pinKvKey(githubUserId));
+  if (!raw) {
+    return {
+      active: false,
+      expiringSoon: false,
+      expiresAtEpoch: null,
+      createdAtEpoch: null,
+      hash: null,
+      missingOrExpired: true,
+    };
+  }
+
+  let parsed: PinRecord;
+  try {
+    parsed = JSON.parse(raw) as PinRecord;
+  } catch {
+    await env.PIN_KV.delete(pinKvKey(githubUserId));
+    return {
+      active: false,
+      expiringSoon: false,
+      expiresAtEpoch: null,
+      createdAtEpoch: null,
+      hash: null,
+      missingOrExpired: true,
+    };
+  }
+
+  const now = nowEpoch();
+  if (
+    parsed.version !== "1" ||
+    !parsed.pin_hash_sha256 ||
+    !Number.isFinite(parsed.created_at_epoch) ||
+    !Number.isFinite(parsed.expires_at_epoch) ||
+    parsed.expires_at_epoch <= now
+  ) {
+    await env.PIN_KV.delete(pinKvKey(githubUserId));
+    return {
+      active: false,
+      expiringSoon: false,
+      expiresAtEpoch: null,
+      createdAtEpoch: null,
+      hash: null,
+      missingOrExpired: true,
+    };
+  }
+
+  const secondsToExpiry = parsed.expires_at_epoch - now;
+  return {
+    active: true,
+    expiringSoon: secondsToExpiry < PIN_WARNING_SECONDS,
+    expiresAtEpoch: parsed.expires_at_epoch,
+    createdAtEpoch: parsed.created_at_epoch,
+    hash: parsed.pin_hash_sha256,
+    missingOrExpired: false,
+  };
+}
+
+async function writePinRecord(env: Env, githubUserId: number, githubLogin: string, pin: string): Promise<void> {
+  if (!/^\d{6}$/.test(pin)) {
+    throw new Error("PIN must be exactly 6 digits.");
+  }
+  const createdAt = nowEpoch();
+  const payload: PinRecord = {
+    version: "1",
+    github_user_id: githubUserId,
+    github_login: githubLogin,
+    pin_hash_sha256: await sha256Hex(pin),
+    created_at_epoch: createdAt,
+    expires_at_epoch: createdAt + PIN_TTL_SECONDS,
+  };
+  await env.PIN_KV.put(pinKvKey(githubUserId), JSON.stringify(payload), {
+    expirationTtl: PIN_TTL_SECONDS,
+  });
+}
+
+function pinKvKey(githubUserId: number): string {
+  return `pin:v1:gh:${githubUserId}`;
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return bytesToHex(new Uint8Array(digest));
+}
+
+async function githubGet<T>(path: string, token: string, env: Env): Promise<T> {
   const res = await fetch(`${githubApiBase(env)}${path}`, {
     method: "GET",
-    headers: githubHeaders(token, asAppJwt),
+    headers: githubHeaders(token),
   });
   if (!res.ok) {
     const text = await res.text();
@@ -561,11 +834,11 @@ async function githubGet<T>(path: string, token: string, env: Env, asAppJwt = fa
   return (await res.json()) as T;
 }
 
-async function githubPost<T>(path: string, token: string, payload: unknown, env: Env, asAppJwt = false): Promise<T> {
+async function githubPost<T>(path: string, token: string, payload: unknown, env: Env): Promise<T> {
   const res = await fetch(`${githubApiBase(env)}${path}`, {
     method: "POST",
     headers: {
-      ...githubHeaders(token, asAppJwt),
+      ...githubHeaders(token),
       "content-type": "application/json",
     },
     body: JSON.stringify(payload),
@@ -577,9 +850,9 @@ async function githubPost<T>(path: string, token: string, payload: unknown, env:
   return (await res.json()) as T;
 }
 
-function githubHeaders(token: string, asAppJwt = false): Record<string, string> {
+function githubHeaders(token: string): Record<string, string> {
   return {
-    authorization: `${asAppJwt ? "Bearer" : "token"} ${token}`,
+    authorization: `token ${token}`,
     accept: "application/vnd.github+json",
     "user-agent": "qms-lite-signature-worker",
     "x-github-api-version": "2022-11-28",
@@ -611,16 +884,6 @@ function timingSafeEqual(a: string, b: string): boolean {
     out |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
   return out === 0;
-}
-
-function pemToArrayBuffer(pem: string): ArrayBuffer {
-  const cleaned = pem
-    .replace(/-----BEGIN [A-Z ]*PRIVATE KEY-----/g, "")
-    .replace(/-----END [A-Z ]*PRIVATE KEY-----/g, "")
-    .replace(/\\n/g, "\n")
-    .replace(/\s+/g, "");
-  const bytes = base64ToBytes(cleaned);
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 }
 
 function base64ToBytes(b64: string): Uint8Array {
@@ -668,6 +931,11 @@ function randomHex(bytes = 16): string {
 
 function stripTrailingSlash(value: string): string {
   return value.replace(/\/+$/g, "");
+}
+
+function wantsJson(request: Request): boolean {
+  const accept = String(request.headers.get("accept") || "").toLowerCase();
+  return accept.includes("application/json");
 }
 
 function html(content: string, status = 200): Response {
@@ -724,8 +992,8 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
   <div class="wrap">
     <div class="card">
       <div class="head">
-        <h1>Part 11 Signature Title Page</h1>
-        <p>Identity is verified by ${escapeHtml(providerLabel)} login. Signature context is locked from the PR request.</p>
+        <h1>QMS Signature Ceremony</h1>
+        <p>Identity is verified by ${escapeHtml(providerLabel)} OAuth. Signature context is locked from the PR request.</p>
       </div>
       <div class="section">
         <div class="grid">
@@ -752,12 +1020,118 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
           <input type="hidden" name="sig" value="${escapeHtml(sig)}" />
           <label for="full_name">Signer full legal name</label>
           <input id="full_name" name="full_name" type="text" autocomplete="name" placeholder="e.g., Aliaksei Tsitovich" required />
-          <div class="hint">Only this field is entered manually. All signing context is locked and verified by the backend.</div>
-          <button class="btn" type="submit">Sign with ${escapeHtml(providerLabel)}</button>
+          <div class="hint">Next steps: GitHub identity verification, then secure 6-digit QMS signature PIN validation.</div>
+          <button class="btn" type="submit">Continue with ${escapeHtml(providerLabel)}</button>
         </form>
       </div>
       <div class="section foot">
         PR: <a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">${escapeHtml(prUrl)}</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+function renderPinSetupPage(session: PinSessionState, sessionToken: string): string {
+  const formAction = `/pin/complete`;
+  const prUrl = `https://github.com/${session.ctx.repo}/pull/${session.ctx.pr}`;
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Set QMS Signature PIN</title>
+  <style>
+    body { margin: 0; font: 16px/1.45 "Segoe UI", "Avenir Next", sans-serif; background: #f4f8ff; color: #15223a; }
+    .wrap { max-width: 760px; margin: 34px auto; padding: 0 16px; }
+    .card { background: #fff; border: 1px solid #d6deef; border-radius: 14px; box-shadow: 0 12px 32px rgba(19,36,78,.09); }
+    .head { padding: 16px 20px; background: #123260; color: #fff; border-radius: 14px 14px 0 0; }
+    .body { padding: 16px 20px; }
+    .explain { background: #eef5ff; border: 1px solid #c9daf8; border-radius: 10px; padding: 12px; color: #21375f; }
+    .k { color: #4d5f84; font-size: 13px; margin-top: 8px; }
+    .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; background: #f2f6ff; border: 1px solid #d6deef; border-radius: 8px; padding: 8px; }
+    label { display: block; margin-top: 12px; font-weight: 600; }
+    input[type="password"] { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #b8c6e2; border-radius: 10px; font-size: 16px; letter-spacing: .2em; }
+    .hint { color: #5d6f92; font-size: 13px; margin-top: 6px; }
+    .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
+    a { color: #1b4ea4; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="head"><h2>Set Your QMS Signature PIN</h2></div>
+      <div class="body">
+        <p class="explain">${escapeHtml(PIN_EXPLANATION_TEXT)}</p>
+        <div class="k">Repository / PR</div><div class="v">${escapeHtml(session.ctx.repo)} #${escapeHtml(session.ctx.pr)}</div>
+        <div class="k">Signer</div><div class="v">${escapeHtml(session.full_name)} (@${escapeHtml(session.signer_login)})</div>
+        <div class="k">Role / Meaning</div><div class="v">${escapeHtml(session.ctx.role)} / ${escapeHtml(session.ctx.meaning)}</div>
+
+        <form action="${escapeHtml(formAction)}" method="post">
+          <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
+          <input type="hidden" name="mode" value="setup" />
+          <label for="pin">New 6-digit PIN</label>
+          <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
+          <label for="pin_confirm">Confirm PIN</label>
+          <input id="pin_confirm" name="pin_confirm" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
+          <div class="hint">PIN is hashed with SHA-256 and stored for 60 days. It expires automatically and must be renewed.</div>
+          <button class="btn" type="submit">Set PIN and Sign</button>
+        </form>
+
+        <p><a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">Open PR</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+function renderPinVerifyPage(session: PinSessionState, sessionToken: string, expiringSoon: boolean, expiresAtEpoch: number | null): string {
+  const formAction = `/pin/complete`;
+  const expiryText = expiresAtEpoch ? new Date(expiresAtEpoch * 1000).toISOString() : "n/a";
+  const warning = expiringSoon
+    ? `<p style="background:#fff4e5;border:1px solid #ffd39b;border-radius:10px;padding:10px;color:#7a4a00;">Warning: your QMS signature PIN expires in less than 7 days (expires at ${escapeHtml(expiryText)}).</p>`
+    : "";
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirm QMS Signature PIN</title>
+  <style>
+    body { margin: 0; font: 16px/1.45 "Segoe UI", "Avenir Next", sans-serif; background: #f4f8ff; color: #15223a; }
+    .wrap { max-width: 760px; margin: 34px auto; padding: 0 16px; }
+    .card { background: #fff; border: 1px solid #d6deef; border-radius: 14px; box-shadow: 0 12px 32px rgba(19,36,78,.09); }
+    .head { padding: 16px 20px; background: #123260; color: #fff; border-radius: 14px 14px 0 0; }
+    .body { padding: 16px 20px; }
+    .k { color: #4d5f84; font-size: 13px; margin-top: 8px; }
+    .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; background: #f2f6ff; border: 1px solid #d6deef; border-radius: 8px; padding: 8px; }
+    label { display: block; margin-top: 12px; font-weight: 600; }
+    input[type="password"] { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #b8c6e2; border-radius: 10px; font-size: 16px; letter-spacing: .2em; }
+    .hint { color: #5d6f92; font-size: 13px; margin-top: 6px; }
+    .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="head"><h2>Confirm Signature with PIN</h2></div>
+      <div class="body">
+        ${warning}
+        <div class="k">Repository / PR</div><div class="v">${escapeHtml(session.ctx.repo)} #${escapeHtml(session.ctx.pr)}</div>
+        <div class="k">Signer</div><div class="v">${escapeHtml(session.full_name)} (@${escapeHtml(session.signer_login)})</div>
+        <div class="k">Role / Meaning</div><div class="v">${escapeHtml(session.ctx.role)} / ${escapeHtml(session.ctx.meaning)}</div>
+        <div class="k">PIN Expiration (UTC)</div><div class="v">${escapeHtml(expiryText)}</div>
+
+        <form action="${escapeHtml(formAction)}" method="post">
+          <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
+          <input type="hidden" name="mode" value="verify" />
+          <label for="pin">Enter your 6-digit PIN</label>
+          <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
+          <div class="hint">This PIN is your second electronic signature factor for QMS approvals.</div>
+          <button class="btn" type="submit">Verify PIN and Sign</button>
+        </form>
       </div>
     </div>
   </div>
@@ -776,8 +1150,13 @@ function renderSuccessPage(input: {
   timestamp: string;
   attestationId: string;
   alreadySigned: boolean;
+  pinExpiringSoon: boolean;
 }): string {
   const prUrl = `https://github.com/${input.repo}/pull/${input.pr}`;
+  const pinWarning = input.pinExpiringSoon
+    ? `<p style="background:#fff4e5;border:1px solid #ffd39b;border-radius:10px;padding:10px;color:#7a4a00;">Your signature PIN expires in less than 7 days. Renew it during your next signature flow.</p>`
+    : "";
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -802,6 +1181,7 @@ function renderSuccessPage(input: {
         <h2>${input.alreadySigned ? "Signature Already Recorded" : "Signature Recorded"}</h2>
       </div>
       <div class="body">
+        ${pinWarning}
         <div class="k">Repository / PR</div><div class="v">${escapeHtml(input.repo)} #${escapeHtml(input.pr)}</div>
         <div class="k">Signer</div><div class="v">${escapeHtml(input.signerFullName)} (@${escapeHtml(input.signer)})</div>
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(input.role)} / ${escapeHtml(input.meaning)}</div>

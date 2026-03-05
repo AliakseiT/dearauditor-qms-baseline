@@ -1,25 +1,17 @@
 # signature-worker
 
-Cloudflare Worker that hosts the Part 11 signing UI and OAuth callback backend for QMS Lite.
+Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 
 ## What It Does
 
-- Serves signer-facing title page at `GET /sign`.
+- Serves signer-facing ceremony page at `GET /sign`.
 - Accepts only cryptographically signed link context from QMS workflows.
-- Runs GitHub OAuth login for signer identity confirmation.
-- Uses minimal GitHub identity scope (`read:user`) and forces account-selection prompt (`prompt=select_account`).
+- Uses GitHub OAuth App login for identity verification (`user:email` scope only).
+- Enforces a second-factor 6-digit signature PIN stored as SHA-256 hash in Cloudflare KV.
+- Applies automatic PIN TTL deletion after 60 days (`expirationTtl=5184000`).
+- Returns `pin_expiring_soon` when less than 7 days remain.
 - Validates signer eligibility against the latest PR signature request comment.
-- Posts immutable attestation comment back to the PR (`<!-- PART11_ATTESTATION_V1 -->`).
-
-## Provider Strategy
-
-Current implementation supports `github` provider.
-
-The worker already has provider selection hooks:
-- `DEFAULT_OAUTH_PROVIDER`
-- `ALLOWED_OAUTH_PROVIDERS`
-
-To add additional IDPs later, keep the same state/context verification and implement provider-specific start/callback handlers.
+- Posts immutable attestation comment back to the PR (`<!-- SIGNATURE_ATTESTATION_V1 -->`).
 
 ## Endpoints
 
@@ -27,25 +19,41 @@ To add additional IDPs later, keep the same state/context verification and imple
 - `GET /sign`
 - `POST /auth/start`
 - `GET /auth/callback`
+- `POST /pin/complete`
+- `POST /api/pin/status`
 
 ## Runtime Configuration
 
-### Plain vars
+### Vars
 
 - `PUBLIC_BASE_URL` (example: `https://sign.qms.dearauditor.ch`)
 - `DEFAULT_OAUTH_PROVIDER` (`github`)
-- `ALLOWED_OAUTH_PROVIDERS` (`github` for now)
+- `ALLOWED_OAUTH_PROVIDERS` (`github`)
 - `GITHUB_API_BASE_URL` (optional; default `https://api.github.com`)
 
-### Secrets
+### Worker Secrets
 
-- `GITHUB_APP_ID`
-- `GITHUB_APP_CLIENT_ID`
-- `GITHUB_APP_CLIENT_SECRET`
-- `GITHUB_APP_PRIVATE_KEY`
-- `GITHUB_APP_INSTALLATION_ID` (optional; auto-resolved if omitted)
+- `GITHUB_OAUTH_CLIENT_ID`
+- `GITHUB_OAUTH_CLIENT_SECRET`
+- `GITHUB_REPO_TOKEN` (token used by worker backend to read signer registry and post PR comments)
 - `SIGNATURE_LINK_SECRET` (must match QMS Lite GitHub Actions secret)
 - `SIGNATURE_STATE_SECRET`
+
+### KV Binding
+
+`wrangler.toml` must include:
+
+- `[[kv_namespaces]]`
+- `binding = "PIN_KV"`
+- valid `id` and `preview_id`
+
+## GitHub OAuth App
+
+Use a standard GitHub OAuth App (not a GitHub App installation flow):
+
+- Homepage URL: `https://sign.qms.dearauditor.ch`
+- Authorization callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
+- OAuth scope requested by worker: `user:email`
 
 ## Local Development
 
@@ -61,20 +69,16 @@ To add additional IDPs later, keep the same state/context verification and imple
 
 ## Bootstrap Helper
 
-Use the bootstrap script to push settings from `.env.local` to GitHub and Cloudflare:
+Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 
 ```bash
 ./services/signature-worker/scripts/bootstrap_env.sh --deploy
 ```
 
 What it does:
+
 - Upserts repo variable `SIGNATURE_UI_BASE_URL`.
-- Sets repo secrets `SIGNATURE_LINK_SECRET`, `SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY` when values are present.
-- Sets worker secrets from `.env.local`.
+- Sets repo secrets `SIGNATURE_LINK_SECRET`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` when values are present.
+- Sets worker secrets for OAuth + PR comment token + signing secrets.
 - Writes `.dev.vars` for local `wrangler dev`.
-
-After deploy, set repo variable in `qms-lite`:
-- `SIGNATURE_UI_BASE_URL=https://sign.qms.dearauditor.ch`
-
-and repo secret:
-- `SIGNATURE_LINK_SECRET=<same value as worker secret>`
+- Validates that KV namespace IDs in `wrangler.toml` are not placeholders before deploy.

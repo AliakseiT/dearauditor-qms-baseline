@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-REPO_ROOT="$(cd "${SERVICE_DIR}/../.." && pwd)"
+WRANGLER_TOML="${SERVICE_DIR}/wrangler.toml"
 
 ENV_FILE="${SERVICE_DIR}/.env.local"
 WORKER_NAME=""
@@ -30,13 +30,19 @@ Expected env keys in .env.local:
   GITHUB_REPO
   CLOUDFLARE_API_TOKEN
   CLOUDFLARE_ACCOUNT_ID
-  GITHUB_APP_ID
-  GITHUB_APP_CLIENT_ID
-  GITHUB_APP_CLIENT_SECRET
-  GITHUB_APP_PRIVATE_KEY
-  GITHUB_APP_INSTALLATION_ID (optional)
+  GITHUB_OAUTH_CLIENT_ID
+  GITHUB_OAUTH_CLIENT_SECRET
+  GITHUB_REPO_TOKEN
   SIGNATURE_LINK_SECRET
   SIGNATURE_STATE_SECRET
+
+Optional env keys:
+  GITHUB_API_BASE_URL
+  DEFAULT_OAUTH_PROVIDER
+  ALLOWED_OAUTH_PROVIDERS
+  SIGNATURE_UI_BASE_URL
+  PIN_KV_NAMESPACE_ID
+  PIN_KV_PREVIEW_NAMESPACE_ID
 USAGE
 }
 
@@ -74,8 +80,8 @@ source "$ENV_FILE"
 set +a
 
 if [[ -z "$WORKER_NAME" ]]; then
-  if [[ -f "${SERVICE_DIR}/wrangler.toml" ]]; then
-    WORKER_NAME="$(awk -F'=' '/^name\s*=/{gsub(/[ \"\r\n]/,"",$2); print $2; exit}' "${SERVICE_DIR}/wrangler.toml")"
+  if [[ -f "$WRANGLER_TOML" ]]; then
+    WORKER_NAME="$(awk -F'=' '/^name\s*=/{gsub(/[ \"\r\n]/,"",$2); print $2; exit}' "$WRANGLER_TOML")"
   fi
   WORKER_NAME="${WORKER_NAME:-signature-worker}"
 fi
@@ -97,6 +103,7 @@ is_placeholder() {
   [[ -z "$val" ]] && return 0
   [[ "$val" == *"..."* ]] && return 0
   [[ "$val" == "CHANGEME"* ]] && return 0
+  [[ "$val" == "REPLACE_WITH_"* ]] && return 0
   [[ "$val" == "<"*">" ]] && return 0
   return 1
 }
@@ -109,15 +116,6 @@ require_non_placeholder_for_deploy() {
     return 1
   fi
   return 0
-}
-
-normalize_private_key() {
-  local key="${1:-}"
-  if [[ "$key" == *"\\n"* ]]; then
-    printf '%b' "${key//\\n/\n}"
-  else
-    printf '%s' "$key"
-  fi
 }
 
 require_cmd() {
@@ -165,6 +163,58 @@ set_worker_secret_if_present() {
   echo "Set worker secret: ${name}"
 }
 
+sync_kv_namespace_ids_from_env() {
+  [[ -f "$WRANGLER_TOML" ]] || return 0
+
+  local kv_id="${PIN_KV_NAMESPACE_ID:-}"
+  local preview_id="${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
+
+  if ! is_placeholder "$kv_id"; then
+    python3 - "$WRANGLER_TOML" "REPLACE_WITH_PIN_KV_NAMESPACE_ID" "$kv_id" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+placeholder = sys.argv[2]
+value = sys.argv[3]
+content = path.read_text()
+content = content.replace(placeholder, value)
+path.write_text(content)
+PY
+  fi
+  if ! is_placeholder "$preview_id"; then
+    python3 - "$WRANGLER_TOML" "REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID" "$preview_id" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+placeholder = sys.argv[2]
+value = sys.argv[3]
+content = path.read_text()
+content = content.replace(placeholder, value)
+path.write_text(content)
+PY
+  fi
+}
+
+assert_kv_binding_configured() {
+  [[ -f "$WRANGLER_TOML" ]] || { echo "Missing wrangler.toml at ${WRANGLER_TOML}" >&2; return 1; }
+
+  if ! grep -q 'binding = "PIN_KV"' "$WRANGLER_TOML"; then
+    echo "wrangler.toml is missing KV binding PIN_KV." >&2
+    return 1
+  fi
+
+  local has_placeholder
+  has_placeholder="$(grep -E 'REPLACE_WITH_PIN_KV_NAMESPACE_ID|REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID' "$WRANGLER_TOML" || true)"
+  if [[ -n "$has_placeholder" ]]; then
+    echo "wrangler.toml still has placeholder KV namespace IDs. Set PIN_KV_NAMESPACE_ID and PIN_KV_PREVIEW_NAMESPACE_ID in .env.local and rerun this script." >&2
+    return 1
+  fi
+
+  return 0
+}
+
 write_dev_vars() {
   local out="${SERVICE_DIR}/.dev.vars"
   cat > "$out" <<DEVVARS
@@ -172,34 +222,26 @@ PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-}
 DEFAULT_OAUTH_PROVIDER=${DEFAULT_OAUTH_PROVIDER:-github}
 ALLOWED_OAUTH_PROVIDERS=${ALLOWED_OAUTH_PROVIDERS:-github}
 GITHUB_API_BASE_URL=${GITHUB_API_BASE_URL:-https://api.github.com}
-GITHUB_APP_ID=${GITHUB_APP_ID:-}
-GITHUB_APP_CLIENT_ID=${GITHUB_APP_CLIENT_ID:-}
-GITHUB_APP_CLIENT_SECRET=${GITHUB_APP_CLIENT_SECRET:-}
-GITHUB_APP_INSTALLATION_ID=${GITHUB_APP_INSTALLATION_ID:-}
+GITHUB_OAUTH_CLIENT_ID=${GITHUB_OAUTH_CLIENT_ID:-}
+GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
+GITHUB_REPO_TOKEN=${GITHUB_REPO_TOKEN:-}
 SIGNATURE_LINK_SECRET=${SIGNATURE_LINK_SECRET:-}
 SIGNATURE_STATE_SECRET=${SIGNATURE_STATE_SECRET:-}
 DEVVARS
 
-  local normalized_key
-  normalized_key="$(normalize_private_key "${GITHUB_APP_PRIVATE_KEY:-}")"
-  {
-    printf 'GITHUB_APP_PRIVATE_KEY='
-    printf '%q' "$normalized_key"
-    printf '\n'
-  } >> "$out"
-
   echo "Wrote local dev file: ${out}"
 }
 
+sync_kv_namespace_ids_from_env
 write_dev_vars
 
 if [[ "$DO_DEPLOY" -eq 1 ]]; then
-  require_non_placeholder_for_deploy "GITHUB_APP_ID"
-  require_non_placeholder_for_deploy "GITHUB_APP_CLIENT_ID"
-  require_non_placeholder_for_deploy "GITHUB_APP_CLIENT_SECRET"
-  require_non_placeholder_for_deploy "GITHUB_APP_PRIVATE_KEY"
+  require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_ID"
+  require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_SECRET"
+  require_non_placeholder_for_deploy "GITHUB_REPO_TOKEN"
   require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
   require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
+  assert_kv_binding_configured
 fi
 
 if [[ "$SKIP_GH" -eq 0 ]]; then
@@ -208,26 +250,18 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
 
   upsert_repo_variable "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
   set_repo_secret_if_present "$GH_REPO" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
-  set_repo_secret_if_present "$GH_REPO" "SIGNATURE_APP_ID" "${GITHUB_APP_ID:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_ACCOUNT_ID" "${CLOUDFLARE_ACCOUNT_ID:-}"
-
-  local_private_key="$(normalize_private_key "${GITHUB_APP_PRIVATE_KEY:-}")"
-  set_repo_secret_if_present "$GH_REPO" "SIGNATURE_APP_PRIVATE_KEY" "$local_private_key"
 fi
 
 if [[ "$SKIP_CF" -eq 0 ]]; then
   require_cmd wrangler
 
-  local_private_key="$(normalize_private_key "${GITHUB_APP_PRIVATE_KEY:-}")"
-
-  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_APP_ID" "${GITHUB_APP_ID:-}"
-  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_APP_CLIENT_ID" "${GITHUB_APP_CLIENT_ID:-}"
-  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_APP_CLIENT_SECRET" "${GITHUB_APP_CLIENT_SECRET:-}"
-  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_APP_PRIVATE_KEY" "$local_private_key"
+  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_OAUTH_CLIENT_ID" "${GITHUB_OAUTH_CLIENT_ID:-}"
+  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_OAUTH_CLIENT_SECRET" "${GITHUB_OAUTH_CLIENT_SECRET:-}"
+  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_REPO_TOKEN" "${GITHUB_REPO_TOKEN:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_STATE_SECRET" "${SIGNATURE_STATE_SECRET:-}"
-  set_worker_secret_if_present "$WORKER_NAME" "GITHUB_APP_INSTALLATION_ID" "${GITHUB_APP_INSTALLATION_ID:-}"
 fi
 
 if [[ "$DO_DEPLOY" -eq 1 ]]; then
