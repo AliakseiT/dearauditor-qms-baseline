@@ -45,6 +45,9 @@
 - Supplier controls: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
 - Risk management artifacts: `records/risk/risk_management_plan_template.yml`, `records/risk/risk_register_template.yml`
 
+## Automation Map
+- End-to-end workflow diagram (SVG): `docs/automation/workflow-automation-map.svg`
+
 ## Immutable Record Release Tags
 
 QMS execution records are published as immutable releases in this repository (`AliakseiT/qms-lite`) on the relevant PR target commit/hash.
@@ -94,9 +97,10 @@ QMS execution records are published as immutable releases in this repository (`A
 
 ## Attention Board
 
-- `signature_status_tracker.yml` syncs actionable work into Project `#1` (open issues and merged PR signature states).
+- `signature_status_tracker.yml` syncs actionable work into GitHub Project `#<SIGNATURE_PROJECT_NUMBER>` (open issues and merged PR signature states).
 - PRs are auto-labeled with exactly one signature state: `signature/outstanding`, `signature/complete`, or `signature/not-required`.
 - No-PAT mode: workflow always updates signature labels and attempts Project sync using `github.token`; if Project access/scope is unavailable, it skips board sync without failing.
+- Set repository variable `SIGNATURE_PROJECT_NUMBER` (for example, `1`) to enable board sync; if unset, labels are still maintained and project sync is skipped.
 - Project status mapping:
   - `Todo` lane: open issues, merged PRs with outstanding signatures.
   - `Done` lane: merged PRs with complete/not-required signatures.
@@ -117,6 +121,7 @@ QMS execution records are published as immutable releases in this repository (`A
 ## Repository Variables (Part 11)
 
 - `SIGNATURE_UI_BASE_URL`: external signer UI origin, for example `https://sign.qms.dearauditor.ch`.
+- `SIGNATURE_PROJECT_NUMBER`: optional GitHub ProjectV2 number used by `signature_status_tracker.yml` for Todo/Done board sync.
 
 ## Signature Worker Service
 

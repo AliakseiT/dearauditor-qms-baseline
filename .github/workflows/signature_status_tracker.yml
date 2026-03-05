@@ -25,17 +25,18 @@ jobs:
   sync_signature_attention_project:
     runs-on: ubuntu-latest
     steps:
-      - name: Evaluate signatures and sync Project 1
+      - name: Evaluate signatures and sync signature attention board
         uses: actions/github-script@v7
         env:
-          PROJECT_NUMBER: '1'
+          PROJECT_NUMBER: ${{ vars.SIGNATURE_PROJECT_NUMBER }}
           HORIZON_DAYS: '45'
           MAX_CLOSED_PRS: '150'
         with:
           github-token: ${{ github.token }}
           script: |
             const repo = context.repo;
-            const projectNumber = Number(process.env.PROJECT_NUMBER || '1');
+            const rawProjectNumber = String(process.env.PROJECT_NUMBER || '').trim();
+            const projectNumber = rawProjectNumber ? Number(rawProjectNumber) : 0;
             const horizonDays = Number(process.env.HORIZON_DAYS || '45');
             const maxClosedPrs = Number(process.env.MAX_CLOSED_PRS || '150');
 
@@ -408,6 +409,12 @@ jobs:
             const issueTargets = openIssues.filter((i) => !i.pull_request);
             const prTargets = prResults;
 
+            if (!Number.isInteger(projectNumber) || projectNumber < 1) {
+              core.warning('Project sync skipped (SIGNATURE_PROJECT_NUMBER is not configured). Signature labels were still updated.');
+              core.info(`Labels synced only: ${prResults.length} merged PRs evaluated.`);
+              return;
+            }
+
             try {
               const project = await getProjectV2(repo.owner, projectNumber);
               const statusField = (project.fields?.nodes || []).find((f) => String(f.name || '').toLowerCase() === 'status');
@@ -447,8 +454,15 @@ jobs:
               core.info(`Synced Project #${projectNumber} (${project.url}): ${issueTargets.length} open issues + ${prTargets.length} merged PRs.`);
             } catch (err) {
               const msg = String(err?.message || err || '');
-              if (msg.includes('INSUFFICIENT_SCOPES') || msg.includes('read:project') || msg.includes('Resource not accessible')) {
-                core.warning('Project sync skipped (insufficient project scope/access for github.token). Signature labels were still updated.');
+              if (
+                msg.includes('INSUFFICIENT_SCOPES') ||
+                msg.includes('read:project') ||
+                msg.includes('Resource not accessible') ||
+                msg.includes('Could not resolve to a ProjectV2 with the number') ||
+                msg.includes('ProjectV2 #') ||
+                msg.includes('was not found for owner')
+              ) {
+                core.warning(`Project sync skipped (project unavailable or insufficient scope): ${msg}`);
                 core.info(`Labels synced only: ${prResults.length} merged PRs evaluated.`);
                 return;
               }
