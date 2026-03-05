@@ -5,8 +5,8 @@ workers_dev = true
 
 [[kv_namespaces]]
 binding = "PIN_KV"
-id = "REPLACE_WITH_PIN_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID"
+id = "9f16e609e2394104a5fcc45ecc0ef5ef"
+preview_id = "df603f54cf7247a1b2a0dcc37e7bdcd7"
 
 [vars]
 PUBLIC_BASE_URL = "https://sign.qms.dearauditor.ch"
