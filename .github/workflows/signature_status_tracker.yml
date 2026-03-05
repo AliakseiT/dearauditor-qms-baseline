@@ -34,6 +34,8 @@ jobs:
           github-token: ${{ github.token }}
           script: |
             const repo = context.repo;
+            const eventName = context.eventName;
+            const payload = context.payload || {};
             const rawProjectNumber = String(process.env.PROJECT_NUMBER || '').trim();
             const projectNumber = rawProjectNumber ? Number(rawProjectNumber) : 0;
             const horizonDays = Number(process.env.HORIZON_DAYS || '45');
@@ -52,6 +54,12 @@ jobs:
               'signature/complete': { color: '1A7F37', description: 'All required signatures are captured.' },
               'signature/not-required': { color: '6E7781', description: 'This PR does not require signatures by policy.' },
             };
+            const SIGNATURE_COMMENT_MARKERS = [
+              '<!-- signature-native-attestation -->',
+              '<!-- part11-native-attestation -->',
+              '<!-- SIGNATURE_ATTESTATION_V1 -->',
+              '<!-- PART11_ATTESTATION_V1 -->',
+            ];
 
             function normalizeLogin(v) {
               return String(v || '').trim().replace(/^@+/, '').toLowerCase();
@@ -377,6 +385,36 @@ jobs:
 
             await ensureStateLabelsExist();
 
+            let targetedMergedPr = null;
+            if (eventName === 'issue_comment') {
+              const issue = payload.issue || {};
+              const isPrComment = Boolean(issue.pull_request);
+              const commentBody = String(payload.comment?.body || '');
+              const hasSignatureMarker = SIGNATURE_COMMENT_MARKERS.some((m) => commentBody.includes(m));
+
+              if (!isPrComment || !hasSignatureMarker) {
+                core.info('Ignoring non-signature issue_comment event.');
+                return;
+              }
+
+              const prNumber = Number(issue.number || 0);
+              if (!Number.isInteger(prNumber) || prNumber < 1) {
+                core.info('Ignoring issue_comment without valid PR number.');
+                return;
+              }
+
+              const pr = await github.rest.pulls.get({
+                owner: repo.owner,
+                repo: repo.repo,
+                pull_number: prNumber,
+              });
+              if (!pr.data?.merged_at) {
+                core.info(`PR #${prNumber} is not merged; skipping signature label sync.`);
+                return;
+              }
+              targetedMergedPr = pr.data;
+            }
+
             const closed = await github.paginate(github.rest.pulls.list, {
               owner: repo.owner,
               repo: repo.repo,
@@ -388,9 +426,11 @@ jobs:
 
             const horizonMs = horizonDays * 24 * 60 * 60 * 1000;
             const now = Date.now();
-            const mergedCandidates = closed
-              .filter((p) => p.merged_at && (now - Date.parse(p.merged_at)) <= horizonMs)
-              .slice(0, maxClosedPrs);
+            const mergedCandidates = targetedMergedPr
+              ? [targetedMergedPr]
+              : closed
+                  .filter((p) => p.merged_at && (now - Date.parse(p.merged_at)) <= horizonMs)
+                  .slice(0, maxClosedPrs);
 
             const prResults = [];
             for (const pr of mergedCandidates) {
