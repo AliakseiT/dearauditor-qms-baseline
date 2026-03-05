@@ -177,10 +177,9 @@ jobs:
               const baseRequiredReviewers = explicitRequired > 0 ? Math.max(0, explicitRequired - 1) : 0;
               const policyRequiredReviewers = policyReasons.length > 0 ? 1 : 0;
               const requiredReviewers = Math.max(baseRequiredReviewers, policyRequiredReviewers);
-              const policySignatureRequired = explicitRequired > 0 || policyReasons.length > 0;
-              const computedRequiredSignatures = policySignatureRequired
-                ? Math.max(explicitRequired || 1, requiredReviewers + 1)
-                : 0;
+              // QMS policy: every merged PR requires at least one signature (author can satisfy single-signature path).
+              const policySignatureRequired = true;
+              const computedRequiredSignatures = Math.max(explicitRequired || 1, requiredReviewers + 1);
 
               const requestComments = comments
                 .filter((c) => {
@@ -225,7 +224,7 @@ jobs:
               const missingSigners = eligibleSigners.filter((s) => !signedBy.has(s));
               const hasAttestationEvidence = signedBy.size > 0;
 
-              const signatureRequired = policySignatureRequired || signatureRequested || hasAttestationEvidence;
+              const signatureRequired = true;
               let requiredSignatures = request?.requiredSignatures || 0;
               if (requiredSignatures <= 0) {
                 requiredSignatures = computedRequiredSignatures;
@@ -234,7 +233,7 @@ jobs:
                 requiredSignatures = Math.max(capturedCount, 1);
               }
 
-              const blockedNoRequest = policySignatureRequired && !request;
+              const blockedNoRequest = !request;
               const outstanding = signatureRequired && (
                 blockedNoRequest ||
                 (eligibleSigners.length > 0 ? missingSigners.length > 0 : capturedCount < requiredSignatures)
@@ -242,7 +241,7 @@ jobs:
 
               const stateLabel = blockedNoRequest
                 ? 'signature/blocked'
-                : (!signatureRequired ? 'signature/not-required' : (outstanding ? 'signature/outstanding' : 'signature/complete'));
+                : (outstanding ? 'signature/outstanding' : 'signature/complete');
 
               return {
                 number: prNumber,
@@ -411,7 +410,7 @@ jobs:
               per_page: 100,
             });
             const issueTargets = openIssues.filter((i) => !i.pull_request);
-            const prTargets = prResults.filter((r) => r.signatureRequired || r.stateLabel === 'signature/not-required');
+            const prTargets = prResults;
 
             try {
               const project = await getProjectV2(repo.owner, projectNumber);
