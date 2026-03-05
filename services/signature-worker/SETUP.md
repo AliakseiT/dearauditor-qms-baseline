@@ -6,7 +6,7 @@ OAuth app name: `QMS Lite Sign`
 
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
-- Scope used by worker: `user:email`
+- Scope used by worker: `read:user`
 
 ## 2. Cloudflare Worker Configuration
 
