@@ -55,6 +55,7 @@ QMS execution records are published as immutable releases in this repository (`A
 | CAPA | `capa-<record-id>-rNN` | `capa-0007-r01` |
 | Audit | `audit-<record-id>-rNN` | `audit-mdsap-internal-r02` |
 | Training | `trn-<record-id>-rNN` | `trn-dev-lina-sop-002-r01` |
+| Training Issue Signature | `sig-train-<issue>-h<hash12>-rNN` | `sig-train-143-h23b61e73b5d7-r01` |
 | Supplier List / Evaluation | `asl-YYYY.MM.DD-rNN` / `sup-<record-id>-rNN` | `asl-2026.03.01-r01` |
 | Fallback | `record-<record-id>-rNN` | `record-general-note-r01` |
 
@@ -63,7 +64,8 @@ QMS execution records are published as immutable releases in this repository (`A
 - `auto_training_assign.yml`: deprecated (manual-only notice); release-based consolidated training diffs are authoritative.
 - `matrices/training_matrix.yml` now contains only active GitHub collaborators as users.
 - `sop_training_matrix_guard.yml`: blocks SOP PRs unless training matrix impact is updated and each changed SOP maps to at least one role.
-- `release_training_diff.yml`: on release publish, compares required SOP revisions against `records/training/user_training_log.yml` and opens one consolidated training diff issue per user (with SOP-by-SOP revision links and diff previews).
+- `release_training_diff.yml`: runs only for training release tags matching `YYYY-MM-DD-RNN` (for example, `2026-03-05-R01`), compares required SOP revisions against `records/training/user_training_log.yml`, and opens one training issue per user.
+- `training_issue_signature_flow.yml`: when all SOP checklist boxes are completed, posts a signer link; after valid signature attestation, publishes an immutable training signature release and closes the issue with the release link.
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
 - `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a review-only onboarding PR where base is a branch pinned to the first commit and head is a SOP-only snapshot of current `main`.
