@@ -130,12 +130,13 @@ def _section_heading(pdf: FPDF, title: str) -> None:
 
 
 def _kv_lines(pdf: FPDF, rows: list[tuple[str, str]]) -> None:
-    label_width = 52
     for label, value in rows:
         pdf.set_font("Helvetica", "B", 10)
-        pdf.cell(label_width, 6, f"{label}:", border=0)
+        pdf.multi_cell(0, 6, f"{label}:", new_x="LMARGIN", new_y="NEXT")
         pdf.set_font("Helvetica", "", 10)
-        pdf.multi_cell(0, 6, _safe(value))
+        # Force character wrapping to safely render long URLs/hashes.
+        pdf.multi_cell(0, 6, _safe(value), new_x="LMARGIN", new_y="NEXT", wrapmode="CHAR")
+        pdf.ln(1)
 
 
 def _wrap_text(pdf: FPDF, text: str, width: float) -> list[str]:
