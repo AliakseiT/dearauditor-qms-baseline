@@ -972,7 +972,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
     <div class="card">
       <div class="head">
         <h1>QMS Signature Ceremony</h1>
-        <p>Identity is verified by active ${escapeHtml(providerLabel)} login, signature context is locked from the PR request, and PIN is verified next.</p>
+        <p>Identity is your active ${escapeHtml(providerLabel)} login, signature context is locked from the PR request, PIN is verified next.</p>
       </div>
       <div class="section">
         <div class="grid">
