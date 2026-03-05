@@ -21,25 +21,44 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Build training gap payload
+      - name: Build consolidated training gap payload
         id: payload
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_URL: ${{ github.event.release.html_url }}
+          REPOSITORY: ${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           python -m pip install --quiet pyyaml
           python <<'PY'
           import json
           import os
           import re
+          import subprocess
           from collections import defaultdict
           from pathlib import Path
 
           import yaml
 
+          def git_output(args):
+            return subprocess.check_output(["git", *args], text=True).strip()
+
+          def git_output_allow_fail(args):
+            proc = subprocess.run(["git", *args], text=True, capture_output=True)
+            if proc.returncode != 0:
+              return ""
+            return (proc.stdout or "").strip()
+
           def extract_sop_id(text: str) -> str:
             m = re.search(r"(SOP-\d+)", str(text or ""), flags=re.IGNORECASE)
             return m.group(1).upper() if m else ""
+
+          def parse_revision(rev: str) -> int:
+            m = re.fullmatch(r"R(\d+)", str(rev or "").strip().upper())
+            return int(m.group(1)) if m else -1
+
+          def newer_revision(candidate: str, baseline: str) -> bool:
+            return parse_revision(candidate) > parse_revision(baseline)
 
           def parse_readme_index(path: Path):
             text = path.read_text(encoding="utf-8")
@@ -68,6 +87,53 @@ jobs:
               }
             return published
 
+          history_cache = {}
+
+          def parse_revision_from_file_content(text: str) -> str:
+            m = re.search(r"(?mi)^revision:\s*(R\d+)\s*$", text or "")
+            return m.group(1).upper() if m else ""
+
+          def file_history_info(file_path: str):
+            if file_path in history_cache:
+              return history_cache[file_path]
+
+            commits_raw = git_output_allow_fail(["rev-list", "--reverse", "HEAD", "--", file_path])
+            commits = [c.strip() for c in commits_raw.splitlines() if c.strip()]
+            if not commits:
+              history_cache[file_path] = {
+                "first_sha": "",
+                "latest_sha": "",
+                "rev_to_sha": {},
+              }
+              return history_cache[file_path]
+
+            rev_to_sha = {}
+            for sha in commits:
+              content = git_output_allow_fail(["show", f"{sha}:{file_path}"])
+              if not content:
+                continue
+              rev = parse_revision_from_file_content(content)
+              if rev:
+                rev_to_sha[rev] = sha
+
+            history_cache[file_path] = {
+              "first_sha": commits[0],
+              "latest_sha": commits[-1],
+              "rev_to_sha": rev_to_sha,
+            }
+            return history_cache[file_path]
+
+          def build_diff_preview(file_path: str, from_sha: str, to_sha: str, max_lines: int = 120) -> str:
+            if not from_sha or not to_sha or from_sha == to_sha:
+              return ""
+            diff_raw = git_output_allow_fail(["diff", "--unified=1", f"{from_sha}..{to_sha}", "--", file_path])
+            if not diff_raw:
+              return ""
+            lines = diff_raw.splitlines()
+            if len(lines) > max_lines:
+              lines = lines[:max_lines] + [f"... diff preview truncated to {max_lines} lines ..."]
+            return "\n".join(lines)
+
           matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
           logs_path = Path("records/training/user_training_log.yml")
           logs = yaml.safe_load(logs_path.read_text(encoding="utf-8")) if logs_path.exists() else {}
@@ -75,74 +141,203 @@ jobs:
 
           release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
           release_url = os.environ.get("RELEASE_URL", "").strip() or ""
+          repository = os.environ.get("REPOSITORY", "").strip()
+          default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
 
           roles = matrix.get("roles", {}) or {}
           trained_by_user = (logs or {}).get("users", {}) or {}
 
-          gaps = {}
-          users_to_roles = defaultdict(set)
+          # Consolidate requirements across roles into one per-user requirement set.
+          requirements_by_user = defaultdict(dict)
+          roles_by_user = defaultdict(set)
+
           for role_name, role_def in roles.items():
             users = [str(u).strip() for u in (role_def.get("users", []) or []) if str(u).strip()]
             required_sops = [str(s).strip() for s in (role_def.get("required_sops", []) or []) if str(s).strip()]
-            required_revisions = {extract_sop_id(k): str(v).strip() for k, v in (role_def.get("required_revisions", {}) or {}).items()}
+            required_revisions = {
+              extract_sop_id(k): str(v).strip().upper()
+              for k, v in (role_def.get("required_revisions", {}) or {}).items()
+            }
 
             for user in users:
-              users_to_roles[user].add(role_name)
-              user_trained = trained_by_user.get(user, {}) or {}
+              roles_by_user[user].add(role_name)
+              user_reqs = requirements_by_user[user]
               for required in required_sops:
                 sop_id = extract_sop_id(required)
                 if not sop_id:
                   continue
-                target_revision = required_revisions.get(sop_id) or (published.get(sop_id, {}) or {}).get("revision", "")
+
+                published_info = published.get(sop_id, {}) or {}
+                target_revision = required_revisions.get(sop_id) or str(published_info.get("revision", "")).strip().upper()
                 if not target_revision:
                   continue
 
-                previous_revision = str(user_trained.get(sop_id, "UNTRAINED")).strip() or "UNTRAINED"
-                if previous_revision == target_revision:
-                  continue
-
-                key = (user, sop_id, target_revision)
-                if key not in gaps:
-                  gaps[key] = {
-                    "user": user,
+                current = user_reqs.get(sop_id)
+                if not current:
+                  user_reqs[sop_id] = {
                     "sop_id": sop_id,
-                    "sop_title": (published.get(sop_id, {}) or {}).get("title", ""),
-                    "sop_file": (published.get(sop_id, {}) or {}).get("file", ""),
-                    "from_revision": previous_revision,
+                    "sop_title": str(published_info.get("title", "")).strip(),
+                    "sop_file": str(published_info.get("file", "")).strip(),
                     "to_revision": target_revision,
+                    "roles": {role_name},
                   }
+                else:
+                  current["roles"].add(role_name)
+                  if newer_revision(target_revision, str(current.get("to_revision", ""))):
+                    current["to_revision"] = target_revision
 
           entries = []
-          for gap in sorted(gaps.values(), key=lambda x: (x["user"], x["sop_id"])):
-            user = gap["user"]
-            sop_id = gap["sop_id"]
-            title = f"TRAINING DIFF REQUIRED: {user} {sop_id} {gap['from_revision']} -> {gap['to_revision']}"
-            role_list = ", ".join(sorted(users_to_roles.get(user, set()))) or "none"
-            sop_suffix = f" ({gap['sop_title']})" if gap["sop_title"] else ""
+          for user in sorted(requirements_by_user.keys()):
+            user_requirements = requirements_by_user[user]
+            user_training = trained_by_user.get(user, {}) or {}
+            has_any_training_entry = bool(user_training)
 
-            body_lines = [
-              "### Training Release Diff",
+            gaps = []
+            for sop_id in sorted(user_requirements.keys()):
+              req = user_requirements[sop_id]
+              to_revision = str(req.get("to_revision", "")).strip().upper()
+              if not to_revision:
+                continue
+
+              from_revision = str(user_training.get(sop_id, "UNTRAINED")).strip().upper() or "UNTRAINED"
+              if from_revision == to_revision:
+                continue
+
+              sop_file = str(req.get("sop_file", "")).strip()
+              sop_title = str(req.get("sop_title", "")).strip()
+              roles = sorted(req.get("roles", set()))
+
+              file_url = f"https://github.com/{repository}/blob/{default_branch}/{sop_file}" if sop_file else ""
+              diff_url = ""
+              diff_preview = ""
+
+              if sop_file:
+                history = file_history_info(sop_file)
+                latest_sha = history.get("latest_sha", "")
+                if from_revision == "UNTRAINED":
+                  # Onboarding: route user to latest published SOP state.
+                  diff_url = file_url
+                else:
+                  from_sha = (history.get("rev_to_sha", {}) or {}).get(from_revision, "")
+                  to_sha = (history.get("rev_to_sha", {}) or {}).get(to_revision, "") or latest_sha
+                  if from_sha and to_sha and from_sha != to_sha:
+                    diff_url = f"https://github.com/{repository}/compare/{from_sha}...{to_sha}"
+                    diff_preview = build_diff_preview(sop_file, from_sha, to_sha)
+                  else:
+                    diff_url = file_url
+
+              gaps.append(
+                {
+                  "sop_id": sop_id,
+                  "sop_title": sop_title,
+                  "sop_file": sop_file,
+                  "from_revision": from_revision,
+                  "to_revision": to_revision,
+                  "roles": roles,
+                  "diff_url": diff_url,
+                  "file_url": file_url,
+                  "diff_preview": diff_preview,
+                }
+              )
+
+            if not gaps:
+              continue
+
+            onboarding_mode = not has_any_training_entry
+            role_list = ", ".join(sorted(roles_by_user.get(user, set()))) or "none"
+            title = f"TRAINING DIFF REQUIRED: {user} consolidated ({release_tag})"
+            marker = f"<!-- training-diff-consolidated:user={user};release={release_tag} -->"
+
+            lines = [
+              marker,
+              "### Consolidated Training Release Diff",
               f"- Trigger release: `{release_tag}`",
               f"- Trigger release URL: {release_url or 'n/a'}",
-              f"- Training User ID: `{user}`",
-              f"- Roles requiring this training: `{role_list}`",
-              f"- SOP: `{sop_id}`{sop_suffix}",
-              f"- SOP file: `{gap['sop_file'] or 'n/a'}`",
-              f"- Previously trained revision: `{gap['from_revision']}`",
-              f"- Required revision: `{gap['to_revision']}`",
+              f"- Training user: `@{user}`",
+              f"- Roles in scope: `{role_list}`",
+              f"- SOP deltas in scope: `{len(gaps)}`",
+              f"- Mode: `{'onboarding' if onboarding_mode else 'incremental'}`",
               "",
-              "### Required Completion Workflow",
-              "1. Open a PR updating `records/training/user_training_log.yml` to the required revision.",
-              f"2. In the PR body include: `Issue #<training-issue-number>`, `**Trainee GitHub Login:** @<github-login>`, `**Training User ID:** {user}`, `**SOP ID:** {sop_id}`.",
-              "3. The named trainee must approve that PR (enforced by workflow).",
-              "4. After merge, complete signature collection via bot links (attestation required).",
             ]
 
-            entries.append({
-              "title": title,
-              "body": "\n".join(body_lines),
-              "labels": ["training", "training-diff"],
-            })
+            if onboarding_mode:
+              lines.extend(
+                [
+                  "This user has no prior training log entry. Review the latest published SOP revisions assigned by role.",
+                  "",
+                ]
+              )
+
+            lines.append("### SOP Delta Checklist")
+            for gap in gaps:
+              sop_suffix = f" ({gap['sop_title']})" if gap["sop_title"] else ""
+              roles_text = ", ".join(gap["roles"]) if gap["roles"] else "none"
+              diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
+              current_link = f"[Current SOP]({gap['file_url']})" if gap["file_url"] else "n/a"
+
+              lines.extend(
+                [
+                  f"- [ ] `{gap['sop_id']}`{sop_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
+                  f"  - File: `{gap['sop_file'] or 'n/a'}`",
+                  f"  - Roles requiring SOP: `{roles_text}`",
+                  f"  - Links: {diff_link} | {current_link}",
+                ]
+              )
+
+              if gap["diff_preview"]:
+                lines.extend(
+                  [
+                    "",
+                    f"  <details><summary>{gap['sop_id']} diff preview</summary>",
+                    "",
+                    "  ```diff",
+                    *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
+                    "  ```",
+                    "  </details>",
+                    "",
+                  ]
+                )
+
+            lines.extend(
+              [
+                "",
+                "### Required Completion Workflow",
+                "1. Open one PR updating `records/training/user_training_log.yml` for this user across all listed SOPs.",
+                f"2. In the PR body include: `Issue #<this-issue-number>`, `**Trainee GitHub Login:** @{user}`, and list all SOP revisions updated.",
+                "3. Obtain required approval and complete signature collection on the training PR.",
+                "",
+                "### Machine Payload",
+                "```json",
+                json.dumps(
+                  {
+                    "release_tag": release_tag,
+                    "release_url": release_url,
+                    "user": user,
+                    "mode": "onboarding" if onboarding_mode else "incremental",
+                    "sop_deltas": [
+                      {
+                        "sop_id": g["sop_id"],
+                        "from_revision": g["from_revision"],
+                        "to_revision": g["to_revision"],
+                        "sop_file": g["sop_file"],
+                        "diff_url": g["diff_url"],
+                      }
+                      for g in gaps
+                    ],
+                  },
+                  indent=2,
+                ),
+                "```",
+              ]
+            )
+
+            entries.append(
+              {
+                "title": title,
+                "body": "\n".join(lines),
+                "labels": ["training", "training-diff"],
+              }
+            )
 
           output = os.environ["GITHUB_OUTPUT"]
           with open(output, "a", encoding="utf-8") as fh:
@@ -151,7 +346,7 @@ jobs:
             fh.write("\nEOF\n")
           PY
 
-      - name: Open training diff issues
+      - name: Open consolidated training diff issues
         uses: actions/github-script@v7
         env:
           ENTRIES_JSON: ${{ steps.payload.outputs.entries_json }}
@@ -176,6 +371,7 @@ jobs:
                 core.info(`Skipping existing open issue: ${entry.title}`);
                 continue;
               }
+
               await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
