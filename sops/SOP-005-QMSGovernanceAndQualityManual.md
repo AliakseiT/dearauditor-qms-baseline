@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R05
-effective_date: 2026-03-02
+revision: R06
+effective_date: 2026-03-05
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -118,7 +118,8 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 ### 8.7 QMS Tooling Governance (GitHub-Only)
 1. QMS digital tooling inventory is maintained in `matrices/qms_tooling_inventory.yml`.
 2. Current approved QMS tooling is GitHub (repositories, pull requests, issues, workflows).
-3. Tooling changes require risk-based validation/revalidation evidence per ISO 13485 4.1.6.
+3. QMS Lite repository defines governance SOPs, matrices, and workflow baselines; product and study execution records are maintained in designated product/study repositories.
+4. Tooling changes require risk-based validation/revalidation evidence per ISO 13485 4.1.6.
 
 ### 8.8 Infrastructure Definition Rule
 1. Product infrastructure architecture and controls are defined per product dossier.
@@ -150,8 +151,13 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 ### 8.13 Usability Engineering Standard Adoption
 1. ACME adopts `EVS-EN 62366-1:2015+A1:2020` as the baseline for safety-related usability engineering.
 2. The usability engineering operating procedure is defined in SOP-019 and is part of QMS scope for user-facing products.
-3. Usability engineering records are maintained in Git as a lightweight usability engineering file with explicit links to risk records.
+3. Usability engineering records are maintained in designated product/study repositories as a lightweight usability engineering file with explicit links to risk records.
 4. Use-related post-production findings are reviewed and fed back into risk and design controls.
+
+### 8.14 GitHub Workflow Alignment Rule
+1. QMS SOP execution model follows GitHub-native lifecycle: issue -> branch -> pull request -> required checks/approvals -> merge -> Part 11 signature attestation -> immutable release evidence.
+2. SOP wording must reflect implemented GitHub workflow behavior; if automation sequence changes, impacted SOPs are revised in the same change set.
+3. Part 11 signing mechanism is common across QMS Lite and designated product/study record repositories.
 
 ## 9. Required Records
 - Quality Manual revision and approval log
@@ -161,6 +167,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - Risk management plan and risk management file references per product
 - Usability engineering file references per product
 - QMS tooling validation/revalidation records
+- Record repository mapping (product/study -> repository path) with ownership
 - Dissemination and feedback records for QMS updates
 
 ## 10. Traceability
@@ -170,7 +177,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | 5.1, 5.3, 5.4 | Management commitment, policy, and objectives governance | Management review records and KPI package |
 | 5.5 | Responsibility and communication governance | Responsibility matrix and dissemination records |
 | 4.1.4 | QMS process change impact control | Change impact records and SOP/index/training updates |
-| 4.1.6 | QMS software validation governance | `matrices/qms_tooling_inventory.yml`, `records/validation/qms-tools/*` |
+| 4.1.6 | QMS software validation governance | `matrices/qms_tooling_inventory.yml`, designated QMS-tool validation record repository |
 | ISO 14971 Clauses 4-10 | Integrated lifecycle risk governance | `sops/SOP-018-RiskManagement.md`, `matrices/iso_14971_gap_analysis.yml` |
 | IEC 62366-1 Clauses 4.1.1-5.10 | Usability engineering lifecycle governance | `sops/SOP-019-UsabilityEngineering.md`, `matrices/iec_62366_1_gap_analysis.yml` |
 
@@ -203,3 +210,4 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | R03 | 2026-03-02 | Aligned related-process references to implemented SOP-006..SOP-017 and finalized supplier/infrastructure cross-links. |
 | R04 | 2026-03-02 | Added ISO 14971 adoption and integrated risk governance linkage to SOP-018 and the risk matrix baseline. |
 | R05 | 2026-03-02 | Added IEC 62366-1 adoption and usability engineering governance linkage to SOP-019 and the usability matrix baseline. |
+| R06 | 2026-03-05 | Added repository-of-record governance for product/study records, clarified IEC 62366 evidence location, and added explicit rule to keep SOP lifecycle wording aligned with implemented GitHub workflow. |

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-05
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -15,7 +15,7 @@ related_issue: "#3"
 Define structure, ownership, and control of product-specific medical device files (MDF) for ACME software products.
 
 ## 2. Scope
-Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets.
+Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets. Product MDF records are maintained in designated product/study repositories, not in `qms-lite`.
 
 ## 3. Inputs
 - Product intended use and claims
@@ -43,6 +43,7 @@ Each product MDF must include at minimum:
 4. Risk management file references
 5. Verification/validation summary and traceability
 6. Release history and post-market references
+7. Repository path/structure that identifies where controlled MDF records are maintained
 
 ### 6.2 Product-Specific Governance Rules
 1. Company QMS is generic; product-specific intended use/classification is never inferred from company-level SOPs.
@@ -51,14 +52,15 @@ Each product MDF must include at minimum:
 ### 6.3 Change Control
 1. MDF-impacting changes must be assessed in product change records.
 2. Regulatory-impacting changes require documented pathway reassessment.
-3. MDF index must be updated before release.
+3. MDF index must be updated before release in the designated record repository.
+4. GitHub issue/PR workflow and post-merge Part 11 signature attestation are used as the approval evidence model for released MDF records.
 
 ### 6.4 Periodic Review
 1. Review MDF completeness at least quarterly and before major release.
 2. Resolve missing/obsolete artifact references via CAPA or change control.
 
 ## 7. Required Records
-- Product MDF index and change history
+- Product MDF index and change history in the designated product/study repository
 - Classification and regulatory decision records
 - Traceability summary evidence
 
@@ -76,3 +78,4 @@ Each product MDF must include at minimum:
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-05 | Clarified that product MDF records are maintained in designated product/study repositories and aligned release evidence model with GitHub PR plus post-merge Part 11 attestation. |

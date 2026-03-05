@@ -1,11 +1,11 @@
 version: 1
-analysis_date: "2026-03-02"
+analysis_date: "2026-03-05"
 standard:
   exact_name: "EVS-EN 62366-1:2015+A1:2020 Medical devices - Part 1: Application of usability engineering to medical devices"
   normative_base: "IEC 62366-1:2015+A1:2020"
 analysis_scope: "ACME GmbH QMS-Lite usability engineering process for user-facing SaMD"
 summary:
-  implementation_model: "Lightweight Git-native usability engineering file with direct risk linkage"
+  implementation_model: "Lightweight Git-native usability engineering file in designated product/study repositories with direct risk linkage"
   outstanding_gaps: []
 clause_to_artifact_map:
   "4.1.1": ["SOP-019"]
@@ -13,18 +13,19 @@ clause_to_artifact_map:
   "4.1.3": ["SOP-019"]
   "4.2": ["SOP-019"]
   "4.3": ["SOP-019"]
-  "5.1": ["SOP-019", "records/usability/*/use_specification.yml"]
-  "5.2": ["SOP-019", "records/usability/*/ui_safety_characteristics.yml"]
-  "5.3": ["SOP-019", "records/usability/*/hazard_related_use_scenarios.yml", "SOP-018"]
-  "5.4": ["SOP-019", "records/usability/*/hazard_related_use_scenarios.yml"]
-  "5.5": ["SOP-019", "records/usability/*/summative_evaluation_record.yml"]
-  "5.6": ["SOP-019", "records/usability/*/ui_safety_characteristics.yml"]
-  "5.7.1": ["SOP-019", "records/usability/*/summative_evaluation_record.yml"]
-  "5.7.2": ["SOP-019", "records/usability/*/formative_evaluation_log.yml"]
-  "5.7.3": ["SOP-019", "records/usability/*/summative_evaluation_record.yml"]
-  "5.8": ["SOP-019", "records/usability/*/formative_evaluation_log.yml"]
-  "5.9": ["SOP-019", "records/usability/*/summative_evaluation_record.yml"]
-  "5.10": ["SOP-019", "records/usability/*/uoup_evaluation.yml"]
+  "5.1": ["SOP-019", "<product-or-study-repo>/records/usability/*/use_specification.yml"]
+  "5.2": ["SOP-019", "<product-or-study-repo>/records/usability/*/ui_safety_characteristics.yml"]
+  "5.3": ["SOP-019", "<product-or-study-repo>/records/usability/*/hazard_related_use_scenarios.yml", "SOP-018"]
+  "5.4": ["SOP-019", "<product-or-study-repo>/records/usability/*/hazard_related_use_scenarios.yml"]
+  "5.5": ["SOP-019", "<product-or-study-repo>/records/usability/*/summative_evaluation_record.yml"]
+  "5.6": ["SOP-019", "<product-or-study-repo>/records/usability/*/ui_safety_characteristics.yml"]
+  "5.7.1": ["SOP-019", "<product-or-study-repo>/records/usability/*/summative_evaluation_record.yml"]
+  "5.7.2": ["SOP-019", "<product-or-study-repo>/records/usability/*/formative_evaluation_log.yml"]
+  "5.7.3": ["SOP-019", "<product-or-study-repo>/records/usability/*/summative_evaluation_record.yml"]
+  "5.8": ["SOP-019", "<product-or-study-repo>/records/usability/*/formative_evaluation_log.yml"]
+  "5.9": ["SOP-019", "<product-or-study-repo>/records/usability/*/summative_evaluation_record.yml"]
+  "5.10": ["SOP-019", "<product-or-study-repo>/records/usability/*/uoup_evaluation.yml"]
 notes:
   - "Mapping based on provided 62366 mapping dataset and IEC 62366-1:2015+A1:2020 clause structure."
   - "No copyrighted standard text is included; only clause references and implementation decisions."
+  - "QMS Lite stores governance SOPs/matrices; usability execution records are maintained in designated product/study repositories."

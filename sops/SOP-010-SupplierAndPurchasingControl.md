@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-010
 title: Supplier and Purchasing Control
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-05
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -49,7 +49,7 @@ Applies to all external providers of software components, cloud services, consul
 3. Approve supplier only if minimum controls are met.
 
 ### 6.3 Approved Supplier List Maintenance
-1. Record approved suppliers in `records/suppliers/approved_supplier_list.yml`.
+1. Record approved suppliers in the designated product/study record repository.
 2. ASL fields must include service scope, criticality, approval date, and next review date.
 3. Procurement from non-approved critical suppliers is prohibited unless documented temporary waiver is approved.
 
@@ -64,7 +64,7 @@ Applies to all external providers of software components, cloud services, consul
 3. Remove/suspend suppliers from ASL if controls are no longer adequate.
 
 ## 7. Required Records
-- Supplier vetting forms in `records/suppliers/`
+- Supplier vetting forms in the designated product/study record repository
 - Approved supplier list
 - Supplier performance reviews and decisions
 
@@ -84,3 +84,4 @@ Applies to all external providers of software components, cloud services, consul
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-05 | Updated supplier record-location control to designated product/study repositories instead of `qms-lite` local record paths. |

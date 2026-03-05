@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R01
-effective_date: 2026-03-02
+revision: R02
+effective_date: 2026-03-05
 status: Published
 owner_role: management_representative
 approver_role: management_representative
@@ -60,7 +60,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 3. Record decisions, action owners, due dates, and rationale.
 
 ### 6.4 Output Control and Follow-Up
-1. Publish approved minutes in `records/management-reviews/`.
+1. Publish approved minutes in the designated product/study record repository.
 2. Link each action to CAPA/change control where applicable.
 3. Track action completion monthly until closure.
 
@@ -90,3 +90,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full management review governance procedure implemented. |
+| R02 | 2026-03-05 | Updated management-review record-location control to designated product/study repositories instead of `qms-lite` local record paths. |

@@ -12,6 +12,6 @@ qms_tools:
       - "Actions workflow automation for guards, traceability, and record locking"
     validation_status: "validated_for_intended_qms_use"
     last_validation_review: "2026-03-01"
-    evidence_reference: "records/validation/qms-tools/github-validation-record.md"
+    evidence_reference: "<designated-qms-validation-repo>/records/validation/qms-tools/github-validation-record.md"
     change_control_required: true
     criticality: "high"

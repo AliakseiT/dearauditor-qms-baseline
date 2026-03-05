@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-05
 status: Published
 owner_role: clinical_ops
 approver_role: qa_lead
@@ -27,7 +27,7 @@ iec_62366_1_clauses:
   - 5.8
   - 5.9
   - 5.10
-related_issue: "#40"
+related_issue: "#44"
 ---
 
 ## 1. Purpose
@@ -41,10 +41,11 @@ Applies to user interface design and evaluation activities that affect safety, i
 - user interface of unknown provenance (UOUP)
 
 ## 3. Process Strategy
-1. Use Git/GitHub as the usability engineering system of record.
+1. Use Git/GitHub as the usability engineering system of record in the designated product or study repository.
 2. Keep records concise and structured in YAML/Markdown.
 3. Store only evidence needed to justify safety-related usability decisions.
 4. Link usability findings directly to ISO 14971 risk items and product changes.
+5. QMS Lite maintains governance SOPs and traceability baselines; operational usability records are maintained outside `qms-lite`.
 
 ## 4. Required Inputs
 - Product intended use and user profiles
@@ -68,7 +69,7 @@ Applies to user interface design and evaluation activities that affect safety, i
 ## 7. Lightweight Usability File Structure
 For each product, maintain:
 
-`records/usability/<product-id>/`
+`<product-or-study-repository>/records/usability/<product-id>/`
 - `usability_file_index.yml`
 - `use_specification.yml`
 - `ui_safety_characteristics.yml`
@@ -132,11 +133,18 @@ The file index is the entrypoint for audits and must reference current revisions
 2. Update use-related hazards/scenarios and risk controls when assumptions change.
 3. Keep usability file current at each major release.
 
+### 8.12 GitHub Workflow Alignment
+1. Track usability-engineering activities through issues in the designated product/study repository.
+2. Implement usability record updates through pull requests that include linked issue context and required Part 11 signature meaning/roles.
+3. Require non-author review approval on current PR head commit before merge.
+4. Collect Part 11 attestations post-merge and publish immutable release assets (including manifest and signature evidence) for released usability records.
+
 ## 9. Required Records
-- Product usability file index and referenced records
+- Product usability file index and referenced records in the designated product/study repository
 - Formative and summative evaluation evidence
 - UOUP evaluation record (if applicable)
 - Links to related risk and change records
+- Immutable release manifest and Part 11 attestation evidence for released usability records
 
 ## 10. Traceability
 | Standard Clause | Control in this SOP |
@@ -157,3 +165,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release with lightweight usability-file model for Git/GitHub execution. |
+| R01 | 2026-03-05 | Clarified multi-repository model for usability records, linked to Issue #44, and aligned procedure with implemented GitHub lifecycle (issue -> PR -> merge -> post-merge Part 11 attestation -> immutable release). |

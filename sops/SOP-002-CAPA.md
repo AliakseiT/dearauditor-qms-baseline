@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-002
 title: Corrective and Preventive Action (CAPA)
-revision: R01
-effective_date: 2026-03-02
+revision: R02
+effective_date: 2026-03-05
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -71,7 +71,7 @@ Applies to quality system and product lifecycle nonconformities originating from
 3. Closed CAPA records are retained as immutable quality records.
 
 ## 7. Required Records
-- CAPA execution record in `records/capas/`
+- CAPA execution record in the designated product/study record repository
 - Investigation evidence and root cause rationale
 - Action completion and effectiveness evidence
 
@@ -91,3 +91,4 @@ Applies to quality system and product lifecycle nonconformities originating from
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full CAPA lifecycle procedure implemented. |
+| R02 | 2026-03-05 | Updated record-location control to designated product/study repositories instead of `qms-lite` local record paths. |

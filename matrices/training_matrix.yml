@@ -1,5 +1,5 @@
 ---
-version: 3
+version: 4
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -32,13 +32,15 @@ roles:
       - SOP-018
       - SOP-019
     required_revisions:
-      SOP-001: R02
-      SOP-002: R01
-      SOP-003: R01
-      SOP-004: R01
-      SOP-005: R05
+      SOP-001: R03
+      SOP-002: R02
+      SOP-003: R02
+      SOP-004: R02
+      SOP-005: R06
+      SOP-010: R01
+      SOP-011: R01
       SOP-018: R00
-      SOP-019: R00
+      SOP-019: R01
 
   software_engineer:
     users:
@@ -70,11 +72,12 @@ roles:
       - SOP-017
       - SOP-018
     required_revisions:
-      SOP-001: R02
-      SOP-002: R01
+      SOP-001: R03
+      SOP-002: R02
       SOP-006: R01
       SOP-009: R01
       SOP-017: R01
+      SOP-007: R01
       SOP-018: R00
 
   clinical_ops:
@@ -115,11 +118,13 @@ roles:
       - SOP-018
       - SOP-019
     required_revisions:
-      SOP-001: R02
-      SOP-003: R01
-      SOP-005: R05
+      SOP-001: R03
+      SOP-003: R02
+      SOP-005: R06
+      SOP-010: R01
+      SOP-011: R01
       SOP-018: R00
-      SOP-019: R00
+      SOP-019: R01
 
   management_representative:
     users:
@@ -140,9 +145,12 @@ roles:
       - SOP-018
       - SOP-019
     required_revisions:
-      SOP-001: R02
-      SOP-002: R01
-      SOP-004: R01
-      SOP-005: R05
+      SOP-001: R03
+      SOP-002: R02
+      SOP-004: R02
+      SOP-005: R06
+      SOP-007: R01
+      SOP-010: R01
+      SOP-011: R01
       SOP-018: R00
-      SOP-019: R00
+      SOP-019: R01
