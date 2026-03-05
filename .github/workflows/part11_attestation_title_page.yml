@@ -1,4 +1,5 @@
 name: Part 11 Attestation Title Page
+run-name: Signature certificate publish (comment #${{ github.event.comment.id }})
 
 on:
   issue_comment:

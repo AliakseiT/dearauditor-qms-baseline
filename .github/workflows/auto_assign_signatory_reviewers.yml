@@ -1,4 +1,5 @@
 name: Auto Assign Signatory Reviewers
+run-name: Auto-assign signatory reviewers (PR #${{ github.event.pull_request.number }})
 
 on:
   pull_request:

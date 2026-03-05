@@ -1,4 +1,5 @@
 name: Required Reviewer Approval Guard
+run-name: Required reviewer approval guard (PR #${{ github.event.pull_request.number }})
 
 on:
   pull_request_review:

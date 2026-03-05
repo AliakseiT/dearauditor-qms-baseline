@@ -66,7 +66,7 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 ## Deploy
 
 - Manual: `npm run deploy`
-- CI: `.github/workflows/deploy_signature_worker.yml`
+- GitHub Actions manual run (`workflow_dispatch`): `.github/workflows/deploy_signature_worker.yml`
 
 ## Bootstrap Helper
 
