@@ -60,7 +60,7 @@ QMS execution records are published as immutable releases in this repository (`A
 
 ## Training Automation
 
-- `auto_training_assign.yml`: opens SOP training issues only when changed SOPs are mapped to at least one role in `matrices/training_matrix.yml`.
+- `auto_training_assign.yml`: deprecated (manual-only notice); release-based consolidated training diffs are authoritative.
 - `matrices/training_matrix.yml` now contains only active GitHub collaborators as users.
 - `sop_training_matrix_guard.yml`: blocks SOP PRs unless training matrix impact is updated and each changed SOP maps to at least one role.
 - `release_training_diff.yml`: on release publish, compares required SOP revisions against `records/training/user_training_log.yml` and opens one consolidated training diff issue per user (with SOP-by-SOP revision links and diff previews).
@@ -88,6 +88,15 @@ QMS execution records are published as immutable releases in this repository (`A
   - `scripts/generate_part11_title_page.py`
   - Produces `part11_title_page.pdf` with signatory names, roles, titles, and signature timestamps.
 - Record publication workflows wait for required signature count/role/meaning before releasing immutable records.
+
+## Attention Board
+
+- `signature_status_tracker.yml` syncs actionable work into Project `#1` (open issues and merged PR signature states).
+- PRs are auto-labeled with exactly one signature state: `signature/outstanding`, `signature/complete`, `signature/not-required`, or `signature/blocked`.
+- No-PAT mode: workflow always updates signature labels and attempts Project sync using `github.token`; if Project access/scope is unavailable, it skips board sync without failing.
+- Project status mapping:
+  - `Todo` lane: open issues, merged PRs with outstanding/blocked signatures.
+  - `Done` lane: merged PRs with complete/not-required signatures.
 
 ## Artifact Quota Control
 

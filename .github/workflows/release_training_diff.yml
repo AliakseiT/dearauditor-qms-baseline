@@ -145,6 +145,7 @@ jobs:
           default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
 
           roles = matrix.get("roles", {}) or {}
+          users_cfg = matrix.get("users", {}) or {}
           trained_by_user = (logs or {}).get("users", {}) or {}
 
           # Consolidate requirements across roles into one per-user requirement set.
@@ -245,15 +246,17 @@ jobs:
 
             onboarding_mode = not has_any_training_entry
             role_list = ", ".join(sorted(roles_by_user.get(user, set()))) or "none"
-            title = f"TRAINING DIFF REQUIRED: {user} consolidated ({release_tag})"
-            marker = f"<!-- training-diff-consolidated:user={user};release={release_tag} -->"
+            profile = users_cfg.get(user, {}) or {}
+            full_name = str(profile.get("full_name", "")).strip() or user
+            title = f"TRAINING REQUIRED: {full_name} ({release_tag})"
+            marker = f"<!-- training-release:user={user};release={release_tag} -->"
 
             lines = [
               marker,
-              "### Consolidated Training Release Diff",
+              "### Training Release Review",
               f"- Trigger release: `{release_tag}`",
               f"- Trigger release URL: {release_url or 'n/a'}",
-              f"- Training user: `@{user}`",
+              f"- Training user: `{full_name}` (`@{user}`)",
               f"- Roles in scope: `{role_list}`",
               f"- SOP deltas in scope: `{len(gaps)}`",
               f"- Mode: `{'onboarding' if onboarding_mode else 'incremental'}`",
@@ -302,32 +305,10 @@ jobs:
               [
                 "",
                 "### Required Completion Workflow",
-                "1. Open one PR updating `records/training/user_training_log.yml` for this user across all listed SOPs.",
-                f"2. In the PR body include: `Issue #<this-issue-number>`, `**Trainee GitHub Login:** @{user}`, and list all SOP revisions updated.",
-                "3. Obtain required approval and complete signature collection on the training PR.",
-                "",
-                "### Machine Payload",
-                "```json",
-                json.dumps(
-                  {
-                    "release_tag": release_tag,
-                    "release_url": release_url,
-                    "user": user,
-                    "mode": "onboarding" if onboarding_mode else "incremental",
-                    "sop_deltas": [
-                      {
-                        "sop_id": g["sop_id"],
-                        "from_revision": g["from_revision"],
-                        "to_revision": g["to_revision"],
-                        "sop_file": g["sop_file"],
-                        "diff_url": g["diff_url"],
-                      }
-                      for g in gaps
-                    ],
-                  },
-                  indent=2,
-                ),
-                "```",
+                "1. Review each SOP delta link in this issue and check every checkbox in `SOP Delta Checklist`.",
+                "2. When all checkboxes are completed, automation posts a signature request comment for this issue.",
+                "3. Open the generated signature link, authenticate, and complete signature.",
+                "4. The issue closes automatically after valid signature attestation is posted.",
               ]
             )
 
@@ -336,6 +317,7 @@ jobs:
                 "title": title,
                 "body": "\n".join(lines),
                 "labels": ["training", "training-diff"],
+                "assignees": [user],
               }
             )
 
@@ -365,8 +347,25 @@ jobs:
               per_page: 100,
             });
             const openTitles = new Set(openIssues.map((i) => i.title));
+            const openMarkers = new Set();
+            for (const issue of openIssues) {
+              const body = String(issue.body || '');
+              const marker = body.match(/<!--\s*(training-release:user=[^;>]+;release=[^>]+)\s*-->/i);
+              if (marker && marker[1]) {
+                openMarkers.add(marker[1].toLowerCase().trim());
+              }
+              const legacy = body.match(/<!--\s*training-diff-consolidated:user=([^;>]+);release=([^;>]+)\s*-->/i);
+              if (legacy && legacy[1] && legacy[2]) {
+                openMarkers.add(`training-release:user=${legacy[1]};release=${legacy[2]}`.toLowerCase());
+              }
+            }
 
             for (const entry of entries) {
+              const marker = String((entry.body || '').match(/<!--\s*(training-release:user=[^;>]+;release=[^>]+)\s*-->/i)?.[1] || '').toLowerCase().trim();
+              if (marker && openMarkers.has(marker)) {
+                core.info(`Skipping existing open issue by marker: ${marker}`);
+                continue;
+              }
               if (openTitles.has(entry.title)) {
                 core.info(`Skipping existing open issue: ${entry.title}`);
                 continue;
@@ -378,5 +377,6 @@ jobs:
                 title: entry.title,
                 body: entry.body,
                 labels: entry.labels,
+                assignees: entry.assignees || [],
               });
             }
