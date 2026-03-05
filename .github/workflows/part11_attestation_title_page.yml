@@ -337,10 +337,10 @@ jobs:
 
           out = Path(os.environ["GITHUB_OUTPUT"])
           with out.open("a", encoding="utf-8") as fh:
-            fh.write(f"tag={tag}\\n")
-            fh.write(f"release_url={rel.get('html_url', '')}\\n")
-            fh.write(f"pdf_url={assets.get(os.environ['CERT_PDF'], '')}\\n")
-            fh.write(f"json_url={assets.get('signed_attestation.json', '')}\\n")
+            fh.write(f"tag={tag}\n")
+            fh.write(f"release_url={rel.get('html_url', '')}\n")
+            fh.write(f"pdf_url={assets.get(os.environ['CERT_PDF'], '')}\n")
+            fh.write(f"json_url={assets.get('signed_attestation.json', '')}\n")
           PY
 
       - name: Comment PR with signature page preview
@@ -356,9 +356,21 @@ jobs:
           script: |
             const prNumber = Number(process.env.PR_NUMBER);
             const releaseTag = (process.env.RELEASE_TAG || '').trim();
-            let releaseUrl = (process.env.RELEASE_URL || '').trim();
-            const pdfUrl = process.env.PDF_URL || '';
-            const jsonUrl = process.env.JSON_URL || '';
+            function sanitizeField(raw) {
+              const value = String(raw || '').trim();
+              if (!value) return '';
+              const line = value.split(/\r?\n|\\n/)[0].trim();
+              const kv = line.match(/^[a-z_]+=([^\s]+)$/i);
+              return (kv ? kv[1] : line).trim();
+            }
+            function extractFirstUrl(raw) {
+              const clean = sanitizeField(raw);
+              const m = clean.match(/https?:\/\/[^\s]+/i);
+              return m ? m[0] : clean;
+            }
+            let releaseUrl = extractFirstUrl(process.env.RELEASE_URL || '');
+            const pdfUrl = extractFirstUrl(process.env.PDF_URL || '');
+            const jsonUrl = extractFirstUrl(process.env.JSON_URL || '');
             if (!releaseUrl && releaseTag) {
               releaseUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/releases/tag/${releaseTag}`;
             }
