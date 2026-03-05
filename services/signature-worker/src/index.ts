@@ -671,7 +671,12 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
 
 function validateRequestAgainstContext(meta: SignatureRequestMeta, ctx: SignatureContext): void {
   if (meta.hash !== ctx.hash) {
-    throw new Error("Signing context hash does not match current request hash.");
+    const expected = `${ctx.hash.slice(0, 12)}...`;
+    const actual = `${meta.hash.slice(0, 12)}...`;
+    const requestUrl = meta.commentUrl ? ` Open latest signature request: ${meta.commentUrl}` : "";
+    throw new Error(
+      `Signing link is stale (hash mismatch). Link hash ${expected} does not match current request hash ${actual}.${requestUrl}`
+    );
   }
   if (meta.meaning !== ctx.meaning) {
     throw new Error("Meaning-of-signature mismatch with latest request comment.");

@@ -31,7 +31,6 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
-            const crypto = require('crypto');
             const pr = context.payload.pull_request;
             if (!pr) {
               core.info('No pull request context; skipping.');
@@ -165,105 +164,14 @@ jobs:
             } catch (error) {
               core.warning(`Could not enable auto-merge via GraphQL: ${error.message}`);
               try {
-                const merged = await github.rest.pulls.merge({
+                await github.rest.pulls.merge({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   pull_number: pr.number,
                   merge_method: 'squash',
                 });
                 core.info(`Merged PR #${pr.number} directly.`);
-
-                const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
-                let meaning = meaningMatch ? meaningMatch[1].trim() : '';
-                if (!meaning || meaning.startsWith('[')) {
-                  meaning = 'Approved Quality Record';
-                }
-
-                const rolesMatch = body.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
-                let rolesRaw = rolesMatch ? rolesMatch[1].trim() : '';
-                if (!rolesRaw || rolesRaw.startsWith('[')) {
-                  rolesRaw = 'Quality Assurance Lead';
-                }
-                const roles = rolesRaw
-                  .split(/[;,]/)
-                  .map((x) => x.trim())
-                  .filter(Boolean);
-
-                const requiredReviewerSignatures = requiredReviewerApprovals;
-                const requiredSignaturesForRequest = Math.max(requiredSignatures, requiredReviewerSignatures + 1);
-                const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
-                const authorLogin = (pr.user?.login || '').toLowerCase();
-                const reviewerSigners = approvedFromPool.slice(0, requiredReviewerSignatures);
-                const finalSigners = [authorLogin, ...reviewerSigners];
-
-                const targetCommit = merged.sha || fresh.merge_commit_sha || fresh.head?.sha || '';
-                const repoFull = `${context.repo.owner}/${context.repo.repo}`;
-                const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
-                const signingBaseUrl = (process.env.SIGNATURE_UI_BASE_URL || '').trim().replace(/\/+$/g, '');
-                const linkSecret = (process.env.SIGNATURE_LINK_SECRET || '').trim();
-                if (!signingBaseUrl) {
-                  core.setFailed('Missing SIGNATURE_UI_BASE_URL variable. Configure repository variable SIGNATURE_UI_BASE_URL.');
-                  return;
-                }
-                if (!linkSecret) {
-                  core.setFailed('Missing SIGNATURE_LINK_SECRET secret. Configure repository secret SIGNATURE_LINK_SECRET.');
-                  return;
-                }
-                const expirationEpoch = Math.floor(Date.now() / 1000) + (12 * 60 * 60);
-                const canonicalize = (map) => Object.keys(map).sort().map((k) => `${k}=${map[k]}`).join('&');
-                const buildLink = (payload) => {
-                  const sig = crypto
-                    .createHmac('sha256', linkSecret)
-                    .update(canonicalize(payload))
-                    .digest('hex');
-                  const params = new URLSearchParams({ ...payload, sig });
-                  return `${signingBaseUrl}/sign?${params.toString()}`;
-                };
-                const runLinks = finalSigners.map((u, i) => {
-                  const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                  const payload = {
-                    repo: `${context.repo.owner}/${context.repo.repo}`,
-                    pr: String(pr.number),
-                    hash: targetHash,
-                    meaning,
-                    role,
-                    signer: u.toLowerCase(),
-                    required_signatures: String(requiredSignaturesForRequest),
-                    signature_index: String(i + 1),
-                    exp: String(expirationEpoch),
-                  };
-                  return `- @${u} (${role}): [Open Signature Title Page](${buildLink(payload)})`;
-                });
-
-                const requestBody = [
-                  '<!-- signature-native-signature-request -->',
-                  '🛑 Signature Required (GitHub App Flow)',
-                  '',
-                  `PR: #${pr.number}`,
-                  `Target commit: \`${targetCommit}\``,
-                  `Target hash (merge state): \`${targetHash}\``,
-                  `Meaning of signature: **${meaning}**`,
-                  `Designated signatory role(s): **${roles.join(', ') || rolesRaw}**`,
-                  `Required signatures: **${requiredSignaturesForRequest}**`,
-                  `Reviewer signatures required: \`${requiredReviewerSignatures}\` (author auto-signs 1)`,
-                  'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), records (`/records`, including management reviews), or matrix/role files (`/matrices`).',
-                  `Co-approval scope matched: ${coapprovalReasons.length > 0 ? coapprovalReasons.join('; ') : 'none'}`,
-                  `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
-                  `Eligible signers: **${finalSigners.length > 0 ? finalSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
-                  '',
-                  'Open your signer link, enter only your full legal name, and complete GitHub login to sign:',
-                  ...runLinks,
-                  '',
-                  `Signature service: ${signingBaseUrl}/sign`,
-                ].join('\n');
-
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr.number,
-                  body: requestBody,
-                });
-                core.info(`Posted fallback signature request on merged PR #${pr.number}.`);
+                core.info(`Signature request will be posted by Issue-to-PR post-merge workflow for PR #${pr.number}.`);
               } catch (mergeError) {
                 core.warning(`Direct merge attempt failed for PR #${pr.number}: ${mergeError.message}`);
                 core.setFailed(

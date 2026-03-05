@@ -47,20 +47,19 @@ jobs:
             }
             const baseRequiredReviewerSignatures = Math.max(0, required - 1);
 
-            const targetCommit = pr.merge_commit_sha || pr.head.sha;
-            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
-            const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
-            const authorLogin = (pr.user?.login || '').toLowerCase();
-            if (!authorLogin) {
-              core.setFailed(`PR #${pr.number} author could not be resolved for Part 11 signer list.`);
-              return;
-            }
-
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pr.number,
             })).data;
+            const targetCommit = fresh.merge_commit_sha || pr.merge_commit_sha || fresh.head?.sha || pr.head.sha;
+            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
+            const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
+            const authorLogin = (fresh.user?.login || pr.user?.login || '').toLowerCase();
+            if (!authorLogin) {
+              core.setFailed(`PR #${pr.number} author could not be resolved for Part 11 signer list.`);
+              return;
+            }
             const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
