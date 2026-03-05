@@ -10,76 +10,113 @@ additional_standards:
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
+quality_manual_document: "docs/QM-001-Quality-Manual.md"
+qms_scope:
+  included_activities:
+    - "QMS governance and document control"
+    - "Design/development and medical device file control"
+    - "Verification and validation execution"
+    - "Configuration management and release baseline control"
+    - "Supplier qualification and purchasing lifecycle"
+    - "Risk management including cybersecurity risk"
+    - "Usability engineering for safety-related UI"
+    - "Feedback, complaint, PMS, and incident processes"
+    - "Nonconformity control, CAPA, audit, metrics, management review"
+  justified_non_applications:
+    - clause: "7.5.2"
+      rationale: "No physical product manufacturing or contamination-control processes."
+    - clause: "7.5.3.2.2"
+      rationale: "No on-site installation by company baseline; product dossier may override."
+    - clause: "7.5.5"
+      rationale: "No sterile medical devices in company baseline scope."
+    - clause: "7.5.7"
+      rationale: "No sterilization processes in company baseline scope."
+    - clause: "7.5.8"
+      rationale: "No implantable devices in company baseline scope."
 quality_manual_sections:
   - section_id: QM-01
     section_name: "QMS context, scope, and process map"
     iso_clauses: ["4.1", "4.2.1", "4.2.2"]
     controlling_sops: ["SOP-005", "SOP-001"]
+    work_instructions: ["WI-001"]
     status: "implemented"
   - section_id: QM-02
     section_name: "Documented information control"
     iso_clauses: ["4.2.4", "4.2.5"]
     controlling_sops: ["SOP-001"]
+    work_instructions: ["WI-001"]
     status: "implemented"
   - section_id: QM-03
     section_name: "Management commitment, policy, objectives"
     iso_clauses: ["5.1", "5.3", "5.4.1", "5.4.2"]
     controlling_sops: ["SOP-004", "SOP-005", "SOP-016"]
+    work_instructions: ["WI-008"]
     status: "implemented"
   - section_id: QM-04
     section_name: "Responsibility, authority, communication"
     iso_clauses: ["5.5.1", "5.5.2", "5.5.3"]
     controlling_sops: ["SOP-005", "SOP-011"]
+    work_instructions: ["WI-008"]
     status: "implemented"
   - section_id: QM-05
     section_name: "Management review"
     iso_clauses: ["5.6.1", "5.6.2", "5.6.3"]
     controlling_sops: ["SOP-004"]
+    work_instructions: ["WI-008"]
     status: "implemented"
   - section_id: QM-06
     section_name: "Human resources and competence"
     iso_clauses: ["6.2"]
     controlling_sops: ["SOP-011"]
+    work_instructions: ["WI-008"]
     status: "implemented"
   - section_id: QM-07
     section_name: "Infrastructure and work environment"
     iso_clauses: ["6.3", "6.4"]
     controlling_sops: ["SOP-017"]
+    work_instructions: ["WI-003"]
     status: "implemented"
   - section_id: QM-08
     section_name: "Design and development controls"
     iso_clauses: ["7.1", "7.3"]
     controlling_sops: ["SOP-008", "SOP-009", "SOP-007"]
+    work_instructions: ["WI-002", "WI-003"]
     status: "implemented"
   - section_id: QM-09
     section_name: "Purchasing and outsourced process control"
     iso_clauses: ["4.1.5", "7.4"]
     controlling_sops: ["SOP-010"]
+    work_instructions: ["WI-004"]
     status: "implemented"
   - section_id: QM-10
     section_name: "Feedback, complaint, and incident processes"
     iso_clauses: ["8.2.1", "8.2.2", "8.2.3"]
     controlling_sops: ["SOP-012", "SOP-013", "SOP-014"]
+    work_instructions: ["WI-006"]
     status: "implemented"
   - section_id: QM-11
     section_name: "Internal audit, monitoring, and analysis"
     iso_clauses: ["8.2.4", "8.2.6", "8.4"]
     controlling_sops: ["SOP-003", "SOP-014", "SOP-016"]
+    work_instructions: ["WI-006", "WI-007", "WI-008"]
     status: "implemented"
   - section_id: QM-12
     section_name: "Nonconformity, CAPA, and improvement"
     iso_clauses: ["8.3", "8.5.1", "8.5.2", "8.5.3"]
     controlling_sops: ["SOP-015", "SOP-002"]
+    work_instructions: ["WI-007"]
     status: "implemented"
   - section_id: QM-13
     section_name: "Lifecycle risk management including cybersecurity risk"
     iso_clauses: ["ISO 14971 4-10"]
     controlling_sops: ["SOP-018", "SOP-008", "SOP-014"]
+    work_instructions: ["WI-005"]
     status: "implemented"
   - section_id: QM-14
     section_name: "Usability engineering for safety-related user interface"
     iso_clauses: ["IEC 62366-1 4.1.1-5.10"]
     controlling_sops: ["SOP-019", "SOP-018", "SOP-008"]
+    work_instructions: ["WI-002", "WI-005"]
     status: "implemented"
 supporting_definitions:
   - item: "Regulatory market scope register"

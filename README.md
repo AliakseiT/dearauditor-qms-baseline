@@ -1,30 +1,50 @@
 # QMS Lite
 
+## Complete Quality Manual
+
+- Full Quality Manual (company context, included/excluded scope, and ISO 13485 clause traceability): `docs/QM-001-Quality-Manual.md`
+- Detailed section traceability baseline: `matrices/quality_manual_traceability.yml`
+- QMS scope includes design/development, V&V, configuration management, purchasing, security risk, PMS/complaints, CAPA, and governance controls.
+- QMS non-applications are explicitly declared and justified in the Quality Manual (`Section 3.2`) and are only overridden by product dossier requirements.
+
 ## Published SOP Index
 
 <!-- PUBLISHED-SOP-INDEX:START -->
-| SOP ID | SOP Title | File | Effective Date | Published Revision | Status |
-|---|---|---|---|---|---|
-| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-05 | R03 | Published |
-| SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published |
-| SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-05 | R02 | Published |
-| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-05 | R02 | Published |
-| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-05 | R06 | Published |
-| SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published |
-| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-05 | R01 | Published |
-| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-02 | R00 | Published |
-| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-02 | R00 | Published |
-| SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-05 | R01 | Published |
-| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-05 | R01 | Published |
-| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-02 | R00 | Published |
-| SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-02 | R00 | Published |
-| SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-02 | R00 | Published |
-| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-02 | R00 | Published |
-| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-02 | R00 | Published |
-| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-02 | R00 | Published |
-| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-02 | R00 | Published |
-| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-05 | R01 | Published |
+| SOP ID | SOP Title | File | Effective Date | Published Revision | Status | QM | SOP Link | WI Link(s) |
+|---|---|---|---|---|---|---|---|---|
+| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-05 | R03 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-001-DocControl.md) | [WI-001](wis/WI-001-DocumentAndQMChangeExecution.md) |
+| SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-002-CAPA.md) | [WI-007](wis/WI-007-NonconformityAndCAPAExecution.md) |
+| SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-05 | R02 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-003-InternalAudit.md) | [WI-007](wis/WI-007-NonconformityAndCAPAExecution.md) |
+| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-05 | R02 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-004-ManagementReview.md) | [WI-008](wis/WI-008-TrainingAssignmentAndCompletion.md) |
+| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-05 | R06 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-005-QMSGovernanceAndQualityManual.md) | [WI-001](wis/WI-001-DocumentAndQMChangeExecution.md) |
+| SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-006-SoftwareValidation.md) | [WI-002](wis/WI-002-VerificationAndValidationExecution.md) |
+| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-05 | R01 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-007-MedicalDeviceFileControl.md) | [WI-002](wis/WI-002-VerificationAndValidationExecution.md) |
+| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-008-DesignAndDevelopmentControl.md) | [WI-002](wis/WI-002-VerificationAndValidationExecution.md), [WI-003](wis/WI-003-ConfigurationManagementAndReleaseBaseline.md), [WI-005](wis/WI-005-SecurityRiskAndVulnerabilityManagement.md) |
+| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-009-ChangeManagement.md) | [WI-003](wis/WI-003-ConfigurationManagementAndReleaseBaseline.md) |
+| SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-05 | R01 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-010-SupplierAndPurchasingControl.md) | [WI-004](wis/WI-004-PurchasingAndSupplierReevaluation.md) |
+| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-05 | R01 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-011-CompetenceTrainingAndAwareness.md) | [WI-008](wis/WI-008-TrainingAssignmentAndCompletion.md) |
+| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-012-FeedbackAndComplaintHandling.md) | [WI-006](wis/WI-006-ComplaintAndPostMarketTriage.md) |
+| SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-013-RegulatoryIncidentReporting.md) | [WI-006](wis/WI-006-ComplaintAndPostMarketTriage.md) |
+| SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-014-PostMarketSurveillance.md) | [WI-006](wis/WI-006-ComplaintAndPostMarketTriage.md), [WI-005](wis/WI-005-SecurityRiskAndVulnerabilityManagement.md) |
+| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-015-NonconformingProductControl.md) | [WI-007](wis/WI-007-NonconformityAndCAPAExecution.md) |
+| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-016-QualityMetricsAndDataAnalysis.md) | [WI-008](wis/WI-008-TrainingAssignmentAndCompletion.md) |
+| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-017-InfrastructureAndMaintenanceControl.md) | [WI-003](wis/WI-003-ConfigurationManagementAndReleaseBaseline.md) |
+| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-02 | R00 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-018-RiskManagement.md) | [WI-005](wis/WI-005-SecurityRiskAndVulnerabilityManagement.md) |
+| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-05 | R01 | Published | [QM-001](docs/QM-001-Quality-Manual.md) | [Open](sops/SOP-019-UsabilityEngineering.md) | [WI-002](wis/WI-002-VerificationAndValidationExecution.md) |
 <!-- PUBLISHED-SOP-INDEX:END -->
+
+## Published Work Instruction Index
+
+| WI ID | WI Title | File | Effective Date | Published Revision | Status |
+|---|---|---|---|---|---|
+| WI-001 | Document and Quality Manual Change Execution | wis/WI-001-DocumentAndQMChangeExecution.md | 2026-03-05 | R00 | Published |
+| WI-002 | Verification and Validation (V&V) Execution | wis/WI-002-VerificationAndValidationExecution.md | 2026-03-05 | R00 | Published |
+| WI-003 | Configuration Management and Release Baseline | wis/WI-003-ConfigurationManagementAndReleaseBaseline.md | 2026-03-05 | R00 | Published |
+| WI-004 | Purchasing and Supplier Re-evaluation Execution | wis/WI-004-PurchasingAndSupplierReevaluation.md | 2026-03-05 | R00 | Published |
+| WI-005 | Security Risk and Vulnerability Management | wis/WI-005-SecurityRiskAndVulnerabilityManagement.md | 2026-03-05 | R00 | Published |
+| WI-006 | Complaint and Post-Market Triage | wis/WI-006-ComplaintAndPostMarketTriage.md | 2026-03-05 | R00 | Published |
+| WI-007 | Nonconformity and CAPA Execution | wis/WI-007-NonconformityAndCAPAExecution.md | 2026-03-05 | R00 | Published |
+| WI-008 | Training Assignment and Completion Workflow | wis/WI-008-TrainingAssignmentAndCompletion.md | 2026-03-05 | R00 | Published |
 
 ## Company Context
 - Legal entity: `ACME GmbH`
@@ -34,6 +54,7 @@
 - Product intent policy: `No single intended medical purpose at company level; each product defines intended use/classification in its own dossier.`
 
 ## QMS Baseline References
+- Complete quality manual baseline: `docs/QM-001-Quality-Manual.md`
 - Company and quality intent baseline: `matrices/company_profile.yml`
 - Regulatory scope baseline (CH/EU/US): `matrices/regulatory_market_scope.yml`
 - ISO 13485 gap-analysis summary: `matrices/iso_13485_gap_analysis.yml`
@@ -44,6 +65,7 @@
 - Signer identity registry (full name/title for attestations): `matrices/signer_registry.json`
 - Supplier control templates: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
 - Risk management templates: `records/risk/risk_management_plan_template.yml`, `records/risk/risk_register_template.yml`
+- Work instruction library: `wis/`
 
 ## Automation Map
 - End-to-end workflow diagram (SVG): `docs/automation/workflow-automation-map.svg`
