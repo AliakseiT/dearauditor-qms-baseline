@@ -130,22 +130,17 @@ jobs:
                 per_page: 100,
               });
               const currentNames = current.map((l) => String(l.name || ''));
-              const toRemove = currentNames.filter((name) => SIGNATURE_STATE_LABELS.includes(name) && name !== targetLabel);
-              for (const name of toRemove) {
-                try {
-                  await github.rest.issues.removeLabel({ owner: repo.owner, repo: repo.repo, issue_number: prNumber, name });
-                } catch (err) {
-                  if (err.status !== 404) throw err;
-                }
-              }
-              if (!currentNames.includes(targetLabel)) {
-                await github.rest.issues.addLabels({
-                  owner: repo.owner,
-                  repo: repo.repo,
-                  issue_number: prNumber,
-                  labels: [targetLabel],
-                });
-              }
+              const nonSignature = currentNames.filter((name) => !SIGNATURE_STATE_LABELS.includes(name));
+              const desired = Array.from(new Set([...nonSignature, targetLabel]));
+              const isSame = desired.length === currentNames.length && desired.every((name) => currentNames.includes(name));
+              if (isSame) return;
+
+              await github.rest.issues.setLabels({
+                owner: repo.owner,
+                repo: repo.repo,
+                issue_number: prNumber,
+                labels: desired,
+              });
             }
 
             async function evaluatePr(pr) {
