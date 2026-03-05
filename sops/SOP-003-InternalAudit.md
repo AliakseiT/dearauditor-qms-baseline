@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-003
 title: Internal Audit
-revision: R01
-effective_date: 2026-03-02
+revision: R02
+effective_date: 2026-03-05
 status: Published
 owner_role: lead_auditor
 approver_role: management_representative
@@ -64,7 +64,7 @@ Applies to all QMS processes and records, including document control, design con
 
 ## 7. Required Records
 - Audit plan and checklist
-- Audit report and finding log in `records/audits/`
+- Audit report and finding log in the designated product/study record repository
 - Closure/effectiveness evidence
 
 ## 8. Traceability
@@ -82,3 +82,4 @@ Applies to all QMS processes and records, including document control, design con
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full internal audit planning/execution/follow-up procedure implemented. |
+| R02 | 2026-03-05 | Updated audit record-location control to designated product/study repositories instead of `qms-lite` local record paths. |

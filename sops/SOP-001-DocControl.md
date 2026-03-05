@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R02
+revision: R03
 effective_date: 2026-03-05
 status: Published
 owner_role: qa_lead
@@ -16,7 +16,7 @@ related_issue: "#1"
 Define how ACME GmbH creates, reviews, approves, revises, distributes, and archives controlled QMS documents and quality records.
 
 ## 2. Scope
-Applies to all controlled information in `qms-lite`, including SOPs, matrices, execution records, templates, and evidence files used to demonstrate QMS compliance.
+Applies to controlled QMS documentation in `qms-lite` and to quality records maintained in designated GitHub product/study record repositories. Product/study execution records are not maintained in `qms-lite`.
 
 ## 3. Inputs
 - Change request, issue, CAPA, audit finding, or management review action
@@ -24,7 +24,7 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 - Existing controlled document revision
 
 ## 4. Outputs
-- Approved controlled document revision in `main`
+- Approved controlled document revision in `main` of the governing repository
 - Immutable execution record through PR history and released record assets
 - Updated published index and training obligations
 
@@ -41,8 +41,8 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 ### 6.1 Document Classes
 1. `SOP`: controlled procedures in `sops/`.
 2. `Matrix`: structured governance references in `matrices/`.
-3. `Record`: objective evidence in `records/`.
-4. `Template`: forms for planning/execution in `.github/ISSUE_TEMPLATE` and `records/*`.
+3. `Template`: forms for planning/execution in `.github/ISSUE_TEMPLATE` and template artifacts in `records/*`.
+4. `Execution Record`: objective evidence maintained in approved external record repositories.
 
 ### 6.2 Identification and Metadata
 1. SOP files must use `SOP-XXX-Title.md` naming.
@@ -50,11 +50,12 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 3. Revision format is `RNN` (for example `R03`).
 
 ### 6.3 Draft, Review, and Approval
-1. All controlled document changes are prepared on a branch and submitted via PR.
+1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with linked issue context.
 2. The PR must identify the execution issue and state the required Part 11 signature meaning and roles.
 3. At least one designated approver reviews technical and compliance adequacy.
 4. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the `qms-lite` signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
-5. Merges are permitted only after required status checks and the required signature gate (Part 11 attestation) are successfully completed.
+5. Merges are permitted only after required status checks and reviewer approvals are successfully completed.
+6. Part 11 signature collection and attestation evidence are captured post-merge on the merged PR and must complete before immutable record publication.
 
 ### 6.4 Published Index Synchronization
 1. Any SOP text change must update the Published SOP Index in `README.md`.
@@ -68,9 +69,9 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 
 ### 6.6 Record Retention and Immutability
 1. Merged PRs serve as the trigger for immutable evidence of the approved document state.
-2. The definitive quality record consists of the cryptographically signed `signed_attestation.json` and the corresponding GitHub Release/Sigstore attestation bundle.
+2. The definitive quality record consists of the cryptographically signed `signed_attestation.json` and corresponding immutable GitHub Release/Sigstore attestation bundle in the target record repository.
 3. A human-readable `Electronic_Signature_Certificate.pdf` is automatically generated alongside these assets to satisfy regulatory manifestation requirements (for example displaying the printed name, date/time, and meaning of the signature).
-4. These required quality records are published as immutable release assets in the repository.
+4. Required quality records are published as immutable release assets in the designated record repository and linked back to source PR context.
 5. Obsolete revisions remain available in Git history and must not be deleted.
 
 ### 6.7 External Documents
@@ -80,6 +81,7 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 ## 7. Required Records
 - PR with approvals and Part 11 attestation
 - Updated `README.md` published SOP index
+- Record release manifest and immutable release assets in the designated record repository when applicable
 - Training issue/record when applicable
 
 ## 8. Traceability
@@ -99,3 +101,4 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full procedure content implemented for ACME GmbH. |
 | R02 | 2026-03-05 | Updated Sections 5, 6.3, and 6.6 to formally define GitHub PR approvals as binding electronic signatures and clarify the structure of immutable cryptographic records. |
+| R03 | 2026-03-05 | Updated repository-of-record model: product/study records are maintained outside `qms-lite`, and SOP workflow wording now matches post-merge Part 11 signature collection before immutable publication. |

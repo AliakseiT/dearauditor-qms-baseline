@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-05
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -54,8 +54,8 @@ Training is required when:
 3. Trainee approval and Part 11 signoff evidence are captured per workflow rules.
 
 ### 6.4 Completion and Evidence
-1. Training completion is logged in `records/training/user_training_log.yml`.
-2. For formal records, immutable package is published to `qms-records`.
+1. Training completion is logged in the designated product/study record repository.
+2. For formal records, immutable package is published to the designated product/study record repository.
 3. Overdue training is escalated to QA Lead and management representative.
 
 ### 6.5 Effectiveness Verification
@@ -80,3 +80,4 @@ Training is required when:
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-05 | Removed repository-specific naming and aligned training completion plus immutable publication wording to designated product/study record repositories. |
