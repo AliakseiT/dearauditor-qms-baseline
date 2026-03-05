@@ -7,6 +7,7 @@ interface Env {
   GITHUB_REPO_TOKEN: string;
   SIGNATURE_LINK_SECRET: string;
   SIGNATURE_STATE_SECRET: string;
+  PIN_PEPPER: string;
   GITHUB_API_BASE_URL?: string;
   PIN_KV: KVNamespace;
 }
@@ -63,10 +64,13 @@ interface SignatureRequestMeta {
 }
 
 interface PinRecord {
-  version: "1";
+  version: "2";
   github_user_id: number;
   github_login: string;
-  pin_hash_sha256: string;
+  pin_kdf: "PBKDF2-SHA256";
+  pin_iterations: number;
+  pin_salt_hex: string;
+  pin_hash_hex: string;
   created_at_epoch: number;
   expires_at_epoch: number;
 }
@@ -76,7 +80,7 @@ interface PinStatus {
   expiringSoon: boolean;
   expiresAtEpoch: number | null;
   createdAtEpoch: number | null;
-  hash: string | null;
+  record: PinRecord | null;
   missingOrExpired: boolean;
 }
 
@@ -84,6 +88,8 @@ const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const HTML_HEADERS = { "content-type": "text/html; charset=utf-8" };
 const PIN_TTL_SECONDS = 5184000; // 60 days
 const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const PIN_KDF_ITERATIONS = 210000;
+const PIN_SALT_BYTES = 16;
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
 
@@ -110,6 +116,9 @@ export default {
       }
       if (path === "/pin/complete" && request.method === "POST") {
         return handlePinComplete(request, env);
+      }
+      if (path === "/pin/setup" && request.method === "POST") {
+        return handlePinSetup(request, env);
       }
       if (path === "/api/pin/status" && request.method === "POST") {
         return handlePinStatusApi(request, env);
@@ -316,11 +325,15 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
     }
     await writePinRecord(env, session.signer_id, session.signer_login, pin);
   } else {
-    if (!pinStatusBefore.hash) {
+    if (!pinStatusBefore.record) {
       throw new Error("PIN record not found. Please set up a new PIN.");
     }
-    const inputHash = await sha256Hex(pin);
-    if (!timingSafeEqual(inputHash, pinStatusBefore.hash)) {
+    const inputHash = await pbkdf2Sha256Hex(
+      pinMaterial(pin, env.PIN_PEPPER),
+      pinStatusBefore.record.pin_salt_hex,
+      pinStatusBefore.record.pin_iterations
+    );
+    if (!timingSafeEqual(inputHash, pinStatusBefore.record.pin_hash_hex)) {
       throw new Error("Invalid PIN.");
     }
   }
@@ -412,6 +425,23 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
   }), 200);
 }
 
+async function handlePinSetup(request: Request, env: Env): Promise<Response> {
+  assertBaseConfig(env);
+  const form = await request.formData();
+  const sessionToken = String(form.get("session_token") || "").trim();
+  if (!sessionToken) {
+    throw new Error("Missing signature PIN session token.");
+  }
+  const session = (await verifyToken(sessionToken, env.SIGNATURE_STATE_SECRET)) as PinSessionState;
+  if (session.type !== "pin_session") {
+    throw new Error("Invalid PIN session token.");
+  }
+  if (session.exp_state < nowEpoch()) {
+    throw new Error("PIN session expired. Restart signing from the PR link.");
+  }
+  return html(renderPinSetupPage(session, sessionToken), 200);
+}
+
 async function handlePinStatusApi(request: Request, env: Env): Promise<Response> {
   assertBaseConfig(env);
   const contentType = request.headers.get("content-type") || "";
@@ -457,6 +487,7 @@ function assertBaseConfig(env: Env): void {
     "GITHUB_REPO_TOKEN",
     "SIGNATURE_LINK_SECRET",
     "SIGNATURE_STATE_SECRET",
+    "PIN_PEPPER",
   ] as const;
   for (const key of required) {
     const value = String(env[key] || "").trim();
@@ -728,14 +759,14 @@ async function getPinStatus(env: Env, githubUserId: number, githubLogin: string)
       expiringSoon: false,
       expiresAtEpoch: null,
       createdAtEpoch: null,
-      hash: null,
+      record: null,
       missingOrExpired: true,
     };
   }
 
-  let parsed: PinRecord;
+  let parsed: any;
   try {
-    parsed = JSON.parse(raw) as PinRecord;
+    parsed = JSON.parse(raw);
   } catch {
     await env.PIN_KV.delete(pinKvKey(githubUserId));
     return {
@@ -743,17 +774,24 @@ async function getPinStatus(env: Env, githubUserId: number, githubLogin: string)
       expiringSoon: false,
       expiresAtEpoch: null,
       createdAtEpoch: null,
-      hash: null,
+      record: null,
       missingOrExpired: true,
     };
   }
 
   const now = nowEpoch();
   if (
-    parsed.version !== "1" ||
-    !parsed.pin_hash_sha256 ||
+    parsed.version !== "2" ||
+    parsed.pin_kdf !== "PBKDF2-SHA256" ||
+    !Number.isInteger(parsed.pin_iterations) ||
+    parsed.pin_iterations < 100000 ||
+    !/^[a-f0-9]{32,128}$/i.test(String(parsed.pin_salt_hex || "")) ||
+    String(parsed.pin_salt_hex || "").length % 2 !== 0 ||
+    !/^[a-f0-9]{64}$/i.test(String(parsed.pin_hash_hex || "")) ||
     !Number.isFinite(parsed.created_at_epoch) ||
     !Number.isFinite(parsed.expires_at_epoch) ||
+    Number(parsed.github_user_id) !== githubUserId ||
+    String(parsed.github_login || "").toLowerCase() !== String(githubLogin || "").toLowerCase() ||
     parsed.expires_at_epoch <= now
   ) {
     await env.PIN_KV.delete(pinKvKey(githubUserId));
@@ -762,10 +800,22 @@ async function getPinStatus(env: Env, githubUserId: number, githubLogin: string)
       expiringSoon: false,
       expiresAtEpoch: null,
       createdAtEpoch: null,
-      hash: null,
+      record: null,
       missingOrExpired: true,
     };
   }
+
+  const record: PinRecord = {
+    version: "2",
+    github_user_id: Number(parsed.github_user_id),
+    github_login: String(parsed.github_login || ""),
+    pin_kdf: "PBKDF2-SHA256",
+    pin_iterations: Number(parsed.pin_iterations),
+    pin_salt_hex: String(parsed.pin_salt_hex || "").toLowerCase(),
+    pin_hash_hex: String(parsed.pin_hash_hex || "").toLowerCase(),
+    created_at_epoch: Number(parsed.created_at_epoch),
+    expires_at_epoch: Number(parsed.expires_at_epoch),
+  };
 
   const secondsToExpiry = parsed.expires_at_epoch - now;
   return {
@@ -773,7 +823,7 @@ async function getPinStatus(env: Env, githubUserId: number, githubLogin: string)
     expiringSoon: secondsToExpiry < PIN_WARNING_SECONDS,
     expiresAtEpoch: parsed.expires_at_epoch,
     createdAtEpoch: parsed.created_at_epoch,
-    hash: parsed.pin_hash_sha256,
+    record,
     missingOrExpired: false,
   };
 }
@@ -783,11 +833,15 @@ async function writePinRecord(env: Env, githubUserId: number, githubLogin: strin
     throw new Error("PIN must be exactly 6 digits.");
   }
   const createdAt = nowEpoch();
+  const saltHex = randomHex(PIN_SALT_BYTES);
   const payload: PinRecord = {
-    version: "1",
+    version: "2",
     github_user_id: githubUserId,
     github_login: githubLogin,
-    pin_hash_sha256: await sha256Hex(pin),
+    pin_kdf: "PBKDF2-SHA256",
+    pin_iterations: PIN_KDF_ITERATIONS,
+    pin_salt_hex: saltHex,
+    pin_hash_hex: await pbkdf2Sha256Hex(pinMaterial(pin, env.PIN_PEPPER), saltHex, PIN_KDF_ITERATIONS),
     created_at_epoch: createdAt,
     expires_at_epoch: createdAt + PIN_TTL_SECONDS,
   };
@@ -796,13 +850,34 @@ async function writePinRecord(env: Env, githubUserId: number, githubLogin: strin
   });
 }
 
-function pinKvKey(githubUserId: number): string {
-  return `pin:v1:gh:${githubUserId}`;
+function pinMaterial(pin: string, pepper: string): string {
+  const p = String(pepper || "").trim();
+  return p ? `${pin}:${p}` : pin;
 }
 
-async function sha256Hex(value: string): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return bytesToHex(new Uint8Array(digest));
+async function pbkdf2Sha256Hex(value: string, saltHex: string, iterations: number): Promise<string> {
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(value),
+    "PBKDF2",
+    false,
+    ["deriveBits"]
+  );
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      salt: hexToBytes(saltHex),
+      iterations,
+    },
+    keyMaterial,
+    256
+  );
+  return bytesToHex(new Uint8Array(bits));
+}
+
+function pinKvKey(githubUserId: number): string {
+  return `pin:v1:gh:${githubUserId}`;
 }
 
 async function githubGet<T>(path: string, token: string, env: Env): Promise<T> {
@@ -873,6 +948,15 @@ function base64ToBytes(b64: string): Uint8Array {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function hexToBytes(hex: string): Uint8Array {
+  if (hex.length % 2 !== 0) throw new Error("Invalid hex length.");
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    out[i / 2] = Number.parseInt(hex.slice(i, i + 2), 16);
+  }
   return out;
 }
 
@@ -1051,7 +1135,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
           <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
           <label for="pin_confirm">Confirm PIN</label>
           <input id="pin_confirm" name="pin_confirm" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
-          <div class="hint">PIN is hashed with SHA-256 and stored for 60 days. It expires automatically and must be renewed.</div>
+          <div class="hint">PIN is salted + PBKDF2-hashed and stored for 60 days. It expires automatically and must be renewed.</div>
           <button class="btn" type="submit">Set PIN and Sign</button>
         </form>
 
@@ -1107,6 +1191,10 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
           <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
           <div class="hint">This PIN is your second electronic signature factor for QMS approvals.</div>
           <button class="btn" type="submit">Verify PIN and Sign</button>
+        </form>
+        <form action="/pin/setup" method="post">
+          <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
+          <button class="btn" type="submit" style="background:#5b677f;">Reset PIN</button>
         </form>
       </div>
     </div>
