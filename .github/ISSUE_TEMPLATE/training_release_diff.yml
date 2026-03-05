@@ -1,58 +1,43 @@
-name: Training Release Diff
-description: Record a user-specific training gap between prior trained revision and newly released revision.
-title: "TRAINING DIFF REQUIRED: [USER-ID] [SOP-ID] [OLD] -> [NEW]"
+name: Training Release Diff (Consolidated)
+description: Record one user-level training delta covering all SOP revision gaps introduced by a release.
+title: "TRAINING DIFF REQUIRED: [GITHUB-LOGIN] consolidated ([RELEASE-TAG])"
 labels:
   - training
+  - training-diff
 body:
   - type: input
     id: release_tag
     attributes:
       label: Trigger Release Tag
-      description: Release that introduced the new required revision.
-      placeholder: qms-baseline-2026.03.02-r01
+      description: Release that introduced new required SOP revisions.
+      placeholder: qms-baseline-2026.03.05-r01
     validations:
       required: true
-  - type: input
-    id: user_id
-    attributes:
-      label: Training User ID
-      description: Internal training user identifier.
-      placeholder: qa_alex
-    validations:
-      required: true
+
   - type: input
     id: trainee_login
     attributes:
       label: Trainee GitHub Login
-      description: GitHub login required to approve the training log PR.
+      description: GitHub login for the training user.
       placeholder: AliakseiT
     validations:
       required: true
-  - type: input
-    id: sop_id
+
+  - type: textarea
+    id: sop_delta_table
     attributes:
-      label: SOP ID
-      description: SOP requiring retraining.
-      placeholder: SOP-005
+      label: SOP Deltas In Scope
+      description: One row per SOP requiring training.
+      placeholder: |
+        | SOP ID | From Revision | To Revision | SOP File |
+        |---|---|---|---|
+        | SOP-001 | R01 | R02 | sops/SOP-001-DocControl.md |
     validations:
       required: true
-  - type: input
-    id: from_revision
-    attributes:
-      label: Previously Trained Revision
-      placeholder: R01
-    validations:
-      required: true
-  - type: input
-    id: to_revision
-    attributes:
-      label: Required Revision
-      placeholder: R02
-    validations:
-      required: true
+
   - type: textarea
     id: completion_notes
     attributes:
       label: Completion Notes
-      description: Link PR and evidence once training is completed.
-      placeholder: PR #__, attestation comment link, reviewer approval link
+      description: Link PR and attestation evidence after training completion.
+      placeholder: PR #__, approval link, signature attestation comment link
