@@ -349,25 +349,31 @@ jobs:
           PR_NUMBER: ${{ github.event.issue.number }}
           RELEASE_URL: ${{ steps.publish.outputs.release_url }}
           PDF_URL: ${{ steps.publish.outputs.pdf_url }}
+          JSON_URL: ${{ steps.publish.outputs.json_url }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const prNumber = Number(process.env.PR_NUMBER);
             const releaseUrl = process.env.RELEASE_URL || '';
             const pdfUrl = process.env.PDF_URL || '';
-            if (!releaseUrl || !pdfUrl) {
-              core.setFailed('Signature page release was published but release or PDF URL is missing.');
+            const jsonUrl = process.env.JSON_URL || '';
+            if (!releaseUrl) {
+              core.setFailed('Signature page release was published but release URL is missing.');
               return;
             }
+
+            const lines = [
+              '<!-- signature-title-page-published -->',
+              '📄 Signature page published.',
+              `Immutable release: ${releaseUrl}`,
+              'Release assets contain the Electronic Signature Certificate PDF and signed attestation JSON.',
+            ];
+            if (pdfUrl) lines.push(`PDF: ${pdfUrl}`);
+            if (jsonUrl) lines.push(`Attestation JSON: ${jsonUrl}`);
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: [
-                '<!-- signature-title-page-published -->',
-                '📄 Signature page published.',
-                `Release: ${releaseUrl}`,
-                `PDF: ${pdfUrl}`,
-              ].join('\n'),
+              body: lines.join('\n'),
             });
