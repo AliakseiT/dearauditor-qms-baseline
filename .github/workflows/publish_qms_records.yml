@@ -392,7 +392,8 @@ jobs:
               json.dumps(signed_attestation, indent=2) + "\n",
               encoding="utf-8",
             )
-            title_page_path = bundle_dir / "part11_title_page.pdf"
+            certificate_name = f"Electronic_Signature_Certificate_PR{source_pr}.pdf"
+            title_page_path = bundle_dir / certificate_name
             subprocess.run(
               [
                 "python",
@@ -418,6 +419,7 @@ jobs:
               "source_record_path": src,
               "source_record_sha256": source_sha,
               "record_pdf_sha256": pdf_sha,
+              "electronic_signature_certificate_pdf_sha256": title_page_sha,
               "part11_title_page_pdf_sha256": title_page_sha,
               "part11_target_hash": target_hash,
               "part11_signer_count": len(attestations),
@@ -450,7 +452,7 @@ jobs:
               "- `record.pdf`",
               "- `manifest.json`",
               "- `signed_attestation.json`",
-              "- `part11_title_page.pdf`",
+              f"- `{certificate_name}`",
             ])
             notes_path = bundle_dir / "release_notes.md"
             notes_path.write_text(notes + "\n", encoding="utf-8")
@@ -460,6 +462,7 @@ jobs:
               "title": release_title,
               "bundle_dir": str(bundle_dir),
               "notes_file": str(notes_path),
+              "certificate_name": certificate_name,
             })
 
           Path("release_plan.json").write_text(json.dumps(release_plan, indent=2) + "\n", encoding="utf-8")
@@ -539,13 +542,14 @@ jobs:
             tag = f"{base_tag}-r{max_rev + 1:02d}"
             bundle_dir = Path(entry["bundle_dir"])
             notes_file = entry["notes_file"]
+            certificate_name = entry.get("certificate_name", "Electronic_Signature_Certificate_PRunknown.pdf")
 
             assets = [
               str(bundle_dir / "record.md"),
               str(bundle_dir / "record.pdf"),
               str(bundle_dir / "manifest.json"),
               str(bundle_dir / "signed_attestation.json"),
-              str(bundle_dir / "part11_title_page.pdf"),
+              str(bundle_dir / certificate_name),
             ]
 
             create_cmd = [

@@ -480,7 +480,8 @@ jobs:
 
           signed_path = out_dir / "signed_attestation.json"
           signed_path.write_text(json.dumps(signed_payload, indent=2) + "\n", encoding="utf-8")
-          part11_title_page_path = out_dir / "part11_title_page.pdf"
+          certificate_name = f"Electronic_Signature_Certificate_PR{pr_number}.pdf"
+          part11_title_page_path = out_dir / certificate_name
           subprocess.run(
             [
               "python",
@@ -513,6 +514,7 @@ jobs:
             "part11_signer_count": len(signed_attestations),
             "record_sha256": hashlib.sha256(record_md_path.read_bytes()).hexdigest(),
             "record_pdf_sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+            "electronic_signature_certificate_pdf_sha256": hashlib.sha256(part11_title_page_path.read_bytes()).hexdigest(),
             "part11_title_page_pdf_sha256": hashlib.sha256(part11_title_page_path.read_bytes()).hexdigest(),
             "published_at_utc": now_utc,
           }
@@ -531,7 +533,7 @@ jobs:
             "- `record.pdf`",
             "- `manifest.json`",
             "- `signed_attestation.json`",
-            "- `part11_title_page.pdf`",
+            f"- `{certificate_name}`",
           ]) + "\n"
           (out_dir / "release_notes.md").write_text(notes, encoding="utf-8")
           PY
@@ -607,7 +609,7 @@ jobs:
             str(out_dir / "record.pdf"),
             str(out_dir / "manifest.json"),
             str(out_dir / "signed_attestation.json"),
-            str(out_dir / "part11_title_page.pdf"),
+            str(out_dir / f"Electronic_Signature_Certificate_PR{pr_number}.pdf"),
           ]
           run_with_retry(create_cmd)
           run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])

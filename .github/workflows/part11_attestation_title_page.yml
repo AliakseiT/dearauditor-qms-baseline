@@ -223,10 +223,12 @@ jobs:
         run: python -m pip install --quiet fpdf2
 
       - name: Generate signature title-page PDF
+        env:
+          CERT_PDF: Electronic_Signature_Certificate_PR${{ github.event.issue.number }}.pdf
         run: |
           python scripts/generate_part11_title_page.py \
             --attestation signed_attestation.json \
-            --output part11_title_page.pdf \
+            --output "${CERT_PDF}" \
             --record-id "${{ steps.aggregate.outputs.record_id }}"
 
       - name: Publish immutable signature page release
@@ -241,6 +243,7 @@ jobs:
           REQUIRED_SIGNATURES: ${{ steps.aggregate.outputs.required_signatures }}
           CAPTURED_SIGNATURES: ${{ steps.aggregate.outputs.captured_signatures }}
           ALL_REQUIRED_COLLECTED: ${{ steps.aggregate.outputs.all_required_collected }}
+          CERT_PDF: Electronic_Signature_Certificate_PR${{ github.event.issue.number }}.pdf
         shell: bash
         run: |
           if [ -z "${GH_TOKEN}" ]; then
@@ -282,7 +285,7 @@ jobs:
             f"- Completion status: `{'complete' if complete else 'pending'}`",
             "",
             "Assets:",
-            "- `part11_title_page.pdf`",
+            f"- `{os.environ['CERT_PDF']}`",
             "- `signed_attestation.json`",
           ]) + "\n"
           Path("release_notes.md").write_text(notes, encoding="utf-8")
@@ -322,7 +325,7 @@ jobs:
             "--title", f"Signature Page: PR #{pr_number}",
             "--notes-file", "release_notes.md",
             "--draft",
-            "part11_title_page.pdf",
+            os.environ["CERT_PDF"],
             "signed_attestation.json",
           ]
           run_with_retry(create_cmd)
@@ -336,7 +339,7 @@ jobs:
           with out.open("a", encoding="utf-8") as fh:
             fh.write(f"tag={tag}\\n")
             fh.write(f"release_url={rel.get('html_url', '')}\\n")
-            fh.write(f"pdf_url={assets.get('part11_title_page.pdf', '')}\\n")
+            fh.write(f"pdf_url={assets.get(os.environ['CERT_PDF'], '')}\\n")
             fh.write(f"json_url={assets.get('signed_attestation.json', '')}\\n")
           PY
 
