@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   assign_reviewers:
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && github.event.pull_request.state == 'open'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -152,6 +152,10 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request;
+            if (!pr || pr.state !== 'open') {
+              core.info('Pull request is not open; reviewer assignment skipped.');
+              return;
+            }
             const author = (pr.user?.login || '').toLowerCase();
             const candidates = (process.env.CANDIDATES_CSV || '')
               .split(',')
@@ -193,6 +197,10 @@ jobs:
               repo: context.repo.repo,
               pull_number: pr.number,
             })).data;
+            if (prData.state !== 'open') {
+              core.info(`PR #${pr.number} is ${prData.state}; skip requesting reviewers.`);
+              return;
+            }
             const alreadyRequested = new Set((prData.requested_reviewers || []).map((r) => (r.login || '').toLowerCase()));
             const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
 
