@@ -7,7 +7,7 @@ on:
     types: [created]
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 concurrency:
@@ -183,7 +183,8 @@ jobs:
           repositories: |
             ${{ github.event.repository.name }}
 
-      - name: Validate attestation and close issue
+      - name: Validate attestation context
+        id: validate
         uses: actions/github-script@v7
         with:
           github-token: ${{ steps.app_token.outputs.token }}
@@ -192,6 +193,7 @@ jobs:
             const labels = (issue.labels || []).map((l) => (l.name || '').toLowerCase());
             if (!labels.includes('training-diff')) {
               core.info(`Issue #${issue.number} is not training-diff; skipping.`);
+              core.setOutput('skip', 'true');
               return;
             }
 
@@ -199,12 +201,14 @@ jobs:
             const sectionMatch = body.match(/### SOP Delta Checklist([\s\S]*?)(?:\n###\s|\n##\s|$)/i);
             if (!sectionMatch) {
               core.info(`Issue #${issue.number} has no SOP Delta Checklist section; skipping.`);
+              core.setOutput('skip', 'true');
               return;
             }
             const checklistSection = sectionMatch[1] || '';
             const openTasks = (checklistSection.match(/^- \[ \] .+$/gm) || []).length;
             if (openTasks > 0) {
               core.info(`Issue #${issue.number} still has unchecked checklist items; cannot close.`);
+              core.setOutput('skip', 'true');
               return;
             }
 
@@ -212,6 +216,7 @@ jobs:
             const jsonMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
             if (!jsonMatch || !jsonMatch[1]) {
               core.info(`Issue #${issue.number} attestation comment did not contain JSON payload; skipping.`);
+              core.setOutput('skip', 'true');
               return;
             }
 
@@ -220,6 +225,7 @@ jobs:
               parsed = JSON.parse(jsonMatch[1]);
             } catch {
               core.info(`Issue #${issue.number} attestation JSON parsing failed; skipping.`);
+              core.setOutput('skip', 'true');
               return;
             }
 
@@ -228,6 +234,7 @@ jobs:
             const attNumber = Number.parseInt(String(parsed.pr_number || ''), 10);
             if (attRepo !== expectedRepo || attNumber !== issue.number) {
               core.info(`Issue #${issue.number} attestation target mismatch; skipping close.`);
+              core.setOutput('skip', 'true');
               return;
             }
 
@@ -239,24 +246,149 @@ jobs:
             const signer = String(parsed.user_id || parsed.actor_login || '').toLowerCase();
             if (expectedSigner && signer !== expectedSigner) {
               core.info(`Issue #${issue.number} signer mismatch (@${signer} != @${expectedSigner}); skipping close.`);
+              core.setOutput('skip', 'true');
               return;
             }
 
             if (String(issue.state || '').toLowerCase() !== 'open') {
               core.info(`Issue #${issue.number} already closed.`);
+              core.setOutput('skip', 'true');
+              return;
+            }
+
+            core.setOutput('skip', 'false');
+            core.setOutput('issue_number', String(issue.number));
+            core.setOutput('issue_title', String(issue.title || ''));
+            core.setOutput('issue_url', String(issue.html_url || ''));
+            core.setOutput('attestation_json', JSON.stringify(parsed));
+            core.setOutput('target_hash', String(parsed.commit_hash || parsed.target_hash || '').toLowerCase());
+
+      - name: Publish immutable training signature release
+        if: steps.validate.outputs.skip != 'true'
+        id: publish
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.validate.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.validate.outputs.issue_title }}
+          ISSUE_URL: ${{ steps.validate.outputs.issue_url }}
+          ATTESTATION_JSON: ${{ steps.validate.outputs.attestation_json }}
+          TARGET_HASH: ${{ steps.validate.outputs.target_hash }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const issueNumber = Number.parseInt(process.env.ISSUE_NUMBER || '0', 10);
+            const issueTitle = String(process.env.ISSUE_TITLE || '');
+            const issueUrl = String(process.env.ISSUE_URL || '');
+            const targetHash = String(process.env.TARGET_HASH || '').toLowerCase();
+            const attestation = JSON.parse(process.env.ATTESTATION_JSON || '{}');
+            const hashShort = (targetHash || 'nohash').slice(0, 12);
+            const baseTag = `sig-train-${issueNumber}-h${hashShort}`;
+
+            const releases = await github.paginate(github.rest.repos.listReleases, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            let maxRev = 0;
+            for (const rel of releases) {
+              const tag = String(rel.tag_name || '');
+              const m = tag.match(new RegExp(`^${baseTag}-r(\\d+)$`));
+              if (!m) continue;
+              const n = Number.parseInt(m[1], 10);
+              if (Number.isInteger(n) && n > maxRev) maxRev = n;
+            }
+            const nextRev = String(maxRev + 1).padStart(2, '0');
+            const tagName = `${baseTag}-r${nextRev}`;
+
+            const bundle = {
+              schema_version: 1,
+              attestation_scope: 'training_issue_signature',
+              source_repository: `${context.repo.owner}/${context.repo.repo}`,
+              source_issue: issueNumber,
+              source_issue_title: issueTitle,
+              source_issue_url: issueUrl,
+              source_attestation_comment_url: String(context.payload.comment?.html_url || ''),
+              part11_target_hash: targetHash,
+              captured_at_utc: new Date().toISOString(),
+              signed_attestations: [attestation],
+            };
+            const bundleJson = `${JSON.stringify(bundle, null, 2)}\n`;
+
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tagName,
+              target_commitish: String(context.payload.repository?.default_branch || 'main'),
+              name: `Training Signature: Issue #${issueNumber}`,
+              body: [
+                '# Immutable Training Signature Record',
+                '',
+                `- Source issue: #${issueNumber}`,
+                `- Source issue URL: ${issueUrl || 'n/a'}`,
+                `- Source issue title: ${issueTitle || 'n/a'}`,
+                `- Target hash: \`${targetHash || 'n/a'}\``,
+                `- Signer: \`${String(attestation.user_id || attestation.actor_login || 'n/a')}\``,
+                `- Meaning: \`${String(attestation.meaning_of_signature || 'Completed QMS Training Review')}\``,
+                '',
+                'Assets:',
+                '- `signed_attestation.json`',
+              ].join('\n'),
+              draft: false,
+              prerelease: false,
+            });
+
+            await github.request('POST {upload_url}', {
+              upload_url: release.data.upload_url,
+              name: 'signed_attestation.json',
+              data: Buffer.from(bundleJson, 'utf8'),
+              headers: {
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(bundleJson),
+              },
+            });
+
+            core.setOutput('release_url', String(release.data.html_url || ''));
+            core.setOutput('tag_name', tagName);
+
+      - name: Close issue and post completion comment
+        if: steps.validate.outputs.skip != 'true'
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.validate.outputs.issue_number }}
+          RELEASE_URL: ${{ steps.publish.outputs.release_url }}
+          TAG_NAME: ${{ steps.publish.outputs.tag_name }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const issueNumber = Number.parseInt(process.env.ISSUE_NUMBER || '0', 10);
+            const releaseUrl = String(process.env.RELEASE_URL || '');
+            const tagName = String(process.env.TAG_NAME || '');
+            if (!issueNumber) {
+              core.setFailed('Missing issue number for close step.');
               return;
             }
 
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue.number,
+              issue_number: issueNumber,
               state: 'closed',
             });
+
+            const lines = [
+              '<!-- training-signature-complete -->',
+              '✅ Training checklist signed. Issue closed automatically.',
+            ];
+            if (releaseUrl) {
+              lines.push(`Immutable signature release: ${releaseUrl}`);
+            }
+            if (tagName) {
+              lines.push(`Release tag: \`${tagName}\``);
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue.number,
-              body: '<!-- training-signature-complete -->\n✅ Training checklist signed. Issue closed automatically.',
+              issue_number: issueNumber,
+              body: lines.join('\n'),
             });
