@@ -972,7 +972,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
     <div class="card">
       <div class="head">
         <h1>QMS Signature Ceremony</h1>
-        <p>Identity is verified by active ${escapeHtml(providerLabel)} login. Signature context is locked from the PR request.</p>
+        <p>Identity is verified by active ${escapeHtml(providerLabel)} login, signature context is locked from the PR request, and PIN is verified next.</p>
       </div>
       <div class="section">
         <div class="grid">
@@ -997,7 +997,6 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
           <input type="hidden" name="signature_index" value="${escapeHtml(ctx.signature_index)}" />
           <input type="hidden" name="exp" value="${escapeHtml(ctx.exp)}" />
           <input type="hidden" name="sig" value="${escapeHtml(sig)}" />
-          <div class="hint">Next steps: GitHub identity verification, then secure 6-digit QMS signature PIN validation. Full legal name is sourced from signer registry.</div>
           <button class="btn" type="submit">Continue with ${escapeHtml(providerLabel)}</button>
         </form>
       </div>
