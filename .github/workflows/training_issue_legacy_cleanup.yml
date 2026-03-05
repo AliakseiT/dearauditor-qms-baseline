@@ -1,0 +1,57 @@
+name: Training Legacy Cleanup
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  close_legacy_per_sop_training_issues:
+    if: github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token for issue updates
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SIGNATURE_APP_ID }}
+          private-key: ${{ secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Close legacy per-SOP training issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const issue = context.payload.issue;
+            const title = String(issue.title || '');
+            const labels = (issue.labels || []).map((l) => String(l.name || '').toLowerCase());
+            const isTraining = labels.includes('training-diff');
+            const isLegacyPerSop = /^TRAINING DIFF REQUIRED:\s+.+\s+SOP-\d+\s+/i.test(title);
+
+            if (!isTraining || !isLegacyPerSop) {
+              core.info(`Issue #${issue.number} is not a legacy per-SOP training issue.`);
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: [
+                '<!-- training-legacy-cleanup -->',
+                '⛔ Closed automatically: legacy per-SOP training issue format is deprecated.',
+                'Use consolidated per-user training issues created only for `QMS-YYYY-MM-DD-RNN` releases.',
+              ].join('\n'),
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed',
+            });

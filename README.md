@@ -66,6 +66,7 @@ QMS execution records are published as immutable releases in this repository (`A
 - `sop_training_matrix_guard.yml`: blocks SOP PRs unless training matrix impact is updated and each changed SOP maps to at least one role.
 - `release_training_diff.yml`: runs only for training release tags matching `QMS-YYYY-MM-DD-RNN` (for example, `QMS-2026-03-05-R01`), compares required SOP revisions against `records/training/user_training_log.yml`, and opens one training issue per user.
 - `training_issue_signature_flow.yml`: when all SOP checklist boxes are completed, posts a signer link; after valid signature attestation, publishes an immutable training signature release and closes the issue with the release link.
+- `training_issue_legacy_cleanup.yml`: auto-closes legacy per-SOP training issues (`TRAINING DIFF REQUIRED: ... SOP-...`) to prevent old tag-bound workflows from creating actionable noise.
 - `training_pr_approval_gate.yml`: for PRs updating `records/training/**`, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
 - `manual_training_onboarding_pr.yml` (`workflow_dispatch`): creates a review-only onboarding PR where base is a branch pinned to the first commit and head is a SOP-only snapshot of current `main`.
