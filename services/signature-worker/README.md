@@ -6,7 +6,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 
 - Serves signer-facing ceremony page at `GET /sign`.
 - Accepts only cryptographically signed link context from QMS workflows.
-- Uses GitHub OAuth App login for identity verification (`user:email` scope only).
+- Uses GitHub OAuth App login for identity verification (`read:user` scope).
 - Enforces a second-factor 6-digit signature PIN stored as SHA-256 hash in Cloudflare KV.
 - Applies automatic PIN TTL deletion after 60 days (`expirationTtl=5184000`).
 - Returns `pin_expiring_soon` when less than 7 days remain.
@@ -53,7 +53,8 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Authorization callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
-- OAuth scope requested by worker: `user:email`
+- OAuth scope requested by worker: `read:user`
+- Signer full legal name is resolved from `matrices/signer_registry.json` (no manual name entry in UI).
 
 ## Local Development
 

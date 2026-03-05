@@ -26,7 +26,6 @@ interface SignatureContext {
 interface OAuthState {
   type: "oauth";
   provider: string;
-  full_name: string;
   ctx: SignatureContext;
   iat: number;
   exp_state: number;
@@ -52,13 +51,6 @@ interface GithubUser {
   login: string;
   id: number;
   name?: string | null;
-}
-
-interface GithubEmail {
-  email: string;
-  verified: boolean;
-  primary: boolean;
-  visibility?: string | null;
 }
 
 interface SignatureRequestMeta {
@@ -160,15 +152,9 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
   const signature = String(form.get("sig") || "").trim();
   await assertValidSignedContext(context, signature, env.SIGNATURE_LINK_SECRET);
 
-  const fullName = String(form.get("full_name") || "").trim();
-  if (!fullName) {
-    throw new Error("Full legal name is required.");
-  }
-
   const state: OAuthState = {
     type: "oauth",
     provider,
-    full_name: fullName,
     ctx: context,
     iat: nowEpoch(),
     exp_state: nowEpoch() + 10 * 60,
@@ -181,10 +167,8 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
     redirect.searchParams.set("client_id", env.GITHUB_OAUTH_CLIENT_ID);
     redirect.searchParams.set("redirect_uri", `${stripTrailingSlash(env.PUBLIC_BASE_URL)}/auth/callback`);
     redirect.searchParams.set("state", stateToken);
-    redirect.searchParams.set("scope", "user:email");
+    redirect.searchParams.set("scope", "read:user");
     redirect.searchParams.set("allow_signup", "false");
-    redirect.searchParams.set("prompt", "select_account");
-    redirect.searchParams.set("login", context.signer);
     return Response.redirect(redirect.toString(), 302);
   }
 
@@ -215,7 +199,6 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
 
   const userToken = await exchangeGithubCode(code, env);
   const user = await githubGet<GithubUser>("/user", userToken, env);
-  const emails = await githubGet<GithubEmail[]>("/user/emails", userToken, env);
   const signerLogin = String(user.login || "").toLowerCase();
   if (!signerLogin) {
     throw new Error("Unable to resolve GitHub user login.");
@@ -227,14 +210,17 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     );
   }
 
-  const hasVerifiedEmail = Array.isArray(emails) && emails.some((e) => e && e.verified === true);
-  if (!hasVerifiedEmail) {
-    throw new Error("GitHub account does not have a verified email. Cannot proceed with signature.");
-  }
-
   const repoToken = env.GITHUB_REPO_TOKEN;
   const requestMeta = await resolveLatestRequestComment(state.ctx.repo, Number.parseInt(state.ctx.pr, 10), repoToken, env);
   validateRequestAgainstContext(requestMeta, state.ctx);
+
+  const signerProfile = await readSignerProfile(state.ctx.repo, signerLogin, repoToken, env);
+  const registryFullName = String(signerProfile.full_name || "").trim();
+  if (!registryFullName) {
+    throw new Error(
+      `Missing full_name for @${signerLogin} in matrices/signer_registry.json. Signature cannot proceed.`
+    );
+  }
 
   const duplicate = await findExistingAttestation(state.ctx, signerLogin, repoToken, env);
   if (duplicate) {
@@ -245,7 +231,7 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
       meaning: state.ctx.meaning,
       role: state.ctx.role,
       signer: signerLogin,
-      signerFullName: state.full_name,
+      signerFullName: registryFullName,
       timestamp: new Date().toISOString(),
       attestationId: duplicate.attestation_id,
       alreadySigned: true,
@@ -253,18 +239,10 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     }), 200);
   }
 
-  const signerProfile = await readSignerProfile(state.ctx.repo, signerLogin, repoToken, env);
-  const expectedName = (signerProfile.full_name || "").trim();
-  if (expectedName && normalizeName(expectedName) !== normalizeName(state.full_name)) {
-    throw new Error(
-      `Full name does not match signer registry for @${signerLogin}. Expected '${expectedName}'.`
-    );
-  }
-
   const pinStatus = await getPinStatus(env, Number(user.id || 0), signerLogin);
   const sessionState: PinSessionState = {
     type: "pin_session",
-    full_name: state.full_name,
+    full_name: registryFullName,
     ctx: state.ctx,
     signer_login: signerLogin,
     signer_id: Number(user.id || 0),
@@ -920,10 +898,6 @@ function bytesToHex(bytes: Uint8Array): string {
     .join("");
 }
 
-function normalizeName(value: string): string {
-  return value.replace(/\s+/g, " ").trim().toLowerCase();
-}
-
 function nowEpoch(): number {
   return Math.floor(Date.now() / 1000);
 }
@@ -998,7 +972,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
     <div class="card">
       <div class="head">
         <h1>QMS Signature Ceremony</h1>
-        <p>Identity is verified by ${escapeHtml(providerLabel)} OAuth. Signature context is locked from the PR request.</p>
+        <p>Identity is verified by active ${escapeHtml(providerLabel)} login. Signature context is locked from the PR request.</p>
       </div>
       <div class="section">
         <div class="grid">
@@ -1023,9 +997,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
           <input type="hidden" name="signature_index" value="${escapeHtml(ctx.signature_index)}" />
           <input type="hidden" name="exp" value="${escapeHtml(ctx.exp)}" />
           <input type="hidden" name="sig" value="${escapeHtml(sig)}" />
-          <label for="full_name">Signer full legal name</label>
-          <input id="full_name" name="full_name" type="text" autocomplete="name" placeholder="e.g., Aliaksei Tsitovich" required />
-          <div class="hint">Next steps: GitHub identity verification, then secure 6-digit QMS signature PIN validation.</div>
+          <div class="hint">Next steps: GitHub identity verification, then secure 6-digit QMS signature PIN validation. Full legal name is sourced from signer registry.</div>
           <button class="btn" type="submit">Continue with ${escapeHtml(providerLabel)}</button>
         </form>
       </div>
