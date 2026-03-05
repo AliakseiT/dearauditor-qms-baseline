@@ -95,10 +95,10 @@ QMS execution records are published as immutable releases in this repository (`A
 ## Attention Board
 
 - `signature_status_tracker.yml` syncs actionable work into Project `#1` (open issues and merged PR signature states).
-- PRs are auto-labeled with exactly one signature state: `signature/outstanding`, `signature/complete`, `signature/not-required`, or `signature/blocked`.
+- PRs are auto-labeled with exactly one signature state: `signature/outstanding`, `signature/complete`, or `signature/not-required`.
 - No-PAT mode: workflow always updates signature labels and attempts Project sync using `github.token`; if Project access/scope is unavailable, it skips board sync without failing.
 - Project status mapping:
-  - `Todo` lane: open issues, merged PRs with outstanding/blocked signatures.
+  - `Todo` lane: open issues, merged PRs with outstanding signatures.
   - `Done` lane: merged PRs with complete/not-required signatures.
 
 ## Artifact Quota Control

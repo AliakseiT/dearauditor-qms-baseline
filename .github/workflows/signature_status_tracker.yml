@@ -43,13 +43,14 @@ jobs:
               'signature/outstanding',
               'signature/complete',
               'signature/not-required',
+            ];
+            const LEGACY_SIGNATURE_STATE_LABELS = [
               'signature/blocked',
             ];
             const LABEL_META = {
               'signature/outstanding': { color: 'D73A49', description: 'Required signatures are still outstanding.' },
               'signature/complete': { color: '1A7F37', description: 'All required signatures are captured.' },
               'signature/not-required': { color: '6E7781', description: 'This PR does not require signatures by policy.' },
-              'signature/blocked': { color: 'B60205', description: 'Signature required but request comment is missing.' },
             };
 
             function normalizeLogin(v) {
@@ -130,7 +131,9 @@ jobs:
                 per_page: 100,
               });
               const currentNames = current.map((l) => String(l.name || ''));
-              const nonSignature = currentNames.filter((name) => !SIGNATURE_STATE_LABELS.includes(name));
+              const signatureLike = new Set([...SIGNATURE_STATE_LABELS, ...LEGACY_SIGNATURE_STATE_LABELS]);
+              const nonSignature = currentNames.filter((name) => !signatureLike.has(name));
+              
               const desired = Array.from(new Set([...nonSignature, targetLabel]));
               const isSame = desired.length === currentNames.length && desired.every((name) => currentNames.includes(name));
               if (isSame) return;
@@ -228,15 +231,13 @@ jobs:
                 requiredSignatures = Math.max(capturedCount, 1);
               }
 
-              const blockedNoRequest = !request;
+              const missingRequest = !request;
               const outstanding = signatureRequired && (
-                blockedNoRequest ||
+                missingRequest ||
                 (eligibleSigners.length > 0 ? missingSigners.length > 0 : capturedCount < requiredSignatures)
               );
 
-              const stateLabel = blockedNoRequest
-                ? 'signature/blocked'
-                : (outstanding ? 'signature/outstanding' : 'signature/complete');
+              const stateLabel = outstanding ? 'signature/outstanding' : 'signature/complete';
 
               return {
                 number: prNumber,
@@ -437,7 +438,7 @@ jobs:
                 const full = await github.rest.pulls.get({ owner: repo.owner, repo: repo.repo, pull_number: pr.number });
                 const contentId = full.data.node_id;
                 const itemId = await ensureProjectItem(project.id, contentId, itemByContentId);
-                const optionId = (pr.stateLabel === 'signature/outstanding' || pr.stateLabel === 'signature/blocked')
+                const optionId = (pr.stateLabel === 'signature/outstanding')
                   ? todoOptionId
                   : doneOptionId;
                 await setProjectStatus(project.id, itemId, statusField.id, optionId);
