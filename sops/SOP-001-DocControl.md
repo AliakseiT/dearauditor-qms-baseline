@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R01
-effective_date: 2026-03-02
+revision: R02
+effective_date: 2026-03-05
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -34,7 +34,7 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 | QA Lead | Maintains document control process and naming/version rules. |
 | Management Representative | Approves new/revised SOPs and critical records. |
 | Process Owner | Drafts/updates document content and verifies technical correctness. |
-| All Personnel | Use only current approved revisions. |
+| All Personnel | Use only current approved revisions. Responsible for maintaining the security of their GitHub credentials. The use of a user's GitHub account to approve a pull request under this QMS constitutes their legally binding electronic signature. |
 
 ## 6. Procedure
 
@@ -51,9 +51,10 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 
 ### 6.3 Draft, Review, and Approval
 1. All controlled document changes are prepared on a branch and submitted via PR.
-2. PR must identify execution issue and Part 11 signature meaning/roles.
+2. The PR must identify the execution issue and state the required Part 11 signature meaning and roles.
 3. At least one designated approver reviews technical and compliance adequacy.
-4. Merge is permitted only after required checks and required signature gate completion.
+4. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the `qms-lite` signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
+5. Merges are permitted only after required status checks and the required signature gate (Part 11 attestation) are successfully completed.
 
 ### 6.4 Published Index Synchronization
 1. Any SOP text change must update the Published SOP Index in `README.md`.
@@ -66,9 +67,11 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 3. Training assignment automation creates issues only for mapped roles/users.
 
 ### 6.6 Record Retention and Immutability
-1. Merged PRs are immutable evidence of approved document state.
-2. Required quality records are published as immutable release assets in `qms-records`.
-3. Obsolete revisions remain available in Git history and must not be deleted.
+1. Merged PRs serve as the trigger for immutable evidence of the approved document state.
+2. The definitive quality record consists of the cryptographically signed `signed_attestation.json` and the corresponding GitHub Release/Sigstore attestation bundle.
+3. A human-readable `Electronic_Signature_Certificate.pdf` is automatically generated alongside these assets to satisfy regulatory manifestation requirements (for example displaying the printed name, date/time, and meaning of the signature).
+4. These required quality records are published as immutable release assets in the repository.
+5. Obsolete revisions remain available in Git history and must not be deleted.
 
 ### 6.7 External Documents
 1. External normative references are maintained as citation metadata, not copied full text.
@@ -95,3 +98,4 @@ Applies to all controlled information in `qms-lite`, including SOPs, matrices, e
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full procedure content implemented for ACME GmbH. |
+| R02 | 2026-03-05 | Updated Sections 5, 6.3, and 6.6 to formally define GitHub PR approvals as binding electronic signatures and clarify the structure of immutable cryptographic records. |
