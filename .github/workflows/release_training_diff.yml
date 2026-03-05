@@ -4,7 +4,7 @@ run-name: Release training diff (${{ github.event_name }})
 on:
   push:
     tags:
-      - 'QMS-????-??-??-R??'
+      - 'QMS-*'
   workflow_dispatch:
     inputs:
       release_tag:
