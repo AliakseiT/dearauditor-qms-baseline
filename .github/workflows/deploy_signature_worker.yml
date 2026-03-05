@@ -1,12 +1,8 @@
 name: Deploy Signature Worker
+run-name: Deploy signature worker (manual)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'services/signature-worker/**'
-      - '.github/workflows/deploy_signature_worker.yml'
 
 permissions:
   contents: read

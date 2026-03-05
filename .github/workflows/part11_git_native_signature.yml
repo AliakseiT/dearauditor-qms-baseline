@@ -1,4 +1,5 @@
 name: Part 11 Signature Title Page
+run-name: Part11 signature fallback (manual) PR #${{ github.event.inputs.pr_number }}
 
 on:
   workflow_dispatch:
@@ -9,8 +10,6 @@ on:
       signer_full_name:
         description: "Type your full legal name exactly as your signature assertion"
         required: true
-  issue_comment:
-    types: [created]
 
 permissions:
   contents: read
@@ -23,7 +22,6 @@ env:
 
 jobs:
   sign_and_attest:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.pull_request != null && github.event.comment.user.login != 'github-actions[bot]' && contains(github.event.comment.body, '/part11-sign'))
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for signature processing

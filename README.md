@@ -68,7 +68,7 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 - `matrices/training_matrix.yml` now contains only active GitHub collaborators as users.
 - `sop_training_matrix_guard.yml`: blocks SOP PRs unless training matrix impact is updated and each changed SOP maps to at least one role.
 - `release_training_diff.yml`: runs only for training release tags matching `QMS-YYYY-MM-DD-RNN` (for example, `QMS-2026-03-05-R01`), compares required SOP revisions against the designated training log in the record repository, and opens one training issue per user.
-- `training_issue_signature_flow.yml`: when all SOP checklist boxes are completed, posts a signer link; after valid signature attestation, publishes an immutable training signature release and closes the issue with the release link.
+- `training_issue_signature_flow.yml`: when all SOP checklist boxes are completed, posts a signer link; training issue closure/release publication is reconciled by manual run (`workflow_dispatch`) in the same workflow (no `issue_comment` trigger).
 - `training_issue_legacy_cleanup.yml`: auto-closes legacy per-SOP training issues (`TRAINING DIFF REQUIRED: ... SOP-...`) and non-QMS consolidated training issues (`TRAINING REQUIRED: ... (sig-pr...)`), unassigning users before closure.
 - `training_pr_approval_gate.yml`: for PRs updating designated training log records, requires approval by the user declared in PR body:
   - `**Trainee GitHub Login:** @<login>`
@@ -82,12 +82,11 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 
 - On merged PRs, `issue_pr_part11_gate.yml` posts signer-specific links to the Cloudflare `signature-worker` title page.
 - The link payload is signed by GitHub Actions (`SIGNATURE_LINK_SECRET`) and verified by worker backend before any OAuth step.
-- Signers open the link, enter only full legal name, and complete GitHub OAuth login.
+- Signers open the link and complete GitHub OAuth login; full legal name is resolved from `matrices/signer_registry.json`.
 - Worker verifies signer eligibility against the latest PR signature request comment and posts attestation (`<!-- PART11_ATTESTATION_V1 -->`) directly to PR.
 - Signature comments are posted via mandatory GitHub App token (`SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`).
 - `required_reviewer_approval_guard.yml` enforces at least one non-author approval on the current PR head SHA (except `review-only` PRs).
-- `part11_git_native_signature.yml` enriches attestations with signer full name/title from `matrices/signer_registry.json`.
-- The `part11_git_native_signature.yml` workflow also supports `workflow_dispatch`.
+- `part11_git_native_signature.yml` is manual fallback (`workflow_dispatch`) only.
 - Cloudflare signer flow creates PR attestation comment (`<!-- PART11_ATTESTATION_V1 -->`) directly from worker backend.
 - Optional fallback workflow (`part11_git_native_signature.yml`) still supports in-GitHub attestation comments (`<!-- part11-native-attestation -->`) and signed artifacts (`signed_attestation.json`, `.sig`, `.pem`).
 - Reusable PDF title-page generator for attestation packages:

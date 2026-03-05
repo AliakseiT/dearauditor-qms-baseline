@@ -61,10 +61,9 @@ Manual:
 - `npm install`
 - `npm run deploy`
 
-CI:
+GitHub Actions:
 
-- merge to `main` changes under `services/signature-worker/**`
-- workflow `Deploy Signature Worker` deploys automatically
+- run workflow `Deploy Signature Worker` manually (`workflow_dispatch`)
 
 ## 6. One-Command Bootstrap
 

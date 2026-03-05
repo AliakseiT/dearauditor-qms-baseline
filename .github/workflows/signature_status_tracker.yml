@@ -1,12 +1,11 @@
 name: Signature Attention Project Sync
+run-name: Signature attention sync (${{ github.event_name }})
 
 on:
   pull_request:
     types: [closed]
   issues:
     types: [opened, reopened, closed, labeled, unlabeled]
-  issue_comment:
-    types: [created]
   workflow_dispatch:
   schedule:
     - cron: '17 * * * *'
