@@ -32,6 +32,7 @@ jobs:
           HORIZON_DAYS: '45'
           MAX_CLOSED_PRS: '150'
         with:
+          github-token: ${{ secrets.PROJECT_AUTOMATION_TOKEN || github.token }}
           script: |
             const repo = context.repo;
             const projectNumber = Number(process.env.PROJECT_NUMBER || '1');
@@ -403,7 +404,18 @@ jobs:
               await syncStateLabel(result.number, result.stateLabel);
             }
 
-            const project = await getProjectV2(repo.owner, projectNumber);
+            let project;
+            try {
+              project = await getProjectV2(repo.owner, projectNumber);
+            } catch (err) {
+              const msg = String(err?.message || err || '');
+              if (msg.includes('INSUFFICIENT_SCOPES') || msg.includes('read:project')) {
+                throw new Error(
+                  'Project sync requires a token with project scopes. Configure repository secret PROJECT_AUTOMATION_TOKEN with scopes: repo, read:project, project.'
+                );
+              }
+              throw err;
+            }
             const statusField = (project.fields?.nodes || []).find((f) => String(f.name || '').toLowerCase() === 'status');
             if (!statusField || !statusField.id) {
               throw new Error(`Project ${project.url} does not have a Status field.`);
