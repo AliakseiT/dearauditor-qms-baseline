@@ -136,9 +136,6 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 - `CLOUDFLARE_API_TOKEN`: token used by `deploy_signature_worker.yml`.
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account identifier for worker deploy.
 
-Temporary compatibility:
-- `SIGNATURE_APP_ID` and `SIGNATURE_APP_PRIVATE_KEY` are still accepted as fallbacks while migrating to `qms-lite-bot`.
-
 ## Repository Variables (Part 11)
 
 - `SIGNATURE_UI_BASE_URL`: external signer UI origin, for example `https://sign.qms.dearauditor.ch`.
@@ -153,7 +150,7 @@ Temporary compatibility:
   - Signer identity: `GITHUB_OAUTH_CLIENT_ID`, `GITHUB_OAUTH_CLIENT_SECRET`
   - Automation app: `QMS_BOT_APP_ID`, `QMS_BOT_APP_PRIVATE_KEY`, optional `QMS_BOT_APP_INSTALLATION_ID`
   - Signing state: `SIGNATURE_LINK_SECRET`, `SIGNATURE_STATE_SECRET`, `PIN_PEPPER`
-  - Legacy fallback only: `GITHUB_REPO_TOKEN`
+- `QMS_BOT_APP_INSTALLATION_ID` is optional. It is not a third app, only a fixed installation identifier if you do not want runtime discovery.
 - Recommended `qms-lite-bot` repository permissions:
   - `Contents: Read and write`
   - `Pull requests: Read and write`

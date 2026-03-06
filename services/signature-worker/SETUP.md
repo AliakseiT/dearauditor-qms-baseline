@@ -43,7 +43,6 @@ Worker secrets:
 - `SIGNATURE_LINK_SECRET`
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER`
-- legacy fallback only: `GITHUB_REPO_TOKEN`
 
 KV binding in `wrangler.toml`:
 
@@ -67,7 +66,6 @@ Repository secrets:
 - `SIGNATURE_LINK_SECRET` (must match worker secret)
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
-- temporary legacy fallback: `SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`
 
 ## 5. Worker Runtime Keys Checklist
 
@@ -87,7 +85,8 @@ Optional:
 
 - `QMS_BOT_APP_INSTALLATION_ID`
 - `GITHUB_API_BASE_URL`
-- `GITHUB_REPO_TOKEN` only as temporary backward-compatible fallback
+
+`QMS_BOT_APP_INSTALLATION_ID` is optional. It is not a separate app, only the installation ID for `qms-lite-bot`.
 
 ## 6. Deploy
 
@@ -107,4 +106,4 @@ From repo root:
 
 - `./services/signature-worker/scripts/bootstrap_env.sh --deploy`
 
-This syncs `.env.local` values to GitHub/Cloudflare, validates KV IDs, and deploys worker. The bootstrap script now supports the preferred `QMS_BOT_APP_*` settings and still accepts the legacy repo-token fallback during migration.
+This syncs `.env.local` values to GitHub/Cloudflare, validates KV IDs, and deploys worker.

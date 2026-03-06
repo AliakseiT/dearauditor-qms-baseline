@@ -45,7 +45,6 @@ The worker sits between two GitHub integrations:
 - `SIGNATURE_LINK_SECRET` (must match QMS Lite GitHub Actions secret)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER` (server-side pepper for PIN KDF)
-- `GITHUB_REPO_TOKEN` (legacy fallback only; planned removal after qms-lite-bot rollout)
 
 ### KV Binding
 
