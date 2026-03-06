@@ -92,7 +92,13 @@ const PIN_TTL_SECONDS = 5184000; // 60 days
 const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const PIN_KDF_ITERATIONS = 140000;
 const PIN_SALT_BYTES = 16;
-const DEFAULT_AUTOMATION_BOT_LOGINS = ["qms-lite-bot", "qms-lite-sign", "github-actions[bot]"];
+const DEFAULT_AUTOMATION_BOT_LOGINS = [
+  "qms-lite-bot",
+  "qms-lite-bot[bot]",
+  "qms-lite-sign",
+  "qms-lite-sign[bot]",
+  "github-actions[bot]",
+];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
@@ -652,13 +658,18 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
     env
   );
   const botLogins = resolveAutomationBotLogins();
+  const requestMarkers = [
+    "<!-- signature-request -->",
+    "<!-- signature-native-signature-request -->",
+    "<!-- part11-signature-request -->",
+    "<!-- part11-native-signature-request -->",
+  ];
 
   const requestComments = comments
     .filter((c) => {
       const body = c.body || "";
       const login = String(c.user?.login || "").trim().toLowerCase();
-      return (body.includes("<!-- signature-native-signature-request -->") || body.includes("<!-- part11-native-signature-request -->")) &&
-        botLogins.has(login);
+      return requestMarkers.some((marker) => body.includes(marker)) && botLogins.has(login);
     })
     .sort((a, b) => Date.parse(a.created_at || "") - Date.parse(b.created_at || ""));
   if (requestComments.length === 0) {
@@ -1084,19 +1095,70 @@ function decodeBase64(value: string): string {
 }
 
 function pemToPkcs8Buffer(pem: string): ArrayBuffer {
-  const normalized = String(pem || "").trim();
+  let normalized = String(pem || "").trim();
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+  normalized = normalized.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\r/g, "\r");
+  const isPkcs1RsaPem = normalized.includes("-----BEGIN RSA PRIVATE KEY-----");
   const base64 = normalized
+    .replace(/-----BEGIN RSA PRIVATE KEY-----/g, "")
+    .replace(/-----END RSA PRIVATE KEY-----/g, "")
     .replace(/-----BEGIN PRIVATE KEY-----/g, "")
     .replace(/-----END PRIVATE KEY-----/g, "")
     .replace(/\s+/g, "");
   if (!base64) {
     throw new Error("GitHub App private key is empty or invalid.");
   }
-  return toArrayBuffer(base64ToBytes(base64));
+  const der = base64ToBytes(base64);
+  return isPkcs1RsaPem ? wrapPkcs1RsaPrivateKeyAsPkcs8(der) : toArrayBuffer(der);
 }
 
 function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
+
+function wrapPkcs1RsaPrivateKeyAsPkcs8(pkcs1Der: Uint8Array): ArrayBuffer {
+  const version = new Uint8Array([0x02, 0x01, 0x00]);
+  const rsaAlgorithmIdentifier = new Uint8Array([
+    0x30, 0x0d,
+    0x06, 0x09,
+    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01,
+    0x05, 0x00,
+  ]);
+  const privateKeyOctetString = derEncode(0x04, pkcs1Der);
+  return toArrayBuffer(derEncode(0x30, concatBytes(version, rsaAlgorithmIdentifier, privateKeyOctetString)));
+}
+
+function derEncode(tag: number, value: Uint8Array): Uint8Array {
+  return concatBytes(new Uint8Array([tag]), derEncodeLength(value.length), value);
+}
+
+function derEncodeLength(length: number): Uint8Array {
+  if (length < 0x80) {
+    return new Uint8Array([length]);
+  }
+  const bytes: number[] = [];
+  let remaining = length;
+  while (remaining > 0) {
+    bytes.unshift(remaining & 0xff);
+    remaining >>= 8;
+  }
+  return new Uint8Array([0x80 | bytes.length, ...bytes]);
+}
+
+function concatBytes(...parts: Uint8Array[]): Uint8Array {
+  const totalLength = parts.reduce((sum, part) => sum + part.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const part of parts) {
+    result.set(part, offset);
+    offset += part.length;
+  }
+  return result;
 }
 
 function bytesToHex(bytes: Uint8Array): string {
