@@ -1683,7 +1683,7 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
         <form action="/pin/setup" method="post" data-reset-form="1">
           <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
         </form>
-        <a href="#" class="secondary-link" data-reset-link="1" data-processing-text="Opening reset...">Reset PIN</a>
+        <a href="#" class="secondary-link" data-reset-link="1">Reset PIN</a>
       </div>
     </div>
   </div>
@@ -1737,13 +1737,11 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
           target.dataset.submitting = '1';
           disableForm(target);
           if (resetLink instanceof HTMLElement) {
-            resetLink.dataset.originalText = resetLink.textContent || '';
             resetLink.setAttribute('aria-disabled', 'true');
           }
           window.setTimeout(function () {
             unlockForm(target);
             if (resetLink instanceof HTMLElement) {
-              resetLink.textContent = resetLink.dataset.originalText || 'Reset PIN';
               resetLink.setAttribute('aria-disabled', 'false');
             }
           }, UNLOCK_MS);
@@ -1753,8 +1751,6 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
         resetLink.addEventListener('click', function (event) {
           event.preventDefault();
           if (resetLink.getAttribute('aria-disabled') === 'true') return;
-          resetLink.dataset.originalText = resetLink.textContent || '';
-          resetLink.textContent = resetLink.dataset.processingText || 'Opening reset...';
           resetLink.setAttribute('aria-disabled', 'true');
           resetForm.submit();
         });
