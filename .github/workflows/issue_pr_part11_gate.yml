@@ -298,7 +298,7 @@ jobs:
               'Open your signer link and complete GitHub login + PIN to sign:',
               ...runLinks,
               '',
-              `Signature service: ${signingBaseUrl}/sign`,
+              `Signature service: ${signingBaseUrl}`,
             ].join('\n');
 
             await github.rest.issues.createComment({

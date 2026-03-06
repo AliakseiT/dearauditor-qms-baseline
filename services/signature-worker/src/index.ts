@@ -102,6 +102,7 @@ const DEFAULT_AUTOMATION_BOT_LOGINS = [
 ];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
+const QMS_LITE_REPO_URL = "https://github.com/AliakseiT/qms-lite";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
 
 export default {
@@ -114,9 +115,12 @@ export default {
         return json({ ok: true, service: "signature-worker" });
       }
       if (path === "/") {
-        return Response.redirect(`${stripTrailingSlash(env.PUBLIC_BASE_URL || url.origin)}/healthz`, 302);
+        return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin), 200);
       }
       if (path === "/sign" && request.method === "GET") {
+        if (!hasSignedContextParams(url.searchParams)) {
+          return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin), 200);
+        }
         return handleSignPage(request, env);
       }
       if (path === "/auth/start" && request.method === "POST") {
@@ -1276,12 +1280,130 @@ function wantsJson(request: Request): boolean {
   return accept.includes("application/json");
 }
 
+function hasSignedContextParams(params: URLSearchParams): boolean {
+  const required = ["repo", "pr", "hash", "meaning", "role", "signer", "exp", "sig"];
+  return required.every((key) => String(params.get(key) || "").trim() !== "");
+}
+
 function html(content: string, status = 200): Response {
   return new Response(content, { status, headers: HTML_HEADERS });
 }
 
 function json(content: unknown, status = 200): Response {
   return new Response(JSON.stringify(content), { status, headers: JSON_HEADERS });
+}
+
+function renderLandingPage(baseUrl: string): string {
+  const title = "QMS Lite Signature";
+  const safeBaseUrl = stripTrailingSlash(baseUrl);
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeHtml(title)}</title>
+  <style>
+    :root {
+      --bg: #f3f6f8;
+      --card: #ffffff;
+      --ink: #13263a;
+      --muted: #536273;
+      --line: #d7e0e7;
+      --accent: #143246;
+      --accent-soft: #edf3f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #ffffff 0%, #f3f6f8 58%, #e8eef2 100%);
+      color: var(--ink);
+      font: 16px/1.45 "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif;
+      padding: 24px;
+    }
+    .card {
+      width: min(720px, 100%);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 18px 44px rgba(14, 34, 54, 0.08);
+      padding: 28px 28px 24px;
+      text-align: center;
+    }
+    .mark {
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 18px;
+      display: block;
+    }
+    h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    p {
+      margin: 14px auto 0;
+      max-width: 540px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+    .links {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    .link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-weight: 700;
+    }
+    .meta {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    ${renderSignatureBadgeSvg()}
+    <h1>QMS Lite Signature</h1>
+    <p>Signature service for QMS Lite, a GitHub-based QMS aligned with ISO 13485, ISO 14971, IEC 62304, and IEC 62366-1.</p>
+    <div class="links">
+      <a class="link" href="${escapeHtml(QMS_LITE_REPO_URL)}" target="_blank" rel="noreferrer">Open QMS Lite Repository</a>
+    </div>
+    <div class="meta">Service URL: ${escapeHtml(safeBaseUrl)}</div>
+  </main>
+</body>
+</html>`;
+}
+
+function renderSignatureBadgeSvg(): string {
+  return `<svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="QMS Lite Signature logo">
+  <rect width="512" height="512" rx="116" fill="#edf3f6"/>
+  <circle cx="256" cy="256" r="182" fill="#143046"/>
+  <circle cx="256" cy="256" r="164" fill="#f5fbff"/>
+  <rect x="132" y="138" width="248" height="22" rx="11" fill="#69b8db"/>
+  <g fill="#143246" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="256" y="234" font-size="62" font-weight="800" letter-spacing="5">QMS LITE</text>
+    <text x="256" y="316" font-size="92" font-weight="900" letter-spacing="7">SIGN</text>
+  </g>
+  <path d="M318 350l34-34 22 22-34 34h-22z" fill="#143246"/>
+  <path d="M316 352l8 24 24-8z" fill="#7dd4de"/>
+</svg>`;
 }
 
 function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string, sig: string): string {
