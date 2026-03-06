@@ -90,7 +90,8 @@ const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const HTML_HEADERS = { "content-type": "text/html; charset=utf-8" };
 const PIN_TTL_SECONDS = 5184000; // 60 days
 const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
-const PIN_KDF_ITERATIONS = 140000;
+// Cloudflare Workers Web Crypto rejects PBKDF2 iteration counts above 100000.
+const PIN_KDF_ITERATIONS = 100000;
 const PIN_SALT_BYTES = 16;
 const DEFAULT_AUTOMATION_BOT_LOGINS = [
   "qms-lite-bot",
