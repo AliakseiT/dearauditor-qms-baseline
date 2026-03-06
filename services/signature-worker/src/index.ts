@@ -1092,8 +1092,25 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
   </div>
   <script>
     (function () {
+      var UNLOCK_MS = 12000;
       var form = document.querySelector('form[data-submit-guard]');
       if (!form) return;
+      var unlock = function (target) {
+        if (!(target instanceof HTMLFormElement)) return;
+        delete target.dataset.submitting;
+        var submit = target.querySelector('button[type="submit"], input[type="submit"]');
+        if (submit instanceof HTMLButtonElement) {
+          submit.disabled = false;
+          if (submit.dataset.originalText !== undefined) {
+            submit.textContent = submit.dataset.originalText;
+          }
+        } else if (submit instanceof HTMLInputElement) {
+          submit.disabled = false;
+          if (submit.dataset.originalValue !== undefined) {
+            submit.value = submit.dataset.originalValue;
+          }
+        }
+      };
       form.addEventListener('submit', function (event) {
         var target = event.currentTarget;
         if (!(target instanceof HTMLFormElement)) return;
@@ -1112,6 +1129,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
           submit.value = submit.dataset.processingText || 'Processing...';
           submit.disabled = true;
         }
+        window.setTimeout(function () { unlock(target); }, UNLOCK_MS);
       });
     })();
   </script>
@@ -1172,8 +1190,25 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
   </div>
   <script>
     (function () {
+      var UNLOCK_MS = 12000;
       var form = document.querySelector('form[data-submit-guard]');
       if (!form) return;
+      var unlock = function (target) {
+        if (!(target instanceof HTMLFormElement)) return;
+        delete target.dataset.submitting;
+        var submit = target.querySelector('button[type="submit"], input[type="submit"]');
+        if (submit instanceof HTMLButtonElement) {
+          submit.disabled = false;
+          if (submit.dataset.originalText !== undefined) {
+            submit.textContent = submit.dataset.originalText;
+          }
+        } else if (submit instanceof HTMLInputElement) {
+          submit.disabled = false;
+          if (submit.dataset.originalValue !== undefined) {
+            submit.value = submit.dataset.originalValue;
+          }
+        }
+      };
       form.addEventListener('submit', function (event) {
         var target = event.currentTarget;
         if (!(target instanceof HTMLFormElement)) return;
@@ -1192,6 +1227,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
           submit.value = submit.dataset.processingText || 'Processing...';
           submit.disabled = true;
         }
+        window.setTimeout(function () { unlock(target); }, UNLOCK_MS);
       });
     })();
   </script>
@@ -1254,6 +1290,7 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
   </div>
   <script>
     (function () {
+      var UNLOCK_MS = 12000;
       var forms = document.querySelectorAll('form[data-submit-guard]');
       if (!forms.length) return;
       var disableForm = function (form) {
@@ -1270,6 +1307,25 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
           }
         });
       };
+      var unlockForm = function (form) {
+        if (!(form instanceof HTMLFormElement)) return;
+        delete form.dataset.submitting;
+        var submits = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+        submits.forEach(function (submit) {
+          if (submit instanceof HTMLButtonElement) {
+            submit.disabled = false;
+            if (submit.dataset.originalText !== undefined) {
+              submit.textContent = submit.dataset.originalText;
+            }
+          } else if (submit instanceof HTMLInputElement) {
+            submit.disabled = false;
+            if (submit.dataset.originalValue !== undefined) {
+              submit.value = submit.dataset.originalValue;
+            }
+          }
+        });
+      };
+      var unlockScheduled = false;
       forms.forEach(function (form) {
         form.addEventListener('submit', function (event) {
           var target = event.currentTarget;
@@ -1284,6 +1340,13 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
               disableForm(f);
             }
           });
+          if (!unlockScheduled) {
+            unlockScheduled = true;
+            window.setTimeout(function () {
+              forms.forEach(function (f) { unlockForm(f); });
+              unlockScheduled = false;
+            }, UNLOCK_MS);
+          }
         });
       });
     })();
