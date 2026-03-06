@@ -222,6 +222,9 @@ jobs:
             }
             const alreadyRequested = new Set((prData.requested_reviewers || []).map((r) => (r.login || '').toLowerCase()));
             const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
+            const sameReviewerSet =
+              selected.length === alreadyRequested.size &&
+              selected.every((u) => alreadyRequested.has(u.toLowerCase()));
 
             if (toRequest.length > 0) {
               await github.rest.pulls.requestReviewers({
@@ -266,6 +269,10 @@ jobs:
               const login = String(c.user?.login || '').toLowerCase();
               return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
             });
+            if (sameReviewerSet) {
+              core.info('Assigned reviewer set is unchanged; skip auto-reviewer comment update.');
+              return;
+            }
             if (existing) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
