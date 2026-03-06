@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">qms-lite-bot badge</title>
+  <desc id="desc">Circular-safe badge for the qms-lite-bot GitHub App.</desc>
+  <defs>
+    <linearGradient id="botBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#15343f"/>
+      <stop offset="100%" stop-color="#0b171c"/>
+    </linearGradient>
+    <linearGradient id="botAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f3c969"/>
+      <stop offset="100%" stop-color="#dd8d3c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="#eef1f3"/>
+  <circle cx="256" cy="256" r="182" fill="url(#botBg)"/>
+  <circle cx="256" cy="256" r="164" fill="#f6efe2"/>
+  <rect x="132" y="138" width="248" height="22" rx="11" fill="url(#botAccent)"/>
+
+  <g fill="#173945" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="256" y="265" font-size="114" font-weight="900" letter-spacing="7">QMS</text>
+    <text x="256" y="345" font-size="78" font-weight="800" letter-spacing="5">BOT</text>
+  </g>
+</svg>
