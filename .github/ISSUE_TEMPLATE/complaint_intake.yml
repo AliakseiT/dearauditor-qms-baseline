@@ -1,0 +1,53 @@
+name: Complaint Intake
+description: Intake a complaint or quality-relevant feedback signal for assessment.
+title: "COMPLAINT: "
+labels:
+  - complaint
+  - feedback
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product or subsystem associated with the complaint.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: textarea
+    id: reporter_details
+    attributes:
+      label: Reporter Details
+      description: Reporter organization, role, and contact route if available.
+      placeholder: Customer, distributor, internal support, or anonymous reporter.
+    validations:
+      required: true
+  - type: textarea
+    id: event_description
+    attributes:
+      label: Event Description
+      description: What happened, where, and when.
+      placeholder: Include the observed behavior and any immediate impact.
+    validations:
+      required: true
+  - type: dropdown
+    id: initial_severity
+    attributes:
+      label: Initial Severity
+      options:
+        - Critical
+        - Major
+        - Minor
+        - Unknown
+    validations:
+      required: true
+  - type: textarea
+    id: linked_context
+    attributes:
+      label: Linked Context
+      description: Related releases, complaints, incidents, risk items, or CAPAs.
+      placeholder: |
+        - release:
+        - risk:
+        - capa:
+    validations:
+      required: false

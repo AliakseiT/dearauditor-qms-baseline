@@ -1,0 +1,18 @@
+version: 1
+record_type: complaint_case_log
+required_fields:
+  complaint_id: "CMP-<product>-<yyyy-mm-dd>-NN"
+  product_id: ""
+  opened_on: "YYYY-MM-DD"
+  source: "customer|distributor|internal|regulator|unknown"
+  reporter_reference: ""
+  event_summary: ""
+  initial_severity: "critical|major|minor|unknown"
+  initial_reportability_assessment: "yes|no|further_assessment_required"
+  linked_records:
+    release_reference: ""
+    risk_reference: ""
+    capa_reference: ""
+    incident_reference: ""
+  investigation_owner: ""
+  closure_status: "open|closed"

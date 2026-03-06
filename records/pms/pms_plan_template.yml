@@ -1,0 +1,19 @@
+version: 1
+record_type: pms_plan
+required_fields:
+  plan_id: "PMS-PLAN-<product>-<yyyy-mm>"
+  product_id: ""
+  review_frequency: "monthly|quarterly|other_with_rationale"
+  data_sources:
+    - complaints
+    - incidents
+    - support_tickets
+    - reliability_metrics
+  signal_thresholds:
+    - metric: ""
+      threshold: ""
+      escalation_path: ""
+  linked_records:
+    risk_reference: ""
+    complaint_log_reference: ""
+    incident_log_reference: ""
