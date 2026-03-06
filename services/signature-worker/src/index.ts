@@ -92,7 +92,13 @@ const PIN_TTL_SECONDS = 5184000; // 60 days
 const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const PIN_KDF_ITERATIONS = 140000;
 const PIN_SALT_BYTES = 16;
-const DEFAULT_AUTOMATION_BOT_LOGINS = ["qms-lite-bot", "qms-lite-sign", "github-actions[bot]"];
+const DEFAULT_AUTOMATION_BOT_LOGINS = [
+  "qms-lite-bot",
+  "qms-lite-bot[bot]",
+  "qms-lite-sign",
+  "qms-lite-sign[bot]",
+  "github-actions[bot]",
+];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
