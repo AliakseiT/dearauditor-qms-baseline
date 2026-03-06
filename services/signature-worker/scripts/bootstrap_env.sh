@@ -35,6 +35,7 @@ Expected env keys in .env.local:
   GITHUB_REPO_TOKEN
   SIGNATURE_LINK_SECRET
   SIGNATURE_STATE_SECRET
+  PIN_PEPPER
 
 Optional env keys:
   GITHUB_API_BASE_URL
@@ -227,6 +228,7 @@ GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
 GITHUB_REPO_TOKEN=${GITHUB_REPO_TOKEN:-}
 SIGNATURE_LINK_SECRET=${SIGNATURE_LINK_SECRET:-}
 SIGNATURE_STATE_SECRET=${SIGNATURE_STATE_SECRET:-}
+PIN_PEPPER=${PIN_PEPPER:-}
 DEVVARS
 
   echo "Wrote local dev file: ${out}"
@@ -241,6 +243,7 @@ if [[ "$DO_DEPLOY" -eq 1 ]]; then
   require_non_placeholder_for_deploy "GITHUB_REPO_TOKEN"
   require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
   require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
+  require_non_placeholder_for_deploy "PIN_PEPPER"
   assert_kv_binding_configured
 fi
 
@@ -262,6 +265,7 @@ if [[ "$SKIP_CF" -eq 0 ]]; then
   set_worker_secret_if_present "$WORKER_NAME" "GITHUB_REPO_TOKEN" "${GITHUB_REPO_TOKEN:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_STATE_SECRET" "${SIGNATURE_STATE_SECRET:-}"
+  set_worker_secret_if_present "$WORKER_NAME" "PIN_PEPPER" "${PIN_PEPPER:-}"
 fi
 
 if [[ "$DO_DEPLOY" -eq 1 ]]; then

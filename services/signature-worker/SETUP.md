@@ -23,6 +23,7 @@ Worker secrets:
 - `GITHUB_REPO_TOKEN`
 - `SIGNATURE_LINK_SECRET`
 - `SIGNATURE_STATE_SECRET`
+- `PIN_PEPPER`
 
 KV binding in `wrangler.toml`:
 

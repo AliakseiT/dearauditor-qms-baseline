@@ -7,7 +7,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - Serves signer-facing ceremony page at `GET /sign`.
 - Accepts only cryptographically signed link context from QMS workflows.
 - Uses GitHub OAuth App login for identity verification (`read:user` scope).
-- Enforces a second-factor 6-digit signature PIN stored as SHA-256 hash in Cloudflare KV.
+- Enforces a second-factor 6-digit signature PIN stored as salted PBKDF2-SHA256 hash in Cloudflare KV.
 - Applies automatic PIN TTL deletion after 60 days (`expirationTtl=5184000`).
 - Returns `pin_expiring_soon` when less than 7 days remain.
 - Validates signer eligibility against the latest PR signature request comment.
@@ -38,6 +38,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - `GITHUB_REPO_TOKEN` (token used by worker backend to read signer registry and post PR comments)
 - `SIGNATURE_LINK_SECRET` (must match QMS Lite GitHub Actions secret)
 - `SIGNATURE_STATE_SECRET`
+- `PIN_PEPPER` (server-side pepper for PIN KDF)
 
 ### KV Binding
 
