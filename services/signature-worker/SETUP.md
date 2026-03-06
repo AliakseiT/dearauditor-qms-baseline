@@ -7,6 +7,7 @@ OAuth app name: `QMS Lite Signature`
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
 - Scope used by worker: `read:user`
+- Badge source asset: `services/signature-worker/assets/qms-lite-signature-badge.svg`
 
 ## 2. GitHub App Configuration for Automation
 

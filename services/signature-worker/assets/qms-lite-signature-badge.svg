@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">QMS Lite Signature badge source</title>
+  <desc id="desc">Two-line badge source for the QMS Lite Signature OAuth app and signature page branding.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#133046"/>
+      <stop offset="100%" stop-color="#09131d"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7fd0d6"/>
+      <stop offset="100%" stop-color="#57a8d8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="42" y="42" width="428" height="428" rx="88" fill="#f5fbff"/>
+  <rect x="42" y="42" width="428" height="28" rx="14" fill="url(#accent)"/>
+
+  <g fill="#143246" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="256" y="248" font-size="74" font-weight="800" letter-spacing="6">QMS LITE</text>
+    <text x="256" y="352" font-size="92" font-weight="900" letter-spacing="8">SIGN</text>
+  </g>
+
+  <path d="M350 386l38-38 28 28-38 38h-28z" fill="#143246"/>
+  <path d="M348 388l10 28 28-10z" fill="#7fd0d6"/>
+</svg>

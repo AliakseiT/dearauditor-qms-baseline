@@ -6,6 +6,9 @@ The worker sits between two GitHub integrations:
 - `QMS Lite Signature`: the signer-facing GitHub OAuth App used only for identity verification during the ceremony
 - `qms-lite-bot`: the repository automation GitHub App used to read PR context and post attestation comments
 
+Branding asset:
+- `services/signature-worker/assets/qms-lite-signature-badge.svg` is the reusable SVG source for the `QMS Lite Signature` OAuth app badge and future signature-page branding.
+
 ## What It Does
 
 - Serves signer-facing ceremony page at `GET /sign`.
