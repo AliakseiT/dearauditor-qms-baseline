@@ -4,6 +4,8 @@ run-name: Signature attention sync (${{ github.event_name }})
 on:
   pull_request:
     types: [closed]
+  issue_comment:
+    types: [created, edited]
   issues:
     types: [opened, reopened, closed, labeled, unlabeled]
   workflow_dispatch:
@@ -59,6 +61,12 @@ jobs:
               '<!-- part11-native-attestation -->',
               '<!-- SIGNATURE_ATTESTATION_V1 -->',
               '<!-- PART11_ATTESTATION_V1 -->',
+            ];
+            const SIGNATURE_REQUEST_MARKERS = [
+              '<!-- signature-request -->',
+              '<!-- signature-native-signature-request -->',
+              '<!-- part11-signature-request -->',
+              '<!-- part11-native-signature-request -->',
             ];
 
             function normalizeLogin(v) {
@@ -190,7 +198,7 @@ jobs:
               const requestComments = comments
                 .filter((c) => {
                   const b = String(c.body || '');
-                  return b.includes('<!-- signature-native-signature-request -->') || b.includes('<!-- part11-native-signature-request -->');
+                  return SIGNATURE_REQUEST_MARKERS.some((marker) => b.includes(marker));
                 })
                 .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
 
