@@ -1,5 +1,5 @@
-name: 6.4 Deploy Signature Worker
-run-name: 6.4 deploy signature worker (manual)
+name: 4.1 Deploy Signature Worker
+run-name: 4.1 deploy signature worker (manual)
 
 on:
   workflow_dispatch:

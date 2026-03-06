@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R06
+revision: R07
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -62,7 +62,7 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 ### 6.4 Published Index Synchronization
 1. Any SOP text change must update the Published SOP Index in `README.md`.
 2. Index entries must include SOP ID, title, file, effective date, revision, and status.
-3. `6.1_qms_content_gate.yml` blocks PRs where SOP updates are not reflected in index changes.
+3. `1.4_qms_content_gate.yml` blocks PRs where SOP updates are not reflected in index changes.
 
 ### 6.5 Training and Role Impact Synchronization
 1. SOP revisions must be evaluated for role/training impact.
@@ -120,3 +120,4 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | R04 | 2026-03-06 | Added controlled WI document class and metadata rules for the targeted GitHub-native execution instructions. |
 | R05 | 2026-03-06 | Added normative control path for external-origin documents and clarified manifest/hash requirements for documents authored outside GitHub. |
 | R06 | 2026-03-07 | Updated workflow references and terminology to the current gate and electronic-signature naming model. |
+| R07 | 2026-03-07 | Updated workflow filename references to the per-automation numbering scheme. |

@@ -37,31 +37,31 @@
 
   <!-- PR controls panel -->
   <rect class="panel" x="30" y="230" width="560" height="500" />
-  <text x="50" y="260" class="panel-title">6.1 PR Controls and Approval Gates</text>
+  <text x="50" y="260" class="panel-title">1 PR Controls and Approval Gates</text>
 
   <rect class="node" x="50" y="280" width="250" height="56" />
-  <text x="62" y="302" class="node-text">6.1 Auto Assign Signatory Reviewers</text>
-  <text x="62" y="320" class="small">6.1_auto_assign_signatory_reviewers.yml</text>
+  <text x="62" y="302" class="node-text">1.1 Auto Assign Signatory Reviewers</text>
+  <text x="62" y="320" class="small">1.1_auto_assign_signatory_reviewers.yml</text>
 
   <rect class="node" x="320" y="280" width="250" height="56" />
-  <text x="332" y="302" class="node-text">6.1 Required Reviewer Approval Gate</text>
-  <text x="332" y="320" class="small">6.1_required_reviewer_approval_gate.yml</text>
+  <text x="332" y="302" class="node-text">1.2 Required Reviewer Approval Gate</text>
+  <text x="332" y="320" class="small">1.2_required_reviewer_approval_gate.yml</text>
 
   <rect class="node" x="50" y="350" width="250" height="56" />
-  <text x="62" y="372" class="node-text">6.1 Auto Merge After Approvals</text>
-  <text x="62" y="390" class="small">6.1_auto_merge_after_signatory_approvals.yml</text>
+  <text x="62" y="372" class="node-text">1.3 Auto Merge After Approvals</text>
+  <text x="62" y="390" class="small">1.3_auto_merge_after_signatory_approvals.yml</text>
 
   <rect class="node" x="320" y="350" width="250" height="56" />
-  <text x="332" y="372" class="node-text">6.1 QMS Content Gate</text>
-  <text x="332" y="390" class="small">6.1_qms_content_gate.yml</text>
+  <text x="332" y="372" class="node-text">1.4 QMS Content Gate</text>
+  <text x="332" y="390" class="small">1.4_qms_content_gate.yml</text>
 
   <rect class="node" x="50" y="420" width="250" height="56" />
-  <text x="62" y="442" class="node-text">6.1 Training PR Approval Gate</text>
-  <text x="62" y="460" class="small">6.1_training_pr_approval_gate.yml</text>
+  <text x="62" y="442" class="node-text">1.6 Training PR Approval Gate</text>
+  <text x="62" y="460" class="small">1.6_training_pr_approval_gate.yml</text>
 
   <rect class="node" x="320" y="420" width="250" height="56" />
-  <text x="332" y="442" class="node-text">6.1 Risk Record Schema Gate</text>
-  <text x="332" y="460" class="small">6.1_risk_record_schema_gate.yml</text>
+  <text x="332" y="442" class="node-text">1.5 Risk Record Schema Gate</text>
+  <text x="332" y="460" class="small">1.5_risk_record_schema_gate.yml</text>
 
   <path class="arrow" d="M175 177 L175 280" />
   <path class="arrow" d="M430 177 L430 280" />
@@ -69,27 +69,27 @@
 
   <!-- Signature / publication panel -->
   <rect class="panel" x="620" y="230" width="560" height="500" />
-  <text x="640" y="260" class="panel-title">6.2 Signature and Publication Gates</text>
+  <text x="640" y="260" class="panel-title">2 Signature and Publication Gates</text>
 
   <rect class="node" x="640" y="285" width="520" height="64" />
-  <text x="652" y="310" class="node-text">6.2 PR Signature Request Gate</text>
-  <text x="652" y="330" class="small">6.2_pr_signature_request_gate.yml</text>
+  <text x="652" y="310" class="node-text">2.1 PR Signature Request Gate</text>
+  <text x="652" y="330" class="small">2.1_pr_signature_request_gate.yml</text>
 
   <rect class="ext" x="640" y="365" width="520" height="72" />
   <text x="652" y="390" class="node-text">Signature Service (Cloudflare Worker + GitHub OAuth)</text>
   <text x="652" y="410" class="small">User signs via title page UI; attestation comment posted back to PR</text>
 
   <rect class="node" x="640" y="455" width="520" height="64" />
-  <text x="652" y="480" class="node-text">6.2 Signature Attestation Title Page</text>
-  <text x="652" y="500" class="small">6.2_signature_attestation_title_page.yml</text>
+  <text x="652" y="480" class="node-text">2.4 Signature Attestation Title Page</text>
+  <text x="652" y="500" class="small">2.4_signature_attestation_title_page.yml</text>
 
   <rect class="node" x="640" y="535" width="250" height="64" />
-  <text x="652" y="560" class="node-text">6.2 Publish QMS Records</text>
-  <text x="652" y="580" class="small">6.2_publish_qms_records.yml</text>
+  <text x="652" y="560" class="node-text">2.2 Publish QMS Records</text>
+  <text x="652" y="580" class="small">2.2_publish_qms_records.yml</text>
 
   <rect class="node" x="910" y="535" width="250" height="64" />
-  <text x="922" y="560" class="node-text">6.2 Publish QMS Release</text>
-  <text x="922" y="580" class="small">6.2_publish_qms_release.yml</text>
+  <text x="922" y="560" class="node-text">2.3 Publish QMS Release</text>
+  <text x="922" y="580" class="small">2.3_publish_qms_release.yml</text>
 
   <path class="arrow" d="M670 177 L670 285" />
   <path class="arrow" d="M900 349 L900 365" />
@@ -100,53 +100,38 @@
 
   <!-- Training lifecycle panel -->
   <rect class="panel" x="1210" y="230" width="560" height="500" />
-  <text x="1230" y="260" class="panel-title">6.3 Training Lifecycle</text>
+  <text x="1230" y="260" class="panel-title">3 Training Lifecycle</text>
 
   <rect class="node" x="1230" y="285" width="520" height="64" />
-  <text x="1242" y="310" class="node-text">6.3 Release Training Diff (creates one issue per user)</text>
-  <text x="1242" y="330" class="small">6.3_release_training_diff.yml</text>
+  <text x="1242" y="310" class="node-text">3.1 Release Training Diff (creates one issue per user)</text>
+  <text x="1242" y="330" class="small">3.1_release_training_diff.yml</text>
 
   <rect class="node" x="1230" y="365" width="520" height="64" />
-  <text x="1242" y="390" class="node-text">6.3 Training Issue Signature Flow</text>
-  <text x="1242" y="410" class="small">6.3_training_issue_signature_flow.yml</text>
-
-  <rect class="node" x="1230" y="445" width="520" height="64" />
-  <text x="1242" y="470" class="node-text">6.3 Training Legacy Cleanup</text>
-  <text x="1242" y="490" class="small">6.3_training_issue_legacy_cleanup.yml</text>
-
-  <rect class="node" x="1230" y="525" width="520" height="64" />
-  <text x="1242" y="550" class="node-text">6.3 Training Review Sign-Off (review-only onboarding PR closure)</text>
-  <text x="1242" y="570" class="small">6.3_training_review_signoff.yml</text>
-
-  <rect class="node" x="1230" y="605" width="520" height="64" />
-  <text x="1242" y="630" class="node-text">6.3 Manual Training Onboarding PR Creator</text>
-  <text x="1242" y="650" class="small">6.3_manual_training_onboarding_pr.yml</text>
+  <text x="1242" y="390" class="node-text">3.2 Training Issue Signature Flow</text>
+  <text x="1242" y="410" class="small">3.2_training_issue_signature_flow.yml</text>
 
   <path class="arrow" d="M945 177 L945 220 L1490 220 L1490 285" />
   <path class="arrow" d="M1490 349 L1490 365" />
-  <path class="arrow dashed" d="M1490 429 L1490 445" />
-  <path class="arrow" d="M1490 589 L1490 525" />
-  <path class="arrow" d="M1445 177 L1445 215 L1760 215 L1760 637 L1750 637" />
 
   <!-- Platform / ops panel -->
   <rect class="panel" x="30" y="760" width="860" height="260" />
-  <text x="50" y="790" class="panel-title">6.4 Platform and Maintenance</text>
+  <text x="50" y="790" class="panel-title">4 Platform and Maintenance</text>
 
   <rect class="node" x="50" y="815" width="260" height="64" />
-  <text x="62" y="840" class="node-text">6.4 Deploy Signature Worker</text>
-  <text x="62" y="860" class="small">6.4_deploy_signature_worker.yml</text>
+  <text x="62" y="840" class="node-text">4.1 Deploy Signature Worker</text>
+  <text x="62" y="860" class="small">4.1_deploy_signature_worker.yml</text>
 
   <rect class="node" x="330" y="815" width="260" height="64" />
-  <text x="342" y="840" class="node-text">6.4 Artifact Quota Cleanup</text>
-  <text x="342" y="860" class="small">6.4_artifact_quota_cleanup.yml</text>
+  <text x="342" y="840" class="node-text">4.2 Artifact Quota Cleanup</text>
+  <text x="342" y="860" class="small">4.2_artifact_quota_cleanup.yml</text>
 
   <!-- Fallback panel -->
   <rect class="panel" x="920" y="760" width="850" height="260" />
-  <text x="940" y="790" class="panel-title">6.2 Fallback / Manual Signature Path</text>
+  <text x="940" y="790" class="panel-title">2 Fallback / Manual Signature Path</text>
 
   <rect class="legacy" x="940" y="815" width="810" height="70" />
-  <text x="952" y="842" class="node-text">6.2 Manual Signature Attestation Fallback</text>
-  <text x="952" y="862" class="small">6.2_signature_git_native_fallback.yml</text>
+  <text x="952" y="842" class="node-text">2.5 Manual Signature Attestation Fallback</text>
+  <text x="952" y="862" class="small">2.5_signature_git_native_fallback.yml</text>
 
   <text x="940" y="910" class="small">Used as break-glass/manual fallback when worker flow is unavailable.</text>
 

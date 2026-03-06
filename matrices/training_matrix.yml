@@ -33,7 +33,7 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      SOP-001: R06
+      SOP-001: R07
       SOP-002: R02
       SOP-003: R02
       SOP-004: R02
@@ -76,7 +76,7 @@ roles:
       - SOP-018
       - SOP-020
     required_revisions:
-      SOP-001: R06
+      SOP-001: R07
       SOP-002: R02
       SOP-006: R01
       SOP-008: R01
@@ -126,7 +126,7 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      SOP-001: R06
+      SOP-001: R07
       SOP-003: R02
       SOP-005: R07
       SOP-010: R01
@@ -155,7 +155,7 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      SOP-001: R06
+      SOP-001: R07
       SOP-002: R02
       SOP-004: R02
       SOP-005: R07

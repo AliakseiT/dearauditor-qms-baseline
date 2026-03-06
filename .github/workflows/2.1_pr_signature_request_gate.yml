@@ -1,5 +1,5 @@
-name: 6.2 PR Signature Request Gate
-run-name: 6.2 post-merge signature request (PR #${{ github.event.pull_request.number || inputs.pr_number }})
+name: 2.1 PR Signature Request Gate
+run-name: 2.1 post-merge signature request (PR #${{ github.event.pull_request.number || inputs.pr_number }})
 
 on:
   pull_request:

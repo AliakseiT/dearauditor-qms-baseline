@@ -1,4 +1,4 @@
-name: 6.1 Risk Record Schema Gate
+name: 1.5 Risk Record Schema Gate
 
 on:
   pull_request:

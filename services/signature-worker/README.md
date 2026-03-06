@@ -70,7 +70,7 @@ The worker UI and `/healthz` expose the active worker version. The default forma
 ## Deploy
 
 - Manual: `npm run deploy`
-- GitHub Actions manual run (`workflow_dispatch`): `.github/workflows/deploy_signature_worker.yml`
+- GitHub Actions manual run (`workflow_dispatch`): `.github/workflows/4.1_deploy_signature_worker.yml`
 
 ## Bootstrap Helper
 

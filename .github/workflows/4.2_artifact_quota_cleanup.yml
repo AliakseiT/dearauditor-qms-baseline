@@ -1,4 +1,4 @@
-name: 6.4 Artifact Quota Cleanup
+name: 4.2 Artifact Quota Cleanup
 
 on:
   workflow_dispatch:

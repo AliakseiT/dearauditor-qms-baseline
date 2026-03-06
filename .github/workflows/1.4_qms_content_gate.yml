@@ -1,4 +1,4 @@
-name: 6.1 QMS Content Gate
+name: 1.4 QMS Content Gate
 
 on:
   pull_request:

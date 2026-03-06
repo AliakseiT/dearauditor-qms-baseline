@@ -50,7 +50,7 @@ Use the grouped links below for navigation. The raw machine-readable published i
 
 #### Governance and Core QMS
 
-- [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R06`, effective `2026-03-07`
+- [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R07`, effective `2026-03-07`
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R02`, effective `2026-03-05`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R02`, effective `2026-03-05`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R02`, effective `2026-03-05`
@@ -88,7 +88,7 @@ Use the grouped links below for navigation. The raw machine-readable published i
 <!-- PUBLISHED-SOP-INDEX:START -->
 | SOP ID | SOP Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-07 | R06 | Published |
+| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-07 | R07 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-05 | R02 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-05 | R02 | Published |

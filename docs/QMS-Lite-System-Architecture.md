@@ -54,36 +54,33 @@ Source file: `docs/automation/workflow-automation-map.svg`
 ### 7.1 PR Controls and Approval Gates
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `6.1_auto_assign_signatory_reviewers.yml` | `pull_request` | Resolves required signatory reviewers from requested signature roles and assigns them. | Active |
-| `6.1_required_reviewer_approval_gate.yml` | `pull_request_review` | Enforces at least one valid non-author approval on the current head SHA where required. | Active |
-| `6.1_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables merge only after assigned reviewer approvals are present. | Active |
-| `6.1_qms_content_gate.yml` | `pull_request` | Enforces revision-history, README navigation/index, training-matrix synchronization, and configured record-index sanity checks for controlled content changes. | Active |
-| `6.1_risk_record_schema_gate.yml` | `pull_request` | Validates controlled risk-record YAML structure and scoring consistency. | Active |
-| `6.1_training_pr_approval_gate.yml` | `pull_request`, `pull_request_review` | Enforces trainee approval for PRs updating designated training records. | Active |
+| `1.1_auto_assign_signatory_reviewers.yml` | `pull_request` | Resolves required signatory reviewers from requested signature roles and assigns them. | Active |
+| `1.2_required_reviewer_approval_gate.yml` | `pull_request_review` | Enforces at least one valid non-author approval on the current head SHA where required. | Active |
+| `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables merge only after assigned reviewer approvals are present. | Active |
+| `1.4_qms_content_gate.yml` | `pull_request` | Enforces revision-history, README navigation/index, training-matrix synchronization, and configured record-index sanity checks for controlled content changes. | Active |
+| `1.5_risk_record_schema_gate.yml` | `pull_request` | Validates controlled risk-record YAML structure and scoring consistency. | Active |
+| `1.6_training_pr_approval_gate.yml` | `pull_request`, `pull_request_review` | Enforces trainee approval for PRs updating designated training records. | Active |
 
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `6.2_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts signer-specific links for the signature ceremony. | Active |
-| `6.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, and publishes immutable releases. | Active |
-| `6.2_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |
-| `6.2_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
-| `6.2_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
+| `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts signer-specific links for the signature ceremony. | Active |
+| `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, and publishes immutable releases. | Active |
+| `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |
+| `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
+| `2.5_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
 
 ### 7.3 Training Lifecycle
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `6.3_release_training_diff.yml` | `push` on QMS release tag, `workflow_dispatch` | Compares required SOP revisions to user training logs and opens one training issue per user. | Active |
-| `6.3_training_issue_signature_flow.yml` | `issues`, `workflow_dispatch` | Manages signature collection and closure flow for consolidated training issues. | Active |
-| `6.3_training_issue_legacy_cleanup.yml` | `issues` | Closes obsolete training issue formats and cleans up assignments. | Active |
-| `6.3_manual_training_onboarding_pr.yml` | `workflow_dispatch` | Creates a review-only onboarding PR from the current SOP baseline. | Active |
-| `6.3_training_review_signoff.yml` | `pull_request` (closed) | Completes signoff and immutable publication for review-only onboarding PRs. | Active |
+| `3.1_release_training_diff.yml` | `push` on QMS release tag, `workflow_dispatch` | Compares required SOP revisions to user training logs and opens one consolidated training issue per user. | Active |
+| `3.2_training_issue_signature_flow.yml` | `issues`, `workflow_dispatch` | Manages signature collection and closure flow for consolidated training issues. | Active |
 
 ### 7.4 Platform and Maintenance Operations
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `6.4_deploy_signature_worker.yml` | `workflow_dispatch` | Deploys the Cloudflare signature worker. | Active |
-| `6.4_artifact_quota_cleanup.yml` | `workflow_dispatch` | Deletes old workflow artifacts to control storage quota. | Active maintenance |
+| `4.1_deploy_signature_worker.yml` | `workflow_dispatch` | Deploys the Cloudflare signature worker. | Active |
+| `4.2_artifact_quota_cleanup.yml` | `workflow_dispatch` | Deletes old workflow artifacts to control storage quota. | Active maintenance |
 
 ## 8. External Dependencies and Trust Boundaries
 | Dependency | Boundary | Purpose |

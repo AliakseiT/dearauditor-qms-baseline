@@ -66,7 +66,7 @@ The deploy command injects `WORKER_VERSION` automatically using the format `YYYY
 
 GitHub Actions:
 
-- run workflow `6.4 Deploy Signature Worker` manually (`workflow_dispatch`)
+- run workflow `4.1 Deploy Signature Worker` manually (`workflow_dispatch`)
 
 ## 6. One-Command Bootstrap
 
