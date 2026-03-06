@@ -1,0 +1,27 @@
+version: 1
+analysis_date: "2026-03-06"
+standard:
+  exact_name: "IEC 62304:2006+A1:2015 Medical device software - Software life cycle processes"
+  normative_base: "IEC 62304:2006+A1:2015"
+analysis_scope: "ACME GmbH QMS-Lite governance, templates, and GitHub-native release controls"
+summary:
+  covered_clause_groups:
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "8"
+    - "9"
+  product_specific_or_tailored:
+    - clause: "5.1.1 software safety classification depth"
+      rationale: "Classification is defined per product or subsystem and drives product-level verification depth."
+    - clause: "5.8 software integration/system testing detail"
+      rationale: "Execution depth and artifact granularity are maintained in designated product repositories using the controlled V&V templates."
+  outstanding_gaps: []
+clause_to_control_map:
+  "4": ["SOP-005", "SOP-020"]
+  "5": ["SOP-008", "SOP-020", "WI-001"]
+  "6": ["SOP-020", "WI-002"]
+  "7": ["SOP-018", "SOP-020"]
+  "8": ["SOP-009", "SOP-020", "WI-002"]
+  "9": ["SOP-015", "SOP-020", "SOP-012", "SOP-013", "SOP-014"]

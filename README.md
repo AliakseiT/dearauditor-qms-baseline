@@ -5,15 +5,15 @@
 <!-- PUBLISHED-SOP-INDEX:START -->
 | SOP ID | SOP Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-05 | R03 | Published |
+| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-06 | R04 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-05 | R02 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-05 | R02 | Published |
-| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-05 | R06 | Published |
+| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-06 | R07 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-05 | R01 | Published |
-| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-02 | R00 | Published |
-| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-02 | R00 | Published |
+| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-06 | R01 | Published |
+| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-06 | R01 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-05 | R01 | Published |
 | SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-05 | R01 | Published |
 | SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-02 | R00 | Published |
@@ -24,7 +24,15 @@
 | SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-02 | R00 | Published |
 | SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-02 | R00 | Published |
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-05 | R01 | Published |
+| SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-06 | R00 | Published |
 <!-- PUBLISHED-SOP-INDEX:END -->
+
+## Published WI Index
+
+| WI ID | WI Title | File | Effective Date | Published Revision | Status |
+|---|---|---|---|---|---|
+| WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-03-06 | R00 | Published |
+| WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-03-06 | R00 | Published |
 
 ## Company Context
 - Legal entity: `ACME GmbH`
@@ -38,12 +46,15 @@
 - Regulatory scope baseline (CH/EU/US): `matrices/regulatory_market_scope.yml`
 - ISO 13485 gap-analysis summary: `matrices/iso_13485_gap_analysis.yml`
 - ISO 14971 gap-analysis summary: `matrices/iso_14971_gap_analysis.yml`
+- IEC 62304 gap-analysis summary: `matrices/iec_62304_gap_analysis.yml`
 - IEC 62366-1 gap-analysis summary: `matrices/iec_62366_1_gap_analysis.yml`
 - Quality manual section-to-SOP traceability: `matrices/quality_manual_traceability.yml`
 - QMS tooling inventory and validation baseline: `matrices/qms_tooling_inventory.yml`
 - Signer identity registry (full name/title for attestations): `matrices/signer_registry.json`
 - Supplier control templates: `records/suppliers/approved_supplier_list.yml`, `records/suppliers/supplier_vetting_template.yml`
 - Risk management templates: `records/risk/risk_management_plan_template.yml`, `records/risk/risk_register_template.yml`
+- V&V templates: `records/verification_validation/vv_plan_template.yml`, `records/verification_validation/test_case_index_template.yml`, `records/verification_validation/vv_report_template.md`
+- Configuration/release templates: `records/configuration/release_plan_template.yml`, `records/configuration/release_baseline_manifest_template.yml`
 
 ## Automation Map
 - End-to-end workflow diagram (SVG): `docs/automation/workflow-automation-map.svg`
@@ -61,6 +72,12 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 | Training Issue Signature | `sig-train-<issue>-h<hash12>-rNN` | `sig-train-143-h23b61e73b5d7-r01` |
 | Supplier List / Evaluation | `asl-YYYY.MM.DD-rNN` / `sup-<record-id>-rNN` | `asl-2026.03.01-r01` |
 | Fallback | `record-<record-id>-rNN` | `record-general-note-r01` |
+
+## QMS Release Publication
+
+- QMS release tags use `QMS-YYYY-MM-DD-RNN`.
+- Canonical controlled content is read directly in GitHub at the tagged commit; no separate handbook repository is required by default.
+- `publish_qms_release.yml` publishes a GitHub Release on each QMS tag with a release manifest and repository snapshot for immutable reference.
 
 ## Training Automation
 
@@ -137,3 +154,9 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 - `SOP-018` defines one integrated method for hazard-based, failure-mode-based, and cybersecurity risk management.
 - `.github/ISSUE_TEMPLATE/risk_management_plan.yml` provides a structured planning form with required top-down, bottom-up, and cybersecurity inputs.
 - `risk_record_schema_guard.yml` validates designated risk-register YAML structure and score consistency in PRs.
+
+## Software Lifecycle Operations
+
+- `SOP-020` defines the IEC 62304-aligned lifecycle, configuration, release, maintenance, and problem-resolution baseline.
+- `WI-001` defines the GitHub-native plan -> PR approval -> post-merge PIN signature -> execution -> evidence PR -> post-merge PIN signature V&V flow.
+- `WI-002` defines the GitHub-native release-plan issue, release-baseline PR, post-merge PIN signature, release tag, and immutable publication flow.

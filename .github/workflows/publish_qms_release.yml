@@ -1,0 +1,152 @@
+name: Publish QMS Release
+
+on:
+  push:
+    tags:
+      - 'QMS-*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish_qms_release:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build QMS release bundle
+        shell: bash
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          import tarfile
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          tag = os.environ["RELEASE_TAG"].strip()
+          if not re.fullmatch(r"QMS-\d{4}-\d{2}-\d{2}-R\d{2}", tag):
+            raise SystemExit(f"Unexpected QMS tag format: {tag}")
+
+          def parse_front_matter(path: Path):
+            text = path.read_text(encoding="utf-8")
+            if not text.startswith("---\n"):
+              return {}
+            _, rest = text.split("---\n", 1)
+            front, _body = rest.split("\n---\n", 1)
+            result = {}
+            current_key = None
+            for line in front.splitlines():
+              if not line.strip():
+                continue
+              if re.match(r"^[A-Za-z0-9_]+:\s*", line):
+                key, value = line.split(":", 1)
+                value = value.strip()
+                current_key = key
+                if value:
+                  result[key] = value
+                else:
+                  result[key] = []
+              elif line.lstrip().startswith("- ") and current_key:
+                result.setdefault(current_key, [])
+                result[current_key].append(line.lstrip()[2:].strip())
+            return result
+
+          sops = []
+          for path in sorted(Path("sops").glob("*.md")):
+            meta = parse_front_matter(path)
+            sops.append({
+              "id": meta.get("sop_id", path.stem),
+              "title": meta.get("title", path.stem),
+              "revision": meta.get("revision", ""),
+              "effective_date": meta.get("effective_date", ""),
+              "path": str(path),
+            })
+
+          wis = []
+          wi_dir = Path("wis")
+          if wi_dir.exists():
+            for path in sorted(wi_dir.glob("*.md")):
+              meta = parse_front_matter(path)
+              wis.append({
+                "id": meta.get("wi_id", path.stem),
+                "title": meta.get("title", path.stem),
+                "revision": meta.get("revision", ""),
+                "effective_date": meta.get("effective_date", ""),
+                "path": str(path),
+              })
+
+          manifest = {
+            "schema_version": 1,
+            "release_tag": tag,
+            "source_repository": os.environ.get("GITHUB_REPOSITORY", ""),
+            "source_sha": os.environ.get("GITHUB_SHA", ""),
+            "published_at_utc": datetime.now(timezone.utc).isoformat(),
+            "canonical_reading_surface": "github_repository_at_release_tag",
+            "sops": sops,
+            "wis": wis,
+            "baseline_references": [
+              "README.md",
+              "matrices/company_profile.yml",
+              "matrices/regulatory_market_scope.yml",
+              "matrices/iso_13485_gap_analysis.yml",
+              "matrices/iso_14971_gap_analysis.yml",
+              "matrices/iec_62304_gap_analysis.yml",
+              "matrices/iec_62366_1_gap_analysis.yml",
+              "matrices/quality_manual_traceability.yml",
+            ],
+          }
+
+          Path("qms_release_manifest.json").write_text(
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+          )
+
+          notes = [
+            f"# QMS Release {tag}",
+            "",
+            "Canonical controlled content is read directly in GitHub at this tag.",
+            "This release packages a manifest and repository snapshot for immutable reference.",
+            "",
+            "## Included Controlled Document Families",
+            f"- SOP count: {len(sops)}",
+            f"- WI count: {len(wis)}",
+            "",
+            "## Assets",
+            "- `qms_release_manifest.json`",
+            "- `qms_release_snapshot.tgz`",
+          ]
+          Path("qms_release_notes.md").write_text("\n".join(notes) + "\n", encoding="utf-8")
+
+          with tarfile.open("qms_release_snapshot.tgz", "w:gz") as archive:
+            for path in [
+              Path("README.md"),
+              Path("sops"),
+              Path("wis"),
+              Path("matrices"),
+              Path(".github/ISSUE_TEMPLATE"),
+              Path("records"),
+            ]:
+              if path.exists():
+                archive.add(path, arcname=str(path))
+          PY
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            qms_release_manifest.json
+            qms_release_snapshot.tgz
+          body_path: qms_release_notes.md

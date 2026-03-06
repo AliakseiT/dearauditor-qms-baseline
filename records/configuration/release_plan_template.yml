@@ -1,0 +1,18 @@
+version: 1
+record_type: release_plan
+required_fields:
+  release_plan_id: "RLP-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  target_version_or_tag: ""
+  scope_summary: ""
+  linked_records:
+    verification_validation_report: ""
+    residual_risk_decision: ""
+    change_record: ""
+    anomaly_summary: ""
+  rollback_or_containment_note: ""
+  signoff:
+    meaning_of_signature: "Approved Release Baseline"
+    signer_roles:
+      - qa_lead
+      - management_representative

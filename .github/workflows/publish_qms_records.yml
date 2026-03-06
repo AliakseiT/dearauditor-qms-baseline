@@ -5,6 +5,9 @@ on:
     types: [closed]
     paths:
       - records/**/*.md
+      - records/**/*.yml
+      - records/**/*.yaml
+      - records/**/*.json
 
 permissions:
   contents: write
@@ -36,7 +39,7 @@ jobs:
             MERGE_SHA="${{ github.sha }}"
           fi
 
-          git diff --name-only "$BASE_SHA" "$MERGE_SHA" -- 'records/**/*.md' 'records/*.md' | sort -u > changed_records.txt
+          git diff --name-only "$BASE_SHA" "$MERGE_SHA" -- 'records/**/*.md' 'records/**/*.yml' 'records/**/*.yaml' 'records/**/*.json' 'records/*.md' 'records/*.yml' 'records/*.yaml' 'records/*.json' | sort -u > changed_records.txt
           if [ -s changed_records.txt ]; then
             echo "has_records=true" >> "$GITHUB_OUTPUT"
             echo "merge_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
@@ -335,6 +338,9 @@ jobs:
             "audits": "audit",
             "training": "trn",
             "suppliers": "sup",
+            "verification_validation": "vv",
+            "configuration": "cfg",
+            "risk": "risk",
           }
 
           def slugify(text: str) -> str:
@@ -351,8 +357,11 @@ jobs:
             source_text = src_path.read_text(encoding="utf-8")
             source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
 
-            html = md.markdown(source_text)
-            plain = re.sub(r"<[^>]+>", "", html)
+            if src_path.suffix.lower() == ".md":
+              html = md.markdown(source_text)
+              plain = re.sub(r"<[^>]+>", "", html)
+            else:
+              plain = source_text
             lines = plain.splitlines() or [""]
 
             parent = src_path.parent.name if src_path.parent.name != "records" else "general"
@@ -364,7 +373,8 @@ jobs:
             bundle_dir = out_root / base_tag
             bundle_dir.mkdir(parents=True, exist_ok=True)
 
-            (bundle_dir / "record.md").write_text(source_text, encoding="utf-8")
+            source_asset_name = src_path.name
+            (bundle_dir / source_asset_name).write_text(source_text, encoding="utf-8")
 
             pdf = FPDF()
             pdf.set_auto_page_break(auto=True, margin=15)
@@ -418,6 +428,7 @@ jobs:
               "source_merge_commit": source_merge_sha,
               "source_record_path": src,
               "source_record_sha256": source_sha,
+              "published_source_asset": source_asset_name,
               "record_pdf_sha256": pdf_sha,
               "electronic_signature_certificate_pdf_sha256": title_page_sha,
               "part11_title_page_pdf_sha256": title_page_sha,
@@ -448,7 +459,7 @@ jobs:
               f"- Signatures captured: `{len(attestations)}`",
               "",
               "Assets:",
-              "- `record.md`",
+              f"- `{source_asset_name}`",
               "- `record.pdf`",
               "- `manifest.json`",
               "- `signed_attestation.json`",
@@ -463,6 +474,7 @@ jobs:
               "bundle_dir": str(bundle_dir),
               "notes_file": str(notes_path),
               "certificate_name": certificate_name,
+              "source_asset_name": source_asset_name,
             })
 
           Path("release_plan.json").write_text(json.dumps(release_plan, indent=2) + "\n", encoding="utf-8")
@@ -543,9 +555,10 @@ jobs:
             bundle_dir = Path(entry["bundle_dir"])
             notes_file = entry["notes_file"]
             certificate_name = entry.get("certificate_name", "Electronic_Signature_Certificate_PRunknown.pdf")
+            source_asset_name = entry.get("source_asset_name", "record.md")
 
             assets = [
-              str(bundle_dir / "record.md"),
+              str(bundle_dir / source_asset_name),
               str(bundle_dir / "record.pdf"),
               str(bundle_dir / "manifest.json"),
               str(bundle_dir / "signed_attestation.json"),

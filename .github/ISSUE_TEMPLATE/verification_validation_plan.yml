@@ -1,0 +1,67 @@
+name: Verification and Validation Plan
+description: Plan a controlled V&V campaign for a product, release, or major change.
+title: "V&V PLAN: "
+labels:
+  - verification-validation
+  - plan
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product, subsystem, or study identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: input
+    id: target_revision
+    attributes:
+      label: Target Build or Commit
+      description: Exact build, image, commit SHA, or release candidate under test.
+      placeholder: main@<sha> or v1.2.0-rc1
+    validations:
+      required: true
+  - type: dropdown
+    id: activity_type
+    attributes:
+      label: Activity Type
+      options:
+        - Verification
+        - Validation
+        - Verification and Validation
+        - Usability Validation
+    validations:
+      required: true
+  - type: textarea
+    id: linked_inputs
+    attributes:
+      label: Linked Inputs
+      description: Requirements, risk items, change records, complaints, or anomalies that drive this plan.
+      placeholder: |
+        - REQ-...
+        - RISK-...
+        - CHANGE-...
+    validations:
+      required: true
+  - type: textarea
+    id: planned_evidence
+    attributes:
+      label: Planned Evidence
+      description: Expected test-case sets, environments, logs, screenshots, or workflow artifacts.
+      placeholder: |
+        - test_case_index.yml
+        - GitHub Actions run references
+        - manual execution log
+    validations:
+      required: true
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be true before the campaign can close.
+      placeholder: |
+        - Approved V&V plan merged and signed
+        - Execution complete on frozen target build
+        - V&V report merged and signed
+    validations:
+      required: true

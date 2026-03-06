@@ -1,0 +1,14 @@
+version: 1
+record_type: test_execution_log
+required_fields:
+  execution_id: "TEX-<product>-<yyyy-mm-dd>"
+  plan_reference: ""
+  target_revision: ""
+  executed_by: ""
+  executed_on: "YYYY-MM-DD"
+  results:
+    - test_case_id: "TC-0001"
+      status: "pass|fail|blocked|not_run"
+      evidence_reference: ""
+      deviation_reference: ""
+      notes: ""

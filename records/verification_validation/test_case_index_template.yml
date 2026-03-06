@@ -1,0 +1,14 @@
+version: 1
+record_type: test_case_index
+required_fields:
+  index_id: "TCI-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  target_revision: ""
+  test_cases:
+    - test_case_id: "TC-0001"
+      title: ""
+      type: "automated|manual|mixed"
+      requirement_references: []
+      risk_references: []
+      location_reference: ""
+      evidence_type: "log|report|screenshot|artifact"
