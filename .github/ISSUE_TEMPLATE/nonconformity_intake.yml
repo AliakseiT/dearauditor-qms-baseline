@@ -1,0 +1,41 @@
+name: Nonconformity Intake
+description: Record a product or process nonconformity requiring disposition and re-verification.
+title: "NONCONFORMITY: "
+labels:
+  - nonconformity
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product, subsystem, or QMS process affected.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: textarea
+    id: detection_context
+    attributes:
+      label: Detection Context
+      description: How and where the nonconformity was discovered.
+      placeholder: Test failure, monitoring alert, support case, audit, or release gate.
+    validations:
+      required: true
+  - type: textarea
+    id: nonconformity_description
+    attributes:
+      label: Nonconformity Description
+      description: Objective description of the nonconformity and affected artifact or release.
+      placeholder: Include observed behavior, expected behavior, and impacted baseline.
+    validations:
+      required: true
+  - type: dropdown
+    id: immediate_disposition
+    attributes:
+      label: Immediate Disposition
+      options:
+        - Contain and investigate
+        - Rework required
+        - Reject from release
+        - Use-as-is with justification
+    validations:
+      required: true

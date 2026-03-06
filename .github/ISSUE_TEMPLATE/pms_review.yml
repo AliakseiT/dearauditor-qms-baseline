@@ -1,0 +1,42 @@
+name: PMS Review
+description: Trigger a controlled post-market surveillance review cycle or signal assessment.
+title: "PMS REVIEW: "
+labels:
+  - pms
+  - post-market
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product or subsystem in scope for this PMS review.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: input
+    id: review_period
+    attributes:
+      label: Review Period
+      description: Period covered by this PMS review.
+      placeholder: YYYY-MM or YYYY-MM-DD to YYYY-MM-DD
+    validations:
+      required: true
+  - type: textarea
+    id: data_sources
+    attributes:
+      label: Data Sources
+      description: Complaints, incidents, telemetry, service tickets, or other PMS inputs reviewed.
+      placeholder: One source per line.
+    validations:
+      required: true
+  - type: textarea
+    id: signal_hypotheses
+    attributes:
+      label: Signal Hypotheses
+      description: Possible trends or safety/performance concerns to assess.
+      placeholder: |
+        - suspected signal:
+        - related complaint IDs:
+        - related risk IDs:
+    validations:
+      required: true
