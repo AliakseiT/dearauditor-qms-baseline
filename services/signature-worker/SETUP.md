@@ -62,9 +62,11 @@ Manual:
 - `npm install`
 - `npm run deploy`
 
+The deploy command injects `WORKER_VERSION` automatically using the format `YYYY-MM-DD-<short git hash>` in UTC, and the active version is shown in the worker UI and `/healthz`.
+
 GitHub Actions:
 
-- run workflow `Deploy Signature Worker` manually (`workflow_dispatch`)
+- run workflow `6.4 Deploy Signature Worker` manually (`workflow_dispatch`)
 
 ## 6. One-Command Bootstrap
 

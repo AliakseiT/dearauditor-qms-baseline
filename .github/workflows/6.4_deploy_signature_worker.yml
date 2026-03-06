@@ -23,9 +23,13 @@ jobs:
         working-directory: services/signature-worker
         run: npm install --no-fund --no-audit
 
+      - name: Show worker version
+        working-directory: services/signature-worker
+        run: npm run print-version
+
       - name: Deploy to Cloudflare Workers
         working-directory: services/signature-worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler deploy
+        run: npm run deploy

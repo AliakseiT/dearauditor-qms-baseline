@@ -27,6 +27,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 ### Vars
 
 - `PUBLIC_BASE_URL` (example: `https://sign.qms.dearauditor.ch`)
+- `WORKER_VERSION` (automatically injected as `YYYY-MM-DD-<short git hash>` during `npm run dev` and `npm run deploy`)
 - `DEFAULT_OAUTH_PROVIDER` (`github`)
 - `ALLOWED_OAUTH_PROVIDERS` (`github`)
 - `GITHUB_API_BASE_URL` (optional; default `https://api.github.com`)
@@ -63,6 +64,8 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 2. `cp .dev.vars.example .dev.vars` and fill values
 3. `npm install`
 4. `npm run dev`
+
+The worker UI and `/healthz` expose the active worker version. The default format is `YYYY-MM-DD-<short git hash>` in UTC, derived automatically from the checked-out repository state.
 
 ## Deploy
 

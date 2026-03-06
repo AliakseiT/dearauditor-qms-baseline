@@ -1,5 +1,6 @@
 interface Env {
   PUBLIC_BASE_URL: string;
+  WORKER_VERSION?: string;
   DEFAULT_OAUTH_PROVIDER?: string;
   ALLOWED_OAUTH_PROVIDERS?: string;
   GITHUB_OAUTH_CLIENT_ID: string;
@@ -110,16 +111,17 @@ export default {
     try {
       const url = new URL(request.url);
       const path = url.pathname;
+      const workerVersion = resolveWorkerVersion(env);
 
       if (path === "/healthz") {
-        return json({ ok: true, service: "signature-worker" });
+        return json({ ok: true, service: "signature-worker", version: workerVersion });
       }
       if (path === "/") {
-        return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin), 200);
+        return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
       }
       if (path === "/sign" && request.method === "GET") {
         if (!hasSignedContextParams(url.searchParams)) {
-          return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin), 200);
+          return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
         }
         return handleSignPage(request, env);
       }
@@ -160,7 +162,10 @@ async function handleSignPage(request: Request, env: Env): Promise<Response> {
   const signature = (url.searchParams.get("sig") || "").trim();
   await assertValidSignedContext(context, signature, env.SIGNATURE_LINK_SECRET);
 
-  return html(renderSignPage(context, provider, env.PUBLIC_BASE_URL, signature), 200);
+  return html(
+    renderSignPage(context, provider, env.PUBLIC_BASE_URL, signature, resolveWorkerVersion(env)),
+    200
+  );
 }
 
 async function handleAuthStart(request: Request, env: Env): Promise<Response> {
@@ -259,6 +264,7 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
       attestationId: duplicate.attestation_id,
       alreadySigned: true,
       pinExpiringSoon: false,
+      workerVersion: resolveWorkerVersion(env),
     }), 200);
   }
 
@@ -296,9 +302,18 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
   }
 
   if (!pinStatus.active) {
-    return html(renderPinSetupPage(sessionState, sessionToken), 200);
+    return html(renderPinSetupPage(sessionState, sessionToken, resolveWorkerVersion(env)), 200);
   }
-  return html(renderPinVerifyPage(sessionState, sessionToken, pinStatus.expiringSoon, pinStatus.expiresAtEpoch), 200);
+  return html(
+    renderPinVerifyPage(
+      sessionState,
+      sessionToken,
+      pinStatus.expiringSoon,
+      pinStatus.expiresAtEpoch,
+      resolveWorkerVersion(env)
+    ),
+    200
+  );
 }
 
 async function handlePinComplete(request: Request, env: Env): Promise<Response> {
@@ -437,6 +452,7 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
     attestationId,
     alreadySigned,
     pinExpiringSoon: pinStatusAfter.expiringSoon,
+    workerVersion: resolveWorkerVersion(env),
   }), 200);
 }
 
@@ -454,7 +470,7 @@ async function handlePinSetup(request: Request, env: Env): Promise<Response> {
   if (session.exp_state < nowEpoch()) {
     throw new Error("PIN session expired. Restart signing from the PR link.");
   }
-  return html(renderPinSetupPage(session, sessionToken), 200);
+  return html(renderPinSetupPage(session, sessionToken, resolveWorkerVersion(env)), 200);
 }
 
 async function handlePinStatusApi(request: Request, env: Env): Promise<Response> {
@@ -1280,6 +1296,11 @@ function wantsJson(request: Request): boolean {
   return accept.includes("application/json");
 }
 
+function resolveWorkerVersion(env: Env): string {
+  const raw = String(env.WORKER_VERSION || "").trim();
+  return raw || "dev-unversioned";
+}
+
 function hasSignedContextParams(params: URLSearchParams): boolean {
   const required = ["repo", "pr", "hash", "meaning", "role", "signer", "exp", "sig"];
   return required.every((key) => String(params.get(key) || "").trim() !== "");
@@ -1293,7 +1314,7 @@ function json(content: unknown, status = 200): Response {
   return new Response(JSON.stringify(content), { status, headers: JSON_HEADERS });
 }
 
-function renderLandingPage(baseUrl: string): string {
+function renderLandingPage(baseUrl: string, workerVersion: string): string {
   const title = "QMS Lite Signature";
   const safeBaseUrl = stripTrailingSlash(baseUrl);
   return `<!doctype html>
@@ -1375,6 +1396,12 @@ function renderLandingPage(baseUrl: string): string {
       color: var(--muted);
       font-size: 13px;
     }
+    .version {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
   </style>
 </head>
 <body>
@@ -1386,6 +1413,7 @@ function renderLandingPage(baseUrl: string): string {
       <a class="link" href="${escapeHtml(QMS_LITE_REPO_URL)}" target="_blank" rel="noreferrer">Open QMS Lite Repository</a>
     </div>
     <div class="meta">Service URL: ${escapeHtml(safeBaseUrl)}</div>
+    <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
   </main>
 </body>
 </html>`;
@@ -1406,7 +1434,13 @@ function renderSignatureBadgeSvg(): string {
 </svg>`;
 }
 
-function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string, sig: string): string {
+function renderSignPage(
+  ctx: SignatureContext,
+  provider: string,
+  baseUrl: string,
+  sig: string,
+  workerVersion: string
+): string {
   const title = "QMS Lite Sign";
   const providerLabel = provider === "github" ? "GitHub" : provider;
   const formAction = `${stripTrailingSlash(baseUrl)}/auth/start`;
@@ -1445,6 +1479,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
     .btn:hover { filter: brightness(1.08); }
     .btn[disabled] { opacity: .68; cursor: not-allowed; filter: none; }
     .foot { font-size: 12px; color: var(--muted); }
+    .version { margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     a { color: #1b4ea4; }
     @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
   </style>
@@ -1484,6 +1519,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
       </div>
       <div class="section foot">
         PR: <a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">${escapeHtml(prUrl)}</a>
+        <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
       </div>
     </div>
   </div>
@@ -1534,7 +1570,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
 </html>`;
 }
 
-function renderPinSetupPage(session: PinSessionState, sessionToken: string): string {
+function renderPinSetupPage(session: PinSessionState, sessionToken: string, workerVersion: string): string {
   const formAction = `/pin/complete`;
   const prUrl = `https://github.com/${session.ctx.repo}/pull/${session.ctx.pr}`;
   return `<!doctype html>
@@ -1557,6 +1593,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
     .hint { color: #5d6f92; font-size: 13px; margin-top: 6px; }
     .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
     .btn[disabled] { opacity: .68; cursor: not-allowed; }
+    .version { margin-top: 14px; color: #5d6f92; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     a { color: #1b4ea4; }
   </style>
 </head>
@@ -1582,6 +1619,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
         </form>
 
         <p><a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">Open PR</a></p>
+        <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
       </div>
     </div>
   </div>
@@ -1632,7 +1670,13 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
 </html>`;
 }
 
-function renderPinVerifyPage(session: PinSessionState, sessionToken: string, expiringSoon: boolean, expiresAtEpoch: number | null): string {
+function renderPinVerifyPage(
+  session: PinSessionState,
+  sessionToken: string,
+  expiringSoon: boolean,
+  expiresAtEpoch: number | null,
+  workerVersion: string
+): string {
   const formAction = `/pin/complete`;
   const expiryText = expiresAtEpoch ? new Date(expiresAtEpoch * 1000).toISOString() : "n/a";
   const warning = expiringSoon
@@ -1659,6 +1703,7 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
     .btn[disabled] { opacity: .68; cursor: not-allowed; }
     .secondary-link { display: inline-block; margin-top: 14px; color: #4e5f82; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-weight: 600; }
     .secondary-link[aria-disabled="true"] { color: #92a0bd; pointer-events: none; text-decoration: none; cursor: default; }
+    .version { margin-top: 14px; color: #5d6f92; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   </style>
 </head>
 <body>
@@ -1684,6 +1729,7 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
           <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
         </form>
         <a href="#" class="secondary-link" data-reset-link="1" data-processing-text="Opening reset...">Reset PIN</a>
+        <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
       </div>
     </div>
   </div>
@@ -1777,6 +1823,7 @@ function renderSuccessPage(input: {
   attestationId: string;
   alreadySigned: boolean;
   pinExpiringSoon: boolean;
+  workerVersion: string;
 }): string {
   const prUrl = `https://github.com/${input.repo}/pull/${input.pr}`;
   const pinWarning = input.pinExpiringSoon
@@ -1797,6 +1844,7 @@ function renderSuccessPage(input: {
     .body { padding: 16px 20px; }
     .k { color: #4d5f84; font-size: 13px; margin-top: 8px; }
     .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; background: #f2f6ff; border: 1px solid #d6deef; border-radius: 8px; padding: 8px; }
+    .version { margin-top: 14px; color: #5d6f92; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     a { color: #1b4ea4; }
   </style>
 </head>
@@ -1815,6 +1863,7 @@ function renderSuccessPage(input: {
         <div class="k">Timestamp</div><div class="v">${escapeHtml(input.timestamp)}</div>
         <div class="k">Attestation ID</div><div class="v">${escapeHtml(input.attestationId || "n/a")}</div>
         <p><a href="${escapeHtml(prUrl)}" rel="noreferrer">Open PR</a></p>
+        <div class="version">Worker version: ${escapeHtml(input.workerVersion)}</div>
       </div>
     </div>
   </div>
