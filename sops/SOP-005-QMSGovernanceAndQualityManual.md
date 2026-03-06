@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R06
-effective_date: 2026-03-05
+revision: R07
+effective_date: 2026-03-06
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -154,7 +154,13 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 3. Usability engineering records are maintained in designated product/study repositories as a lightweight usability engineering file with explicit links to risk records.
 4. Use-related post-production findings are reviewed and fed back into risk and design controls.
 
-### 8.14 GitHub Workflow Alignment Rule
+### 8.14 Software Lifecycle Standard Adoption
+1. ACME adopts `IEC 62304:2006+A1:2015` as the baseline for software lifecycle, software maintenance, configuration management, and problem-resolution controls.
+2. The lifecycle and release operating procedure is defined in SOP-020 and is part of QMS scope for software products.
+3. Default GitHub execution detail for V&V and release-baseline approvals is defined in WI-001 and WI-002.
+4. Product lifecycle records are maintained in designated product/study repositories and linked into the medical device file.
+
+### 8.15 GitHub Workflow Alignment Rule
 1. QMS SOP execution model follows GitHub-native lifecycle: issue -> branch -> pull request -> required checks/approvals -> merge -> Part 11 signature attestation -> immutable release evidence.
 2. SOP wording must reflect implemented GitHub workflow behavior; if automation sequence changes, impacted SOPs are revised in the same change set.
 3. Part 11 signing mechanism is common across QMS Lite and designated product/study record repositories.
@@ -166,6 +172,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - Product dossier approval records for intended use/classification
 - Risk management plan and risk management file references per product
 - Usability engineering file references per product
+- Software lifecycle plan, release-baseline, and maintenance/problem-resolution references per product
 - QMS tooling validation/revalidation records
 - Record repository mapping (product/study -> repository path) with ownership
 - Dissemination and feedback records for QMS updates
@@ -180,6 +187,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | 4.1.6 | QMS software validation governance | `matrices/qms_tooling_inventory.yml`, designated QMS-tool validation record repository |
 | ISO 14971 Clauses 4-10 | Integrated lifecycle risk governance | `sops/SOP-018-RiskManagement.md`, `matrices/iso_14971_gap_analysis.yml` |
 | IEC 62366-1 Clauses 4.1.1-5.10 | Usability engineering lifecycle governance | `sops/SOP-019-UsabilityEngineering.md`, `matrices/iec_62366_1_gap_analysis.yml` |
+| IEC 62304 Clauses 4-9 | Software lifecycle, release, maintenance, and problem-resolution governance | `sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md`, `matrices/iec_62304_gap_analysis.yml` |
 
 ## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -200,6 +208,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - SOP-017 Infrastructure and Maintenance Control
 - SOP-018 Risk Management (ISO 14971)
 - SOP-019 Usability Engineering (IEC 62366-1)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
 
 ## 12. Revision History
 | Revision | Effective Date | Change Summary |
@@ -211,3 +220,4 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | R04 | 2026-03-02 | Added ISO 14971 adoption and integrated risk governance linkage to SOP-018 and the risk matrix baseline. |
 | R05 | 2026-03-02 | Added IEC 62366-1 adoption and usability engineering governance linkage to SOP-019 and the usability matrix baseline. |
 | R06 | 2026-03-05 | Added repository-of-record governance for product/study records, clarified IEC 62366 evidence location, and added explicit rule to keep SOP lifecycle wording aligned with implemented GitHub workflow. |
+| R07 | 2026-03-06 | Added IEC 62304 adoption, linked lifecycle execution instructions, and required product-level lifecycle/release record references. |

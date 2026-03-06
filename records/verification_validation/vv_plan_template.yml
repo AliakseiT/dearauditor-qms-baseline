@@ -1,0 +1,25 @@
+version: 1
+record_type: verification_validation_plan
+required_fields:
+  plan_id: "VVP-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  target_revision: ""
+  activity_type: "verification|validation|verification_and_validation|usability_validation"
+  software_safety_classification: "A|B|C|not_applicable_with_rationale"
+  linked_inputs:
+    requirements: []
+    risk_items: []
+    change_records: []
+    anomaly_records: []
+  environments:
+    - name: ""
+      purpose: ""
+      configuration_reference: ""
+  planned_test_case_index: "records/verification_validation/test_case_index_template.yml"
+  acceptance_criteria:
+    - ""
+  signoff:
+    meaning_of_signature: "Approved V&V Plan"
+    signer_roles:
+      - qa_lead
+      - software_engineer

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-06
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -48,6 +48,7 @@ Classify each change as one or more of:
 1. Assess impact on safety/performance, compliance, and record integrity.
 2. Determine affected SOPs, training, tests, risks, and regulatory submissions.
 3. Define rollback/containment approach for high-risk changes.
+4. For software changes, determine whether configuration baseline, release manifest, or software safety classification updates are required.
 
 ### 6.3 Approval
 1. Minor changes: QA Lead approval.
@@ -58,6 +59,7 @@ Classify each change as one or more of:
 1. Implement via PR with linked issue and evidence.
 2. Execute required tests/reviews and attach objective evidence.
 3. Update published SOP index and training matrix where applicable.
+4. Software release-affecting changes must update the release baseline records defined in SOP-020 and WI-002.
 
 ### 6.5 Closure
 1. Confirm all impacted artifacts are updated and approved.
@@ -79,8 +81,11 @@ Classify each change as one or more of:
 - SOP-001 Document and Record Control
 - SOP-008 Design and Development Control
 - SOP-011 Competence, Training, and Awareness
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-06 | Added software baseline and release-manifest impact controls for regulated software changes. |

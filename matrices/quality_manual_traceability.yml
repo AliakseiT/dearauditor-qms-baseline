@@ -3,6 +3,8 @@ standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
 additional_standards:
+  - exact_name: "IEC 62304:2006+A1:2015 Medical device software - Software life cycle processes"
+    normative_base: "IEC 62304:2006+A1:2015"
   - exact_name: "EVS-EN ISO 14971:2019+A11:2021 Medical devices - Application of risk management to medical devices"
     normative_base: "ISO 14971:2019"
   - exact_name: "EVS-EN 62366-1:2015+A1:2020 Medical devices - Part 1: Application of usability engineering to medical devices"
@@ -81,6 +83,11 @@ quality_manual_sections:
     iso_clauses: ["IEC 62366-1 4.1.1-5.10"]
     controlling_sops: ["SOP-019", "SOP-018", "SOP-008"]
     status: "implemented"
+  - section_id: QM-15
+    section_name: "Software lifecycle, configuration, release, and maintenance"
+    iso_clauses: ["IEC 62304 4-9"]
+    controlling_sops: ["SOP-020", "SOP-008", "SOP-009"]
+    status: "implemented"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -110,3 +117,7 @@ supporting_definitions:
     status: "implemented"
     reference: "sops/SOP-019-UsabilityEngineering.md, <product-or-study-repo>/records/usability/*"
     note: "QMS Lite defines governance; usability-file execution records are maintained in designated product/study repositories and signed with the same Part 11 mechanism."
+  - item: "Software lifecycle and release baseline model"
+    status: "implemented"
+    reference: "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md, wis/WI-001-VerificationAndValidationExecution.md, wis/WI-002-ConfigurationAndReleaseManagementExecution.md"
+    note: "IEC 62304 lifecycle planning, GitHub-native V&V approval, and release-baseline control are part of the controlled QMS baseline."

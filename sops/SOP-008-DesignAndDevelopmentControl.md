@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-06
 status: Published
 owner_role: software_engineer
 approver_role: qa_lead
@@ -50,6 +50,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 1. Define lifecycle plan, milestones, and responsibilities.
 2. Identify review/verification/validation gates.
 3. Define required deliverables and entry/exit criteria per phase.
+4. For regulated software products, include software safety classification, configuration baselines, and release decision criteria per SOP-020.
 
 ### 6.2 Design Inputs
 1. Capture user needs, safety/performance requirements, and regulatory constraints.
@@ -70,11 +71,13 @@ Applies to new products, major features, and significant lifecycle changes affec
 1. Verification demonstrates outputs meet design input requirements.
 2. Validation demonstrates product meets user needs/intended use in representative context.
 3. Maintain bidirectional traceability requirements -> risk controls -> tests -> results.
+4. Execute V&V planning, approval, evidence review, and post-merge PIN signature flow using WI-001.
 
 ### 6.6 Transfer and Release
 1. Confirm release readiness checklist completion.
 2. Ensure required regulatory and QMS deliverables are approved.
 3. Release only controlled versions with immutable record linkage.
+4. Configuration baseline and release publication must follow SOP-020 and WI-002.
 
 ### 6.7 Design Changes
 1. Manage post-baseline changes under SOP-009.
@@ -95,8 +98,12 @@ Applies to new products, major features, and significant lifecycle changes affec
 - SOP-007 Medical Device File Control
 - SOP-009 Change Management
 - SOP-015 Nonconforming Product Control
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- WI-001 Verification and Validation Execution
+- WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-06 | Added IEC 62304 lifecycle/release linkage and default GitHub-native V&V execution reference. |

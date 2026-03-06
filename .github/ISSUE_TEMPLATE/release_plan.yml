@@ -1,0 +1,64 @@
+name: Release Plan
+description: Plan a controlled software release baseline and immutable publication.
+title: "RELEASE PLAN: "
+labels:
+  - release-management
+  - plan
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product or subsystem identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: input
+    id: target_version
+    attributes:
+      label: Target Version or Tag
+      description: Planned release version, tag, or baseline name.
+      placeholder: v1.2.0 or rel-2026-03-06-r01
+    validations:
+      required: true
+  - type: textarea
+    id: configuration_items
+    attributes:
+      label: Configuration Items
+      description: Repositories, components, commits, or packages that define the release.
+      placeholder: |
+        - app repo @ <sha>
+        - configuration manifest
+        - deployment package reference
+    validations:
+      required: true
+  - type: textarea
+    id: linked_records
+    attributes:
+      label: Linked Records
+      description: V&V, risk, change, anomaly, or approval records required for release.
+      placeholder: |
+        - VVR-...
+        - RISK-...
+        - CHANGE-...
+    validations:
+      required: true
+  - type: textarea
+    id: rollback_note
+    attributes:
+      label: Rollback or Containment Note
+      description: High-level rollback or containment approach if release must be halted.
+      placeholder: Document the fallback baseline or containment plan.
+    validations:
+      required: true
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be true before the release plan can close.
+      placeholder: |
+        - Release baseline PR merged and signed
+        - Immutable release published
+        - MDF and traceability links updated
+    validations:
+      required: true

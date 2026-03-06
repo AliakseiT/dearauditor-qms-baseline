@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R03
-effective_date: 2026-03-05
+revision: R04
+effective_date: 2026-03-06
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -40,14 +40,16 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 
 ### 6.1 Document Classes
 1. `SOP`: controlled procedures in `sops/`.
-2. `Matrix`: structured governance references in `matrices/`.
-3. `Template`: forms for planning/execution in `.github/ISSUE_TEMPLATE` and template artifacts in `records/*`.
-4. `Execution Record`: objective evidence maintained in approved external record repositories.
+2. `WI`: controlled work instructions in `wis/` that define default execution detail for selected SOP activities.
+3. `Matrix`: structured governance references in `matrices/`.
+4. `Template`: forms for planning/execution in `.github/ISSUE_TEMPLATE` and template artifacts in `records/*`.
+5. `Execution Record`: objective evidence maintained in approved external record repositories.
 
 ### 6.2 Identification and Metadata
 1. SOP files must use `SOP-XXX-Title.md` naming.
-2. SOPs must include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`, `iso_13485_clauses`.
-3. Revision format is `RNN` (for example `R03`).
+2. WI files must use `WI-XXX-Title.md` naming and include YAML front matter fields: `wi_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `related_sops`.
+3. SOPs must include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`, `iso_13485_clauses`.
+4. Revision format is `RNN` (for example `R03`).
 
 ### 6.3 Draft, Review, and Approval
 1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with linked issue context.
@@ -93,6 +95,8 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 ## 9. Related Controlled Documents
 - SOP-005 QMS Governance and Quality Manual
 - SOP-009 Change Management
+- WI-001 Verification and Validation Execution
+- WI-002 Configuration and Release Management Execution
 - `README.md` Published SOP Index
 
 ## 10. Revision History
@@ -102,3 +106,4 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | R01 | 2026-03-02 | Full procedure content implemented for ACME GmbH. |
 | R02 | 2026-03-05 | Updated Sections 5, 6.3, and 6.6 to formally define GitHub PR approvals as binding electronic signatures and clarify the structure of immutable cryptographic records. |
 | R03 | 2026-03-05 | Updated repository-of-record model: product/study records are maintained outside `qms-lite`, and SOP workflow wording now matches post-merge Part 11 signature collection before immutable publication. |
+| R04 | 2026-03-06 | Added controlled WI document class and metadata rules for the targeted GitHub-native execution instructions. |
