@@ -100,9 +100,9 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 
 - On merged PRs, `issue_pr_part11_gate.yml` posts signer-specific links to the Cloudflare `signature-worker` title page.
 - The link payload is signed by GitHub Actions (`SIGNATURE_LINK_SECRET`) and verified by worker backend before any OAuth step.
-- Signers open the link and complete GitHub OAuth login; full legal name is resolved from `matrices/signer_registry.json`.
-- Worker verifies signer eligibility against the latest PR signature request comment and posts attestation (`<!-- PART11_ATTESTATION_V1 -->`) directly to PR.
-- Signature comments are posted via mandatory GitHub App token (`SIGNATURE_APP_ID`, `SIGNATURE_APP_PRIVATE_KEY`).
+- Signers open the link and complete GitHub OAuth login through the signer-facing `QMS Lite Signature` OAuth app; full legal name is resolved from `matrices/signer_registry.json`.
+- Worker verifies signer eligibility against the latest PR signature request comment and posts attestation (`<!-- PART11_ATTESTATION_V1 -->`) directly to PR via the automation app.
+- PR comments, reviewer-assignment comments, merges, and immutable-release publication should run through the future `qms-lite-bot` GitHub App (`QMS_BOT_APP_ID`, `QMS_BOT_APP_PRIVATE_KEY`).
 - `required_reviewer_approval_guard.yml` enforces at least one non-author approval on the current PR head SHA (except `review-only` PRs).
 - `part11_git_native_signature.yml` is manual fallback (`workflow_dispatch`) only.
 - Cloudflare signer flow creates PR attestation comment (`<!-- PART11_ATTESTATION_V1 -->`) directly from worker backend.
@@ -110,6 +110,7 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 - Reusable PDF title-page generator for attestation packages:
   - `scripts/generate_part11_title_page.py`
   - Produces `Electronic_Signature_Certificate_PR{n}.pdf` with signatory names, roles, titles, and signature timestamps.
+- Title-page/release finalization waits for the full required attestation set before publishing one immutable certificate package for the PR.
 - Record publication workflows wait for required signature count/role/meaning before releasing immutable records.
 
 ## Attention Board
@@ -129,11 +130,14 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 
 ## Repository Secrets (Part 11)
 
-- `SIGNATURE_APP_ID`: GitHub App ID used by signature workflows.
-- `SIGNATURE_APP_PRIVATE_KEY`: GitHub App private key (PEM) for installation token minting.
+- `QMS_BOT_APP_ID`: GitHub App ID for the future `qms-lite-bot` automation app.
+- `QMS_BOT_APP_PRIVATE_KEY`: GitHub App private key (PEM) for `qms-lite-bot` installation token minting.
 - `SIGNATURE_LINK_SECRET`: shared HMAC key used to sign `/sign` links in Actions and verify them in worker backend.
 - `CLOUDFLARE_API_TOKEN`: token used by `deploy_signature_worker.yml`.
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account identifier for worker deploy.
+
+Temporary compatibility:
+- `SIGNATURE_APP_ID` and `SIGNATURE_APP_PRIVATE_KEY` are still accepted as fallbacks while migrating to `qms-lite-bot`.
 
 ## Repository Variables (Part 11)
 
@@ -146,9 +150,17 @@ QMS Lite defines the release-tagging and signature model. Operational product/st
 - Setup guide: `services/signature-worker/SETUP.md`
 - Deploy workflow: `.github/workflows/deploy_signature_worker.yml`
 - Worker runtime secrets are configured in Cloudflare Worker settings:
-  - `GITHUB_APP_ID`, `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET`, `GITHUB_APP_PRIVATE_KEY`
-  - `SIGNATURE_LINK_SECRET`, `SIGNATURE_STATE_SECRET`
-  - optional `GITHUB_APP_INSTALLATION_ID`
+  - Signer identity: `GITHUB_OAUTH_CLIENT_ID`, `GITHUB_OAUTH_CLIENT_SECRET`
+  - Automation app: `QMS_BOT_APP_ID`, `QMS_BOT_APP_PRIVATE_KEY`, optional `QMS_BOT_APP_INSTALLATION_ID`
+  - Signing state: `SIGNATURE_LINK_SECRET`, `SIGNATURE_STATE_SECRET`, `PIN_PEPPER`
+  - Legacy fallback only: `GITHUB_REPO_TOKEN`
+- Recommended `qms-lite-bot` repository permissions:
+  - `Contents: Read and write`
+  - `Pull requests: Read and write`
+  - `Issues: Read and write`
+  - `Metadata: Read-only`
+- Optional future extension:
+  - `Repository projects: Read and write` if project-board synchronization is later moved under `qms-lite-bot`
 
 ## Risk Operations
 

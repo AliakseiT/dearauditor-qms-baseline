@@ -16,6 +16,7 @@ QMS Lite is a GitHub-native QMS operating model built from:
 - GitHub Actions for enforcement, signing orchestration, training automation, and immutable publication
 - GitHub Releases for immutable record and QMS release packaging
 - a Cloudflare-hosted signature worker for the primary post-merge signature ceremony
+- two separate GitHub identities: a signer-facing OAuth app (`QMS Lite Signature`) and a repository automation app (`qms-lite-bot`)
 
 The canonical controlled reading surface remains GitHub at the approved commit or tag. QMS releases are formalized by tags matching `QMS-YYYY-MM-DD-RNN`.
 
@@ -28,7 +29,8 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 | GitHub Actions | Policy enforcement, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
 | GitHub Releases | Immutable publication surface for quality records and formal QMS release packages. |
 | Cloudflare signature worker | External signer UI and OAuth/PIN ceremony for the main Part 11 signing path. |
-| GitHub App token | Required for posting signature-attestation comments back to PRs. |
+| `QMS Lite Signature` OAuth app | Signer identity verification during the browser-based signature ceremony. |
+| `qms-lite-bot` GitHub App | Repository automation identity for PR comments, merges, release publication, and attestation posting. |
 | GitHub Project board | Optional operational board synchronized from signature status labels and actionable work. |
 | Signer registry (`matrices/signer_registry.json`) | Source for resolved signatory legal names and job titles in attestation output. |
 
@@ -90,8 +92,9 @@ Source file: `docs/automation/workflow-automation-map.svg`
 | Dependency | Boundary | Purpose |
 |---|---|---|
 | GitHub-hosted Actions runners | External platform runtime | Execute automation logic, enforce guards, and publish releases. |
-| Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through the GitHub App. |
-| GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
+| Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through `qms-lite-bot`. |
+| GitHub OAuth app credentials | Secret-managed integration | Authenticate signer identity during the browser ceremony. |
+| GitHub App credentials | Secret-managed integration | Authenticate repository automation such as PR comments, merges, and immutable release publication. |
 | Repository secrets and variables | Controlled configuration | Provide signing, deployment, and board-sync configuration. |
 
 ## 8. Architecture Principles

@@ -2,6 +2,10 @@
 
 Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 
+The worker sits between two GitHub integrations:
+- `QMS Lite Signature`: the signer-facing GitHub OAuth App used only for identity verification during the ceremony
+- `qms-lite-bot`: the repository automation GitHub App used to read PR context and post attestation comments
+
 ## What It Does
 
 - Serves signer-facing ceremony page at `GET /sign`.
@@ -35,10 +39,13 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
-- `GITHUB_REPO_TOKEN` (token used by worker backend to read signer registry and post PR comments)
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
+- `QMS_BOT_APP_INSTALLATION_ID` (optional; if omitted, worker resolves installation from repo)
 - `SIGNATURE_LINK_SECRET` (must match QMS Lite GitHub Actions secret)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER` (server-side pepper for PIN KDF)
+- `GITHUB_REPO_TOKEN` (legacy fallback only; planned removal after qms-lite-bot rollout)
 
 ### KV Binding
 
@@ -56,6 +63,19 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 - Authorization callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
 - OAuth scope requested by worker: `read:user`
 - Signer full legal name is resolved from `matrices/signer_registry.json` (no manual name entry in UI).
+
+## GitHub App for Automation
+
+Use a separate GitHub App for repository-side automation:
+
+- App name: `qms-lite-bot`
+- Minimum repository permissions:
+  - `Contents: Read and write`
+  - `Pull requests: Read and write`
+  - `Issues: Read and write`
+  - `Metadata: Read-only`
+- Optional later permission:
+  - `Repository projects: Read and write` if project-board sync is moved under the bot
 
 ## Local Development
 
@@ -80,7 +100,7 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 What it does:
 
 - Upserts repo variable `SIGNATURE_UI_BASE_URL`.
-- Sets repo secrets `SIGNATURE_LINK_SECRET`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` when values are present.
-- Sets worker secrets for OAuth + PR comment token + signing secrets.
+- Sets repo secrets for `QMS_BOT_APP_*`, `SIGNATURE_LINK_SECRET`, `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_ACCOUNT_ID` when values are present.
+- Sets worker secrets for OAuth + `qms-lite-bot` app auth + signing secrets.
 - Writes `.dev.vars` for local `wrangler dev`.
 - Validates that KV namespace IDs in `wrangler.toml` are not placeholders before deploy.
