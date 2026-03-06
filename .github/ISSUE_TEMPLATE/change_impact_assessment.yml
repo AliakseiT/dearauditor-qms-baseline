@@ -1,0 +1,56 @@
+name: Change Impact Assessment
+description: Capture a structured impact assessment for a QMS or product change.
+title: "CHANGE: "
+labels:
+  - change-management
+body:
+  - type: input
+    id: product_or_process_id
+    attributes:
+      label: Product or Process ID
+      description: Product, subsystem, supplier, infrastructure area, or QMS process in scope.
+      placeholder: ACME-GENERIC-SAMD or SOP-008
+    validations:
+      required: true
+  - type: dropdown
+    id: change_type
+    attributes:
+      label: Change Type
+      options:
+        - Product design or software
+        - QMS document or process
+        - Infrastructure or operations
+        - Supplier or external dependency
+    validations:
+      required: true
+  - type: textarea
+    id: change_summary
+    attributes:
+      label: Change Summary
+      description: What is changing and why.
+      placeholder: Include scope, rationale, and affected baseline.
+    validations:
+      required: true
+  - type: textarea
+    id: impact_areas
+    attributes:
+      label: Impact Areas
+      description: Requirements, risks, tests, dossiers, training, releases, or suppliers that may be affected.
+      placeholder: |
+        - requirements:
+        - risk:
+        - v&v:
+        - release:
+    validations:
+      required: true
+  - type: textarea
+    id: completion_criteria
+    attributes:
+      label: Completion Criteria
+      description: What must be updated before the change can close.
+      placeholder: |
+        - impact assessed
+        - affected records updated
+        - verification complete
+    validations:
+      required: true
