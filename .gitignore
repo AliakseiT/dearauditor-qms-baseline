@@ -1,3 +1,4 @@
 wrangler-account.json
 .wrangler/
 services/signature-worker/.wrangler/
+.DS_Store
