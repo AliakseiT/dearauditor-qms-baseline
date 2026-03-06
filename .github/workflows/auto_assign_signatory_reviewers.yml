@@ -139,6 +139,16 @@ jobs:
             exit 1
           fi
 
+      - name: Create GitHub App token for PR updates
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
       - name: Request reviewers from collaborators
         if: steps.plan.outputs.candidates_csv != ''
         uses: actions/github-script@v7
@@ -151,6 +161,7 @@ jobs:
           COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
           COAPPROVAL_REASONS: ${{ steps.policy.outputs.coapproval_reasons }}
         with:
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const pr = context.payload.pull_request;
             if (!pr || pr.state !== 'open') {
@@ -216,6 +227,7 @@ jobs:
 
             const marker = '<!-- signature-auto-reviewers -->';
             const legacyMarker = '<!-- part11-auto-reviewers -->';
+            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
             const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
             const rolesRaw = process.env.ROLES_RAW || '';
             const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
@@ -244,7 +256,8 @@ jobs:
             });
             const existing = comments.find((c) => {
               const body = c.body || '';
-              return (body.includes(marker) || body.includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]';
+              const login = String(c.user?.login || '').toLowerCase();
+              return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
             });
             if (existing) {
               await github.rest.issues.updateComment({

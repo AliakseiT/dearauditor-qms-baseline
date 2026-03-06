@@ -135,6 +135,7 @@ jobs:
             if (reviewerPool.length === 0) {
               const marker = '<!-- signature-auto-reviewers -->';
               const legacyMarker = '<!-- part11-auto-reviewers -->';
+              const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -142,7 +143,7 @@ jobs:
                 per_page: 100,
               });
               const markerComments = comments
-                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && (c.user?.login || '') === 'github-actions[bot]')
+                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
               if (markerComments.length > 0) {
                 const latestBody = markerComments[markerComments.length - 1].body || '';
@@ -190,8 +191,8 @@ jobs:
         id: app_token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ secrets.SIGNATURE_APP_ID }}
-          private-key: ${{ secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: |
             ${{ github.event.repository.name }}
