@@ -1535,6 +1535,8 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
     .hint { color: #5d6f92; font-size: 13px; margin-top: 6px; }
     .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
     .btn[disabled] { opacity: .68; cursor: not-allowed; }
+    .secondary-link { display: inline-block; margin-top: 14px; color: #4e5f82; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-weight: 600; }
+    .secondary-link[aria-disabled="true"] { color: #92a0bd; pointer-events: none; text-decoration: none; cursor: default; }
   </style>
 </head>
 <body>
@@ -1556,10 +1558,10 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
           <div class="hint">This PIN is your second electronic signature factor for QMS approvals.</div>
           <button class="btn" type="submit" data-processing-text="Verifying...">Verify PIN and Sign</button>
         </form>
-        <form action="/pin/setup" method="post" data-submit-guard="1">
+        <form action="/pin/setup" method="post" data-reset-form="1">
           <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
-          <button class="btn" type="submit" style="background:#5b677f;" data-processing-text="Opening reset...">Reset PIN</button>
         </form>
+        <a href="#" class="secondary-link" data-reset-link="1" data-processing-text="Opening reset...">Reset PIN</a>
       </div>
     </div>
   </div>
@@ -1567,6 +1569,8 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
     (function () {
       var UNLOCK_MS = 12000;
       var forms = document.querySelectorAll('form[data-submit-guard]');
+      var resetForm = document.querySelector('form[data-reset-form]');
+      var resetLink = document.querySelector('[data-reset-link]');
       if (!forms.length) return;
       var disableForm = function (form) {
         var submits = form.querySelectorAll('button[type="submit"], input[type="submit"]');
@@ -1600,7 +1604,6 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
           }
         });
       };
-      var unlockScheduled = false;
       forms.forEach(function (form) {
         form.addEventListener('submit', function (event) {
           var target = event.currentTarget;
@@ -1609,21 +1612,31 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
             event.preventDefault();
             return;
           }
-          forms.forEach(function (f) {
-            if (f instanceof HTMLFormElement) {
-              f.dataset.submitting = '1';
-              disableForm(f);
-            }
-          });
-          if (!unlockScheduled) {
-            unlockScheduled = true;
-            window.setTimeout(function () {
-              forms.forEach(function (f) { unlockForm(f); });
-              unlockScheduled = false;
-            }, UNLOCK_MS);
+          target.dataset.submitting = '1';
+          disableForm(target);
+          if (resetLink instanceof HTMLElement) {
+            resetLink.dataset.originalText = resetLink.textContent || '';
+            resetLink.setAttribute('aria-disabled', 'true');
           }
+          window.setTimeout(function () {
+            unlockForm(target);
+            if (resetLink instanceof HTMLElement) {
+              resetLink.textContent = resetLink.dataset.originalText || 'Reset PIN';
+              resetLink.setAttribute('aria-disabled', 'false');
+            }
+          }, UNLOCK_MS);
         });
       });
+      if (resetLink instanceof HTMLElement && resetForm instanceof HTMLFormElement) {
+        resetLink.addEventListener('click', function (event) {
+          event.preventDefault();
+          if (resetLink.getAttribute('aria-disabled') === 'true') return;
+          resetLink.dataset.originalText = resetLink.textContent || '';
+          resetLink.textContent = resetLink.dataset.processingText || 'Opening reset...';
+          resetLink.setAttribute('aria-disabled', 'true');
+          resetForm.submit();
+        });
+      }
     })();
   </script>
 </body>
