@@ -114,7 +114,7 @@ Use the grouped links below for navigation. The raw machine-readable published i
 
 ## Records and Baselines
 
-- [Records index](records/README.md) for training, management reviews, audits, CAPA, suppliers, risk, PMS, MDF, validation, V&V, and release artifacts
+- [Records index](records/README.md) for company-level records kept here, reusable record templates, and links to record families used in designated product/study repositories
 - [Company profile baseline](matrices/company_profile.yml)
 - [Regulatory market scope baseline](matrices/regulatory_market_scope.yml)
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)

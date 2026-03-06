@@ -88,15 +88,20 @@ jobs:
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
             const isRecordArtifactPath = (path) => path.startsWith('records/') && /\.(md|ya?ml|json)$/i.test(path);
             const isTemplateRecordPath = (path) => /(^|[_-])template\.(md|ya?ml|json)$/i.test(path.split('/').pop() || '');
-            const requiresExecutionIssueRef = paths.some((path) => isRecordArtifactPath(path) && !isTemplateRecordPath(path));
+            const isRecordIndexPath = (path) => path.startsWith('records/') && /(^|\/)README\.md$/i.test(path);
+            const isExecutionRecordPath = (path) =>
+              isRecordArtifactPath(path) &&
+              !isTemplateRecordPath(path) &&
+              !isRecordIndexPath(path);
+            const requiresExecutionIssueRef = paths.some((path) => isExecutionRecordPath(path));
             if (requiresExecutionIssueRef && !issueMatch) {
               core.setFailed('Execution record PRs must reference an Issue number in PR body (e.g., "Issue #12"). Record templates do not require an execution issue reference.');
               return;
             }
             const coapprovalReasons = [];
             if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
-            if (hasPath('records/')) coapprovalReasons.push('records (/records)');
-            if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
+            if (paths.some((path) => isExecutionRecordPath(path))) coapprovalReasons.push('execution records (/records, excluding templates and index pages)');
+            if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
             const policyMinimumReviewerSignatures = coapprovalReasons.length > 0 ? 1 : 0;
             const requiredReviewerSignatures = Math.max(baseRequiredReviewerSignatures, policyMinimumReviewerSignatures);
@@ -290,7 +295,7 @@ jobs:
               `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
               `Required signatures: **${process.env.REQUIRED}**`,
               `Reviewer signatures required: \`${process.env.REQUIRED_REVIEWERS}\` (author auto-signs 1)`,
-              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), records (`/records`, including management reviews), or matrix/role files (`/matrices`).',
+              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
               `Co-approval scope matched: ${coapprovalReasons || 'none'}`,
               `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,

@@ -39,14 +39,62 @@ jobs:
             MERGE_SHA="${{ github.sha }}"
           fi
 
-          git diff --name-only "$BASE_SHA" "$MERGE_SHA" -- 'records/**/*.md' 'records/**/*.yml' 'records/**/*.yaml' 'records/**/*.json' 'records/*.md' 'records/*.yml' 'records/*.yaml' 'records/*.json' | sort -u > changed_records.txt
+          export BASE_SHA MERGE_SHA
+          python3 <<'PY' > changed_records.txt
+          import os
+          import re
+          import subprocess
+
+          def is_execution_record(path: str) -> bool:
+            if not path.startswith("records/"):
+              return False
+            if not re.search(r"\.(md|ya?ml|json)$", path, flags=re.IGNORECASE):
+              return False
+            if re.search(r"(^|/)README\.md$", path, flags=re.IGNORECASE):
+              return False
+            name = path.rsplit("/", 1)[-1]
+            if re.search(r"(^|[_-])template\.(md|ya?ml|json)$", name, flags=re.IGNORECASE):
+              return False
+            return True
+
+          base_sha = os.environ["BASE_SHA"]
+          merge_sha = os.environ["MERGE_SHA"]
+          diff_paths = subprocess.check_output(
+            [
+              "git",
+              "diff",
+              "--name-only",
+              base_sha,
+              merge_sha,
+              "--",
+              "records/**/*.md",
+              "records/**/*.yml",
+              "records/**/*.yaml",
+              "records/**/*.json",
+              "records/*.md",
+              "records/*.yml",
+              "records/*.yaml",
+              "records/*.json",
+            ],
+            text=True,
+          ).splitlines()
+
+          seen = set()
+          for raw in diff_paths:
+            path = raw.strip()
+            if not path or path in seen:
+              continue
+            if is_execution_record(path):
+              seen.add(path)
+              print(path)
+          PY
           if [ -s changed_records.txt ]; then
             echo "has_records=true" >> "$GITHUB_OUTPUT"
             echo "merge_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
             cat changed_records.txt
           else
             echo "has_records=false" >> "$GITHUB_OUTPUT"
-            echo "No markdown records changed in this merged PR."
+            echo "No execution records changed in this merged PR."
           fi
 
       - name: Wait for Git-native Part 11 attestations

@@ -10,7 +10,7 @@ This document is the system-level architecture description for QMS Lite and comp
 
 ## 2. Architecture Overview
 QMS Lite is a GitHub-native QMS operating model built from:
-- controlled content in `sops/`, `matrices/`, `records/`, and `.github/`
+- controlled content in `sops/`, `matrices/`, selected company-level records, reusable templates, and `.github/`
 - GitHub Issues for planning and coordination
 - GitHub Pull Requests for controlled review and approval
 - GitHub Actions for enforcement, signing orchestration, training automation, and immutable publication
@@ -22,7 +22,7 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 ## 3. Core Components
 | Component | Role in the architecture |
 |---|---|
-| GitHub repository (`qms-lite`) | System of record for QMS procedures, matrices, workflow definitions, and controlled templates. |
+| GitHub repository (`qms-lite`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
 | GitHub Issues | Planning and intake layer for CAPA, audit, risk, training, V&V, release, complaint, PMS, and change activities. |
 | GitHub Pull Requests | Controlled review, approval, and merge boundary for QMS document and record changes. |
 | GitHub Actions | Policy enforcement, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
@@ -36,7 +36,7 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 1. A QMS activity starts from an issue, a release tag, or a manual workflow dispatch.
 2. Controlled changes are implemented on a branch and proposed through a pull request.
 3. Guard workflows enforce approval and structural rules on the PR.
-4. Once merged, post-merge workflows request signatures, collect attestations, and publish immutable record evidence.
+4. Once merged, post-merge workflows request signatures, collect attestations, and publish immutable record evidence for execution records maintained in the target repository.
 5. Training and attention-board automations derive additional work items from released or merged state.
 6. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
 
@@ -65,7 +65,7 @@ Source file: `docs/automation/workflow-automation-map.svg`
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
 | `issue_pr_part11_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts signer-specific links for the signature ceremony. | Active |
-| `publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed record artifacts, and publishes immutable releases. | Active |
+| `publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, and publishes immutable releases. | Active |
 | `signature_status_tracker.yml` | `pull_request`, `issues`, `workflow_dispatch` | Maintains signature-state labels and optionally syncs a GitHub Project board. | Active |
 | `part11_attestation_title_page.yml` | `issue_comment` | Supports title-page generation path for attestation packages. | Active support workflow |
 | `part11_git_native_signature.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
@@ -96,6 +96,7 @@ Source file: `docs/automation/workflow-automation-map.svg`
 
 ## 8. Architecture Principles
 - GitHub is the canonical controlled surface for both content and workflow execution.
+- `qms-lite` governs the QMS baseline; product/study execution records may live in designated repositories that reuse the same templates and signature model.
 - PR review on a specific head SHA is the approval boundary before merge.
 - Post-merge attestation is the formal electronic signature manifestation step.
 - Immutable GitHub Releases are the long-term evidence package for records and QMS releases.
