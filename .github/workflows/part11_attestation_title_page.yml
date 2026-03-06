@@ -15,7 +15,7 @@ env:
   TARGET_RECORD_BRANCH: main
 
 concurrency:
-  group: part11-title-page-comment-${{ github.event.comment.id }}
+  group: part11-title-page-pr-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
@@ -221,9 +221,11 @@ jobs:
             core.setOutput('source_target_commit', sourceTargetCommit);
 
       - name: Install render dependencies
+        if: steps.aggregate.outputs.all_required_collected == 'true'
         run: python -m pip install --quiet fpdf2
 
       - name: Generate signature title-page PDF
+        if: steps.aggregate.outputs.all_required_collected == 'true'
         env:
           CERT_PDF: Electronic_Signature_Certificate_PR${{ github.event.issue.number }}.pdf
         run: |
@@ -234,6 +236,7 @@ jobs:
 
       - name: Publish immutable signature page release
         id: publish
+        if: steps.aggregate.outputs.all_required_collected == 'true'
         env:
           GH_TOKEN: ${{ steps.app_token.outputs.token }}
           TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
@@ -311,26 +314,32 @@ jobs:
           refs = json.loads(refs_raw) if refs_raw else []
 
           max_rev = 0
+          latest_existing_tag = ""
           for ref in refs:
             ref_name = ref.get("ref", "")
             m = re.search(r"-r(\\d+)$", ref_name)
             if m:
-              max_rev = max(max_rev, int(m.group(1)))
+              rev = int(m.group(1))
+              if rev >= max_rev:
+                max_rev = rev
+                latest_existing_tag = ref_name.rsplit("/", 1)[-1]
 
-          tag = f"{base_tag}-r{max_rev + 1:02d}"
-
-          create_cmd = [
-            "gh", "release", "create", tag,
-            "--repo", target_repo,
-            "--target", target_ref,
-            "--title", f"Signature Page: PR #{pr_number}",
-            "--notes-file", "release_notes.md",
-            "--draft",
-            os.environ["CERT_PDF"],
-            "signed_attestation.json",
-          ]
-          run_with_retry(create_cmd)
-          run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])
+          if latest_existing_tag:
+            tag = latest_existing_tag
+          else:
+            tag = f"{base_tag}-r{max_rev + 1:02d}"
+            create_cmd = [
+              "gh", "release", "create", tag,
+              "--repo", target_repo,
+              "--target", target_ref,
+              "--title", f"Signature Page: PR #{pr_number}",
+              "--notes-file", "release_notes.md",
+              "--draft",
+              os.environ["CERT_PDF"],
+              "signed_attestation.json",
+            ]
+            run_with_retry(create_cmd)
+            run_with_retry(["gh", "release", "edit", tag, "--repo", target_repo, "--draft=false"])
 
           release_json = run_with_retry(["gh", "api", f"repos/{target_repo}/releases/tags/{tag}"])
           rel = json.loads(release_json)
@@ -345,6 +354,7 @@ jobs:
           PY
 
       - name: Comment PR with signature page preview
+        if: steps.aggregate.outputs.all_required_collected == 'true'
         uses: actions/github-script@v7
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
@@ -352,11 +362,16 @@ jobs:
           RELEASE_URL: ${{ steps.publish.outputs.release_url }}
           PDF_URL: ${{ steps.publish.outputs.pdf_url }}
           JSON_URL: ${{ steps.publish.outputs.json_url }}
+          REQUIRED_SIGNATURES: ${{ steps.aggregate.outputs.required_signatures }}
+          CAPTURED_SIGNATURES: ${{ steps.aggregate.outputs.captured_signatures }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const prNumber = Number(process.env.PR_NUMBER);
             const releaseTag = (process.env.RELEASE_TAG || '').trim();
+            const requiredSignatures = (process.env.REQUIRED_SIGNATURES || '').trim();
+            const capturedSignatures = (process.env.CAPTURED_SIGNATURES || '').trim();
+            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
             function sanitizeField(raw) {
               const value = String(raw || '').trim();
               if (!value) return '';
@@ -386,15 +401,37 @@ jobs:
             const lines = [
               '<!-- signature-title-page-published -->',
               '📄 Signature page published.',
-              'Release assets contain the Electronic Signature Certificate PDF and signed attestation JSON.',
+              `Final signature package was created after collecting all required attestations (${capturedSignatures || 'n/a'}/${requiredSignatures || 'n/a'}).`,
+              'Release assets contain one Electronic Signature Certificate PDF and one aggregated signed attestation JSON.',
             ];
             if (releaseUrl) lines.push(`Immutable release: ${releaseUrl}`);
             if (pdfUrl) lines.push(`PDF: ${pdfUrl}`);
             if (jsonUrl) lines.push(`Attestation JSON: ${jsonUrl}`);
 
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const body = lines.join('\n');
+            const existing = comments.find((comment) => {
+              const commentBody = String(comment.body || '');
+              const login = String(comment.user?.login || '').toLowerCase();
+              return commentBody.includes('<!-- signature-title-page-published -->') && automationBotLogins.has(login);
+            });
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              return;
+            }
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: lines.join('\n'),
+              body,
             });
