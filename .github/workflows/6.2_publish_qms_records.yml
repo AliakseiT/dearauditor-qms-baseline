@@ -1,4 +1,4 @@
-name: Publish QMS Records
+name: 6.2 Publish QMS Records
 
 on:
   pull_request:

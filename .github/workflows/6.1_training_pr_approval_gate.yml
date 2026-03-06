@@ -1,4 +1,4 @@
-name: Training PR Approval Gate
+name: 6.1 Training PR Approval Gate
 
 on:
   pull_request:

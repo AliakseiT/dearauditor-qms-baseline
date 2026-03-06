@@ -1,4 +1,4 @@
-name: Publish QMS Release
+name: 6.2 Publish QMS Release
 
 on:
   push:

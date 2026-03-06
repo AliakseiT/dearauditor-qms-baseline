@@ -1,4 +1,4 @@
-name: Training Legacy Cleanup
+name: 6.3 Training Legacy Cleanup
 
 on:
   issues:

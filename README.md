@@ -28,7 +28,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
 - Operating model: `Remote-first`
 - Current baseline shown in this README: `20` published SOPs and `2` published WIs
-- Latest effective date currently shown in the published baseline: `2026-03-06`
+- Latest effective date currently shown in the published baseline: `2026-03-07`
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNN`
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
 
@@ -50,7 +50,7 @@ Use the grouped links below for navigation. The raw machine-readable published i
 
 #### Governance and Core QMS
 
-- [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R05`, effective `2026-03-06`
+- [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R06`, effective `2026-03-07`
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R02`, effective `2026-03-05`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R02`, effective `2026-03-05`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R02`, effective `2026-03-05`
@@ -88,7 +88,7 @@ Use the grouped links below for navigation. The raw machine-readable published i
 <!-- PUBLISHED-SOP-INDEX:START -->
 | SOP ID | SOP Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-06 | R05 | Published |
+| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-07 | R06 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-05 | R02 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-05 | R02 | Published |

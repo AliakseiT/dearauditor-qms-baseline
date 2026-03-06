@@ -1,5 +1,5 @@
-name: Issue-to-PR Part 11 Sign-Off
-run-name: Post-merge signature request (PR #${{ github.event.pull_request.number || inputs.pr_number }})
+name: 6.2 PR Signature Request Gate
+run-name: 6.2 post-merge signature request (PR #${{ github.event.pull_request.number || inputs.pr_number }})
 
 on:
   pull_request:
@@ -16,7 +16,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: part11-post-merge-pr-${{ github.event.pull_request.number || inputs.pr_number }}
+  group: signature-post-merge-pr-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: false
 
 jobs:

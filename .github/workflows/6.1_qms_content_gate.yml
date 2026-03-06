@@ -1,4 +1,4 @@
-name: QMS Content Guard
+name: 6.1 QMS Content Gate
 
 on:
   pull_request:
@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run QMS content sanity checks
+      - name: Run QMS content gate checks
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}

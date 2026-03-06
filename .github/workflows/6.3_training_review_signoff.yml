@@ -1,4 +1,4 @@
-name: Training Review Sign-Off
+name: 6.3 Training Review Sign-Off
 
 on:
   pull_request:

@@ -1,4 +1,4 @@
-name: Risk Record Schema Guard
+name: 6.1 Risk Record Schema Gate
 
 on:
   pull_request:
@@ -53,7 +53,7 @@ jobs:
           changed = [c.strip() for c in changed if c.strip()]
 
           if not changed:
-            print("No risk yaml changes; guard passed.")
+            print("No risk yaml changes; gate passed.")
             sys.exit(0)
 
           errors = []
@@ -127,5 +127,5 @@ jobs:
               print(f" - {err}")
             sys.exit(1)
 
-          print("Risk record schema guard passed.")
+          print("Risk record schema gate passed.")
           PY

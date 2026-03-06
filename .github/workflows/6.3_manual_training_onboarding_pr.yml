@@ -1,4 +1,4 @@
-name: Manual Training Onboarding PR
+name: 6.3 Manual Training Onboarding PR
 
 on:
   workflow_dispatch:
