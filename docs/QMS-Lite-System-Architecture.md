@@ -55,6 +55,7 @@ Source file: `docs/automation/workflow-automation-map.svg`
 | `auto_assign_signatory_reviewers.yml` | `pull_request` | Resolves required signatory reviewers from requested signature roles and assigns them. | Active |
 | `required_reviewer_approval_guard.yml` | `pull_request_review` | Enforces at least one valid non-author approval on the current head SHA where required. | Active |
 | `auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables merge only after assigned reviewer approvals are present. | Active |
+| `qms_content_guard.yml` | `pull_request` | Enforces revision-history, README navigation/index, and configured record-index sanity checks for controlled content changes. | Active |
 | `sop_published_index_guard.yml` | `pull_request` | Blocks SOP PRs when `README.md` published-index content is not updated consistently. | Active |
 | `sop_training_matrix_guard.yml` | `pull_request` | Blocks SOP PRs when training impact and role coverage are not updated. | Active |
 | `risk_record_schema_guard.yml` | `pull_request` | Validates controlled risk-record YAML structure and scoring consistency. | Active |
