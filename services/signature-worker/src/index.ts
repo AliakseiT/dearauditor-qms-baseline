@@ -1092,7 +1092,7 @@ function base64UrlDecode(value: string): Uint8Array {
 }
 
 function decodeBase64(value: string): string {
-  return new TextDecoder().decode(base64ToBytes(value.replace(/\n/g, "")));
+  return new TextDecoder().decode(decodeBase64Loose(value, "base64 content"));
 }
 
 function pemToPkcs8Buffer(pem: string): ArrayBuffer {
@@ -1104,8 +1104,32 @@ function pemToPkcs8Buffer(pem: string): ArrayBuffer {
     normalized = normalized.slice(1, -1).trim();
   }
   normalized = normalized.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\r/g, "\r");
-  const isPkcs1RsaPem = normalized.includes("-----BEGIN RSA PRIVATE KEY-----");
-  const base64 = normalized
+  normalized = normalized.replace(/^QMS_BOT_APP_PRIVATE_KEY\s*=\s*/i, "").trim();
+
+  if (!normalized) {
+    throw new Error("GitHub App private key is empty or invalid.");
+  }
+
+  if (normalized.includes("-----BEGIN")) {
+    return pemOrDerTextToPkcs8Buffer(normalized);
+  }
+
+  const decoded = decodeBase64Loose(normalized, "GitHub App private key");
+  const decodedText = tryDecodeUtf8(decoded).trim();
+  if (decodedText.includes("-----BEGIN")) {
+    return pemOrDerTextToPkcs8Buffer(decodedText);
+  }
+
+  return classifyDerPrivateKey(decoded, "GitHub App private key");
+}
+
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
+
+function pemOrDerTextToPkcs8Buffer(text: string): ArrayBuffer {
+  const isPkcs1RsaPem = text.includes("-----BEGIN RSA PRIVATE KEY-----");
+  const base64 = text
     .replace(/-----BEGIN RSA PRIVATE KEY-----/g, "")
     .replace(/-----END RSA PRIVATE KEY-----/g, "")
     .replace(/-----BEGIN PRIVATE KEY-----/g, "")
@@ -1114,12 +1138,78 @@ function pemToPkcs8Buffer(pem: string): ArrayBuffer {
   if (!base64) {
     throw new Error("GitHub App private key is empty or invalid.");
   }
-  const der = base64ToBytes(base64);
-  return isPkcs1RsaPem ? wrapPkcs1RsaPrivateKeyAsPkcs8(der) : toArrayBuffer(der);
+  const der = decodeBase64Loose(base64, "GitHub App private key PEM body");
+  return isPkcs1RsaPem ? wrapPkcs1RsaPrivateKeyAsPkcs8(der) : classifyDerPrivateKey(der, "GitHub App private key");
 }
 
-function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+function classifyDerPrivateKey(der: Uint8Array, label: string): ArrayBuffer {
+  const derKind = detectPrivateKeyDerKind(der);
+  if (derKind === "pkcs1") {
+    return wrapPkcs1RsaPrivateKeyAsPkcs8(der);
+  }
+  if (derKind === "pkcs8") {
+    return toArrayBuffer(der);
+  }
+  throw new Error(`${label} is not a supported PKCS#1 or PKCS#8 private key format.`);
+}
+
+function detectPrivateKeyDerKind(der: Uint8Array): "pkcs1" | "pkcs8" | "unknown" {
+  let offset = 0;
+  if (der[offset++] !== 0x30) {
+    return "unknown";
+  }
+  offset = skipDerLength(der, offset);
+  if (offset < 0 || der[offset++] !== 0x02) {
+    return "unknown";
+  }
+  offset = skipDerLength(der, offset);
+  if (offset < 0) {
+    return "unknown";
+  }
+  if (offset >= der.length) {
+    return "unknown";
+  }
+  if (der[offset] === 0x30) {
+    return "pkcs8";
+  }
+  if (der[offset] === 0x02) {
+    return "pkcs1";
+  }
+  return "unknown";
+}
+
+function skipDerLength(der: Uint8Array, offset: number): number {
+  if (offset >= der.length) return -1;
+  const first = der[offset++];
+  if ((first & 0x80) === 0) {
+    return offset + first;
+  }
+  const count = first & 0x7f;
+  if (count < 1 || count > 4 || offset + count > der.length) {
+    return -1;
+  }
+  let length = 0;
+  for (let i = 0; i < count; i += 1) {
+    length = (length << 8) | der[offset + i];
+  }
+  return offset + count + length;
+}
+
+function decodeBase64Loose(value: string, label: string): Uint8Array {
+  const normalized = String(value || "").replace(/\s+/g, "");
+  try {
+    return base64ToBytes(normalized);
+  } catch {
+    throw new Error(`${label} is not valid base64 data.`);
+  }
+}
+
+function tryDecodeUtf8(bytes: Uint8Array): string {
+  try {
+    return new TextDecoder().decode(bytes);
+  } catch {
+    return "";
+  }
 }
 
 function wrapPkcs1RsaPrivateKeyAsPkcs8(pkcs1Der: Uint8Array): ArrayBuffer {
