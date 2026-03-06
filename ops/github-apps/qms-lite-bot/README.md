@@ -24,12 +24,19 @@ This directory is the operational baseline for the app:
 
 The manifest is treated as configuration-as-code. GitHub App registration itself is still applied manually in GitHub settings.
 
+Logo note:
+- GitHub App badge/logo is not part of the manifest flow.
+- GitHub requires manual badge upload in app settings.
+- GitHub expects a `PNG`, `JPG`, or `GIF` badge upload.
+- SVG can still be kept in Git as the editable source asset.
+
 ## Current MVP Configuration
 - App owner: `AliakseiT`
 - App visibility: private
 - Installation target: `AliakseiT/qms-lite`
 - Webhook: not required for MVP
 - OAuth-on-install: disabled
+- Badge source asset: [assets/qms-lite-bot-badge.svg](/Users/aliaksei/workspace/qms-lite/ops/github-apps/qms-lite-bot/assets/qms-lite-bot-badge.svg)
 
 ## Required Permissions
 Current minimum repository permissions:
@@ -49,6 +56,7 @@ Recommended path:
 5. Create the app.
 6. Install it on `AliakseiT/qms-lite` only.
 7. Generate a private key and store it in the secret manager used for QMS Lite deployment.
+8. Export [assets/qms-lite-bot-badge.svg](/Users/aliaksei/workspace/qms-lite/ops/github-apps/qms-lite-bot/assets/qms-lite-bot-badge.svg) to a square `PNG` and upload it as the app badge in GitHub settings.
 
 ## Secrets and Variables to Populate
 Repository or deployment configuration must receive:
