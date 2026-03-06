@@ -121,6 +121,31 @@ require_non_placeholder_for_deploy() {
   return 0
 }
 
+wrangler_has_kv_placeholders() {
+  [[ -f "$WRANGLER_TOML" ]] || return 1
+  grep -Eq 'REPLACE_WITH_PIN_KV_NAMESPACE_ID|REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID' "$WRANGLER_TOML"
+}
+
+validate_deploy_config() {
+  require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_ID"
+  require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_SECRET"
+  require_non_placeholder_for_deploy "QMS_BOT_APP_ID"
+  require_non_placeholder_for_deploy "QMS_BOT_APP_PRIVATE_KEY"
+  require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
+  require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
+  require_non_placeholder_for_deploy "PIN_PEPPER"
+
+  if [[ "$SKIP_GH" -eq 0 ]]; then
+    require_non_placeholder_for_deploy "CLOUDFLARE_API_TOKEN"
+    require_non_placeholder_for_deploy "CLOUDFLARE_ACCOUNT_ID"
+  fi
+
+  if wrangler_has_kv_placeholders; then
+    require_non_placeholder_for_deploy "PIN_KV_NAMESPACE_ID"
+    require_non_placeholder_for_deploy "PIN_KV_PREVIEW_NAMESPACE_ID"
+  fi
+}
+
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
     echo "Required command not found: $1" >&2
@@ -238,19 +263,16 @@ DEVVARS
   echo "Wrote local dev file: ${out}"
 }
 
-sync_kv_namespace_ids_from_env
-write_dev_vars
-
 if [[ "$DO_DEPLOY" -eq 1 ]]; then
-  require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_ID"
-  require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_SECRET"
-  require_non_placeholder_for_deploy "QMS_BOT_APP_ID"
-  require_non_placeholder_for_deploy "QMS_BOT_APP_PRIVATE_KEY"
-  require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
-  require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
-  require_non_placeholder_for_deploy "PIN_PEPPER"
+  validate_deploy_config
+  sync_kv_namespace_ids_from_env
   assert_kv_binding_configured
 fi
+
+if [[ "$DO_DEPLOY" -eq 0 ]]; then
+  sync_kv_namespace_ids_from_env
+fi
+write_dev_vars
 
 if [[ "$SKIP_GH" -eq 0 ]]; then
   require_cmd gh
