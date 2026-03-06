@@ -34,6 +34,10 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 | GitHub Project board | Optional operational board synchronized from signature status labels and actionable work. |
 | Signer registry (`matrices/signer_registry.json`) | Source for resolved signatory legal names and job titles in attestation output. |
 
+Operational baseline for `qms-lite-bot`:
+- `ops/github-apps/qms-lite-bot/manifest.json`
+- `ops/github-apps/qms-lite-bot/README.md`
+
 ## 4. Primary Data Flows
 1. A QMS activity starts from an issue, a release tag, or a manual workflow dispatch.
 2. Controlled changes are implemented on a branch and proposed through a pull request.

@@ -59,6 +59,7 @@
 ## Automation Map
 - End-to-end workflow diagram (SVG): `docs/automation/workflow-automation-map.svg`
 - System architecture description and automation catalog: `docs/QMS-Lite-System-Architecture.md`
+- `qms-lite-bot` manifest and operational runbook: `ops/github-apps/qms-lite-bot/manifest.json`, `ops/github-apps/qms-lite-bot/README.md`
 
 ## Immutable Record Release Tags
 

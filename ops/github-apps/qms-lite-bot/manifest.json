@@ -1,0 +1,15 @@
+{
+  "name": "qms-lite-bot",
+  "url": "https://github.com/AliakseiT/qms-lite",
+  "description": "Repository automation app for QMS Lite PR comments, merges, release publication, and attestation posting.",
+  "public": false,
+  "default_events": [],
+  "default_permissions": {
+    "contents": "write",
+    "issues": "write",
+    "metadata": "read",
+    "pull_requests": "write"
+  },
+  "request_oauth_on_install": false,
+  "setup_on_update": false
+}
