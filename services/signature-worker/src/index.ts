@@ -1084,7 +1084,14 @@ function decodeBase64(value: string): string {
 }
 
 function pemToPkcs8Buffer(pem: string): ArrayBuffer {
-  const normalized = String(pem || "").trim();
+  let normalized = String(pem || "").trim();
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+  normalized = normalized.replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\r/g, "\r");
   const base64 = normalized
     .replace(/-----BEGIN PRIVATE KEY-----/g, "")
     .replace(/-----END PRIVATE KEY-----/g, "")
