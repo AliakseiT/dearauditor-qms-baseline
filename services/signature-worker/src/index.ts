@@ -652,13 +652,18 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
     env
   );
   const botLogins = resolveAutomationBotLogins();
+  const requestMarkers = [
+    "<!-- signature-request -->",
+    "<!-- signature-native-signature-request -->",
+    "<!-- part11-signature-request -->",
+    "<!-- part11-native-signature-request -->",
+  ];
 
   const requestComments = comments
     .filter((c) => {
       const body = c.body || "";
       const login = String(c.user?.login || "").trim().toLowerCase();
-      return (body.includes("<!-- signature-native-signature-request -->") || body.includes("<!-- part11-native-signature-request -->")) &&
-        botLogins.has(login);
+      return requestMarkers.some((marker) => body.includes(marker)) && botLogins.has(login);
     })
     .sort((a, b) => Date.parse(a.created_at || "") - Date.parse(b.created_at || ""));
   if (requestComments.length === 0) {
