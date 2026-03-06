@@ -69,9 +69,11 @@ jobs:
             });
             const paths = changedFiles.map((f) => String(f.filename || ''));
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
-            const requiresExecutionIssueRef = paths.some((p) => p.startsWith('records/') && p.endsWith('.md'));
+            const isRecordArtifactPath = (path) => path.startsWith('records/') && /\.(md|ya?ml|json)$/i.test(path);
+            const isTemplateRecordPath = (path) => /(^|[_-])template\.(md|ya?ml|json)$/i.test(path.split('/').pop() || '');
+            const requiresExecutionIssueRef = paths.some((path) => isRecordArtifactPath(path) && !isTemplateRecordPath(path));
             if (requiresExecutionIssueRef && !issueMatch) {
-              core.setFailed('Execution record PRs must reference an Issue number in PR body (e.g., "Issue #12").');
+              core.setFailed('Execution record PRs must reference an Issue number in PR body (e.g., "Issue #12"). Record templates do not require an execution issue reference.');
               return;
             }
             const coapprovalReasons = [];
