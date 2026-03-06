@@ -1,7 +1,7 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R00
+revision: R01
 effective_date: 2026-03-06
 status: Published
 owner_role: software_engineer
@@ -22,7 +22,7 @@ Applies to product releases, significant maintenance drops, and other controlled
 ### 3.1 Plan the Release Baseline
 1. Open a GitHub issue using `.github/ISSUE_TEMPLATE/release_plan.yml`.
 2. Capture scope, target version or tag, impacted repositories/components, rollback note, linked V&V/risk/change inputs, and release done criteria.
-3. The issue remains the coordination thread; the controlled release record is the PR-merged file set.
+3. The issue remains the coordination thread; the controlled release record is the PR-merged file set in the designated product/study repository.
 
 ### 3.2 Define Controlled Configuration Items
 1. Identify all configuration items required to reproduce the release baseline.
@@ -32,10 +32,10 @@ Applies to product releases, significant maintenance drops, and other controlled
    - linked requirements, risk, V&V, and known-anomaly references
    - build or deployment package identifier
    - rollback or containment note
-3. Record the baseline in the release manifest template under `records/configuration/`.
+3. Record the baseline in the designated product/study repository using the release manifest template from `qms-lite/records/configuration/` or an approved derivative.
 
 ### 3.3 Approve the Release Baseline
-1. Open a PR that commits or updates the release plan and baseline manifest.
+1. Open a PR in the designated product/study repository that commits or updates the release plan and baseline manifest.
 2. The PR body must state:
    - `**Meaning of Signature:** Approved Release Baseline`
    - `**Signer Roles:** Quality Assurance Lead; Management Representative`
@@ -58,6 +58,12 @@ Applies to product releases, significant maintenance drops, and other controlled
 
 ## 4. Required Records
 - Release planning issue
-- Configuration and release baseline manifest
+- Configuration and release baseline manifest in the designated product/study repository
 - Release tag and immutable release package
 - Linked approval, V&V, risk, and rollback references
+
+## 5. Revision History
+| Revision | Effective Date | Change Summary |
+|---|---|---|
+| R00 | 2026-03-06 | Initial release defining GitHub-native configuration and release-baseline execution flow. |
+| R01 | 2026-03-06 | Clarified that product release baseline records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |
