@@ -4,13 +4,9 @@ interface Env {
   ALLOWED_OAUTH_PROVIDERS?: string;
   GITHUB_OAUTH_CLIENT_ID: string;
   GITHUB_OAUTH_CLIENT_SECRET: string;
-  GITHUB_REPO_TOKEN?: string;
   QMS_BOT_APP_ID?: string;
   QMS_BOT_APP_PRIVATE_KEY?: string;
   QMS_BOT_APP_INSTALLATION_ID?: string;
-  GITHUB_APP_ID?: string;
-  GITHUB_APP_PRIVATE_KEY?: string;
-  GITHUB_APP_INSTALLATION_ID?: string;
   SIGNATURE_LINK_SECRET: string;
   SIGNATURE_STATE_SECRET: string;
   PIN_PEPPER: string;
@@ -504,11 +500,8 @@ function assertBaseConfig(env: Env): void {
     }
   }
   const hasAppConfig = Boolean(resolveBotAppId(env) && resolveBotAppPrivateKey(env));
-  const hasRepoToken = Boolean(String(env.GITHUB_REPO_TOKEN || "").trim());
-  if (!hasAppConfig && !hasRepoToken) {
-    throw new Error(
-      "Missing required repository access configuration: set QMS_BOT_APP_ID/QMS_BOT_APP_PRIVATE_KEY (preferred) or legacy GITHUB_REPO_TOKEN."
-    );
+  if (!hasAppConfig) {
+    throw new Error("Missing required repository access configuration: QMS_BOT_APP_ID and QMS_BOT_APP_PRIVATE_KEY.");
   }
   if (!env.PIN_KV) {
     throw new Error("Missing required KV binding: PIN_KV");
@@ -771,32 +764,24 @@ function resolveAutomationBotLogins(): Set<string> {
 }
 
 function resolveBotAppId(env: Env): string {
-  return String(env.QMS_BOT_APP_ID || env.GITHUB_APP_ID || "").trim();
+  return String(env.QMS_BOT_APP_ID || "").trim();
 }
 
 function resolveBotAppPrivateKey(env: Env): string {
-  return String(env.QMS_BOT_APP_PRIVATE_KEY || env.GITHUB_APP_PRIVATE_KEY || "").trim();
+  return String(env.QMS_BOT_APP_PRIVATE_KEY || "").trim();
 }
 
 function resolveBotInstallationId(env: Env): string {
-  return String(env.QMS_BOT_APP_INSTALLATION_ID || env.GITHUB_APP_INSTALLATION_ID || "").trim();
+  return String(env.QMS_BOT_APP_INSTALLATION_ID || "").trim();
 }
 
 async function resolveRepoAccessToken(repo: string, env: Env): Promise<string> {
   const appId = resolveBotAppId(env);
   const privateKey = resolveBotAppPrivateKey(env);
-  if (appId && privateKey) {
-    return mintGithubInstallationToken(repo, appId, privateKey, resolveBotInstallationId(env), env);
+  if (!appId || !privateKey) {
+    throw new Error("QMS_BOT_APP_ID and QMS_BOT_APP_PRIVATE_KEY must both be configured.");
   }
-
-  const repoToken = String(env.GITHUB_REPO_TOKEN || "").trim();
-  if (repoToken) {
-    return repoToken;
-  }
-
-  throw new Error(
-    "No repository API credential available. Configure QMS_BOT_APP_ID/QMS_BOT_APP_PRIVATE_KEY or legacy GITHUB_REPO_TOKEN."
-  );
+  return mintGithubInstallationToken(repo, appId, privateKey, resolveBotInstallationId(env), env);
 }
 
 async function mintGithubInstallationToken(

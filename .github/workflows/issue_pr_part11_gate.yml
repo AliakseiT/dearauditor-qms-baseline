@@ -191,8 +191,8 @@ jobs:
         id: app_token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ secrets.QMS_BOT_APP_ID || secrets.SIGNATURE_APP_ID }}
-          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY || secrets.SIGNATURE_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: |
             ${{ github.event.repository.name }}
