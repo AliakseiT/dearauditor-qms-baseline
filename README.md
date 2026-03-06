@@ -58,6 +58,7 @@
 
 ## Automation Map
 - End-to-end workflow diagram (SVG): `docs/automation/workflow-automation-map.svg`
+- System architecture description and automation catalog: `docs/QMS-Lite-System-Architecture.md`
 
 ## Immutable Record Release Tags
 
