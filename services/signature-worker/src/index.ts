@@ -4,7 +4,13 @@ interface Env {
   ALLOWED_OAUTH_PROVIDERS?: string;
   GITHUB_OAUTH_CLIENT_ID: string;
   GITHUB_OAUTH_CLIENT_SECRET: string;
-  GITHUB_REPO_TOKEN: string;
+  GITHUB_REPO_TOKEN?: string;
+  QMS_BOT_APP_ID?: string;
+  QMS_BOT_APP_PRIVATE_KEY?: string;
+  QMS_BOT_APP_INSTALLATION_ID?: string;
+  GITHUB_APP_ID?: string;
+  GITHUB_APP_PRIVATE_KEY?: string;
+  GITHUB_APP_INSTALLATION_ID?: string;
   SIGNATURE_LINK_SECRET: string;
   SIGNATURE_STATE_SECRET: string;
   PIN_PEPPER: string;
@@ -90,8 +96,10 @@ const PIN_TTL_SECONDS = 5184000; // 60 days
 const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const PIN_KDF_ITERATIONS = 140000;
 const PIN_SALT_BYTES = 16;
+const DEFAULT_AUTOMATION_BOT_LOGINS = ["qms-lite-bot", "qms-lite-sign", "github-actions[bot]"];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
+const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -219,7 +227,7 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     );
   }
 
-  const repoToken = env.GITHUB_REPO_TOKEN;
+  const repoToken = await resolveRepoAccessToken(state.ctx.repo, env);
   const requestMeta = await resolveLatestRequestComment(state.ctx.repo, Number.parseInt(state.ctx.pr, 10), repoToken, env);
   validateRequestAgainstContext(requestMeta, state.ctx);
 
@@ -340,7 +348,8 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
 
   const pinStatusAfter = await getPinStatus(env, session.signer_id, session.signer_login);
 
-  const duplicate = await findExistingAttestation(session.ctx, session.signer_login, env.GITHUB_REPO_TOKEN, env);
+  const repoToken = await resolveRepoAccessToken(session.ctx.repo, env);
+  const duplicate = await findExistingAttestation(session.ctx, session.signer_login, repoToken, env);
   let attestationId = duplicate?.attestation_id || "";
   let timestamp = new Date().toISOString();
   let alreadySigned = Boolean(duplicate);
@@ -385,7 +394,7 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
 
     await githubPost(
       `/repos/${session.ctx.repo}/issues/${session.ctx.pr}/comments`,
-      env.GITHUB_REPO_TOKEN,
+      repoToken,
       { body },
       env
     );
@@ -484,7 +493,6 @@ function assertBaseConfig(env: Env): void {
     "PUBLIC_BASE_URL",
     "GITHUB_OAUTH_CLIENT_ID",
     "GITHUB_OAUTH_CLIENT_SECRET",
-    "GITHUB_REPO_TOKEN",
     "SIGNATURE_LINK_SECRET",
     "SIGNATURE_STATE_SECRET",
     "PIN_PEPPER",
@@ -494,6 +502,13 @@ function assertBaseConfig(env: Env): void {
     if (!value) {
       throw new Error(`Missing required configuration: ${key}`);
     }
+  }
+  const hasAppConfig = Boolean(resolveBotAppId(env) && resolveBotAppPrivateKey(env));
+  const hasRepoToken = Boolean(String(env.GITHUB_REPO_TOKEN || "").trim());
+  if (!hasAppConfig && !hasRepoToken) {
+    throw new Error(
+      "Missing required repository access configuration: set QMS_BOT_APP_ID/QMS_BOT_APP_PRIVATE_KEY (preferred) or legacy GITHUB_REPO_TOKEN."
+    );
   }
   if (!env.PIN_KV) {
     throw new Error("Missing required KV binding: PIN_KV");
@@ -638,16 +653,19 @@ async function exchangeGithubCode(code: string, env: Env): Promise<string> {
 }
 
 async function resolveLatestRequestComment(repo: string, prNumber: number, token: string, env: Env): Promise<SignatureRequestMeta> {
-  const comments = await githubGet<Array<{ id: number; html_url: string; body?: string; created_at?: string }>>(
+  const comments = await githubGet<Array<{ id: number; html_url: string; body?: string; created_at?: string; user?: { login?: string } }>>(
     `/repos/${repo}/issues/${prNumber}/comments?per_page=100`,
     token,
     env
   );
+  const botLogins = resolveAutomationBotLogins();
 
   const requestComments = comments
     .filter((c) => {
       const body = c.body || "";
-      return body.includes("<!-- signature-native-signature-request -->") || body.includes("<!-- part11-native-signature-request -->");
+      const login = String(c.user?.login || "").trim().toLowerCase();
+      return (body.includes("<!-- signature-native-signature-request -->") || body.includes("<!-- part11-native-signature-request -->")) &&
+        botLogins.has(login);
     })
     .sort((a, b) => Date.parse(a.created_at || "") - Date.parse(b.created_at || ""));
   if (requestComments.length === 0) {
@@ -746,6 +764,110 @@ async function findExistingAttestation(ctx: SignatureContext, signer: string, to
   }
 
   return null;
+}
+
+function resolveAutomationBotLogins(): Set<string> {
+  return new Set(DEFAULT_AUTOMATION_BOT_LOGINS.map((login) => login.toLowerCase()));
+}
+
+function resolveBotAppId(env: Env): string {
+  return String(env.QMS_BOT_APP_ID || env.GITHUB_APP_ID || "").trim();
+}
+
+function resolveBotAppPrivateKey(env: Env): string {
+  return String(env.QMS_BOT_APP_PRIVATE_KEY || env.GITHUB_APP_PRIVATE_KEY || "").trim();
+}
+
+function resolveBotInstallationId(env: Env): string {
+  return String(env.QMS_BOT_APP_INSTALLATION_ID || env.GITHUB_APP_INSTALLATION_ID || "").trim();
+}
+
+async function resolveRepoAccessToken(repo: string, env: Env): Promise<string> {
+  const appId = resolveBotAppId(env);
+  const privateKey = resolveBotAppPrivateKey(env);
+  if (appId && privateKey) {
+    return mintGithubInstallationToken(repo, appId, privateKey, resolveBotInstallationId(env), env);
+  }
+
+  const repoToken = String(env.GITHUB_REPO_TOKEN || "").trim();
+  if (repoToken) {
+    return repoToken;
+  }
+
+  throw new Error(
+    "No repository API credential available. Configure QMS_BOT_APP_ID/QMS_BOT_APP_PRIVATE_KEY or legacy GITHUB_REPO_TOKEN."
+  );
+}
+
+async function mintGithubInstallationToken(
+  repo: string,
+  appId: string,
+  privateKeyPem: string,
+  installationIdHint: string,
+  env: Env
+): Promise<string> {
+  const installationId = installationIdHint || String(await resolveInstallationId(repo, appId, privateKeyPem, env));
+  const cacheKey = `${repo}:${installationId}`;
+  const cached = githubInstallationTokenCache.get(cacheKey);
+  if (cached && cached.expiresAtEpoch > nowEpoch() + 60) {
+    return cached.token;
+  }
+
+  const appJwt = await createGithubAppJwt(appId, privateKeyPem);
+  const payload = await githubPost<{ token?: string; expires_at?: string }>(
+    `/app/installations/${installationId}/access_tokens`,
+    appJwt,
+    {},
+    env
+  );
+  const token = String(payload.token || "").trim();
+  if (!token) {
+    throw new Error(`GitHub App installation token minting returned no token for installation ${installationId}.`);
+  }
+  const expiresAtEpoch = Math.floor(Date.parse(String(payload.expires_at || "")) / 1000) || (nowEpoch() + 50 * 60);
+  githubInstallationTokenCache.set(cacheKey, { token, expiresAtEpoch });
+  return token;
+}
+
+async function resolveInstallationId(repo: string, appId: string, privateKeyPem: string, env: Env): Promise<number> {
+  const appJwt = await createGithubAppJwt(appId, privateKeyPem);
+  const installation = await githubGet<{ id?: number }>(
+    `/repos/${repo}/installation`,
+    appJwt,
+    env
+  );
+  const installationId = Number(installation.id || 0);
+  if (!Number.isInteger(installationId) || installationId < 1) {
+    throw new Error(`Unable to resolve GitHub App installation for ${repo}.`);
+  }
+  return installationId;
+}
+
+async function createGithubAppJwt(appId: string, privateKeyPem: string): Promise<string> {
+  const header = base64UrlEncode(new TextEncoder().encode(JSON.stringify({ alg: "RS256", typ: "JWT" })));
+  const payload = base64UrlEncode(
+    new TextEncoder().encode(
+      JSON.stringify({
+        iat: nowEpoch() - 60,
+        exp: nowEpoch() + 9 * 60,
+        iss: appId,
+      })
+    )
+  );
+  const signingInput = `${header}.${payload}`;
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    pemToPkcs8Buffer(privateKeyPem),
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    key,
+    toArrayBuffer(new TextEncoder().encode(signingInput))
+  );
+  return `${signingInput}.${base64UrlEncode(new Uint8Array(signature))}`;
 }
 
 async function getPinStatus(env: Env, githubUserId: number, githubLogin: string): Promise<PinStatus> {
@@ -867,7 +989,7 @@ async function pbkdf2Sha256Hex(value: string, saltHex: string, iterations: numbe
     {
       name: "PBKDF2",
       hash: "SHA-256",
-      salt: hexToBytes(saltHex),
+      salt: toArrayBuffer(hexToBytes(saltHex)),
       iterations,
     },
     keyMaterial,
@@ -910,9 +1032,9 @@ async function githubPost<T>(path: string, token: string, payload: unknown, env:
 
 function githubHeaders(token: string): Record<string, string> {
   return {
-    authorization: `token ${token}`,
+    authorization: `Bearer ${token}`,
     accept: "application/vnd.github+json",
-    "user-agent": "qms-lite-signature-worker",
+    "user-agent": "qms-lite-bot-signature-service",
     "x-github-api-version": "2022-11-28",
   };
 }
@@ -974,6 +1096,22 @@ function base64UrlDecode(value: string): Uint8Array {
 
 function decodeBase64(value: string): string {
   return new TextDecoder().decode(base64ToBytes(value.replace(/\n/g, "")));
+}
+
+function pemToPkcs8Buffer(pem: string): ArrayBuffer {
+  const normalized = String(pem || "").trim();
+  const base64 = normalized
+    .replace(/-----BEGIN PRIVATE KEY-----/g, "")
+    .replace(/-----END PRIVATE KEY-----/g, "")
+    .replace(/\s+/g, "");
+  if (!base64) {
+    throw new Error("GitHub App private key is empty or invalid.");
+  }
+  return toArrayBuffer(base64ToBytes(base64));
+}
+
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 
 function bytesToHex(bytes: Uint8Array): string {

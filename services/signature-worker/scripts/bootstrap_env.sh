@@ -32,12 +32,15 @@ Expected env keys in .env.local:
   CLOUDFLARE_ACCOUNT_ID
   GITHUB_OAUTH_CLIENT_ID
   GITHUB_OAUTH_CLIENT_SECRET
-  GITHUB_REPO_TOKEN
+  QMS_BOT_APP_ID
+  QMS_BOT_APP_PRIVATE_KEY
   SIGNATURE_LINK_SECRET
   SIGNATURE_STATE_SECRET
   PIN_PEPPER
 
 Optional env keys:
+  QMS_BOT_APP_INSTALLATION_ID
+  GITHUB_REPO_TOKEN
   GITHUB_API_BASE_URL
   DEFAULT_OAUTH_PROVIDER
   ALLOWED_OAUTH_PROVIDERS
@@ -225,6 +228,9 @@ ALLOWED_OAUTH_PROVIDERS=${ALLOWED_OAUTH_PROVIDERS:-github}
 GITHUB_API_BASE_URL=${GITHUB_API_BASE_URL:-https://api.github.com}
 GITHUB_OAUTH_CLIENT_ID=${GITHUB_OAUTH_CLIENT_ID:-}
 GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
+QMS_BOT_APP_ID=${QMS_BOT_APP_ID:-}
+QMS_BOT_APP_PRIVATE_KEY=${QMS_BOT_APP_PRIVATE_KEY:-}
+QMS_BOT_APP_INSTALLATION_ID=${QMS_BOT_APP_INSTALLATION_ID:-}
 GITHUB_REPO_TOKEN=${GITHUB_REPO_TOKEN:-}
 SIGNATURE_LINK_SECRET=${SIGNATURE_LINK_SECRET:-}
 SIGNATURE_STATE_SECRET=${SIGNATURE_STATE_SECRET:-}
@@ -240,10 +246,12 @@ write_dev_vars
 if [[ "$DO_DEPLOY" -eq 1 ]]; then
   require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_ID"
   require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_SECRET"
-  require_non_placeholder_for_deploy "GITHUB_REPO_TOKEN"
   require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
   require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
   require_non_placeholder_for_deploy "PIN_PEPPER"
+  if is_placeholder "${QMS_BOT_APP_ID:-}" || is_placeholder "${QMS_BOT_APP_PRIVATE_KEY:-}"; then
+    require_non_placeholder_for_deploy "GITHUB_REPO_TOKEN"
+  fi
   assert_kv_binding_configured
 fi
 
@@ -252,6 +260,8 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   gh auth status >/dev/null
 
   upsert_repo_variable "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
+  set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
+  set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
   set_repo_secret_if_present "$GH_REPO" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_ACCOUNT_ID" "${CLOUDFLARE_ACCOUNT_ID:-}"
@@ -262,6 +272,9 @@ if [[ "$SKIP_CF" -eq 0 ]]; then
 
   set_worker_secret_if_present "$WORKER_NAME" "GITHUB_OAUTH_CLIENT_ID" "${GITHUB_OAUTH_CLIENT_ID:-}"
   set_worker_secret_if_present "$WORKER_NAME" "GITHUB_OAUTH_CLIENT_SECRET" "${GITHUB_OAUTH_CLIENT_SECRET:-}"
+  set_worker_secret_if_present "$WORKER_NAME" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
+  set_worker_secret_if_present "$WORKER_NAME" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
+  set_worker_secret_if_present "$WORKER_NAME" "QMS_BOT_APP_INSTALLATION_ID" "${QMS_BOT_APP_INSTALLATION_ID:-}"
   set_worker_secret_if_present "$WORKER_NAME" "GITHUB_REPO_TOKEN" "${GITHUB_REPO_TOKEN:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_STATE_SECRET" "${SIGNATURE_STATE_SECRET:-}"
