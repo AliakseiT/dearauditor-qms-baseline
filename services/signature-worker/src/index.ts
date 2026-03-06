@@ -1046,6 +1046,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
     .hint { margin-top: 6px; color: var(--muted); font-size: 13px; }
     .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: var(--action); color: var(--action-ink); cursor: pointer; }
     .btn:hover { filter: brightness(1.08); }
+    .btn[disabled] { opacity: .68; cursor: not-allowed; filter: none; }
     .foot { font-size: 12px; color: var(--muted); }
     a { color: #1b4ea4; }
     @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
@@ -1069,7 +1070,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
         </div>
       </div>
       <div class="section">
-        <form action="${escapeHtml(formAction)}" method="post">
+        <form action="${escapeHtml(formAction)}" method="post" data-submit-guard="1">
           <input type="hidden" name="provider" value="${escapeHtml(provider)}" />
           <input type="hidden" name="repo" value="${escapeHtml(ctx.repo)}" />
           <input type="hidden" name="pr" value="${escapeHtml(ctx.pr)}" />
@@ -1081,7 +1082,7 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
           <input type="hidden" name="signature_index" value="${escapeHtml(ctx.signature_index)}" />
           <input type="hidden" name="exp" value="${escapeHtml(ctx.exp)}" />
           <input type="hidden" name="sig" value="${escapeHtml(sig)}" />
-          <button class="btn" type="submit">Continue with ${escapeHtml(providerLabel)}</button>
+          <button class="btn" type="submit" data-processing-text="Opening GitHub...">Continue with ${escapeHtml(providerLabel)}</button>
         </form>
       </div>
       <div class="section foot">
@@ -1089,6 +1090,31 @@ function renderSignPage(ctx: SignatureContext, provider: string, baseUrl: string
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var form = document.querySelector('form[data-submit-guard]');
+      if (!form) return;
+      form.addEventListener('submit', function (event) {
+        var target = event.currentTarget;
+        if (!(target instanceof HTMLFormElement)) return;
+        if (target.dataset.submitting === '1') {
+          event.preventDefault();
+          return;
+        }
+        target.dataset.submitting = '1';
+        var submit = target.querySelector('button[type="submit"], input[type="submit"]');
+        if (submit instanceof HTMLButtonElement) {
+          submit.dataset.originalText = submit.textContent || '';
+          submit.textContent = submit.dataset.processingText || 'Processing...';
+          submit.disabled = true;
+        } else if (submit instanceof HTMLInputElement) {
+          submit.dataset.originalValue = submit.value || '';
+          submit.value = submit.dataset.processingText || 'Processing...';
+          submit.disabled = true;
+        }
+      });
+    })();
+  </script>
 </body>
 </html>`;
 }
@@ -1115,6 +1141,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
     input[type="password"] { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #b8c6e2; border-radius: 10px; font-size: 16px; letter-spacing: .2em; }
     .hint { color: #5d6f92; font-size: 13px; margin-top: 6px; }
     .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
+    .btn[disabled] { opacity: .68; cursor: not-allowed; }
     a { color: #1b4ea4; }
   </style>
 </head>
@@ -1128,7 +1155,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
         <div class="k">Signer</div><div class="v">${escapeHtml(session.full_name)} (@${escapeHtml(session.signer_login)})</div>
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(session.ctx.role)} / ${escapeHtml(session.ctx.meaning)}</div>
 
-        <form action="${escapeHtml(formAction)}" method="post">
+        <form action="${escapeHtml(formAction)}" method="post" data-submit-guard="1">
           <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
           <input type="hidden" name="mode" value="setup" />
           <label for="pin">New 6-digit PIN</label>
@@ -1136,13 +1163,38 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string): str
           <label for="pin_confirm">Confirm PIN</label>
           <input id="pin_confirm" name="pin_confirm" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
           <div class="hint">PIN is salted + PBKDF2-hashed and stored for 60 days. It expires automatically and must be renewed.</div>
-          <button class="btn" type="submit">Set PIN and Sign</button>
+          <button class="btn" type="submit" data-processing-text="Submitting...">Set PIN and Sign</button>
         </form>
 
         <p><a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">Open PR</a></p>
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var form = document.querySelector('form[data-submit-guard]');
+      if (!form) return;
+      form.addEventListener('submit', function (event) {
+        var target = event.currentTarget;
+        if (!(target instanceof HTMLFormElement)) return;
+        if (target.dataset.submitting === '1') {
+          event.preventDefault();
+          return;
+        }
+        target.dataset.submitting = '1';
+        var submit = target.querySelector('button[type="submit"], input[type="submit"]');
+        if (submit instanceof HTMLButtonElement) {
+          submit.dataset.originalText = submit.textContent || '';
+          submit.textContent = submit.dataset.processingText || 'Processing...';
+          submit.disabled = true;
+        } else if (submit instanceof HTMLInputElement) {
+          submit.dataset.originalValue = submit.value || '';
+          submit.value = submit.dataset.processingText || 'Processing...';
+          submit.disabled = true;
+        }
+      });
+    })();
+  </script>
 </body>
 </html>`;
 }
@@ -1171,6 +1223,7 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
     input[type="password"] { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #b8c6e2; border-radius: 10px; font-size: 16px; letter-spacing: .2em; }
     .hint { color: #5d6f92; font-size: 13px; margin-top: 6px; }
     .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
+    .btn[disabled] { opacity: .68; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -1184,21 +1237,57 @@ function renderPinVerifyPage(session: PinSessionState, sessionToken: string, exp
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(session.ctx.role)} / ${escapeHtml(session.ctx.meaning)}</div>
         <div class="k">PIN Expiration (UTC)</div><div class="v">${escapeHtml(expiryText)}</div>
 
-        <form action="${escapeHtml(formAction)}" method="post">
+        <form action="${escapeHtml(formAction)}" method="post" data-submit-guard="1">
           <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
           <input type="hidden" name="mode" value="verify" />
           <label for="pin">Enter your 6-digit PIN</label>
           <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required />
           <div class="hint">This PIN is your second electronic signature factor for QMS approvals.</div>
-          <button class="btn" type="submit">Verify PIN and Sign</button>
+          <button class="btn" type="submit" data-processing-text="Verifying...">Verify PIN and Sign</button>
         </form>
-        <form action="/pin/setup" method="post">
+        <form action="/pin/setup" method="post" data-submit-guard="1">
           <input type="hidden" name="session_token" value="${escapeHtml(sessionToken)}" />
-          <button class="btn" type="submit" style="background:#5b677f;">Reset PIN</button>
+          <button class="btn" type="submit" style="background:#5b677f;" data-processing-text="Opening reset...">Reset PIN</button>
         </form>
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var forms = document.querySelectorAll('form[data-submit-guard]');
+      if (!forms.length) return;
+      var disableForm = function (form) {
+        var submits = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+        submits.forEach(function (submit) {
+          if (submit instanceof HTMLButtonElement) {
+            submit.dataset.originalText = submit.textContent || '';
+            submit.textContent = submit.dataset.processingText || 'Processing...';
+            submit.disabled = true;
+          } else if (submit instanceof HTMLInputElement) {
+            submit.dataset.originalValue = submit.value || '';
+            submit.value = submit.dataset.processingText || 'Processing...';
+            submit.disabled = true;
+          }
+        });
+      };
+      forms.forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          var target = event.currentTarget;
+          if (!(target instanceof HTMLFormElement)) return;
+          if (target.dataset.submitting === '1') {
+            event.preventDefault();
+            return;
+          }
+          forms.forEach(function (f) {
+            if (f instanceof HTMLFormElement) {
+              f.dataset.submitting = '1';
+              disableForm(f);
+            }
+          });
+        });
+      });
+    })();
+  </script>
 </body>
 </html>`;
 }
@@ -1252,7 +1341,7 @@ function renderSuccessPage(input: {
         <div class="k">Target Hash</div><div class="v">${escapeHtml(input.hash)}</div>
         <div class="k">Timestamp</div><div class="v">${escapeHtml(input.timestamp)}</div>
         <div class="k">Attestation ID</div><div class="v">${escapeHtml(input.attestationId || "n/a")}</div>
-        <p><a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">Open PR</a></p>
+        <p><a href="${escapeHtml(prUrl)}" rel="noreferrer">Open PR</a></p>
       </div>
     </div>
   </div>
