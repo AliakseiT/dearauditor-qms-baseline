@@ -4,8 +4,17 @@ required_fields:
   execution_id: "TEX-<product>-<yyyy-mm-dd>"
   plan_reference: ""
   target_revision: ""
+  execution_mode: "dry_run|formal_release_candidate|investigation_regression"
   executed_by: ""
   executed_on: "YYYY-MM-DD"
+  execution_configuration:
+    captured_before_execution: true
+    operating_system_version: ""
+    hardware_model_or_host: ""
+    environment_name: ""
+    release_binary_reference: ""
+    supporting_software_versions: []
+    configuration_notes: ""
   results:
     - test_case_id: "TC-0001"
       status: "pass|fail|blocked|not_run"

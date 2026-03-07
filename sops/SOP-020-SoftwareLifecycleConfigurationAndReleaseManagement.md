@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R02
+revision: R03
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -21,7 +21,7 @@ related_issue: "#45"
 ---
 
 ## 1. Purpose
-Define a lightweight, GitHub-native software lifecycle control model aligned with IEC 62304 for software development planning, software-system classification, verification/validation linkage, configuration management, release baselining, maintenance, and problem resolution.
+Define a lightweight, GitHub-native software lifecycle control model aligned with IEC 62304 for software development planning, software-system classification, verification/validation linkage, parallel controlled change flow on product `main`, release-readiness gating, configuration management, release baselining, maintenance, and problem resolution.
 
 ## 2. Scope
 Applies to regulated software products and significant product changes that require controlled software lifecycle records.
@@ -35,6 +35,7 @@ Applies to regulated software products and significant product changes that requ
 
 ## 4. Outputs
 - Approved software development and maintenance plan
+- Approved release-readiness and V&V-entry decision
 - Controlled software configuration baseline and release manifest
 - Linked verification/validation records and release decision evidence
 - Maintenance and problem-resolution records with feedback to risk and design controls
@@ -74,24 +75,34 @@ Applies to regulated software products and significant product changes that requ
 1. Verification and validation records must be traceable to software requirements, risk controls, anomalies, and release decisions.
 2. Use controlled test-case identifiers and exact repository references to bind automated or manual evidence to the approved plan.
 3. Validation against intended use or user needs must be reviewed with appropriate clinical or regulatory participation where required.
+4. Dry-run executions may occur before formal release-readiness approval, but they are not release evidence until the candidate scope and binary deployment are formally approved and recorded.
 
 ### 6.5 Configuration Identification and Baseline Control
 1. All controlled software lifecycle changes follow issue -> branch -> pull request -> merge -> Part 11 attestation -> immutable release evidence.
-2. Each release-capable baseline must identify configuration items at minimum:
+2. Multiple approved product changes may exist in parallel on product `main`; the subsequent release is defined later by an explicit release-readiness decision, not by merge order alone.
+3. Before formal release-candidate V&V starts, record:
+   - the selected release cutoff or candidate revision on `main`
+   - which merged change records are included
+   - which merged change records are deferred
+   - the binary or deployment package that enters formal V&V
+4. Each release-capable baseline must identify configuration items at minimum:
    - source revision/commit
    - relevant requirements/risk/test record revisions
    - approved build or deployment package reference
    - release manifest and rollback note
-3. Baseline updates after approval require a new PR revision; issue edits alone are not sufficient.
+5. Formal release test execution must record the exact environment and binary configuration at the start of each test run.
+6. Baseline updates after approval require a new PR revision; issue edits alone are not sufficient.
 
 ### 6.6 Release Decision and Publication
 1. Release decisions require:
+   - approved release-readiness scope decision
    - approved and current lifecycle records
    - acceptable unresolved anomaly posture
    - completed required verification/validation activities
    - approved residual risk status
-2. Release evidence is published as immutable GitHub release assets using the QMS tag and record publication model.
-3. Product MDF and related dossiers must link to the released baseline and associated evidence package.
+2. If the release binary changes after formal V&V entry, assess the change through change/risk/release records, record the new binary deployment, and determine whether partial or full re-execution is required before release.
+3. Release evidence is published as immutable GitHub release assets using the QMS tag and record publication model.
+4. Product MDF and related dossiers must link to the released baseline and associated evidence package.
 
 ### 6.7 Maintenance and Problem Resolution
 1. Maintenance inputs include anomalies, complaints, incidents, cybersecurity findings, supplier changes, and PMS signals.
@@ -101,8 +112,9 @@ Applies to regulated software products and significant product changes that requ
 ## 7. Required Records
 - Software development and maintenance plan
 - Software safety classification rationale
+- Release-readiness and V&V-entry decision record
 - Configuration item list and release baseline manifest
-- Verification/validation plan, execution, and report references
+- Verification/validation plan, execution, configuration-capture, and report references
 - Problem-resolution and maintenance records
 
 ## 8. Traceability
@@ -131,3 +143,4 @@ Applies to regulated software products and significant product changes that requ
 | R00 | 2026-03-06 | Initial release establishing IEC 62304 lifecycle, configuration, release, maintenance, and problem-resolution controls in the GitHub-native QMS model. |
 | R01 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and clarified the distinction between engineer execution and engineering-owner accountability. |
 | R02 | 2026-03-07 | Simplified lifecycle role names to `engineering_lead` and `regulatory_lead`. |
+| R03 | 2026-03-07 | Clarified parallel change flow on product `main`, added the controlled release-readiness/V&V-entry gate, and made per-run execution configuration capture mandatory for formal release testing. |

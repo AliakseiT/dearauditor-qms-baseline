@@ -4,6 +4,8 @@ required_fields:
   plan_id: "VVP-<product>-<yyyy-mm-dd>"
   product_id: ""
   target_revision: ""
+  campaign_mode: "dry_run|formal_release_candidate|investigation_regression"
+  release_scope_decision_reference: ""
   activity_type: "verification|validation|verification_and_validation|usability_validation"
   software_safety_classification: "A|B|C|not_applicable_with_rationale"
   linked_inputs:
@@ -16,6 +18,11 @@ required_fields:
     - name: ""
       purpose: ""
       configuration_reference: ""
+  formal_execution_gate:
+    pre_gate_execution_policy: "dry_run_only"
+    approved_release_readiness_reference: ""
+    binary_deployment_reference: ""
+    configuration_capture_required_for_each_run: true
   planned_test_case_index: "records/verification_validation/test_case_index_template.yml"
   acceptance_criteria:
     - ""

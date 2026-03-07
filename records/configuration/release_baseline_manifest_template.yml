@@ -4,6 +4,8 @@ required_fields:
   baseline_id: "RBM-<product>-<yyyy-mm-dd>"
   product_id: ""
   release_tag: ""
+  release_readiness_reference: ""
+  included_change_records: []
   source_repositories:
     - repository: ""
       target_revision: ""
@@ -14,4 +16,6 @@ required_fields:
     verification_validation_reference: ""
     mdf_reference: ""
   build_or_package_reference: ""
+  binary_deployment_reference: ""
+  execution_configuration_references: []
   rollback_reference: ""

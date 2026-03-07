@@ -22,6 +22,16 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: campaign_mode
+    attributes:
+      label: Campaign Mode
+      options:
+        - Dry Run
+        - Formal Release Candidate V&V
+        - Investigation / Regression
+    validations:
+      required: true
+  - type: dropdown
     id: activity_type
     attributes:
       label: Activity Type
@@ -32,6 +42,15 @@ body:
         - Usability Validation
     validations:
       required: true
+  - type: textarea
+    id: release_scope_decision
+    attributes:
+      label: Release Scope Decision
+      description: Reference the approved release-readiness decision for formal release-candidate execution, including included and deferred changes.
+      placeholder: |
+        - release readiness PR / record
+        - included changes
+        - deferred changes
   - type: textarea
     id: linked_inputs
     attributes:
@@ -62,7 +81,8 @@ body:
       description: What must be true before the campaign can close.
       placeholder: |
         - Approved V&V plan merged and signed
-        - Execution complete on frozen target build
+        - Formal runs started only after release-readiness approval and binary recording
+        - Execution complete on recorded target build and environment
         - V&V report merged and signed
     validations:
       required: true

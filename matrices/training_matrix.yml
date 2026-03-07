@@ -1,5 +1,5 @@
 ---
-version: 7
+version: 8
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -42,7 +42,7 @@ roles:
       SOP-006: R01
       SOP-007: R03
       SOP-008: R04
-      SOP-009: R03
+      SOP-009: R04
       SOP-010: R01
       SOP-011: R05
       SOP-012: R02
@@ -53,7 +53,7 @@ roles:
       SOP-017: R02
       SOP-018: R03
       SOP-019: R04
-      SOP-020: R02
+      SOP-020: R03
 
   engineer:
     users:
@@ -75,11 +75,11 @@ roles:
     required_revisions:
       SOP-001: R07
       SOP-008: R04
-      SOP-009: R03
+      SOP-009: R04
       SOP-011: R05
       SOP-017: R02
       SOP-018: R03
-      SOP-020: R02
+      SOP-020: R03
 
   engineering_lead:
     users:
@@ -103,12 +103,12 @@ roles:
       SOP-002: R02
       SOP-007: R03
       SOP-008: R04
-      SOP-009: R03
+      SOP-009: R04
       SOP-011: R05
       SOP-015: R01
       SOP-017: R02
       SOP-018: R03
-      SOP-020: R02
+      SOP-020: R03
 
   technical_qms_maintainer:
     users:
@@ -127,7 +127,7 @@ roles:
     required_revisions:
       SOP-001: R07
       SOP-006: R01
-      SOP-009: R03
+      SOP-009: R04
       SOP-011: R05
       SOP-017: R02
 
@@ -164,7 +164,7 @@ roles:
       SOP-006: R01
       SOP-007: R03
       SOP-008: R04
-      SOP-009: R03
+      SOP-009: R04
       SOP-010: R01
       SOP-011: R05
       SOP-012: R02
@@ -175,7 +175,7 @@ roles:
       SOP-017: R02
       SOP-018: R03
       SOP-019: R04
-      SOP-020: R02
+      SOP-020: R03
 
   usability_lead:
     users:
@@ -231,7 +231,7 @@ roles:
       SOP-006: R01
       SOP-007: R03
       SOP-008: R04
-      SOP-009: R03
+      SOP-009: R04
       SOP-010: R01
       SOP-011: R05
       SOP-012: R02
@@ -242,7 +242,7 @@ roles:
       SOP-017: R02
       SOP-018: R03
       SOP-019: R04
-      SOP-020: R02
+      SOP-020: R03
 
   management_representative:
     users:
@@ -277,7 +277,7 @@ roles:
       SOP-006: R01
       SOP-007: R03
       SOP-008: R04
-      SOP-009: R03
+      SOP-009: R04
       SOP-010: R01
       SOP-011: R05
       SOP-012: R02
@@ -288,4 +288,4 @@ roles:
       SOP-017: R02
       SOP-018: R03
       SOP-019: R04
-      SOP-020: R02
+      SOP-020: R03

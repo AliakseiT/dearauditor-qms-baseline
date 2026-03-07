@@ -17,6 +17,8 @@
 - Regulatory / Compliance Impact:
 - Risk Records Affected:
 - Verification / Validation Impact:
+- Release Inclusion Decision: included in next candidate | deferred | patch to current release
+- Binary Upgrade / Regression Impact:
 - Training Impact:
 - Release / Deployment Impact:
 

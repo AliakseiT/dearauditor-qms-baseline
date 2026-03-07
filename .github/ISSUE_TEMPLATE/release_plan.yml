@@ -1,5 +1,5 @@
 name: Release Plan
-description: Plan a controlled software release baseline and immutable publication.
+description: Approve release readiness, freeze included changes, and later publish the release baseline.
 title: "RELEASE PLAN: "
 labels:
   - release-management
@@ -25,7 +25,7 @@ body:
     id: configuration_items
     attributes:
       label: Configuration Items
-      description: Repositories, components, commits, or packages that define the release.
+      description: Repositories, components, commits, or packages that define the release candidate and later release baseline.
       placeholder: |
         - app repo @ <sha>
         - configuration manifest
@@ -33,10 +33,36 @@ body:
     validations:
       required: true
   - type: textarea
+    id: included_changes
+    attributes:
+      label: Included Changes
+      description: Change records or PRs approved to enter formal release-candidate V&V.
+      placeholder: |
+        - CHANGE-...
+        - PR-...
+    validations:
+      required: true
+  - type: textarea
+    id: deferred_changes
+    attributes:
+      label: Deferred Changes
+      description: Merged or in-flight changes that are explicitly excluded from this release candidate.
+      placeholder: |
+        - CHANGE-...
+        - PR-...
+  - type: input
+    id: candidate_binary
+    attributes:
+      label: Release Candidate Binary / Deployment
+      description: Exact package, container image, build artifact, or deployment identifier entering formal V&V.
+      placeholder: ghcr.io/org/app@sha256:... or build-2026-03-07.1
+    validations:
+      required: true
+  - type: textarea
     id: linked_records
     attributes:
       label: Linked Records
-      description: V&V, risk, change, anomaly, or approval records required for release.
+      description: V&V, risk, change, anomaly, or approval records required for release readiness and release.
       placeholder: |
         - VVR-...
         - RISK-...
@@ -57,6 +83,9 @@ body:
       label: Done Criteria
       description: What must be true before the release plan can close.
       placeholder: |
+        - Release readiness PR merged and signed before formal V&V
+        - Included/deferred change set frozen for the candidate
+        - Formal V&V executed against the recorded candidate binary
         - Release baseline PR merged and signed
         - Immutable release published
         - MDF and traceability links updated
