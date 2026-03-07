@@ -5,7 +5,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 ## What It Does
 
 - Serves signer-facing ceremony page at `GET /sign`.
-- Accepts only cryptographically signed link context from QMS workflows.
+- Accepts stable signer links from QMS workflows and rebuilds signing context from the latest request comment.
 - Uses GitHub OAuth App login for identity verification (`read:user` scope).
 - Enforces a second-factor 6-digit signature PIN stored as salted PBKDF2-SHA256 hash in Cloudflare KV.
 - Applies automatic PIN TTL deletion after 60 days (`expirationTtl=5184000`).
@@ -37,7 +37,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
 - `GITHUB_REPO_TOKEN` (token used by worker backend to read signer registry and post PR comments)
-- `SIGNATURE_LINK_SECRET` (must match QMS Lite GitHub Actions secret)
+- `SIGNATURE_LINK_SECRET` (optional; only needed to keep legacy signed links working)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER` (server-side pepper for PIN KDF)
 
@@ -89,7 +89,7 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 What it does:
 
 - Upserts repo variable `SIGNATURE_UI_BASE_URL`.
-- Sets repo secrets `SIGNATURE_LINK_SECRET`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` when values are present.
+- Sets repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` when values are present, plus `SIGNATURE_LINK_SECRET` only when legacy signed-link compatibility is desired.
 - Sets worker secrets for OAuth + PR comment token + signing secrets.
 - Writes `.dev.vars` for local `wrangler dev`.
 - Validates that KV namespace IDs in `wrangler.toml` are not placeholders before deploy.

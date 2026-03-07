@@ -21,7 +21,7 @@ Worker secrets:
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
 - `GITHUB_REPO_TOKEN`
-- `SIGNATURE_LINK_SECRET`
+- `SIGNATURE_LINK_SECRET` (optional; only for legacy signed-link compatibility)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER`
 
@@ -50,7 +50,7 @@ Repository variable:
 
 Repository secrets:
 
-- `SIGNATURE_LINK_SECRET` (must match worker secret)
+- `SIGNATURE_LINK_SECRET` (optional; only if you need legacy signed-link compatibility)
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
