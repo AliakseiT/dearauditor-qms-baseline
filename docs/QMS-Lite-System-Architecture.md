@@ -43,10 +43,9 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 6. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
 
 ## 6. Automation Map
-The current workflow topology is summarized in the Mermaid source map:
+The current workflow topology is summarized in the landing-page Mermaid map:
 
-- [Workflow automation map](automation/workflow-automation-map.md)
-- Source file: `docs/automation/workflow-automation-map.md`
+- [Workflow automation map](../README.md#workflow-automation-map)
 
 ## 7. Automation Catalog
 
