@@ -19,7 +19,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 | See recorded training status | [User training log](records/training/user_training_log.yml) |
 | Browse record families and templates | [Records index](records/README.md) |
 | Understand workflows, automations, and trust boundaries | [System architecture](docs/QMS-Lite-System-Architecture.md) |
-| Open the end-to-end automation diagram | [Automation map (SVG)](docs/automation/workflow-automation-map.svg) |
+| Open the end-to-end automation diagram | [Automation map (Mermaid)](docs/automation/workflow-automation-map.md) |
 | Check published releases in GitHub | [Releases](https://github.com/AliakseiT/qms-lite/releases) |
 
 ## Publication Status
@@ -40,7 +40,7 @@ GitHub README pages cannot personalize content by the viewer's login, so the Git
 - [Training matrix](matrices/training_matrix.yml) for GitHub user-to-role mappings and required SOP revisions
 - [User training log](records/training/user_training_log.yml) for recorded completion state
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) for the governing procedure
-- [System architecture](docs/QMS-Lite-System-Architecture.md) and [automation map](docs/automation/workflow-automation-map.svg) for the training workflow model
+- [System architecture](docs/QMS-Lite-System-Architecture.md) and [automation map](docs/automation/workflow-automation-map.md) for the training workflow model
 
 ## Published Library
 
@@ -127,12 +127,5 @@ Use the grouped links below for navigation. The raw machine-readable published i
 Process detail lives in the SOPs. System behavior, workflow boundaries, and automation relationships live in the architecture docs.
 
 - [QMS Lite system architecture](docs/QMS-Lite-System-Architecture.md)
-- [Workflow automation map (SVG)](docs/automation/workflow-automation-map.svg)
+- [Workflow automation map (Mermaid)](docs/automation/workflow-automation-map.md)
 - [Signature worker service](services/signature-worker/README.md)
-
-<details>
-<summary>Preview the workflow map</summary>
-
-![QMS Lite GitHub automation map](docs/automation/workflow-automation-map.svg)
-
-</details>
