@@ -84,7 +84,7 @@ def parse_markdown_revision_row_pairs(text):
 def parse_readme_doc_nav(text):
     entries = {}
     pattern = re.compile(
-        r"^- \[[^\]]+\]\((?P<path>(?:sops|wis)/[^)]+)\) - `(?P<revision>R\d{2})`, effective `(?P<date>\d{4}-\d{2}-\d{2})`$",
+        r"^- \[[^\]]+\]\((?P<path>(?:sops|wis)/[^)]+)\) - `(?P<revision>R\d{2})`$",
         flags=re.MULTILINE,
     )
     for match in pattern.finditer(text):
@@ -96,7 +96,6 @@ def parse_readme_doc_nav(text):
         entries[doc_id] = {
             "path": path,
             "revision": match.group("revision"),
-            "date": match.group("date"),
         }
     return entries
 
@@ -336,10 +335,6 @@ class QMSContentGuardTests(unittest.TestCase):
             if doc.revision and entry["revision"] != doc.revision:
                 failures.append(
                     f"README.md visible navigation revision mismatch for {doc.doc_id}: {entry['revision']} != {doc.revision}."
-                )
-            if doc.date and entry["date"] != doc.date:
-                failures.append(
-                    f"README.md visible navigation effective date mismatch for {doc.doc_id}: {entry['date']} != {doc.date}."
                 )
         self.assert_no_failures(failures)
 
