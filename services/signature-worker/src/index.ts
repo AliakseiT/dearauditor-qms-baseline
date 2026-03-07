@@ -8,7 +8,7 @@ interface Env {
   QMS_BOT_APP_ID?: string;
   QMS_BOT_APP_PRIVATE_KEY?: string;
   QMS_BOT_APP_INSTALLATION_ID?: string;
-  SIGNATURE_LINK_SECRET: string;
+  SIGNATURE_LINK_SECRET?: string;
   SIGNATURE_STATE_SECRET: string;
   PIN_PEPPER: string;
   GITHUB_API_BASE_URL?: string;
@@ -25,6 +25,12 @@ interface SignatureContext {
   required_signatures: string;
   signature_index: string;
   exp: string;
+}
+
+interface SignatureRequestSigner {
+  signer: string;
+  role: string;
+  signature_index: string;
 }
 
 interface OAuthState {
@@ -64,6 +70,8 @@ interface SignatureRequestMeta {
   meaning: string;
   roles: string[];
   eligibleSigners: string[];
+  requiredSignatures: string;
+  signerRequests: SignatureRequestSigner[];
 }
 
 interface PinRecord {
@@ -87,6 +95,14 @@ interface PinStatus {
   missingOrExpired: boolean;
 }
 
+interface ErrorPresentation {
+  status: number;
+  title: string;
+  summary: string;
+  nextSteps: string[];
+  technicalDetails?: string;
+}
+
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const HTML_HEADERS = { "content-type": "text/html; charset=utf-8" };
 const PIN_TTL_SECONDS = 5184000; // 60 days
@@ -108,10 +124,10 @@ const githubInstallationTokenCache = new Map<string, { token: string; expiresAtE
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const workerVersion = resolveWorkerVersion(env);
     try {
       const url = new URL(request.url);
       const path = url.pathname;
-      const workerVersion = resolveWorkerVersion(env);
 
       if (path === "/healthz") {
         return json({ ok: true, service: "signature-worker", version: workerVersion });
@@ -120,7 +136,7 @@ export default {
         return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
       }
       if (path === "/sign" && request.method === "GET") {
-        if (!hasSignedContextParams(url.searchParams)) {
+        if (!hasSignedContextParams(url.searchParams) && !hasRequestLocatorParams(url.searchParams)) {
           return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
         }
         return handleSignPage(request, env);
@@ -141,10 +157,9 @@ export default {
         return handlePinStatusApi(request, env);
       }
 
-      return html(renderErrorPage("Not Found", "Unknown route."), 404);
+      return renderErrorResponse("Unknown route.", workerVersion);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return html(renderErrorPage("Signature Worker Error", message), 500);
+      return renderErrorResponse(error, workerVersion);
     }
   },
 };
@@ -158,12 +173,18 @@ async function handleSignPage(request: Request, env: Env): Promise<Response> {
     env
   );
 
-  const context = parseContextFromParams(url.searchParams);
-  const signature = (url.searchParams.get("sig") || "").trim();
-  await assertValidSignedContext(context, signature, env.SIGNATURE_LINK_SECRET);
+  let context: SignatureContext;
+  if (hasSignedContextParams(url.searchParams)) {
+    context = parseContextFromParams(url.searchParams);
+    const signature = (url.searchParams.get("sig") || "").trim();
+    await assertValidSignedContext(context, signature, requireLegacyLinkSecret(env));
+  } else {
+    const locator = parseRequestLocatorFromParams(url.searchParams);
+    context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
+  }
 
   return html(
-    renderSignPage(context, provider, env.PUBLIC_BASE_URL, signature, resolveWorkerVersion(env)),
+    renderSignPage(context, provider, env.PUBLIC_BASE_URL, resolveWorkerVersion(env)),
     200
   );
 }
@@ -177,9 +198,15 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
     env
   );
 
-  const context = contextFromFormData(form);
-  const signature = String(form.get("sig") || "").trim();
-  await assertValidSignedContext(context, signature, env.SIGNATURE_LINK_SECRET);
+  let context: SignatureContext;
+  if (hasLegacySignedContextFormData(form)) {
+    context = contextFromFormData(form);
+    const signature = String(form.get("sig") || "").trim();
+    await assertValidSignedContext(context, signature, requireLegacyLinkSecret(env));
+  } else {
+    const locator = requestLocatorFromFormData(form);
+    context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
+  }
 
   const state: OAuthState = {
     type: "oauth",
@@ -515,7 +542,6 @@ function assertBaseConfig(env: Env): void {
     "PUBLIC_BASE_URL",
     "GITHUB_OAUTH_CLIENT_ID",
     "GITHUB_OAUTH_CLIENT_SECRET",
-    "SIGNATURE_LINK_SECRET",
     "SIGNATURE_STATE_SECRET",
     "PIN_PEPPER",
   ] as const;
@@ -698,17 +724,26 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
 
   const latest = requestComments[requestComments.length - 1];
   const body = latest.body || "";
+  const hiddenMeta = parseHiddenRequestContext(body);
 
-  const hash = extractOne(body, /Target hash \(merge state\):\s*`([a-f0-9]{64})`/i, "target hash");
-  const meaning = extractOne(body, /Meaning of signature:\s*\*\*([^*]+)\*\*/i, "meaning of signature");
-  const rolesRaw = extractOne(body, /Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i, "signer roles");
-  const eligibleRaw = extractOne(body, /Eligible signers:\s*\*\*([^*]+)\*\*/i, "eligible signers");
+  const hash = hiddenMeta?.hash || extractOne(body, /Target hash \(merge state\):\s*`([a-f0-9]{64})`/i, "target hash");
+  const meaning =
+    hiddenMeta?.meaning ||
+    extractOne(body, /Meaning of signature:\s*\*\*([^*]+)\*\*/i, "meaning of signature");
+  const rolesRaw = hiddenMeta?.signers.map((x) => x.role).filter(Boolean).join(", ") ||
+    extractOne(body, /Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i, "signer roles");
+  const eligibleRaw = hiddenMeta?.signers.map((x) => `@${x.signer}`).join(", ") ||
+    extractOne(body, /Eligible signers:\s*\*\*([^*]+)\*\*/i, "eligible signers");
+  const requiredSignatures = hiddenMeta?.required_signatures || parseRequiredSignatures(body);
 
   const roles = rolesRaw
     .split(/[;,]/)
     .map((x) => x.trim())
     .filter(Boolean);
   const eligibleSigners = Array.from(eligibleRaw.matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase());
+  const signerRequests = hiddenMeta && hiddenMeta.signers.length > 0
+    ? hiddenMeta.signers
+    : parseSignerRequests(body, roles);
 
   return {
     commentId: Number(latest.id),
@@ -717,6 +752,8 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
     meaning,
     roles,
     eligibleSigners,
+    requiredSignatures,
+    signerRequests,
   };
 }
 
@@ -737,9 +774,107 @@ function validateRequestAgainstContext(meta: SignatureRequestMeta, ctx: Signatur
     throw new Error(`Role '${ctx.role}' is not allowed in current request.`);
   }
   const signerLower = ctx.signer.toLowerCase();
+  const signerRequest = meta.signerRequests.find((x) => x.signer === signerLower);
+  if (meta.signerRequests.length > 0 && !signerRequest) {
+    throw new Error(`Signer @${ctx.signer} is not assigned a signature slot in the current request.`);
+  }
+  if (signerRequest && signerRequest.role && signerRequest.role.toLowerCase() !== roleLower) {
+    throw new Error(`Role '${ctx.role}' does not match the current request slot for @${ctx.signer}.`);
+  }
   if (meta.eligibleSigners.length > 0 && !meta.eligibleSigners.includes(signerLower)) {
     throw new Error(`Signer @${ctx.signer} is not eligible for this request.`);
   }
+}
+
+function parseRequiredSignatures(body: string): string {
+  const match = String(body || "").match(/Required signatures:\s*\*\*([0-9]+)\*\*/i);
+  const value = match ? String(match[1] || "").trim() : "1";
+  return /^\d+$/.test(value) ? value : "1";
+}
+
+function parseSignerRequests(body: string, fallbackRoles: string[]): SignatureRequestSigner[] {
+  return Array.from(String(body || "").matchAll(/^- @([A-Za-z0-9-]+)(?: \(([^)]+)\))?: /gm))
+    .map((match, index) => ({
+      signer: String(match[1] || "").trim().toLowerCase(),
+      role: String(match[2] || fallbackRoles[index] || fallbackRoles[0] || "").trim(),
+      signature_index: String(index + 1),
+    }))
+    .filter((entry) => entry.signer);
+}
+
+function parseHiddenRequestContext(body: string): {
+  hash: string;
+  meaning: string;
+  required_signatures: string;
+  signers: SignatureRequestSigner[];
+} | null {
+  const match = String(body || "").match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+  if (!match || !match[1]) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(match[1].trim()) as {
+      hash?: string;
+      meaning?: string;
+      required_signatures?: string | number;
+      signers?: Array<{ signer?: string; role?: string; signature_index?: string | number }>;
+    };
+    const hash = String(payload.hash || "").trim().toLowerCase();
+    const meaning = String(payload.meaning || "").trim();
+    const requiredSignatures = String(payload.required_signatures || "1").trim();
+    const signers = Array.isArray(payload.signers)
+      ? payload.signers
+          .map((entry, index) => ({
+            signer: String(entry?.signer || "").trim().toLowerCase(),
+            role: String(entry?.role || "").trim(),
+            signature_index: String(entry?.signature_index || index + 1).trim(),
+          }))
+          .filter((entry) => entry.signer)
+      : [];
+    if (!/^[a-f0-9]{64}$/.test(hash) || !meaning || !/^\d+$/.test(requiredSignatures)) {
+      return null;
+    }
+    return {
+      hash,
+      meaning,
+      required_signatures: requiredSignatures,
+      signers,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function resolveCurrentContextForSigner(repo: string, pr: string, signer: string, env: Env): Promise<SignatureContext> {
+  const normalizedRepo = repo.trim();
+  const normalizedPr = pr.trim();
+  const normalizedSigner = signer.trim().toLowerCase();
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedRepo)) throw new Error("Invalid repository.");
+  if (!/^\d+$/.test(normalizedPr)) throw new Error("Invalid PR number.");
+  if (!/^[A-Za-z0-9-]+$/.test(normalizedSigner)) throw new Error("Invalid signer login.");
+
+  const repoToken = await resolveRepoAccessToken(normalizedRepo, env);
+  const requestMeta = await resolveLatestRequestComment(normalizedRepo, Number.parseInt(normalizedPr, 10), repoToken, env);
+  const signerRequest = requestMeta.signerRequests.find((entry) => entry.signer === normalizedSigner);
+  const role = String(signerRequest?.role || (requestMeta.roles.length === 1 ? requestMeta.roles[0] : "")).trim();
+  if (!role) {
+    throw new Error(`Unable to resolve signer role for @${normalizedSigner} from the latest request comment.`);
+  }
+
+  const context: SignatureContext = {
+    repo: normalizedRepo,
+    pr: normalizedPr,
+    hash: requestMeta.hash,
+    meaning: requestMeta.meaning,
+    role,
+    signer: normalizedSigner,
+    required_signatures: requestMeta.requiredSignatures,
+    signature_index: String(signerRequest?.signature_index || "1"),
+    exp: "",
+  };
+  validateRequestAgainstContext(requestMeta, context);
+  return context;
 }
 
 async function readSignerProfile(repo: string, login: string, token: string, env: Env): Promise<{ full_name?: string; job_title?: string }> {
@@ -1301,9 +1436,43 @@ function resolveWorkerVersion(env: Env): string {
   return raw || "dev-unversioned";
 }
 
+function requireLegacyLinkSecret(env: Env): string {
+  const secret = String(env.SIGNATURE_LINK_SECRET || "").trim();
+  if (!secret) {
+    throw new Error("Legacy signed links are not enabled. Open the latest signature request link from GitHub.");
+  }
+  return secret;
+}
+
+function parseRequestLocatorFromParams(params: URLSearchParams): { repo: string; pr: string; signer: string } {
+  return {
+    repo: String(params.get("repo") || "").trim(),
+    pr: String(params.get("pr") || "").trim(),
+    signer: String(params.get("signer") || "").trim().toLowerCase(),
+  };
+}
+
+function requestLocatorFromFormData(form: FormData): { repo: string; pr: string; signer: string } {
+  return {
+    repo: String(form.get("repo") || "").trim(),
+    pr: String(form.get("pr") || "").trim(),
+    signer: String(form.get("signer") || "").trim().toLowerCase(),
+  };
+}
+
 function hasSignedContextParams(params: URLSearchParams): boolean {
   const required = ["repo", "pr", "hash", "meaning", "role", "signer", "exp", "sig"];
   return required.every((key) => String(params.get(key) || "").trim() !== "");
+}
+
+function hasRequestLocatorParams(params: URLSearchParams): boolean {
+  const required = ["repo", "pr", "signer"];
+  return required.every((key) => String(params.get(key) || "").trim() !== "");
+}
+
+function hasLegacySignedContextFormData(form: FormData): boolean {
+  const required = ["repo", "pr", "hash", "meaning", "role", "signer", "exp", "sig"];
+  return required.every((key) => String(form.get(key) || "").trim() !== "");
 }
 
 function html(content: string, status = 200): Response {
@@ -1312,6 +1481,174 @@ function html(content: string, status = 200): Response {
 
 function json(content: unknown, status = 200): Response {
   return new Response(JSON.stringify(content), { status, headers: JSON_HEADERS });
+}
+
+function renderErrorResponse(error: unknown, workerVersion: string): Response {
+  const presentation = classifyError(error);
+  try {
+    return html(renderErrorPage(presentation, workerVersion), presentation.status);
+  } catch {
+    const summary = `${presentation.title}\n\n${presentation.summary}`;
+    return new Response(summary, {
+      status: presentation.status,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+}
+
+function classifyError(error: unknown): ErrorPresentation {
+  const details = String(error instanceof Error ? error.message : error || "Unexpected worker error.").trim();
+  const normalized = details.toLowerCase();
+  const defaultNextSteps = [
+    "Return to the GitHub pull request or issue comment and open the latest signature link.",
+    "If the problem keeps happening, contact the QMS administrator and include the technical details below.",
+  ];
+
+  if (normalized === "unknown route.") {
+    return {
+      status: 404,
+      title: "Page not found",
+      summary: "This address is not a valid QMS signature route.",
+      nextSteps: [
+        "Open the signature ceremony link directly from the GitHub request comment.",
+        "If you typed the URL manually, discard it and use the latest link from GitHub.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (
+    normalized.includes("signing link expired") ||
+    normalized.includes("sign session expired") ||
+    normalized.includes("pin session expired") ||
+    normalized.includes("invalid signature token") ||
+    normalized.includes("invalid signed link payload") ||
+    normalized.includes("invalid token")
+  ) {
+    return {
+      status: 400,
+      title: "This signing session is no longer valid",
+      summary: "The link or in-progress signing session has expired or is no longer accepted.",
+      nextSteps: defaultNextSteps,
+      technicalDetails: details,
+    };
+  }
+
+  if (normalized.includes("stale (hash mismatch)") || normalized.includes("latest request comment")) {
+    return {
+      status: 409,
+      title: "This signature request is out of date",
+      summary: "The request changed after this signing flow started, so the worker refused to continue with stale context.",
+      nextSteps: [
+        "Open the latest signature link from the GitHub request comment.",
+        "If the request was just updated, refresh GitHub and retry from the newest comment state.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (
+    normalized.includes("you are signed in as") ||
+    normalized.includes("is not eligible for this request") ||
+    normalized.includes("is not assigned a signature slot") ||
+    normalized.includes("does not match the current request slot") ||
+    normalized.includes("role '") ||
+    normalized.includes("unable to resolve signer role")
+  ) {
+    return {
+      status: 403,
+      title: "You are not authorized for this signature request",
+      summary: "The current GitHub account or signer assignment does not match the request that is being signed.",
+      nextSteps: [
+        "Confirm you are signed into the correct GitHub account for this request.",
+        "Open your own signer link from the GitHub request comment instead of reusing someone else's link.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (normalized.includes("invalid pin")) {
+    return {
+      status: 403,
+      title: "PIN verification failed",
+      summary: "The QMS signature PIN was not accepted.",
+      nextSteps: [
+        "Try again with your current 6-digit QMS PIN.",
+        "If you recently rotated or forgot the PIN, use the reset path and then restart from the latest signature link.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (normalized.includes("pin must be exactly 6 digits") || normalized.includes("pin confirmation must be exactly 6 digits")) {
+    return {
+      status: 400,
+      title: "PIN format is invalid",
+      summary: "The QMS signature PIN must contain exactly six digits.",
+      nextSteps: [
+        "Enter a 6-digit numeric PIN.",
+        "If you are setting a new PIN, make sure both entries match.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (normalized.includes("pin and confirmation do not match")) {
+    return {
+      status: 400,
+      title: "PIN confirmation does not match",
+      summary: "The two PIN values were different, so the worker did not save or use them.",
+      nextSteps: [
+        "Enter the same 6-digit PIN in both fields.",
+        "Restart the flow from the latest GitHub link if this page has been open for a while.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (
+    normalized.includes("missing required configuration") ||
+    normalized.includes("missing required repository access configuration") ||
+    normalized.includes("missing required kv binding") ||
+    normalized.includes("legacy signed links are not enabled")
+  ) {
+    return {
+      status: 500,
+      title: "Signature service is not configured correctly",
+      summary: "The signing worker is missing required configuration and cannot complete the ceremony right now.",
+      nextSteps: [
+        "Contact the QMS administrator to repair the signature worker configuration.",
+        "Retry after the worker configuration has been updated.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  if (
+    normalized.includes("github api get") ||
+    normalized.includes("github api post") ||
+    normalized.includes("github oauth exchange failed") ||
+    normalized.includes("gitHub app".toLowerCase())
+  ) {
+    return {
+      status: 502,
+      title: "The signature service could not complete a GitHub check",
+      summary: "The worker could not finish a required GitHub API or OAuth step.",
+      nextSteps: [
+        "Wait a moment and retry from the latest GitHub signature link.",
+        "If the problem persists, contact the QMS administrator and include the technical details below.",
+      ],
+      technicalDetails: details,
+    };
+  }
+
+  return {
+    status: 500,
+    title: "Unable to complete the signature request",
+    summary: "The worker hit an unexpected condition before it could finish the signing ceremony.",
+    nextSteps: defaultNextSteps,
+    technicalDetails: details,
+  };
 }
 
 function renderLandingPage(baseUrl: string, workerVersion: string): string {
@@ -1438,13 +1775,12 @@ function renderSignPage(
   ctx: SignatureContext,
   provider: string,
   baseUrl: string,
-  sig: string,
   workerVersion: string
 ): string {
   const title = "QMS Lite Sign";
   const providerLabel = provider === "github" ? "GitHub" : provider;
   const formAction = `${stripTrailingSlash(baseUrl)}/auth/start`;
-  const prUrl = `https://github.com/${ctx.repo}/pull/${ctx.pr}`;
+  const requestUrl = `https://github.com/${ctx.repo}/issues/${ctx.pr}`;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1489,12 +1825,12 @@ function renderSignPage(
     <div class="card">
       <div class="head">
         <h1>QMS Signature Ceremony</h1>
-        <p>Identity is your active ${escapeHtml(providerLabel)} login, signature context is locked from the PR request, PIN is verified next.</p>
+        <p>Identity is your active ${escapeHtml(providerLabel)} login, signature context is locked from the current request, PIN is verified next.</p>
       </div>
       <div class="section">
         <div class="grid">
           <div><div class="k">Repository</div><div class="v">${escapeHtml(ctx.repo)}</div></div>
-          <div><div class="k">PR Number</div><div class="v">${escapeHtml(ctx.pr)}</div></div>
+          <div><div class="k">Request Number</div><div class="v">${escapeHtml(ctx.pr)}</div></div>
           <div><div class="k">Target Hash</div><div class="v">${escapeHtml(ctx.hash)}</div></div>
           <div><div class="k">Meaning of Signature</div><div class="v">${escapeHtml(ctx.meaning)}</div></div>
           <div><div class="k">Signer Role</div><div class="v">${escapeHtml(ctx.role)}</div></div>
@@ -1506,19 +1842,12 @@ function renderSignPage(
           <input type="hidden" name="provider" value="${escapeHtml(provider)}" />
           <input type="hidden" name="repo" value="${escapeHtml(ctx.repo)}" />
           <input type="hidden" name="pr" value="${escapeHtml(ctx.pr)}" />
-          <input type="hidden" name="hash" value="${escapeHtml(ctx.hash)}" />
-          <input type="hidden" name="meaning" value="${escapeHtml(ctx.meaning)}" />
-          <input type="hidden" name="role" value="${escapeHtml(ctx.role)}" />
           <input type="hidden" name="signer" value="${escapeHtml(ctx.signer)}" />
-          <input type="hidden" name="required_signatures" value="${escapeHtml(ctx.required_signatures)}" />
-          <input type="hidden" name="signature_index" value="${escapeHtml(ctx.signature_index)}" />
-          <input type="hidden" name="exp" value="${escapeHtml(ctx.exp)}" />
-          <input type="hidden" name="sig" value="${escapeHtml(sig)}" />
           <button class="btn" type="submit" data-processing-text="Opening GitHub...">Continue with ${escapeHtml(providerLabel)}</button>
         </form>
       </div>
       <div class="section foot">
-        PR: <a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">${escapeHtml(prUrl)}</a>
+        Request: <a href="${escapeHtml(requestUrl)}" target="_blank" rel="noreferrer">${escapeHtml(requestUrl)}</a>
         <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
       </div>
     </div>
@@ -1867,26 +2196,61 @@ function renderSuccessPage(input: {
 </html>`;
 }
 
-function renderErrorPage(title: string, details: string): string {
+function renderErrorPage(input: ErrorPresentation, workerVersion: string): string {
+  const nextSteps = input.nextSteps
+    .map((step) => `<li>${escapeHtml(step)}</li>`)
+    .join("");
+  const detailsBlock = input.technicalDetails
+    ? `<details><summary>Technical details</summary><pre>${escapeHtml(input.technicalDetails)}</pre></details>`
+    : "";
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${escapeHtml(title)}</title>
+  <title>${escapeHtml(input.title)}</title>
   <style>
-    body { margin: 0; background: #fff7f7; color: #4a0f0f; font: 16px/1.45 "Segoe UI", sans-serif; }
-    .wrap { max-width: 760px; margin: 34px auto; padding: 0 16px; }
-    .card { border: 1px solid #f0b3b3; border-radius: 12px; background: #fff; }
-    h1 { margin: 0; padding: 16px 20px; background: #ffe1e1; border-radius: 12px 12px 0 0; font-size: 22px; }
-    p { margin: 0; padding: 16px 20px; white-space: pre-wrap; }
+    :root {
+      --bg: #fff5f2;
+      --card: #fffdfc;
+      --ink: #402021;
+      --muted: #7d5757;
+      --line: #efc3bb;
+      --accent: #8d2f25;
+      --accent-soft: #fee3dd;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(circle at top, #fffefd 0%, var(--bg) 62%, #f7e3de 100%); color: var(--ink); font: 16px/1.5 "Segoe UI", "Avenir Next", "Helvetica Neue", sans-serif; }
+    .wrap { max-width: 860px; margin: 40px auto; padding: 0 18px; }
+    .card { border: 1px solid var(--line); border-radius: 18px; background: var(--card); box-shadow: 0 18px 40px rgba(95, 30, 23, 0.08); overflow: hidden; }
+    .head { padding: 22px 24px 18px; background: linear-gradient(135deg, #fff0ec, #ffe3dd); border-bottom: 1px solid var(--line); }
+    .eyebrow { display: inline-block; margin-bottom: 8px; padding: 5px 9px; border-radius: 999px; background: rgba(141, 47, 37, 0.10); color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { margin: 0; font-size: 28px; line-height: 1.15; letter-spacing: -0.02em; }
+    .summary { margin: 10px 0 0; color: var(--muted); font-size: 17px; }
+    .body { padding: 22px 24px 24px; }
+    h2 { margin: 0 0 10px; font-size: 15px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+    ul { margin: 0; padding-left: 20px; }
+    li + li { margin-top: 8px; }
+    details { margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; background: #fff7f5; overflow: hidden; }
+    summary { cursor: pointer; padding: 12px 14px; font-weight: 650; }
+    pre { margin: 0; padding: 0 14px 14px; white-space: pre-wrap; word-break: break-word; color: #5b2f2b; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .foot { margin-top: 20px; color: var(--muted); font-size: 12px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>${escapeHtml(title)}</h1>
-      <p>${escapeHtml(details)}</p>
+      <div class="head">
+        <div class="eyebrow">QMS Signature</div>
+        <h1>${escapeHtml(input.title)}</h1>
+        <p class="summary">${escapeHtml(input.summary)}</p>
+      </div>
+      <div class="body">
+        <h2>What To Do Next</h2>
+        <ul>${nextSteps}</ul>
+        ${detailsBlock}
+        <div class="foot">Worker version: ${escapeHtml(workerVersion)}</div>
+      </div>
     </div>
   </div>
 </body>
