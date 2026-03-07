@@ -1,0 +1,47 @@
+version: 1
+record_type: design_traceability_matrix
+required_fields:
+  matrix_id: "DTM-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  maintained_by_role: "engineering_lead"
+  rows:
+    - user_need_id: "UN-001"
+      requirement_ids:
+        - "SYS-REQ-001"
+        - "SYS-REQ-004"
+      risk_ids:
+        - "RISK-003"
+      verification_references:
+        - "TC-QMSL-0001"
+      release_references:
+        - "records/configuration/qms_lite_release_plan.yml"
+    - user_need_id: "UN-002"
+      requirement_ids:
+        - "SYS-REQ-002"
+      risk_ids:
+        - "RISK-001"
+      verification_references:
+        - "TC-QMSL-0002"
+      release_references:
+        - "records/configuration/qms_lite_release_plan.yml"
+    - user_need_id: "UN-003"
+      requirement_ids:
+        - "SYS-REQ-003"
+      risk_ids:
+        - "RISK-002"
+      verification_references:
+        - "TC-QMSL-0003"
+      release_references:
+        - "records/configuration/qms_lite_release_plan.yml"
+    - user_need_id: "UN-004"
+      requirement_ids:
+        - "SYS-REQ-004"
+        - "SYS-REQ-005"
+      risk_ids:
+        - "RISK-003"
+        - "RISK-004"
+      verification_references:
+        - "TC-QMSL-0001"
+        - "TC-QMSL-0101"
+      release_references:
+        - "records/configuration/qms_lite_release_plan.yml"

@@ -1,0 +1,53 @@
+version: 1
+record_type: user_needs_specification
+required_fields:
+  user_needs_id: "UNS-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  intended_use_reference: "docs/regulatory/intended_use.md"
+  maintained_by_role: "regulatory_lead"
+  user_profiles:
+    - profile_id: "UP-001"
+      label: "qa_or_regulatory_administrator"
+      environment: "GitHub web UI and controlled workflow environment"
+      training_or_experience: "trained in QMS Lite SOP and workflow use"
+      safety_relevance: "high"
+    - profile_id: "UP-002"
+      label: "engineering_maintainer"
+      environment: "GitHub repository, workflow files, and release evidence surface"
+      training_or_experience: "trained in controlled SDLC and repository change management"
+      safety_relevance: "medium"
+  user_needs:
+    - need_id: "UN-001"
+      statement: "Users need QMS Lite to preserve a controlled QMS baseline with traceable issue, branch, pull request, and release history."
+      rationale: "The software item exists to act as the controlled QMS operating surface."
+      source_reference: "README.md and docs/architecture/README.md in the adopted upstream baseline"
+      safety_relevance: "high"
+      linked_use_scenarios: []
+      linked_requirements:
+        - "SYS-REQ-001"
+        - "SYS-REQ-004"
+    - need_id: "UN-002"
+      statement: "Users need merged controlled changes to produce attributable review and signature evidence bound to the approved request context."
+      rationale: "Electronic-signature and approval evidence are core quality and audit controls."
+      source_reference: "SOP-008, SOP-020, and signature workflow definitions in the adopted upstream baseline"
+      safety_relevance: "high"
+      linked_use_scenarios: []
+      linked_requirements:
+        - "SYS-REQ-002"
+    - need_id: "UN-003"
+      statement: "Users need changed execution records to be published as immutable evidence packages with hashes, source PR linkage, and signed attestation metadata."
+      rationale: "Long-term auditability depends on immutable publication."
+      source_reference: "docs/architecture/README.md and records/README.md in the adopted upstream baseline"
+      safety_relevance: "high"
+      linked_use_scenarios: []
+      linked_requirements:
+        - "SYS-REQ-003"
+    - need_id: "UN-004"
+      statement: "Users need the SDLC repo to identify exactly which upstream baseline is being validated and when revalidation is required."
+      rationale: "Without baseline and revalidation control, evidence can drift away from the software actually in use."
+      source_reference: "README.md open-source distribution model and SOP-006 software validation controls"
+      safety_relevance: "medium"
+      linked_use_scenarios: []
+      linked_requirements:
+        - "SYS-REQ-004"
+        - "SYS-REQ-005"

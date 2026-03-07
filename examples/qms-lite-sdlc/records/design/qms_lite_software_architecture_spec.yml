@@ -1,0 +1,77 @@
+version: 1
+record_type: software_architecture_spec
+required_fields:
+  architecture_id: "SAS-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  source_requirements_reference: "records/design/qms_lite_system_requirements_spec.yml"
+  maintained_by_role: "engineering_lead"
+  system_context_summary: "QMS Lite operates as GitHub-native QMS software built around GitHub content, pull-request review, workflow automation, immutable releases, and a Cloudflare-hosted signature worker."
+  components:
+    - component_id: "CMP-001"
+      name: "github_control_surface"
+      responsibility: "Hosts controlled QMS content, issues, pull requests, review evidence, and release objects."
+      interfaces:
+        - "GitHub web UI"
+        - "GitHub REST and GraphQL APIs"
+      allocated_requirements:
+        - "SYS-REQ-001"
+        - "SYS-REQ-004"
+      linked_risk_controls:
+        - "CTRL-003"
+    - component_id: "CMP-002"
+      name: "github_actions_workflows"
+      responsibility: "Executes review gates, signature orchestration, training automation, and immutable publication workflows."
+      interfaces:
+        - "GitHub Actions runner environment"
+        - "Repository workflow definitions"
+      allocated_requirements:
+        - "SYS-REQ-001"
+        - "SYS-REQ-003"
+        - "SYS-REQ-005"
+      linked_risk_controls:
+        - "CTRL-005"
+        - "CTRL-007"
+    - component_id: "CMP-003"
+      name: "signature_worker"
+      responsibility: "Performs signer ceremony, identity check, PIN verification, and attestation posting."
+      interfaces:
+        - "Cloudflare Worker HTTP routes"
+        - "GitHub OAuth"
+        - "GitHub API"
+      allocated_requirements:
+        - "SYS-REQ-002"
+      linked_risk_controls:
+        - "CTRL-001"
+        - "CTRL-002"
+    - component_id: "CMP-004"
+      name: "immutable_release_surface"
+      responsibility: "Stores immutable record bundles and signature evidence as GitHub release assets."
+      interfaces:
+        - "GitHub Releases"
+        - "Release asset download URLs"
+      allocated_requirements:
+        - "SYS-REQ-003"
+      linked_risk_controls:
+        - "CTRL-004"
+  external_dependencies:
+    - dependency_name: "GitHub"
+      version_or_service: "github.com and hosted Actions"
+      intended_use: "Controlled content, workflow execution, review evidence, and immutable release publication"
+      evaluation_reference: "records/validation/qms-tools/github-validation-record.md in the adopted upstream baseline"
+    - dependency_name: "Cloudflare Workers"
+      version_or_service: "signature worker hosting platform"
+      intended_use: "Signer ceremony hosting for the post-merge signature path"
+      evaluation_reference: "services/signature-worker/README.md in the adopted upstream baseline"
+  architecture_decisions:
+    - decision_id: "AD-001"
+      summary: "Use GitHub as the canonical controlled surface."
+      rationale: "Matches the current QMS Lite operating model and reduces process split between documentation and automation."
+      consequences: "Evidence and release controls remain tightly coupled to GitHub platform behavior."
+    - decision_id: "AD-002"
+      summary: "Use post-merge attestation plus immutable release packaging for formal evidence retention."
+      rationale: "This matches the current signature and publication flow in the upstream architecture."
+      consequences: "Workflow integrity and GitHub platform availability are quality-critical."
+    - decision_id: "AD-003"
+      summary: "Keep QMS Lite software-item SDLC evidence in a dedicated repository separate from the public upstream baseline."
+      rationale: "Avoids mixing product-specific execution evidence into the public upstream repository."
+      consequences: "Upstream baseline tracking and controlled upgrades become required SDLC activities."

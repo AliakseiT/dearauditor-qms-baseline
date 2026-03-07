@@ -1,0 +1,197 @@
+version: 1
+record_type: risk_register
+product_id: "qms-lite"
+assessment_scope: "QMS Lite software lifecycle, signature evidence, immutable publication, and upstream-baseline control"
+scoring_model:
+  formula: "risk_score = severity_value * probability_value"
+  severity_scale:
+    S1: {label: negligible, value: 1}
+    S2: {label: minor, value: 2}
+    S3: {label: moderate, value: 3}
+    S4: {label: serious, value: 4}
+    S5: {label: critical, value: 5}
+  probability_scale:
+    P1: {label: remote, value: 1}
+    P2: {label: low, value: 2}
+    P3: {label: occasional, value: 3}
+    P4: {label: probable, value: 4}
+    P5: {label: frequent_or_credible, value: 5}
+  acceptability_bands:
+    acceptable: "1-4"
+    alarp_or_justification: "5-9"
+    not_acceptable: "10-25"
+entries:
+  - risk_id: "RISK-001"
+    source_type: hazard_top_down
+    hazard_or_threat: "Incorrect or unauthorized electronic signature is captured for a controlled request."
+    sequence_of_events:
+      - "A signature request is opened for a merged controlled change."
+      - "The wrong GitHub user or stale request context enters the signer flow."
+      - "An attestation is generated against the wrong signer or request state."
+    hazardous_situation: "Quality evidence reflects an incorrect signer or request context."
+    possible_harm: "Invalid approval evidence, audit nonconformance, and release of an inadequately reviewed change."
+    initial_risk:
+      severity_code: S4
+      severity_value: 4
+      probability_code: P3
+      probability_value: 3
+      score: 12
+      acceptability_decision: additional_controls_or_benefit_risk_required
+      rationale: "Signature evidence is quality-critical and the flow spans multiple systems."
+    controls:
+      - control_id: "CTRL-001"
+        control_type: inherent_safety_by_design
+        description: "Verify GitHub login against the designated signer and bind the signature ceremony to the current approved request context."
+        implementation_reference: "upstream/qms-lite/services/signature-worker/src/index.ts and upstream/qms-lite/.github/workflows/2.1_pr_signature_request_gate.yml"
+        effectiveness_verification_reference: "TC-QMSL-0002"
+        implementation_status: planned
+      - control_id: "CTRL-002"
+        control_type: protective_measure
+        description: "Require QMS signature PIN verification before posting attestation evidence."
+        implementation_reference: "upstream/qms-lite/services/signature-worker/src/index.ts"
+        effectiveness_verification_reference: "TC-QMSL-0002"
+        implementation_status: planned
+    residual_risk:
+      severity_code: S4
+      severity_value: 4
+      probability_code: P1
+      probability_value: 1
+      score: 4
+      acceptability_decision: acceptable_with_rationale
+      rationale: "Identity, request-context, and PIN controls reduce the credible occurrence to remote for the planned scope."
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements:
+        - "SYS-REQ-002"
+      tests:
+        - "TC-QMSL-0002"
+      monitoring: []
+  - risk_id: "RISK-002"
+    source_type: failure_mode_bottom_up
+    hazard_or_threat: "Immutable record release package is incomplete or loses source linkage."
+    sequence_of_events:
+      - "A record-publication workflow runs after merge."
+      - "Manifest content, source paths, or signed attestation data are missing or mismatched."
+      - "The release package is published with incomplete evidence."
+    hazardous_situation: "Immutable record package cannot prove what was approved and published."
+    possible_harm: "Evidence integrity weakness and failed audit reconstruction."
+    initial_risk:
+      severity_code: S4
+      severity_value: 4
+      probability_code: P2
+      probability_value: 2
+      score: 8
+      acceptability_decision: reduce_when_practicable_or_justify_residual_risk
+      rationale: "The workflow is deterministic, but publication defects directly affect retained evidence."
+    controls:
+      - control_id: "CTRL-004"
+        control_type: inherent_safety_by_design
+        description: "Generate record bundle manifests with source hashes, source PR linkage, and signed attestation metadata before release publication."
+        implementation_reference: "upstream/qms-lite/.github/workflows/2.2_publish_qms_records.yml"
+        effectiveness_verification_reference: "TC-QMSL-0003"
+        implementation_status: planned
+    residual_risk:
+      severity_code: S3
+      severity_value: 3
+      probability_code: P1
+      probability_value: 1
+      score: 3
+      acceptability_decision: acceptable_with_rationale
+      rationale: "Automated manifest generation and release-asset checks reduce the credible occurrence for the planned dry-run scope."
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements:
+        - "SYS-REQ-003"
+      tests:
+        - "TC-QMSL-0003"
+      monitoring: []
+  - risk_id: "RISK-003"
+    source_type: hazard_top_down
+    hazard_or_threat: "The SDLC evidence set no longer matches the actual adopted upstream QMS Lite revision."
+    sequence_of_events:
+      - "The SDLC repo imports an upstream baseline."
+      - "Local evidence continues while the actual upstream source changes or the baseline is no longer explicit."
+      - "Reviewers cannot prove which software item revision the evidence applies to."
+    hazardous_situation: "The validated software item and the documented evidence set diverge."
+    possible_harm: "Incorrect release readiness, misleading traceability, and invalid validation conclusions."
+    initial_risk:
+      severity_code: S3
+      severity_value: 3
+      probability_code: P3
+      probability_value: 3
+      score: 9
+      acceptability_decision: reduce_when_practicable_or_justify_residual_risk
+      rationale: "Separate upstream and SDLC repositories create an explicit drift risk if baseline control is weak."
+    controls:
+      - control_id: "CTRL-003"
+        control_type: inherent_safety_by_design
+        description: "Record the adopted upstream repository and ref in `adoption/upstream-baseline.json` and move to new upstream revisions only through controlled PR updates."
+        implementation_reference: "adoption/upstream-baseline.json and controlled SDLC change process"
+        effectiveness_verification_reference: "TC-QMSL-0001"
+        implementation_status: planned
+    residual_risk:
+      severity_code: S3
+      severity_value: 3
+      probability_code: P1
+      probability_value: 1
+      score: 3
+      acceptability_decision: acceptable_with_rationale
+      rationale: "Explicit baseline recording and controlled upgrade review keep drift visible and reviewable."
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements:
+        - "SYS-REQ-001"
+        - "SYS-REQ-004"
+      tests:
+        - "TC-QMSL-0001"
+      monitoring: []
+  - risk_id: "RISK-004"
+    source_type: failure_mode_bottom_up
+    hazard_or_threat: "A platform or workflow change invalidates the validated intended use without triggering reassessment."
+    sequence_of_events:
+      - "GitHub, the signature worker, or critical workflow logic changes."
+      - "The change materially affects approval, signature, or evidence behavior."
+      - "The prior validation conclusion is reused without adequate revalidation."
+    hazardous_situation: "The software is relied on outside its validated envelope."
+    possible_harm: "Undetected evidence-control failure and invalid release or QMS decisions."
+    initial_risk:
+      severity_code: S4
+      severity_value: 4
+      probability_code: P2
+      probability_value: 2
+      score: 8
+      acceptability_decision: reduce_when_practicable_or_justify_residual_risk
+      rationale: "The QMS Lite operating model depends on external platforms and internal workflow automation."
+    controls:
+      - control_id: "CTRL-005"
+        control_type: protective_measure
+        description: "Use SOP-006 aligned validation planning and identify target revision, environments, and revalidation triggers in the V&V plan."
+        implementation_reference: "records/verification_validation/qms_lite_vv_plan.yml"
+        effectiveness_verification_reference: "TC-QMSL-0101"
+        implementation_status: planned
+      - control_id: "CTRL-007"
+        control_type: information_for_safety
+        description: "Review major upstream baseline changes and workflow changes through controlled SDLC PR updates before use."
+        implementation_reference: "adoption/upstream-baseline.json and SDLC review practice"
+        effectiveness_verification_reference: "TC-QMSL-0001"
+        implementation_status: planned
+    residual_risk:
+      severity_code: S4
+      severity_value: 4
+      probability_code: P1
+      probability_value: 1
+      score: 4
+      acceptability_decision: acceptable_with_rationale
+      rationale: "Revision targeting and explicit revalidation triggers reduce the credible occurrence for the planned scope."
+    benefit_risk_needed: false
+    status: open
+    evidence_links:
+      requirements:
+        - "SYS-REQ-005"
+      tests:
+        - "TC-QMSL-0001"
+        - "TC-QMSL-0101"
+      monitoring: []

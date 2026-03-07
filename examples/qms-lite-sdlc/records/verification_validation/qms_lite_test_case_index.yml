@@ -1,0 +1,53 @@
+version: 1
+record_type: test_case_index
+required_fields:
+  index_id: "TCI-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  target_revision: "4bd638d2ccaca6dbfb2a20492225abce55017882"
+  test_cases:
+    - test_case_id: "TC-QMSL-0001"
+      title: "Controlled upstream-baseline and review-path verification"
+      type: "mixed"
+      requirement_references:
+        - "SYS-REQ-001"
+        - "SYS-REQ-004"
+        - "SYS-REQ-005"
+      risk_references:
+        - "RISK-003"
+        - "RISK-004"
+      location_reference: "records/verification_validation/TC-QMSL-0001.md"
+      evidence_type: "report"
+    - test_case_id: "TC-QMSL-0002"
+      title: "Signature flow identity and request-context verification"
+      type: "mixed"
+      requirement_references:
+        - "SYS-REQ-002"
+      risk_references:
+        - "RISK-001"
+      location_reference: "records/verification_validation/TC-QMSL-0002.md"
+      evidence_type: "log"
+    - test_case_id: "TC-QMSL-0003"
+      title: "Immutable record-publication package verification"
+      type: "mixed"
+      requirement_references:
+        - "SYS-REQ-003"
+      risk_references:
+        - "RISK-002"
+      location_reference: "records/verification_validation/TC-QMSL-0003.md"
+      evidence_type: "artifact"
+    - test_case_id: "TC-QMSL-0101"
+      title: "End-to-end intended-use validation scenario"
+      type: "manual"
+      requirement_references:
+        - "SYS-REQ-001"
+        - "SYS-REQ-002"
+        - "SYS-REQ-003"
+        - "SYS-REQ-004"
+        - "SYS-REQ-005"
+      risk_references:
+        - "RISK-001"
+        - "RISK-002"
+        - "RISK-003"
+        - "RISK-004"
+      location_reference: "records/verification_validation/TC-QMSL-0101.md"
+      evidence_type: "report"

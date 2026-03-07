@@ -1,0 +1,69 @@
+version: 1
+record_type: system_requirements_spec
+required_fields:
+  spec_id: "SRS-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  source_user_needs_reference: "records/design/qms_lite_user_needs.yml"
+  maintained_by_role: "engineering_lead"
+  requirements:
+    - requirement_id: "SYS-REQ-001"
+      category: "functional"
+      statement: "QMS Lite shall use GitHub issues, pull requests, controlled content, and releases as the canonical controlled surface for QMS operation and change history."
+      rationale: "Matches the current GitHub-native operating model documented in the adopted upstream baseline."
+      source_user_needs:
+        - "UN-001"
+      linked_risk_items:
+        - "RISK-003"
+      verification_method: "review"
+      acceptance_criteria:
+        - "The adopted upstream baseline documents GitHub as the canonical controlled surface."
+        - "The SDLC repo records the adopted upstream baseline and planned controlled release path."
+    - requirement_id: "SYS-REQ-002"
+      category: "regulatory"
+      statement: "QMS Lite shall collect post-merge signature evidence in a flow that verifies designated signer identity, binds the ceremony to the current request context, and records the resulting attestation."
+      rationale: "This is the core Part 11 style signature control in the current architecture."
+      source_user_needs:
+        - "UN-002"
+      linked_risk_items:
+        - "RISK-001"
+      verification_method: "test"
+      acceptance_criteria:
+        - "The signature flow rejects a non-designated signer account."
+        - "The resulting attestation references the current approved request context."
+    - requirement_id: "SYS-REQ-003"
+      category: "regulatory"
+      statement: "QMS Lite shall publish immutable record-release packages that include source content, manifest hashes, source PR linkage, and signed attestation metadata."
+      rationale: "Immutable publication is required for durable audit evidence."
+      source_user_needs:
+        - "UN-003"
+      linked_risk_items:
+        - "RISK-002"
+      verification_method: "test"
+      acceptance_criteria:
+        - "A record-publication workflow creates a manifest with source hashes and source PR linkage."
+        - "The release assets include signed attestation metadata."
+    - requirement_id: "SYS-REQ-004"
+      category: "operational"
+      statement: "The dedicated QMS Lite SDLC repository shall record the adopted upstream baseline and use controlled changes when moving to a new upstream revision."
+      rationale: "The SDLC evidence must stay tied to the exact upstream software item revision under control."
+      source_user_needs:
+        - "UN-001"
+        - "UN-004"
+      linked_risk_items:
+        - "RISK-003"
+      verification_method: "review"
+      acceptance_criteria:
+        - "The SDLC repo contains `adoption/upstream-baseline.json` with the active upstream repository and ref."
+        - "Upgrade activity is planned as controlled PR-based change."
+    - requirement_id: "SYS-REQ-005"
+      category: "regulatory"
+      statement: "QMS Lite shall define validation and revalidation triggers for quality-critical platform, workflow, and intended-use changes."
+      rationale: "Tool validation remains valid only while intended use and critical behavior stay within the validated envelope."
+      source_user_needs:
+        - "UN-004"
+      linked_risk_items:
+        - "RISK-004"
+      verification_method: "review"
+      acceptance_criteria:
+        - "The SDLC baseline references validation and revalidation controls aligned to SOP-006."
+        - "The V&V plan identifies the target revision and conditions that require reassessment."

@@ -1,0 +1,28 @@
+version: 1
+record_type: release_plan
+required_fields:
+  release_plan_id: "RLP-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  target_version_or_tag: "QMS-LITE-SDLC-INITIAL-RC1"
+  release_cutoff_revision: "4bd638d2ccaca6dbfb2a20492225abce55017882"
+  scope_summary: "Initial dedicated SDLC baseline for QMS Lite using the adopted upstream revision as of 2026-03-07."
+  included_change_records:
+    - "Initial upstream baseline import recorded in adoption/upstream-baseline.json"
+  deferred_change_records:
+    - "Dedicated usability-engineering file remains out of scope for the current QMS Lite software-item baseline and will be reconsidered only if product direction or claims change."
+  formal_vv_entry_binary_reference: "Repository baseline 4bd638d2ccaca6dbfb2a20492225abce55017882 plus the matching signature-worker source revision under the same controlled baseline."
+  pre_gate_execution_policy: "dry_run_only"
+  linked_records:
+    design_input_baseline_reference: "records/design/qms_lite_design_development_plan.yml"
+    design_traceability_reference: "records/design/qms_lite_design_traceability_matrix.yml"
+    verification_validation_report: ""
+    residual_risk_decision: "records/risk/qms_lite_risk_management_review.md"
+    change_record: "adoption/upstream-baseline.json"
+    anomaly_summary: ""
+  rollback_or_containment_note: "Revert to the prior adopted upstream baseline through a controlled SDLC PR, update adoption/upstream-baseline.json, and redeploy any worker change only from the reviewed baseline."
+  signoff:
+    meaning_of_signature: "Approved Release Readiness and Formal V&V Entry"
+    signer_roles:
+      - qa_lead
+      - engineering_lead
+      - regulatory_lead

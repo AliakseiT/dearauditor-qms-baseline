@@ -1,0 +1,55 @@
+version: 1
+record_type: design_development_plan
+required_fields:
+  plan_id: "DDP-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  intended_use_reference: "docs/regulatory/intended_use.md"
+  scope_summary: "Controlled SDLC for QMS Lite as GitHub-native QMS software, covering baseline import, issue and pull-request review, signature orchestration, immutable record publication, and QMS-tool revalidation triggers."
+  lifecycle_model: "incremental"
+  accountable_roles:
+    engineering_lead: "REPLACE_WITH_ENGINEERING_LEAD"
+    regulatory_lead: "REPLACE_WITH_REGULATORY_LEAD"
+    usability_lead: "not_applicable_for_current_scope"
+    qa_lead: "REPLACE_WITH_QA_LEAD"
+  design_inputs:
+    user_needs_reference: "records/design/qms_lite_user_needs.yml"
+    system_requirements_reference: "records/design/qms_lite_system_requirements_spec.yml"
+    risk_management_plan_reference: "records/risk/qms_lite_risk_management_plan.yml"
+    usability_file_index_reference: ""
+    deferred_inputs_or_constraints:
+      - "Usability engineering file intentionally not opened for the current QMS Lite scope; revisit if product direction introduces dedicated user-interface claims or human-factors evidence needs."
+  implementation_entry_gate:
+    approved_for_controlled_implementation: false
+    open_assumptions:
+      - "The SDLC repo will stay aligned to the adopted upstream baseline and record upgrades by controlled PR."
+      - "Cloudflare signature-worker deployment remains part of the software item boundary where used for formal signature collection."
+    planned_vv_strategy_reference: "records/verification_validation/qms_lite_vv_plan.yml"
+  planned_outputs:
+    architecture_spec_reference: "records/design/qms_lite_software_architecture_spec.yml"
+    traceability_matrix_reference: "records/design/qms_lite_design_traceability_matrix.yml"
+    verification_validation_plan_reference: "records/verification_validation/qms_lite_vv_plan.yml"
+    release_plan_reference: "records/configuration/qms_lite_release_plan.yml"
+  milestones:
+    - name: "design_inputs_baselined"
+      entry_criteria:
+        - "intended use approved"
+        - "user needs reviewed"
+      exit_criteria:
+        - "requirements baselined"
+    - name: "architecture_ready"
+      entry_criteria:
+        - "requirements baselined"
+      exit_criteria:
+        - "architecture and key interfaces reviewed"
+    - name: "release_ready"
+      entry_criteria:
+        - "verification and validation complete"
+        - "residual risk reviewed"
+      exit_criteria:
+        - "release baseline approved"
+  signoff:
+    meaning_of_signature: "Approved Design Inputs and Development Plan"
+    signer_roles:
+      - qa_lead
+      - engineering_lead
+      - regulatory_lead

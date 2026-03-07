@@ -1,0 +1,42 @@
+version: 1
+record_type: verification_validation_plan
+required_fields:
+  plan_id: "VVP-QMS-LITE-2026-03-07"
+  product_id: "qms-lite"
+  target_revision: "4bd638d2ccaca6dbfb2a20492225abce55017882"
+  campaign_mode: "dry_run"
+  release_scope_decision_reference: "records/configuration/qms_lite_release_plan.yml"
+  activity_type: "verification_and_validation"
+  software_safety_classification: "not_applicable_with_rationale"
+  linked_inputs:
+    design_input_baseline_reference: "records/design/qms_lite_design_development_plan.yml"
+    requirements:
+      - "records/design/qms_lite_system_requirements_spec.yml"
+    risk_items:
+      - "records/risk/qms_lite_risk_register.yml"
+    design_traceability_reference: "records/design/qms_lite_design_traceability_matrix.yml"
+    change_records: []
+    anomaly_records: []
+  environments:
+    - name: "github_control_surface"
+      purpose: "Issue, pull-request, workflow-gate, and immutable-release verification"
+      configuration_reference: "docs/admin/test-environments.md#github-control-surface"
+    - name: "signature_worker_environment"
+      purpose: "Signer-ceremony and attestation verification"
+      configuration_reference: "docs/admin/test-environments.md#signature-worker-environment"
+  formal_execution_gate:
+    pre_gate_execution_policy: "dry_run_only"
+    approved_release_readiness_reference: "records/configuration/qms_lite_release_plan.yml"
+    binary_deployment_reference: "Repository baseline 4bd638d2ccaca6dbfb2a20492225abce55017882 plus matching signature-worker source revision under the same controlled baseline."
+    configuration_capture_required_for_each_run: true
+  planned_test_case_index: "records/verification_validation/qms_lite_test_case_index.yml"
+  acceptance_criteria:
+    - "All planned verification test cases pass or have approved deviation rationale."
+    - "At least one end-to-end validation scenario confirms intended QMS use for the selected baseline."
+    - "Traceability from user needs to requirements, risk controls, and tests remains complete."
+    - "No unresolved issue remains that invalidates signature evidence or immutable publication integrity."
+  signoff:
+    meaning_of_signature: "Approved V&V Plan"
+    signer_roles:
+      - qa_lead
+      - engineering_lead
