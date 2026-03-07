@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -139,6 +140,10 @@ def is_record_artifact(path):
     )
 
 
+def is_execution_record(path):
+    return is_record_artifact(path) and not is_template_record(path) and not is_record_readme(path)
+
+
 @dataclass
 class DocInfo:
     path: str
@@ -153,6 +158,7 @@ class DocInfo:
 class QMSContext:
     base_sha: str
     head_sha: str
+    pr_body: str
     changed: list[str]
     changed_set: set[str]
     readme_text: str
@@ -217,6 +223,7 @@ def parse_training_matrix(text):
 def build_context(base_sha, head_sha):
     changed = changed_files(base_sha, head_sha)
     changed_set = set(changed)
+    pr_body = os.environ.get("PR_BODY", "")
     readme_text = Path("README.md").read_text(encoding="utf-8")
     readme_nav = parse_readme_doc_nav(readme_text)
     readme_sop_index = parse_readme_sop_index(readme_text)
@@ -260,6 +267,7 @@ def build_context(base_sha, head_sha):
     return QMSContext(
         base_sha=base_sha,
         head_sha=head_sha,
+        pr_body=pr_body,
         changed=changed,
         changed_set=changed_set,
         readme_text=readme_text,
@@ -407,6 +415,24 @@ class QMSContentGuardTests(unittest.TestCase):
                     f"{rule['name']} must be updated when these record files change: {', '.join(sorted(watched_records))}."
                 )
         self.assert_no_failures(failures)
+
+    def test_execution_record_prs_reference_issue_in_pr_body(self):
+        changed_execution_records = [
+            path
+            for path in self.ctx.changed
+            if is_execution_record(path)
+        ]
+        if not changed_execution_records:
+            return
+
+        pr_body = self.ctx.pr_body or ""
+        if re.search(r"\bIssue\s+#\d+\b", pr_body, flags=re.IGNORECASE):
+            return
+
+        self.fail(
+            "Execution record PRs must reference an Issue number in PR body "
+            '(for example: "Issue #12"). Record templates and index pages do not trigger this rule.'
+        )
 
     def test_risk_records_have_valid_schema(self):
         failures = []

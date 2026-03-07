@@ -49,7 +49,6 @@ jobs:
               return;
             }
             const body = pr.body || '';
-            const issueMatch = body.match(/Issue\s+#(\d+)/i);
 
             const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
             let meaning = meaningMatch ? meaningMatch[1].trim() : '';
@@ -93,11 +92,6 @@ jobs:
               isRecordArtifactPath(path) &&
               !isTemplateRecordPath(path) &&
               !isRecordIndexPath(path);
-            const requiresExecutionIssueRef = paths.some((path) => isExecutionRecordPath(path));
-            if (requiresExecutionIssueRef && !issueMatch) {
-              core.setFailed('Execution record PRs must reference an Issue number in PR body (e.g., "Issue #12"). Record templates do not require an execution issue reference.');
-              return;
-            }
             const coapprovalReasons = [];
             if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
             if (paths.some((path) => isExecutionRecordPath(path))) coapprovalReasons.push('execution records (/records, excluding templates and index pages)');
@@ -179,7 +173,6 @@ jobs:
             const finalSigners = [authorLogin, ...reviewerSigners];
 
             core.setOutput('pr_number', String(prNumber));
-            core.setOutput('issue_number', issueMatch ? issueMatch[1] : '');
             core.setOutput('meaning_of_signature', meaning);
             core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(requiredSignaturesForRequest));

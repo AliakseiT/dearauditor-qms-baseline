@@ -31,5 +31,6 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           python3 scripts/validate_qms_content.py --base "$BASE_SHA" --head "$HEAD_SHA"
