@@ -78,7 +78,6 @@ roles:
   engineering_owner:
     users:
       - AliakseiT
-      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-002
