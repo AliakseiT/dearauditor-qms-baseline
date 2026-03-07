@@ -16,7 +16,7 @@ QMS Lite is a GitHub-native QMS operating model built from:
 - controlled content in `sops/`, `matrices/`, selected company-level records, reusable templates, and `.github/`
 - GitHub Issues for planning and coordination
 - GitHub Pull Requests for controlled review and approval
-- GitHub Actions for enforcement, signing orchestration, training automation, and immutable publication
+- GitHub Actions for policy evaluation, signing orchestration, training automation, and immutable publication
 - GitHub Releases for immutable record and QMS release packaging
 - a Cloudflare-hosted signature worker for the primary post-merge signature ceremony
 
@@ -28,7 +28,7 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 | GitHub repository (`qms-lite`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
 | GitHub Issues | Planning and intake layer for CAPA, audit, risk, training, V&V, release, complaint, PMS, and change activities. |
 | GitHub Pull Requests | Controlled review, approval, and merge boundary for QMS document and record changes. |
-| GitHub Actions | Policy enforcement, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
+| GitHub Actions | Policy evaluation, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
 | GitHub Releases | Immutable publication surface for quality records and formal QMS release packages. |
 | Cloudflare signature worker | External signer UI and OAuth/PIN ceremony for the primary electronic-signature path. |
 | GitHub App token | Required for posting signature-attestation comments back to PRs. |
@@ -37,7 +37,7 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 ## 5. Primary Data Flows
 1. A QMS activity starts from an issue, a release tag, or a manual workflow dispatch.
 2. Controlled changes are implemented on a branch and proposed through a pull request.
-3. Gate workflows enforce approval and structural rules on the PR.
+3. Gate workflows evaluate approval and structural rules on the PR and can drive auto-merge behavior where repository settings allow enforcement.
 4. Once merged, post-merge workflows request signatures, collect attestations, and publish immutable record evidence for execution records maintained in the target repository.
 5. Training automations derive additional work items from released or merged state.
 6. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
@@ -112,9 +112,9 @@ flowchart LR
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
 | `1.1_auto_assign_signatory_reviewers.yml` | `pull_request` | Resolves required signatory reviewers from requested signature roles and assigns them. | Active |
-| `1.2_required_reviewer_approval_gate.yml` | `pull_request_review` | Enforces at least one valid non-author approval on the current head SHA where required. | Active |
-| `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables merge only after assigned reviewer approvals are present. | Active |
-| `1.4_qms_content_gate.yml` | `pull_request` | Enforces revision-history, README navigation/index, training-matrix synchronization, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
+| `1.2_required_reviewer_approval_gate.yml` | `pull_request_review` | Validates that at least one required non-author approval exists on the current head SHA. | Active |
+| `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables auto-merge after assigned reviewer approvals are present; repository-level branch protection or rulesets are still required to hard-block manual merges. | Active |
+| `1.4_qms_content_gate.yml` | `pull_request` | Validates revision-history, README navigation/index, training-matrix synchronization, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
 
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
@@ -140,7 +140,10 @@ flowchart LR
 ## 8. External Dependencies and Trust Boundaries
 | Dependency | Boundary | Purpose |
 |---|---|---|
-| GitHub-hosted Actions runners | External platform runtime | Execute automation logic, enforce gates, and publish releases. |
+| GitHub-hosted Actions runners | External platform runtime | Execute automation logic, evaluate configured gates, and publish releases. |
 | Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through the GitHub App. |
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |
+
+## 9. Platform Caveat
+On private repositories using GitHub Free, GitHub does not provide branch protection or rulesets to hard-block merges. In that deployment model, QMS Lite workflows can validate approvals and avoid enabling auto-merge, but an accidental manual merge without the intended approvals remains technically possible.
