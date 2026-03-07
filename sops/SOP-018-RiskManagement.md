@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R02
+revision: R03
 effective_date: 2026-03-07
 status: Published
-owner_role: qa_lead
+owner_role: regulatory_lead
 approver_role: management_representative
 iso_13485_clauses:
   - 7.1
@@ -71,9 +71,10 @@ This SOP covers:
 ## 6. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| QA Lead | Owns risk process integrity, file completeness, and governance cadence. |
+| Regulatory Lead | Leads the risk management file, intended-use/misuse context, and cross-functional risk reviews. |
+| QA Lead | Owns risk process integrity, record completeness, and governance cadence. |
 | Engineering Lead | Identifies failure modes/threat scenarios and implements controls. |
-| Regulatory Lead | Identifies foreseeable misuse and clinical workflow hazards. |
+| Usability Lead | Identifies use-related hazards, critical tasks, and usability-derived risk inputs for user-facing products. |
 | Management Representative | Approves risk acceptability framework and overall residual risk decisions. |
 | Auditor | Audits risk process execution and traceability quality. |
 
@@ -121,6 +122,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 1. Create product risk management plan before detailed analysis.
 2. Define acceptability criteria, methods, responsibilities, and review cadence.
 3. Define method for overall residual risk evaluation.
+4. Regulatory Lead is accountable for maintaining the current risk management file; QA Lead verifies process and evidence completeness.
 
 ### 8.2 Risk Analysis (Clause 5)
 1. Identify intended use and foreseeable misuse.
@@ -192,3 +194,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R00 | 2026-03-02 | Initial full release with unified software, use-related, and cybersecurity risk method aligned to ISO 14971. |
 | R01 | 2026-03-07 | Renamed the business-owner risk role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified risk-management role names to `engineering_lead`, `regulatory_lead`, and `auditor`. |
+| R03 | 2026-03-07 | Made `regulatory_lead` the risk-file owner, clarified QA process-governance responsibility, and added `usability_lead` for use-related risk inputs. |

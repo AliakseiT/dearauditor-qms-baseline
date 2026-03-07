@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R03
+revision: R04
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -40,10 +40,11 @@ Applies to new products, major features, and significant lifecycle changes affec
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Engineering Lead | Owns design planning, technical outputs, and release-readiness accountability. |
+| Engineering Lead | Owns system/software requirements, technical design planning, architecture, and release-readiness accountability. |
 | Engineer | Implements design outputs and executes assigned verification activities under approved plans. |
 | QA Lead | Ensures process conformance and evidence adequacy. |
-| Regulatory Lead | Reviews intended-use, clinical, and regulatory adequacy of outputs. |
+| Regulatory Lead | Owns intended use, claims, user needs, and regulatory constraints that become design inputs. |
+| Usability Lead | Owns usability-engineering inputs, user profiles, critical tasks, and user-interface evaluation planning for user-facing products. |
 
 ## 6. Procedure
 
@@ -55,8 +56,9 @@ Applies to new products, major features, and significant lifecycle changes affec
 
 ### 6.2 Design Inputs
 1. Capture user needs, safety/performance requirements, and regulatory constraints.
-2. Verify input completeness, consistency, and testability.
-3. Resolve conflicting requirements before implementation.
+2. Engineering Lead owns system and software requirements; Regulatory Lead owns intended-use, claims, and regulatory input definitions; Usability Lead owns user-profile and critical-task inputs for user-facing products.
+3. Verify input completeness, consistency, and testability.
+4. Resolve conflicting requirements before implementation.
 
 ### 6.3 Design Outputs
 1. Produce architecture, detailed design, and implementation artifacts.
@@ -110,3 +112,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R01 | 2026-03-06 | Added IEC 62304 lifecycle/release linkage and default GitHub-native V&V execution reference. |
 | R02 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and added explicit engineer execution responsibilities under approved plans. |
 | R03 | 2026-03-07 | Renamed lead roles to `engineering_lead` and `regulatory_lead` to remove owner-style role wording. |
+| R04 | 2026-03-07 | Clarified ownership of system requirements, regulatory design inputs, and usability inputs, and added `usability_lead` responsibilities. |

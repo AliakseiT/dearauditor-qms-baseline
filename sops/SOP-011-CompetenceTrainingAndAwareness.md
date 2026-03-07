@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R04
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -42,6 +42,7 @@ Applies to all personnel and contractors performing tasks that can affect produc
 2. Avoid broad over-assignment; include only SOPs needed for role responsibilities.
 3. Any user who changes code, prepares builds, or executes controlled verification/validation activities must hold the `engineer` role at minimum.
 4. Any user accountable for lifecycle planning, release readiness, or technical approval decisions must also hold the `engineering_lead` role.
+5. Any user accountable for usability-engineering records, formative/summative evaluation planning, or user-profile/use-environment definition must also hold the `usability_lead` role.
 
 ### 6.2 Triggering Training
 Training is required when:
@@ -86,3 +87,4 @@ Training is required when:
 | R02 | 2026-03-07 | Removed the deprecated review-only onboarding PR path and aligned training execution wording to the consolidated issue-based signature flow. |
 | R03 | 2026-03-07 | Added explicit minimum training role expectations for engineers and normalized manager language to role owners for small teams. |
 | R04 | 2026-03-07 | Renamed accountable roles to the simplified `*_lead` taxonomy and aligned training language to that naming. |
+| R05 | 2026-03-07 | Added explicit training-role criteria for `usability_lead` and aligned the matrix to required-versus-awareness training scope. |

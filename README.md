@@ -64,7 +64,7 @@ Contact for adoption, pilot use, or support: [aliaksei@dearauditor.ch](mailto:al
 GitHub README pages cannot personalize content by the viewer's login, so the GitHub-native training entry points are:
 
 - [My open training issues](https://github.com/AliakseiT/qms-lite/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) for the logged-in user
-- [Training matrix](matrices/training_matrix.yml) for GitHub user-to-role mappings and required SOP revisions
+- [Training matrix](matrices/training_matrix.yml) for GitHub user-to-role mappings plus required versus awareness training scope
 - [User training log](records/training/user_training_log.yml) for recorded completion state
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) for the governing procedure
 - [System architecture](docs/architecture/README.md) and [workflow automation map](docs/architecture/README.md#6-automation-map) for the training workflow model
@@ -81,8 +81,8 @@ Use the grouped links below for navigation. The raw machine-readable published i
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R02`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R03`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R04`
-- [SOP-005 QMS Governance and Quality Manual](sops/SOP-005-QMSGovernanceAndQualityManual.md) - `R09`
-- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R04`
+- [SOP-005 QMS Governance and Quality Manual](sops/SOP-005-QMSGovernanceAndQualityManual.md) - `R10`
+- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R05`
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R02`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R02`
 
@@ -90,10 +90,10 @@ Use the grouped links below for navigation. The raw machine-readable published i
 
 - [SOP-006 Software Validation (QMS Tools)](sops/SOP-006-SoftwareValidation.md) - `R00`
 - [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R03`
-- [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R03`
+- [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R04`
 - [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R03`
-- [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R02`
-- [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R03`
+- [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R03`
+- [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R04`
 - [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R02`
 
 #### Suppliers, Complaints, and Post-Market
@@ -119,21 +119,21 @@ Use the grouped links below for navigation. The raw machine-readable published i
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-07 | R03 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-07 | R04 | Published |
-| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-07 | R09 | Published |
+| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-07 | R10 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-07 | R03 | Published |
-| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-07 | R03 | Published |
+| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-07 | R04 | Published |
 | SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-07 | R03 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-05 | R01 | Published |
-| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-07 | R04 | Published |
+| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-07 | R05 | Published |
 | SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-07 | R02 | Published |
 | SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-07 | R02 | Published |
 | SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-07 | R02 | Published |
 | SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-07 | R01 | Published |
 | SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-07 | R02 | Published |
 | SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-07 | R02 | Published |
-| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-07 | R02 | Published |
-| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-07 | R03 | Published |
+| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-07 | R03 | Published |
+| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-07 | R04 | Published |
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-07 | R02 | Published |
 <!-- PUBLISHED-SOP-INDEX:END -->
 
