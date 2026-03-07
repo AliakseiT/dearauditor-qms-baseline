@@ -1,7 +1,7 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R03
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -43,10 +43,22 @@ Applies to software verification, software validation, and usability-validation 
 4. After merge, the merged PR is PIN-signed through the standard Part 11 flow. That post-merge attestation is the formal approval of the plan baseline.
 
 ### 3.4 Execute the Approved Plan
-1. Execute only against the frozen build, environment, and target commit named in the approved plan.
-2. Automated evidence may be generated in GitHub Actions or other validated tooling, but the controlled record must capture the exact job/run or artifact reference.
-3. Manual execution results are recorded in the designated product/study repository using the execution log template or an equivalent controlled derivative.
-4. Deviations or failed results are logged immediately and linked to defects, nonconformities, CAPA, or change actions as applicable.
+1. Dry-run or exploratory execution may occur before the formal release-readiness gate, but those runs are not the controlled release-evidence set.
+2. Formal release-candidate V&V begins only after the approved release-readiness decision names:
+   - the candidate revision or cutoff on `main`
+   - the included/deferred change set
+   - the binary or deployment package entering formal V&V
+3. Every controlled execution run containing one or more tests must begin by recording the exact execution configuration before the first test starts, including:
+   - operating system or platform version
+   - hardware model, host, or device under test
+   - environment or deployment name
+   - binary, image, or package identifier under test
+   - any supporting software or dependency versions needed to reproduce the run
+4. Execute only against the recorded configuration for that run.
+5. Automated evidence may be generated in GitHub Actions or other validated tooling, but the controlled record must capture the exact job/run or artifact reference.
+6. Manual execution results are recorded in the designated product/study repository using the execution log template or an equivalent controlled derivative.
+7. Deviations or failed results are logged immediately and linked to defects, nonconformities, CAPA, or change actions as applicable.
+8. If the binary or deployment package changes after formal execution has started, open a new controlled execution run with a new configuration capture and reassess the required regression scope before using the new results for release.
 
 ### 3.5 Review and Sign Evidence and the V&V Report
 1. Open a second PR that commits:
@@ -60,7 +72,8 @@ Applies to software verification, software validation, and usability-validation 
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
    - `**Required Signatures:** 2`
 4. After merge, collect the post-merge PIN-based Part 11 attestation on the merged PR.
-5. Publish the immutable release package and link it from the MDF, risk records, usability records, and release baseline as applicable.
+5. Route the approved V&V report into the final release-decision gate defined in WI-002 before shipment authorization.
+6. Publish the immutable release package and link it from the MDF, risk records, usability records, and release baseline as applicable.
 
 ### 3.6 Change Control and Re-Execution
 1. If planned scope, environment, or acceptance criteria change, revise the plan through a new PR before further execution.
@@ -70,7 +83,7 @@ Applies to software verification, software validation, and usability-validation 
 ## 4. Required Records
 - V&V planning issue
 - Approved V&V plan record and test case index in the designated product/study repository
-- Test execution log and evidence index
+- Test execution log with per-run configuration capture and evidence index
 - Deviation log
 - V&V report with signed approval evidence
 
@@ -81,3 +94,5 @@ Applies to software verification, software validation, and usability-validation 
 | R01 | 2026-03-06 | Clarified that product V&V execution records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |
 | R02 | 2026-03-07 | Normalized V&V signoff accountability to the engineering owner role while keeping engineers as the minimum trained execution role. |
 | R03 | 2026-03-07 | Renamed the accountable technical signoff role to `engineering_lead`. |
+| R04 | 2026-03-07 | Distinguished dry runs from formal release-candidate V&V, required approved release-readiness entry before formal execution, and made per-run configuration capture mandatory. |
+| R05 | 2026-03-07 | Explicitly routed the approved V&V report into the separate final release-decision gate before shipment authorization. |

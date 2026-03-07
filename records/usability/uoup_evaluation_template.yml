@@ -1,0 +1,12 @@
+version: 1
+record_type: uoup_evaluation
+required_fields:
+  record_id: "UOUP-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  interface_element: ""
+  provenance_summary: ""
+  known_limitations: []
+  applied_controls: []
+  residual_risk_rationale: ""
+

@@ -1,0 +1,22 @@
+version: 1
+record_type: user_needs_specification
+required_fields:
+  user_needs_id: "UNS-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  intended_use_reference: "docs/regulatory/intended_use.md"
+  maintained_by_role: "regulatory_lead"
+  user_profiles:
+    - profile_id: "UP-001"
+      label: ""
+      environment: ""
+      training_or_experience: ""
+      safety_relevance: "low|medium|high"
+  user_needs:
+    - need_id: "UN-001"
+      statement: ""
+      rationale: ""
+      source_reference: ""
+      safety_relevance: "low|medium|high"
+      linked_use_scenarios: []
+      linked_requirements: []
+

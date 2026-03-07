@@ -1,0 +1,26 @@
+version: 1
+record_type: software_architecture_spec
+required_fields:
+  architecture_id: "SAS-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  source_requirements_reference: "records/design/system_requirements_spec_template.yml"
+  maintained_by_role: "engineering_lead"
+  system_context_summary: ""
+  components:
+    - component_id: "CMP-001"
+      name: ""
+      responsibility: ""
+      interfaces: []
+      allocated_requirements: []
+      linked_risk_controls: []
+  external_dependencies:
+    - dependency_name: ""
+      version_or_service: ""
+      intended_use: ""
+      evaluation_reference: ""
+  architecture_decisions:
+    - decision_id: "AD-001"
+      summary: ""
+      rationale: ""
+      consequences: []
+

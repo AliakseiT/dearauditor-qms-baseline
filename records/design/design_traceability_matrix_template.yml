@@ -1,0 +1,16 @@
+version: 1
+record_type: design_traceability_matrix
+required_fields:
+  matrix_id: "DTM-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "engineering_lead"
+  rows:
+    - user_need_id: "UN-001"
+      requirement_ids:
+        - "SYS-REQ-001"
+      risk_ids:
+        - "RISK-001"
+      verification_references:
+        - "TC-001"
+      release_references: []
+

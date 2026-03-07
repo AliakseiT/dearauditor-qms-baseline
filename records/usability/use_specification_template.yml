@@ -1,0 +1,20 @@
+version: 1
+record_type: use_specification
+required_fields:
+  record_id: "USE-SPEC-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  intended_users:
+    - profile_id: "UP-001"
+      description: ""
+      training_or_experience: ""
+  use_environments:
+    - ""
+  operating_conditions:
+    - ""
+  critical_tasks:
+    - task_id: "CT-001"
+      description: ""
+      linked_harms: []
+      linked_requirements: []
+

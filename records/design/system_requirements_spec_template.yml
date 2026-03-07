@@ -1,0 +1,17 @@
+version: 1
+record_type: system_requirements_spec
+required_fields:
+  spec_id: "SRS-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  source_user_needs_reference: "records/design/user_needs_template.yml"
+  maintained_by_role: "engineering_lead"
+  requirements:
+    - requirement_id: "SYS-REQ-001"
+      category: "functional|safety|regulatory|security|usability|interface|data|operational"
+      statement: ""
+      rationale: ""
+      source_user_needs: []
+      linked_risk_items: []
+      verification_method: "analysis|review|inspection|test|demonstration"
+      acceptance_criteria: []
+

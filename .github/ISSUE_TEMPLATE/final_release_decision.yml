@@ -1,0 +1,57 @@
+name: Final Release Decision
+description: Collect the post-V&V group release decision for a specific release candidate.
+title: "FINAL RELEASE DECISION: "
+labels:
+  - release-management
+  - approval
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product or subsystem identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: input
+    id: release_tag
+    attributes:
+      label: Release Tag or Version
+      description: Candidate release identifier under final decision.
+      placeholder: v1.2.0
+    validations:
+      required: true
+  - type: textarea
+    id: evidence_reviewed
+    attributes:
+      label: Evidence Reviewed
+      description: V&V report, residual-risk decision, anomaly summary, baseline manifest, and exact binary/deployment reference.
+      placeholder: |
+        - V&V report reference
+        - residual risk decision
+        - anomaly summary
+        - baseline manifest
+        - binary / image / deployment identifier
+    validations:
+      required: true
+  - type: textarea
+    id: release_conditions
+    attributes:
+      label: Release Conditions or Restrictions
+      description: Any accepted deviations, rollout constraints, or escalation notes.
+      placeholder: |
+        - no known restrictions
+        - staged rollout only
+        - management escalation reference if required
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be true before the final release decision can close.
+      placeholder: |
+        - final release decision record merged and signed
+        - exact shipped binary recorded
+        - immutable release published
+        - MDF and baseline links updated
+    validations:
+      required: true

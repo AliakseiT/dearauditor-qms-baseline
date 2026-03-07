@@ -71,6 +71,15 @@ body:
       required: true
 
   - type: textarea
+    id: scoring_notes
+    attributes:
+      label: Scoring / Acceptability Notes
+      description: Note any deviation from the default S1-S5 x P1-P5 scoring and acceptability bands in the risk plan template.
+      placeholder: |
+        Default scoring applies unless noted here.
+        Any alternative scale or threshold must be justified in the plan.
+
+  - type: textarea
     id: done_criteria
     attributes:
       label: Done Criteria

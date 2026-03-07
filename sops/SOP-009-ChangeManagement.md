@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R03
+revision: R04
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -59,7 +59,8 @@ Classify each change as one or more of:
 1. Implement via PR with linked issue and evidence.
 2. Execute required tests/reviews and attach objective evidence.
 3. Update published SOP index and training matrix where applicable.
-4. Software release-affecting changes must update the release baseline records defined in SOP-020 and WI-002.
+4. Multiple approved software changes may progress in parallel on the product `main` branch; merge alone does not imply inclusion in the next release.
+5. Software release-affecting changes must update the release-readiness and release-baseline records defined in SOP-020 and WI-002.
 
 ### 6.5 Closure
 1. Confirm all impacted artifacts are updated and approved.
@@ -91,3 +92,4 @@ Classify each change as one or more of:
 | R01 | 2026-03-06 | Added software baseline and release-manifest impact controls for regulated software changes. |
 | R02 | 2026-03-07 | Normalized change-execution responsibilities to the controlled small-team role model. |
 | R03 | 2026-03-07 | Renamed change-execution roles to the simplified `engineering_lead` and `regulatory_lead` taxonomy. |
+| R04 | 2026-03-07 | Clarified that multiple software changes may proceed in parallel on product `main`, and that formal release inclusion is decided later through the controlled release-readiness gate. |

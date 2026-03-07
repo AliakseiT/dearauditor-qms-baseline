@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R04
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -33,7 +33,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 - Risk management inputs
 
 ## 4. Outputs
-- Design plan and design history evidence
+- Approved design-input baseline and design history evidence
 - Verified/validated software release package
 - Controlled transfer and maintenance artifacts
 
@@ -53,6 +53,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 2. Identify review/verification/validation gates.
 3. Define required deliverables and entry/exit criteria per phase.
 4. For regulated software products, include software safety classification, configuration baselines, and release decision criteria per SOP-020.
+5. Do not treat implementation planning as approved until the design-input baseline gate is completed.
 
 ### 6.2 Design Inputs
 1. Capture user needs, safety/performance requirements, and regulatory constraints.
@@ -60,34 +61,50 @@ Applies to new products, major features, and significant lifecycle changes affec
 3. Verify input completeness, consistency, and testability.
 4. Resolve conflicting requirements before implementation.
 
-### 6.3 Design Outputs
+### 6.3 Design-Input Baseline Approval
+1. Before controlled implementation starts, open a PR in the designated product repository that baselines:
+   - design and development plan
+   - intended use or equivalent scope statement
+   - user needs
+   - system requirements baseline
+   - initial risk-management plan/reference set
+   - planned V&V strategy
+2. The design-input baseline must state key assumptions, open constraints, and any explicitly deferred inputs.
+3. The PR body must state:
+   - `**Meaning of Signature:** Approved Design Inputs and Development Plan`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
+   - `**Required Signatures:** 3`
+4. Merge only after required approvals on the current head commit and post-merge Part 11 attestation collection.
+5. Changes to approved design inputs require a new PR revision before they are used as the basis for controlled implementation or release evidence.
+
+### 6.4 Design Outputs
 1. Produce architecture, detailed design, and implementation artifacts.
 2. Ensure outputs are traceable to approved inputs.
 3. Define acceptance criteria for each output element.
 
-### 6.4 Design Review
+### 6.5 Design Review
 1. Conduct planned independent reviews at defined milestones.
 2. Record participants, findings, decisions, and action items.
 3. Resolve critical findings before proceeding to next phase.
 
-### 6.5 Verification and Validation
+### 6.6 Verification and Validation
 1. Verification demonstrates outputs meet design input requirements.
 2. Validation demonstrates product meets user needs/intended use in representative context.
 3. Maintain bidirectional traceability requirements -> risk controls -> tests -> results.
 4. Execute V&V planning, approval, evidence review, and post-merge PIN signature flow using WI-001.
 
-### 6.6 Transfer and Release
+### 6.7 Transfer and Release
 1. Confirm release readiness checklist completion.
 2. Ensure required regulatory and QMS deliverables are approved.
 3. Release only controlled versions with immutable record linkage.
 4. Configuration baseline and release publication must follow SOP-020 and WI-002.
 
-### 6.7 Design Changes
+### 6.8 Design Changes
 1. Manage post-baseline changes under SOP-009.
 2. Re-run impacted verification/validation and update traceability.
 
 ## 7. Required Records
-- Design/development plan and reviews
+- Design/development plan and approved design-input baseline
 - Requirements, architecture, and traceability records
 - Verification/validation evidence
 
@@ -113,3 +130,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R02 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and added explicit engineer execution responsibilities under approved plans. |
 | R03 | 2026-03-07 | Renamed lead roles to `engineering_lead` and `regulatory_lead` to remove owner-style role wording. |
 | R04 | 2026-03-07 | Clarified ownership of system requirements, regulatory design inputs, and usability inputs, and added `usability_lead` responsibilities. |
+| R05 | 2026-03-07 | Added the explicit design-input baseline gate requiring group approval of the development plan and approved input set before controlled implementation. |

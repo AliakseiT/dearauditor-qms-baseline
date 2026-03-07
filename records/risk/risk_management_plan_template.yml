@@ -18,22 +18,54 @@ required_fields:
     management_representative: ""
   risk_acceptability:
     method: "severity_x_probability"
+    scoring_formula: "risk_score = severity_value * probability_value"
     severity_scale:
-      S1: negligible
-      S2: minor
-      S3: moderate
-      S4: serious
-      S5: critical
+      S1:
+        label: negligible
+        value: 1
+      S2:
+        label: minor
+        value: 2
+      S3:
+        label: moderate
+        value: 3
+      S4:
+        label: serious
+        value: 4
+      S5:
+        label: critical
+        value: 5
     probability_scale:
-      P1: remote
-      P2: low
-      P3: occasional
-      P4: probable
-      P5: frequent_or_credible
+      P1:
+        label: remote
+        value: 1
+      P2:
+        label: low
+        value: 2
+      P3:
+        label: occasional
+        value: 3
+      P4:
+        label: probable
+        value: 4
+      P5:
+        label: frequent_or_credible
+        value: 5
     decision_thresholds:
-      acceptable_max_score: 4
-      alp_or_justification_range: "5-9"
-      not_acceptable_min_score: 10
+      acceptable:
+        score_range: "1-4"
+        required_decision: "acceptable_with_rationale"
+      alarp_or_justification:
+        score_range: "5-9"
+        required_decision: "reduce_when_practicable_or_justify_residual_risk"
+      not_acceptable:
+        score_range: "10-25"
+        required_decision: "additional_controls_or_benefit_risk_required"
+    entry_scoring_rules:
+      require_severity_code_and_probability_code: true
+      require_numeric_score_recorded: true
+      require_acceptability_decision_recorded: true
+      require_decision_rationale_recorded: true
   overall_residual_risk_evaluation_method: "aggregate_review_by_release_and_quarter"
   post_production_inputs:
     - complaints

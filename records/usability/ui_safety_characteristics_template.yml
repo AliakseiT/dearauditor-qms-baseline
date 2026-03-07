@@ -1,0 +1,13 @@
+version: 1
+record_type: ui_safety_characteristics
+required_fields:
+  record_id: "UI-SAFE-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  characteristics:
+    - characteristic_id: "UIC-001"
+      description: ""
+      safety_relevance: "low|medium|high"
+      linked_risk_items: []
+      linked_requirements: []
+

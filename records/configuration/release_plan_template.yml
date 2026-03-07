@@ -4,15 +4,23 @@ required_fields:
   release_plan_id: "RLP-<product>-<yyyy-mm-dd>"
   product_id: ""
   target_version_or_tag: ""
+  release_cutoff_revision: ""
   scope_summary: ""
+  included_change_records: []
+  deferred_change_records: []
+  formal_vv_entry_binary_reference: ""
+  pre_gate_execution_policy: "dry_run_only"
   linked_records:
+    design_input_baseline_reference: ""
+    design_traceability_reference: ""
     verification_validation_report: ""
     residual_risk_decision: ""
     change_record: ""
     anomaly_summary: ""
   rollback_or_containment_note: ""
   signoff:
-    meaning_of_signature: "Approved Release Baseline"
+    meaning_of_signature: "Approved Release Readiness and Formal V&V Entry"
     signer_roles:
       - qa_lead
       - engineering_lead
+      - regulatory_lead

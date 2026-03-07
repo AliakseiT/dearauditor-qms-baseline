@@ -4,6 +4,8 @@
 - Report ID:
 - Product ID:
 - Plan Reference:
+- Release Scope Decision Reference:
+- Traceability Reference:
 - Target Revision:
 - Report Date:
 
@@ -11,6 +13,9 @@
 - Activity Type:
 - Covered Requirements:
 - Covered Risk Controls:
+- Covered Use Scenarios (if applicable):
+- Environment / Tooling References:
+- Configuration Capture References:
 
 ## Summary of Results
 - Total Test Cases:

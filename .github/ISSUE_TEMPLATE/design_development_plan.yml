@@ -1,0 +1,55 @@
+name: Design Input Baseline
+description: Approve the development plan and baseline design inputs before controlled implementation.
+title: "DESIGN INPUT BASELINE: "
+labels:
+  - design-control
+  - plan
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product, subsystem, or study identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: textarea
+    id: scope_summary
+    attributes:
+      label: Scope Summary
+      description: Product boundary, intended-use context, and major change scope.
+    validations:
+      required: true
+  - type: textarea
+    id: planned_records
+    attributes:
+      label: Planned Records
+      description: Baseline records that will be approved at the design-input gate and the downstream outputs they authorize.
+      placeholder: |
+        - design_development_plan.yml
+        - user_needs.yml
+        - system_requirements_spec.yml
+        - software_architecture_spec.yml
+        - design_traceability_matrix.yml
+    validations:
+      required: true
+  - type: textarea
+    id: open_assumptions
+    attributes:
+      label: Open Assumptions or Deferred Inputs
+      description: Any input still constrained, intentionally deferred, or requiring follow-up before later gates.
+      placeholder: |
+        - usability study population to be finalized
+        - external interface requirement pending supplier confirmation
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be true before the design-input baseline can close.
+      placeholder: |
+        - design and development plan approved
+        - user needs and system requirements baselined
+        - risk plan and V&V strategy linked
+        - approved for controlled implementation
+    validations:
+      required: true
