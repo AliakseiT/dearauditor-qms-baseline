@@ -52,6 +52,11 @@ Recommended scripts:
 - [tools/open_upstream_upgrade_pr.sh](tools/open_upstream_upgrade_pr.sh) to propose a selected upstream update into a downstream repo
 - [tools/check_adoption_readiness.sh](tools/check_adoption_readiness.sh) to block incomplete onboarding and missing repo settings
 
+Signing service options:
+
+- self-host the GitHub signing worker described in [services/signature-worker](services/signature-worker/README.md)
+- optionally discuss use of the hosted signing endpoint `https://sign.qms.dearauditor.ch` for GitHub-native signing workflows; commercial terms and service conditions remain separate from the open-source baseline
+
 Contact for adoption, pilot use, or support: [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
 
 ## Training and Role Navigation

@@ -36,6 +36,15 @@ Use the repository scripts instead of ad hoc copy/paste:
 3. [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh)
    Fails if placeholder tokens remain or if required GitHub repo settings are missing.
 
+## Signature Hosting Options
+
+Adopters that want the GitHub-native signing flow have two practical options:
+
+- self-host the worker in [`../../services/signature-worker`](../../services/signature-worker/README.md)
+- use the hosted signing endpoint `https://sign.qms.dearauditor.ch` by separate arrangement, if offered for the adopter's use case
+
+The hosted endpoint is not part of the open-source license grant by itself. Any commercial terms, support scope, uptime expectations, data-handling terms, or onboarding conditions for hosted use are separate from the repository license and still to be defined.
+
 ## Tag Namespaces
 
 The current automations treat `QMS-*` as the formal upstream baseline channel.
@@ -48,4 +57,4 @@ This keeps high-volume immutable record/signature tags available for evidence re
 
 ## Contact
 
-For adoption, pilot use, or support inquiries: [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
+For adoption, pilot use, hosted-signing inquiries, or support: [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
