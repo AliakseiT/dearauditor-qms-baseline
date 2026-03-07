@@ -72,5 +72,5 @@ Use the external manifest template when a controlled document is authored outsid
 ## Related Navigation
 
 - [QMS Lite landing page](../README.md)
-- [QMS Lite system architecture](../docs/QMS-Lite-System-Architecture.md)
-- [Workflow automation map](../README.md#workflow-automation-map)
+- [QMS Lite system architecture](../docs/architecture/README.md)
+- [Workflow automation map](../docs/architecture/README.md#6-automation-map)
