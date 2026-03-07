@@ -207,7 +207,6 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
-            const crypto = require('crypto');
             const prNumber = Number.parseInt(process.env.PR_NUMBER, 10);
             if (!Number.isInteger(prNumber) || prNumber < 1) {
               core.setFailed('Missing PR_NUMBER workflow output.');
@@ -219,13 +218,8 @@ jobs:
               pull_number: prNumber,
             })).data;
             const signingBaseUrl = (process.env.SIGNATURE_UI_BASE_URL || '').trim().replace(/\/+$/g, '');
-            const linkSecret = (process.env.SIGNATURE_LINK_SECRET || '').trim();
             if (!signingBaseUrl) {
               core.setFailed('Missing SIGNATURE_UI_BASE_URL variable. Configure repository variable SIGNATURE_UI_BASE_URL.');
-              return;
-            }
-            if (!linkSecret) {
-              core.setFailed('Missing SIGNATURE_LINK_SECRET secret. Configure repository secret SIGNATURE_LINK_SECRET.');
               return;
             }
             const roles = (process.env.ROLES || '')
@@ -236,34 +230,22 @@ jobs:
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
-            const authorLogin = (process.env.AUTHOR_LOGIN || '').trim().toLowerCase();
-            const expirationEpoch = Math.floor(Date.now() / 1000) + (12 * 60 * 60);
-            const canonicalize = (map) => Object.keys(map).sort().map((k) => `${k}=${map[k]}`).join('&');
-            const buildLink = (payload) => {
-              const sig = crypto
-                .createHmac('sha256', linkSecret)
-                .update(canonicalize(payload))
-                .digest('hex');
-              const params = new URLSearchParams({ ...payload, sig });
+            const buildLink = (signer) => {
+              const params = new URLSearchParams({
+                repo: `${context.repo.owner}/${context.repo.repo}`,
+                pr: String(pr.number),
+                signer: signer.toLowerCase(),
+              });
               return `${signingBaseUrl}/sign?${params.toString()}`;
             };
+            const signerSlots = approvedSigners.map((u, i) => ({
+              signer: u.toLowerCase(),
+              role: roles[i] || roles[0] || 'Quality Assurance Lead',
+              signature_index: String(i + 1),
+            }));
 
-            const runLinks = approvedSigners.length > 0
-              ? approvedSigners.map((u, i) => {
-                const role = roles[i] || roles[0] || 'Quality Assurance Lead';
-                const payload = {
-                  repo: `${context.repo.owner}/${context.repo.repo}`,
-                  pr: String(pr.number),
-                  hash: process.env.TARGET_HASH,
-                  meaning: process.env.MEANING,
-                  role,
-                  signer: u.toLowerCase(),
-                  required_signatures: String(process.env.REQUIRED || '1'),
-                  signature_index: String(i + 1),
-                  exp: String(expirationEpoch),
-                };
-                return `- @${u} (${role}): [Open Signature Title Page](${buildLink(payload)})`;
-              })
+            const runLinks = signerSlots.length > 0
+              ? signerSlots.map((slot) => `- @${slot.signer} (${slot.role}): [Open signature ceremony](${buildLink(slot.signer)})`)
               : ['- No eligible approved assigned reviewers found.'];
 
             const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
@@ -273,38 +255,59 @@ jobs:
               issue_number: prNumber,
               per_page: 100,
             });
-            const hasRequestOrAttestation = comments.some((comment) => {
+            const requestComments = comments
+              .filter((comment) => {
+                const commentBody = String(comment.body || '');
+                return commentBody.includes('<!-- signature-native-signature-request -->') ||
+                  commentBody.includes('<!-- part11-native-signature-request -->');
+              })
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
+            const hasAttestation = comments.some((comment) => {
               const commentBody = String(comment.body || '');
-              return commentBody.includes('<!-- signature-native-signature-request -->') ||
-                commentBody.includes('<!-- part11-native-signature-request -->') ||
-                commentBody.includes('<!-- signature-native-attestation -->') ||
+              return commentBody.includes('<!-- signature-native-attestation -->') ||
                 commentBody.includes('<!-- part11-native-attestation -->');
             });
-            if (hasRequestOrAttestation) {
-              core.info(`PR #${prNumber} already has a signature request or native attestation comment; skipping duplicate request post.`);
+            if (hasAttestation) {
+              core.info(`PR #${prNumber} already has a native attestation comment; skipping request post.`);
               return;
             }
+            const requestContext = {
+              version: 1,
+              hash: process.env.TARGET_HASH,
+              meaning: process.env.MEANING,
+              required_signatures: String(process.env.REQUIRED || '1'),
+              signers: signerSlots,
+            };
             const body = [
               '<!-- signature-native-signature-request -->',
-              '🛑 Signature Required (GitHub App Flow)',
+              '<!-- SIGNATURE_REQUEST_CONTEXT_V1',
+              JSON.stringify(requestContext, null, 2),
+              '-->',
+              '🛑 Signature required',
               '',
-              `PR: #${pr.number}`,
-              `Target commit: \`${process.env.TARGET_COMMIT}\``,
-              `Target hash (merge state): \`${process.env.TARGET_HASH}\``,
               `Meaning of signature: **${process.env.MEANING}**`,
-              `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
               `Required signatures: **${process.env.REQUIRED}**`,
-              `Reviewer signatures required: \`${process.env.REQUIRED_REVIEWERS}\` (author auto-signs 1)`,
-              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
-              `Co-approval scope matched: ${coapprovalReasons || 'none'}`,
-              `Required author signer: **${authorLogin ? '@' + authorLogin : 'unknown'}**`,
+              `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
+              `Target hash (merge state): \`${process.env.TARGET_HASH}\``,
+              coapprovalReasons ? `Co-approval scope matched: ${coapprovalReasons}` : '',
               '',
-              'Open your signer link and complete GitHub login + PIN to sign:',
+              'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
+              '',
               ...runLinks,
-              '',
-              `Signature service: ${signingBaseUrl}`,
-            ].join('\n');
+            ].filter(Boolean).join('\n');
+
+            const latestRequest = requestComments.length > 0 ? requestComments[requestComments.length - 1] : null;
+            if (latestRequest) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: latestRequest.id,
+                body,
+              });
+              core.info(`Updated signature request comment for PR #${prNumber}.`);
+              return;
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -317,11 +320,7 @@ jobs:
           MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
           ROLES: ${{ steps.parse.outputs.signatory_roles }}
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
-          REQUIRED_REVIEWERS: ${{ steps.parse.outputs.required_reviewer_signatures }}
           TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
-          TARGET_COMMIT: ${{ steps.parse.outputs.target_commit }}
-          AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
           COAPPROVAL_REASONS: ${{ steps.parse.outputs.coapproval_reasons }}
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
-          SIGNATURE_LINK_SECRET: ${{ secrets.SIGNATURE_LINK_SECRET }}

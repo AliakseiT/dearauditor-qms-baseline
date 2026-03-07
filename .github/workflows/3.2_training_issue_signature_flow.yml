@@ -35,7 +35,6 @@ jobs:
         uses: actions/github-script@v7
         env:
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
-          SIGNATURE_LINK_SECRET: ${{ secrets.SIGNATURE_LINK_SECRET }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
@@ -71,7 +70,9 @@ jobs:
               issue_number: issue.number,
               per_page: 100,
             });
-            const hasRequest = comments.some((c) => String(c.body || '').includes('<!-- training-signature-request -->'));
+            const requestComments = comments
+              .filter((c) => String(c.body || '').includes('<!-- training-signature-request -->'))
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
             const hasAttestation = comments.some((c) => {
               const b = String(c.body || '');
               return b.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') ||
@@ -79,8 +80,8 @@ jobs:
                 b.includes('<!-- signature-native-attestation -->') ||
                 b.includes('<!-- part11-native-attestation -->');
             });
-            if (hasRequest || hasAttestation) {
-              core.info(`Issue #${issue.number} already has signature request/attestation; skipping.`);
+            if (hasAttestation) {
+              core.info(`Issue #${issue.number} already has a signature attestation; skipping request post.`);
               return;
             }
 
@@ -105,13 +106,8 @@ jobs:
             }
 
             const signingBaseUrl = (process.env.SIGNATURE_UI_BASE_URL || '').trim().replace(/\/+$/g, '');
-            const linkSecret = (process.env.SIGNATURE_LINK_SECRET || '').trim();
             if (!signingBaseUrl) {
               core.setFailed('Missing SIGNATURE_UI_BASE_URL variable.');
-              return;
-            }
-            if (!linkSecret) {
-              core.setFailed('Missing SIGNATURE_LINK_SECRET secret.');
               return;
             }
 
@@ -122,39 +118,55 @@ jobs:
             const role = 'Trained Personnel';
             const requiredSignatures = '1';
             const signatureIndex = '1';
-            const expirationEpoch = Math.floor(Date.now() / 1000) + (12 * 60 * 60);
-
-            const payload = {
+            const link = `${signingBaseUrl}/sign?${new URLSearchParams({
               repo: repoFull,
               pr: String(issue.number),
+              signer: trainee,
+            }).toString()}`;
+            const requestContext = {
+              version: 1,
               hash: targetHash,
               meaning,
-              role,
-              signer: trainee,
               required_signatures: requiredSignatures,
-              signature_index: signatureIndex,
-              exp: String(expirationEpoch),
+              signers: [
+                {
+                  signer: trainee,
+                  role,
+                  signature_index: signatureIndex,
+                },
+              ],
             };
-            const canonical = Object.keys(payload).sort().map((k) => `${k}=${payload[k]}`).join('&');
-            const sig = crypto.createHmac('sha256', linkSecret).update(canonical).digest('hex');
-            const link = `${signingBaseUrl}/sign?${new URLSearchParams({ ...payload, sig }).toString()}`;
 
             const requestBody = [
               '<!-- training-signature-request -->',
               '<!-- signature-native-signature-request -->',
-              '🛑 Signature Required',
+              '<!-- SIGNATURE_REQUEST_CONTEXT_V1',
+              JSON.stringify(requestContext, null, 2),
+              '-->',
+              '🛑 Signature required',
               '',
-              `Issue: #${issue.number}`,
-              `Target hash (merge state): \`${targetHash}\``,
               `Meaning of signature: **${meaning}**`,
-              `Designated signatory role(s): **${role}**`,
               `Required signatures: **${requiredSignatures}**`,
+              `Designated signatory role(s): **${role}**`,
               `Eligible signers: **@${trainee}**`,
+              `Target hash (merge state): \`${targetHash}\``,
               '',
-              `- @${trainee}: [Open Signature Title Page](${link})`,
+              'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
               '',
-              `Signature service: ${signingBaseUrl}`,
+              `- @${trainee}: [Open signature ceremony](${link})`,
             ].join('\n');
+
+            const latestRequest = requestComments.length > 0 ? requestComments[requestComments.length - 1] : null;
+            if (latestRequest) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: latestRequest.id,
+                body: requestBody,
+              });
+              core.info(`Updated training signature request for issue #${issue.number}.`);
+              return;
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
