@@ -137,7 +137,7 @@ jobs:
               !isTemplateRecordPath(path) &&
               !isRecordIndexPath(path);
             const reasons = [];
-            if (hasPath('sops/')) reasons.push('SOP files (/sops)');
+            if (hasPath('qm/') || hasPath('sops/')) reasons.push('controlled documents (/qm, /sops)');
             if (paths.some((path) => isExecutionRecordPath(path))) reasons.push('execution records (/records, excluding templates and index pages)');
             if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');

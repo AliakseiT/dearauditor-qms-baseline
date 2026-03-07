@@ -14,7 +14,7 @@ on:
         description: "Optional GitHub username to limit issue creation to one user"
         required: false
       additional_documents:
-        description: "Optional extra SOP/WI ids (comma, space, or newline separated) to append for manual training"
+        description: "Optional extra controlled-document ids (QM/SOP/WI; comma, space, or newline separated) to append for manual training"
         required: false
 
 env:
@@ -103,14 +103,14 @@ jobs:
               return ""
             return (proc.stdout or "").strip()
 
-          def extract_sop_id(text: str) -> str:
-            m = re.search(r"(SOP-\d+)", str(text or ""), flags=re.IGNORECASE)
+          def extract_doc_id(text: str) -> str:
+            m = re.search(r"((?:QM|SOP|WI)-\d+)", str(text or ""), flags=re.IGNORECASE)
             return m.group(1).upper() if m else ""
 
           def extract_doc_ids(text: str):
             return [
               match.upper()
-              for match in re.findall(r"\b((?:SOP|WI)-\d+)\b", str(text or ""), flags=re.IGNORECASE)
+              for match in re.findall(r"\b((?:QM|SOP|WI)-\d+)\b", str(text or ""), flags=re.IGNORECASE)
             ]
 
           def parse_revision(rev: str) -> int:
@@ -122,8 +122,8 @@ jobs:
 
           def parse_readme_index(path: Path):
             text = path.read_text(encoding="utf-8")
-            start = "<!-- PUBLISHED-SOP-INDEX:START -->"
-            end = "<!-- PUBLISHED-SOP-INDEX:END -->"
+            start = "<!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->"
+            end = "<!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->"
             if start not in text or end not in text:
               return {}
             block = text.split(start, 1)[1].split(end, 1)[0]
@@ -132,17 +132,17 @@ jobs:
               row = line.strip()
               if not row.startswith("|"):
                 continue
-              if row.startswith("| SOP ID ") or row.startswith("|---"):
+              if row.startswith("| Document ID ") or row.startswith("|---"):
                 continue
               cols = [c.strip() for c in row.strip("|").split("|")]
               if len(cols) < 6:
                 continue
-              sop_id, title, sop_file, _date, revision, _status = cols[:6]
-              if not re.fullmatch(r"SOP-\d+", sop_id):
+              doc_id, title, doc_file, _date, revision, _status = cols[:6]
+              if not re.fullmatch(r"(?:QM|SOP|WI)-\d+", doc_id):
                 continue
-              published[sop_id] = {
+              published[doc_id] = {
                 "title": title,
-                "file": sop_file,
+                "file": doc_file,
                 "revision": revision,
               }
             return published
@@ -151,12 +151,12 @@ jobs:
             text = path.read_text(encoding="utf-8")
             entries = {}
             pattern = re.compile(
-              r"^- \[(?P<title>[^\]]+)\]\((?P<path>(?:sops|wis)/[^)]+)\) - `(?P<revision>R\d{2})`$",
+              r"^- \[(?P<title>[^\]]+)\]\((?P<path>(?:qm|sops|wis)/[^)]+)\) - `(?P<revision>R\d{2})`$",
               flags=re.MULTILINE,
             )
             for match in pattern.finditer(text):
               doc_path = match.group("path").strip()
-              id_match = re.search(r"((?:SOP|WI)-\d+)", doc_path, flags=re.IGNORECASE)
+              id_match = re.search(r"((?:QM|SOP|WI)-\d+)", doc_path, flags=re.IGNORECASE)
               if not id_match:
                 continue
               doc_id = id_match.group(1).upper()
@@ -274,29 +274,37 @@ jobs:
 
           for role_name, role_def in roles.items():
             users = [str(u).strip() for u in (role_def.get("users", []) or []) if str(u).strip()]
-            required_sops = [str(s).strip() for s in (role_def.get("required_sops", []) or []) if str(s).strip()]
-            required_revisions = {
-              extract_sop_id(k): str(v).strip().upper()
+          required_documents = [
+            str(s).strip()
+            for s in (
+              role_def.get("required_documents", [])
+              or role_def.get("required_sops", [])
+              or []
+            )
+            if str(s).strip()
+          ]
+          required_revisions = {
+              extract_doc_id(k): str(v).strip().upper()
               for k, v in (role_def.get("required_revisions", {}) or {}).items()
             }
 
             for user in users:
               roles_by_user[user].add(role_name)
               user_reqs = requirements_by_user[user]
-              for required in required_sops:
-                sop_id = extract_sop_id(required)
-                if not sop_id:
+              for required in required_documents:
+                doc_id = extract_doc_id(required)
+                if not doc_id:
                   continue
 
-                published_info = published.get(sop_id, {}) or {}
-                target_revision = required_revisions.get(sop_id) or str(published_info.get("revision", "")).strip().upper()
+                published_info = published.get(doc_id, {}) or {}
+                target_revision = required_revisions.get(doc_id) or str(published_info.get("revision", "")).strip().upper()
                 if not target_revision:
                   continue
 
-                current = user_reqs.get(sop_id)
+                current = user_reqs.get(doc_id)
                 if not current:
-                  user_reqs[sop_id] = {
-                    "doc_id": sop_id,
+                  user_reqs[doc_id] = {
+                    "doc_id": doc_id,
                     "doc_title": str(published_info.get("title", "")).strip(),
                     "doc_file": str(published_info.get("file", "")).strip(),
                     "to_revision": target_revision,
@@ -321,15 +329,15 @@ jobs:
             has_any_training_entry = bool(user_training)
             gaps = []
 
-            for sop_id in sorted(user_requirements.keys()):
-              req = user_requirements[sop_id]
+            for doc_id in sorted(user_requirements.keys()):
+              req = user_requirements[doc_id]
               to_revision = str(req.get("to_revision", "")).strip().upper()
               if not to_revision:
                 continue
 
-              from_revision = str(user_training.get(sop_id, "UNTRAINED")).strip().upper() or "UNTRAINED"
+              from_revision = str(user_training.get(doc_id, "UNTRAINED")).strip().upper() or "UNTRAINED"
               gap = build_doc_gap(
-                doc_id=sop_id,
+                doc_id=doc_id,
                 doc_title=str(req.get("doc_title", "")).strip(),
                 doc_file=str(req.get("doc_file", "")).strip(),
                 from_revision=from_revision,

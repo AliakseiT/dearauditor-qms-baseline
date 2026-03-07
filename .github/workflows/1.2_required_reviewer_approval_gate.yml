@@ -79,7 +79,7 @@ jobs:
               !isTemplateRecordPath(path) &&
               !isRecordIndexPath(path);
             const coapprovalReasons = [];
-            if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
+            if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
             if (paths.some((path) => isExecutionRecordPath(path))) coapprovalReasons.push('execution records (/records, excluding templates and index pages)');
             if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');

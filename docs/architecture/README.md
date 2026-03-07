@@ -13,7 +13,7 @@ This document describes how the QMS operates as a system: where controlled conte
 
 ## 3. Architecture Overview
 QMS Lite is a GitHub-native QMS operating model built from:
-- controlled content in `sops/`, `matrices/`, selected company-level records, reusable templates, and `.github/`
+- controlled content in `qm/`, `sops/`, `matrices/`, selected company-level records, reusable templates, and `.github/`
 - GitHub Issues for planning and coordination
 - GitHub Pull Requests for controlled review and approval
 - GitHub Actions for policy evaluation, signing orchestration, training automation, and immutable publication
@@ -142,7 +142,7 @@ flowchart LR
 ### 7.3 Training Lifecycle
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `3.1_release_training_diff.yml` | `push` on QMS release tag, `workflow_dispatch` | Compares required SOP revisions to user training logs and opens one consolidated training issue per user. | Active |
+| `3.1_release_training_diff.yml` | `push` on QMS release tag, `workflow_dispatch` | Compares required controlled-document revisions to user training logs and opens one consolidated training issue per user. | Active |
 | `3.2_training_issue_signature_flow.yml` | `issues`, `workflow_dispatch` | Manages signature collection and closure flow for consolidated training issues. | Active |
 
 ### 7.4 Platform and Maintenance Operations

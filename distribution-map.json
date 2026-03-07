@@ -67,6 +67,10 @@
     },
     {
       "kind": "path",
+      "value": "qm"
+    },
+    {
+      "kind": "path",
       "value": "records/README.md"
     },
     {

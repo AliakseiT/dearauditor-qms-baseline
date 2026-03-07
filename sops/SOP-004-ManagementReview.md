@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R04
-effective_date: 2026-03-07
+revision: R05
+effective_date: 2026-03-08
 status: Published
 owner_role: management_representative
 approver_role: management_representative
@@ -81,7 +81,8 @@ Applies to formal management review meetings and resulting decisions/actions for
 | 5.6.3 | Defines required review outputs and action follow-up. |
 
 ## 9. Related Controlled Documents
-- SOP-005 QMS Governance and Quality Manual
+- QM-001 Quality Manual
+- SOP-005 QMS Governance
 - SOP-002 CAPA
 - SOP-016 Quality Metrics and Data Analysis
 
@@ -93,3 +94,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 | R02 | 2026-03-05 | Updated management-review record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
 | R03 | 2026-03-07 | Normalized attendee and presenter role language to the controlled small-team role model. |
 | R04 | 2026-03-07 | Renamed generic presenter wording from role owners to role leads to match the simplified role taxonomy. |
+| R05 | 2026-03-08 | Split the Quality Manual out of SOP-005 and linked management review to both the top-level manual and the governance procedure. |

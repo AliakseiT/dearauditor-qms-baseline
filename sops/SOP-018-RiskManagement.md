@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R03
-effective_date: 2026-03-07
+revision: R04
+effective_date: 2026-03-08
 status: Published
 owner_role: regulatory_lead
 approver_role: management_representative
@@ -181,7 +181,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | ISO 14971 8-10 | Defines overall residual risk, formal review, and post-production feedback loop. |
 
 ## 12. Related Controlled Documents
-- SOP-005 QMS Governance and Quality Manual
+- SOP-005 QMS Governance
 - SOP-008 Design and Development Control
 - SOP-009 Change Management
 - SOP-012 Feedback and Complaint Handling
@@ -195,3 +195,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R01 | 2026-03-07 | Renamed the business-owner risk role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified risk-management role names to `engineering_lead`, `regulatory_lead`, and `auditor`. |
 | R03 | 2026-03-07 | Made `regulatory_lead` the risk-file owner, clarified QA process-governance responsibility, and added `usability_lead` for use-related risk inputs. |
+| R04 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |

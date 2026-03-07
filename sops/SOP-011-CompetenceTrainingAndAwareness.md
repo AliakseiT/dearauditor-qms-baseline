@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R05
-effective_date: 2026-03-07
+revision: R06
+effective_date: 2026-03-08
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -18,8 +18,8 @@ Define how ACME GmbH establishes competence requirements, assigns training, veri
 Applies to all personnel and contractors performing tasks that can affect product quality, regulatory compliance, or QMS record integrity.
 
 ## 3. Inputs
-- Role definitions and required SOP set in `matrices/training_matrix.yml`
-- New/updated SOP revisions
+- Role definitions and required controlled-document set in `matrices/training_matrix.yml`
+- New or updated QM/SOP revisions
 - Onboarding and role-change events
 
 ## 4. Outputs
@@ -38,8 +38,8 @@ Applies to all personnel and contractors performing tasks that can affect produc
 ## 6. Procedure
 
 ### 6.1 Competence Definition
-1. Define role-specific required SOPs in `matrices/training_matrix.yml`.
-2. Avoid broad over-assignment; include only SOPs needed for role responsibilities.
+1. Define role-specific required controlled documents in `matrices/training_matrix.yml`.
+2. Avoid broad over-assignment; include only the controlled documents needed for role responsibilities.
 3. Any user who changes code, prepares builds, or executes controlled verification/validation activities must hold the `engineer` role at minimum.
 4. Any user accountable for lifecycle planning, release readiness, or technical approval decisions must also hold the `engineering_lead` role.
 5. Any user accountable for usability-engineering records, formative/summative evaluation planning, or user-profile/use-environment definition must also hold the `usability_lead` role.
@@ -48,11 +48,11 @@ Applies to all personnel and contractors performing tasks that can affect produc
 Training is required when:
 1. New user is onboarded to one or more roles.
 2. User changes role.
-3. SOP revision affects assigned role responsibilities.
+3. QM or SOP revision affects assigned role responsibilities.
 4. CAPA/audit identifies competence gaps.
 
 ### 6.3 Training Assignment and Review
-1. Automation opens training issues when mapped SOPs are revised.
+1. Automation opens training issues when mapped QM or SOP documents are revised.
 2. Training is executed through consolidated per-user training issues rather than review-only onboarding PRs.
 3. Trainee acknowledgement and electronic-signature evidence are captured per workflow rules.
 
@@ -77,7 +77,8 @@ Training is required when:
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control
-- SOP-005 QMS Governance and Quality Manual
+- QM-001 Quality Manual
+- SOP-005 QMS Governance
 
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
@@ -88,3 +89,4 @@ Training is required when:
 | R03 | 2026-03-07 | Added explicit minimum training role expectations for engineers and normalized manager language to role owners for small teams. |
 | R04 | 2026-03-07 | Renamed accountable roles to the simplified `*_lead` taxonomy and aligned training language to that naming. |
 | R05 | 2026-03-07 | Added explicit training-role criteria for `usability_lead` and aligned the matrix to required-versus-awareness training scope. |
+| R06 | 2026-03-08 | Generalized the training matrix from SOP-only assignments to required controlled documents and added the standalone Quality Manual to role-based training. |

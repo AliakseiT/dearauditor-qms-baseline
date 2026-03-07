@@ -72,7 +72,7 @@ jobs:
             const paths = changedFiles.map((f) => String(f.filename || ''));
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
             const coapprovalReasons = [];
-            if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
+            if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
             if (hasPath('records/')) coapprovalReasons.push('records (/records)');
             if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');

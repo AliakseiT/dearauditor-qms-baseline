@@ -1,5 +1,5 @@
 ---
-version: 2
+version: 3
 users:
   REPLACE_WITH_PRIMARY_GH_USERNAME:
     full_name: REPLACE_WITH_PRIMARY_FULL_NAME
@@ -9,7 +9,8 @@ roles:
   qa_lead:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-002
       - SOP-003
@@ -29,13 +30,14 @@ roles:
       - SOP-018
       - SOP-019
       - SOP-020
-    awareness_sops:
+    awareness_documents:
       - SOP-004
 
   engineer:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-008
       - SOP-009
@@ -43,7 +45,7 @@ roles:
       - SOP-017
       - SOP-018
       - SOP-020
-    awareness_sops:
+    awareness_documents:
       - SOP-002
       - SOP-006
       - SOP-015
@@ -52,7 +54,8 @@ roles:
   engineering_lead:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-002
       - SOP-007
@@ -63,20 +66,21 @@ roles:
       - SOP-017
       - SOP-018
       - SOP-020
-    awareness_sops:
+    awareness_documents:
       - SOP-006
       - SOP-019
 
   technical_qms_maintainer:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-006
       - SOP-009
       - SOP-011
       - SOP-017
-    awareness_sops:
+    awareness_documents:
       - SOP-002
       - SOP-007
       - SOP-018
@@ -85,7 +89,8 @@ roles:
   regulatory_lead:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-002
       - SOP-003
@@ -110,7 +115,8 @@ roles:
   usability_lead:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-008
       - SOP-011
@@ -118,12 +124,13 @@ roles:
       - SOP-014
       - SOP-018
       - SOP-019
-    awareness_sops:
+    awareness_documents:
       - SOP-020
 
   auditor:
     users: []
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-002
       - SOP-003
@@ -148,7 +155,8 @@ roles:
   management_representative:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
+    required_documents:
+      - QM-001
       - SOP-001
       - SOP-002
       - SOP-003
