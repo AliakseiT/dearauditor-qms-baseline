@@ -59,8 +59,9 @@ Classify each change as one or more of:
 1. Implement via PR with linked issue and evidence.
 2. Execute required tests/reviews and attach objective evidence.
 3. Update published SOP index and training matrix where applicable.
-4. Multiple approved software changes may progress in parallel on the product `main` branch; merge alone does not imply inclusion in the next release.
-5. Software release-affecting changes must update the release-readiness and release-baseline records defined in SOP-020 and WI-002.
+4. Branch implementations may be used for collaboration and interim verification, but branch-only state is draft/uncontrolled until merged to the controlled `main` baseline.
+5. Multiple approved software changes may progress in parallel on the product `main` branch; merge alone does not imply inclusion in the next release.
+6. Software release-affecting changes must update the release-readiness and release-baseline records defined in SOP-020 and WI-002.
 
 ### 6.5 Closure
 1. Confirm all impacted artifacts are updated and approved.

@@ -161,8 +161,10 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 
 ### 8.15 GitHub Workflow Alignment Rule
 1. QMS SOP execution model follows GitHub-native lifecycle: issue -> branch -> pull request -> required checks/approvals -> merge -> Part 11 signature attestation -> immutable release evidence.
-2. SOP wording must reflect implemented GitHub workflow behavior; if automation sequence changes, impacted SOPs are revised in the same change set.
-3. Part 11 signing mechanism is common across QMS Lite and designated product/study record repositories.
+2. Branch-only and PR-draft content may be used for collaboration, but it is not QMS-controlled approved state and must not be cited as the approved baseline.
+3. The controlled repository baseline exists on `main` and, where applicable, on approved immutable release tags and release assets created from `main`.
+4. SOP wording must reflect implemented GitHub workflow behavior; if automation sequence changes, impacted SOPs are revised in the same change set.
+5. Part 11 signing mechanism is common across QMS Lite and designated product/study record repositories.
 
 ## 9. Required Records
 - Quality Manual revision and approval log

@@ -41,6 +41,7 @@ Applies to software verification, software validation, and usability-validation 
    - `**Required Signatures:** 2`
 3. Merge only after required approvals on the current head commit.
 4. After merge, the merged PR is PIN-signed through the standard Part 11 flow. That post-merge attestation is the formal approval of the plan baseline.
+5. Branch-only plan or test-record drafts may be reviewed and iterated, but they are not controlled approved plan baselines until the PR is merged.
 
 ### 3.4 Execute the Approved Plan
 1. Dry-run or exploratory execution may occur before the formal release-readiness gate, but those runs are not the controlled release-evidence set.

@@ -26,17 +26,18 @@ Applies to product releases, significant maintenance drops, and other controlled
 
 ### 3.2 Approve Release Readiness and Formal V&V Entry
 1. Product changes may be developed and merged in parallel on the product `main` branch while release planning is in progress.
-2. Before formal release-candidate V&V begins, open a PR in the designated product/study repository that commits or updates the release plan record and captures:
+2. Branch-only work may support planning and technical rehearsal, but controlled release scope is selected only from merged state on `main`.
+3. Before formal release-candidate V&V begins, open a PR in the designated product/study repository that commits or updates the release plan record and captures:
    - the candidate cutoff revision or candidate commit on `main`
    - the included change records for the upcoming release
    - merged changes that are explicitly deferred
    - the binary, image, or deployment package that enters formal V&V
-3. The PR body must state:
+4. The PR body must state:
    - `**Meaning of Signature:** Approved Release Readiness and Formal V&V Entry`
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
    - `**Required Signatures:** 3`
-4. Merge only after required approvals and mandatory checks complete.
-5. Pre-gate execution may continue as dry run only; formal release evidence starts after the post-merge Part 11 attestation on this release-readiness PR.
+5. Merge only after required approvals and mandatory checks complete.
+6. Pre-gate execution may continue as dry run only; formal release evidence starts after the post-merge Part 11 attestation on this release-readiness PR.
 
 ### 3.3 Prepare the Final Configuration Baseline
 1. Identify all configuration items required to reproduce the release baseline.

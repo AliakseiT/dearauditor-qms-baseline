@@ -53,11 +53,13 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 
 ### 6.3 Draft, Review, and Approval
 1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with linked issue context.
-2. The PR must identify the execution issue and state the required electronic-signature meaning and roles.
-3. At least one designated approver reviews technical and compliance adequacy.
-4. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the `qms-lite` signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
-5. Merges are permitted only after required status checks and reviewer approvals are successfully completed.
-6. Signature collection and attestation evidence are captured post-merge on the merged PR and must complete before immutable record publication.
+2. Branch-only and PR-draft states are work-in-progress and are not approved controlled revisions, released baselines, or record evidence.
+3. The PR must identify the execution issue and state the required electronic-signature meaning and roles.
+4. At least one designated approver reviews technical and compliance adequacy.
+5. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the `qms-lite` signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
+6. Merges are permitted only after required status checks and reviewer approvals are successfully completed.
+7. Controlled state exists only after merge to `main` in the governing repository and, where required by process, after the associated immutable release/tag evidence is created.
+8. Signature collection and attestation evidence are captured post-merge on the merged PR and must complete before immutable record publication.
 
 ### 6.4 Published Index Synchronization
 1. Any SOP text change must update the Published SOP Index in `README.md`.

@@ -80,13 +80,14 @@ Applies to regulated software products and significant product changes that requ
 
 ### 6.5 Configuration Identification and Baseline Control
 1. All controlled software lifecycle changes follow issue -> branch -> pull request -> merge -> Part 11 attestation -> immutable release evidence.
-2. Multiple approved product changes may exist in parallel on product `main`; the subsequent release is defined later by an explicit release-readiness decision, not by merge order alone.
-3. Before formal release-candidate V&V starts, record:
+2. Working branches are collaboration and draft baselines only; they are not controlled release baselines and must not be used as the approved product state.
+3. Multiple approved product changes may exist in parallel on product `main`; the subsequent release is defined later by an explicit release-readiness decision, not by merge order alone.
+4. Before formal release-candidate V&V starts, record:
    - the selected release cutoff or candidate revision on `main`
    - which merged change records are included
    - which merged change records are deferred
    - the binary or deployment package that enters formal V&V
-4. Each release-capable baseline must identify configuration items at minimum:
+5. Each release-capable baseline must identify configuration items at minimum:
    - source revision/commit
    - relevant requirements/risk/test record revisions
    - approved build or deployment package reference
