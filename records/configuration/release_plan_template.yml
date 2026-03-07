@@ -6,6 +6,7 @@ required_fields:
   target_version_or_tag: ""
   scope_summary: ""
   linked_records:
+    design_traceability_reference: ""
     verification_validation_report: ""
     residual_risk_decision: ""
     change_record: ""

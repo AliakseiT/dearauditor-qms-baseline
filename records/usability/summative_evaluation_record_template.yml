@@ -1,0 +1,21 @@
+version: 1
+record_type: summative_evaluation_record
+required_fields:
+  record_id: "SUM-UE-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  evaluation_scope:
+    participant_profiles: []
+    scenarios_in_scope: []
+    environment_description: ""
+  outcomes:
+    total_participants: 0
+    use_errors_observed: []
+    conclusion: "acceptable|acceptable_with_follow_up|not_acceptable"
+    residual_use_risk_rationale: ""
+  signoff:
+    meaning_of_signature: "Approved Usability Evaluation Record"
+    signer_roles:
+      - qa_lead
+      - usability_lead
+

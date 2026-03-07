@@ -24,7 +24,9 @@ Some folders are intentionally empty until the first signed and published compan
 | Browse management review outputs | [Management reviews](management-reviews/) |
 | Browse audit records | [Audits](audits/) |
 | Open the approved supplier list | [Approved supplier list](suppliers/approved_supplier_list.yml) |
+| Start with design-control templates | [Design record templates](design/) |
 | Start with risk records | [Risk management records](risk/) |
+| Start with usability-engineering templates | [Usability engineering templates](usability/) |
 | Start with medical device file templates | [Medical device file templates](mdf/) |
 | Start with V&V templates | [Verification and validation templates](verification_validation/) |
 | Start with release/configuration templates | [Configuration and release templates](configuration/) |
@@ -42,7 +44,9 @@ Some folders are intentionally empty until the first signed and published compan
 
 ## Product and Lifecycle Record Families
 
+- [Design control](design/) - design and development plan, user needs, system requirements, software architecture, and traceability templates
 - [Risk management](risk/) - risk management plan, register, review, and example risk register templates/reference artifacts
+- [Usability engineering](usability/) - usability file index, use specification, hazard-related scenarios, formative/summative, and post-production usability review templates
 - [Medical device file](mdf/) - classification, file index, and traceability summary templates
 - [Verification and validation](verification_validation/) - V&V plan, test case, execution log, and report templates for designated product/study repositories
 - [Configuration and release](configuration/) - release plan and release baseline manifest templates for designated product/study repositories
@@ -62,6 +66,13 @@ Use the external manifest template when a controlled document is authored outsid
 3. Commit the manifest and the controlled artifact set in the target record repository, then route approval through the normal issue -> PR -> merge -> Part 11 attestation flow.
 4. Publish the immutable release package with the exported artifact, manifest, and signature evidence so GitHub remains the approval and retention surface even when authoring happened elsewhere.
 
+## Immutable Publication Notes
+
+- Most execution records publish as one immutable bundle per changed record file.
+- Risk-management PRs publish grouped bundles so the risk review, register snapshot, and related risk artifacts travel together.
+- Usability-engineering PRs publish grouped bundles so the usability file index and referenced YAML records travel together.
+- Every immutable bundle includes source hashes, source PR linkage, and captured Part 11 attestation metadata.
+
 ## GitHub Workflow Entry Points
 
 - [Start a management review issue](https://github.com/AliakseiT/qms-lite/issues/new?template=mgmt_review_plan.yml)
@@ -71,7 +82,9 @@ Use the external manifest template when a controlled document is authored outsid
 - [Start a complaint intake issue](https://github.com/AliakseiT/qms-lite/issues/new?template=complaint_intake.yml)
 - [Start a nonconformity intake issue](https://github.com/AliakseiT/qms-lite/issues/new?template=nonconformity_intake.yml)
 - [Start a PMS review issue](https://github.com/AliakseiT/qms-lite/issues/new?template=pms_review.yml)
+- [Start a design and development plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=design_development_plan.yml)
 - [Start a risk management plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=risk_management_plan.yml)
+- [Start a usability engineering plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=usability_engineering_plan.yml)
 - [Start a verification and validation plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=verification_validation_plan.yml)
 - [Start a release plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=release_plan.yml)
 

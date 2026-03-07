@@ -1,0 +1,47 @@
+version: 1
+record_type: design_development_plan
+required_fields:
+  plan_id: "DDP-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  intended_use_reference: "docs/regulatory/intended_use.md"
+  scope_summary: ""
+  lifecycle_model: "incremental|iterative|waterfall_with_iterations"
+  accountable_roles:
+    engineering_lead: ""
+    regulatory_lead: ""
+    usability_lead: ""
+    qa_lead: ""
+  design_inputs:
+    user_needs_reference: "records/design/user_needs_template.yml"
+    system_requirements_reference: "records/design/system_requirements_spec_template.yml"
+    risk_management_plan_reference: "records/risk/risk_management_plan_template.yml"
+    usability_file_index_reference: "records/usability/usability_file_index_template.yml"
+  planned_outputs:
+    architecture_spec_reference: "records/design/software_architecture_spec_template.yml"
+    traceability_matrix_reference: "records/design/design_traceability_matrix_template.yml"
+    verification_validation_plan_reference: "records/verification_validation/vv_plan_template.yml"
+    release_plan_reference: "records/configuration/release_plan_template.yml"
+  milestones:
+    - name: "design_inputs_baselined"
+      entry_criteria:
+        - "intended use approved"
+        - "user needs reviewed"
+      exit_criteria:
+        - "requirements baselined"
+    - name: "architecture_ready"
+      entry_criteria:
+        - "requirements baselined"
+      exit_criteria:
+        - "architecture and key interfaces reviewed"
+    - name: "release_ready"
+      entry_criteria:
+        - "verification and validation complete"
+        - "residual risk reviewed"
+      exit_criteria:
+        - "release baseline approved"
+  signoff:
+    meaning_of_signature: "Approved Design and Development Plan"
+    signer_roles:
+      - qa_lead
+      - engineering_lead
+

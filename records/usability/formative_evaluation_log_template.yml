@@ -1,0 +1,17 @@
+version: 1
+record_type: formative_evaluation_log
+required_fields:
+  record_id: "FORM-UE-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  evaluations:
+    - evaluation_id: "FE-001"
+      date: "YYYY-MM-DD"
+      scenario_reference: "USE-SCN-001"
+      participant_profile: ""
+      observations:
+        - ""
+      resulting_actions:
+        - ""
+      linked_change_records: []
+

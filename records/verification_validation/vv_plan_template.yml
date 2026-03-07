@@ -9,6 +9,7 @@ required_fields:
   linked_inputs:
     requirements: []
     risk_items: []
+    design_traceability_reference: ""
     change_records: []
     anomaly_records: []
   environments:

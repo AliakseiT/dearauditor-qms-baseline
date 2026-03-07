@@ -1,0 +1,46 @@
+name: Usability Engineering Plan
+description: Plan usability-engineering records and evaluation scope for a user-facing product.
+title: "USABILITY PLAN: "
+labels:
+  - usability
+  - plan
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product or study identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: textarea
+    id: intended_users_and_context
+    attributes:
+      label: Intended Users and Context
+      description: Intended users, environments, and critical tasks in scope.
+    validations:
+      required: true
+  - type: textarea
+    id: records_in_scope
+    attributes:
+      label: Records In Scope
+      description: Usability file index and supporting YAML records that will be created or updated.
+      placeholder: |
+        - usability_file_index.yml
+        - use_specification.yml
+        - hazard_related_use_scenarios.yml
+        - formative_evaluation_log.yml
+        - summative_evaluation_record.yml
+    validations:
+      required: true
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be complete before closure.
+      placeholder: |
+        - use specification current
+        - hazard-related scenarios reviewed
+        - formative/summative outputs linked to risk file
+    validations:
+      required: true

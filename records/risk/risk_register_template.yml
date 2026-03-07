@@ -3,9 +3,23 @@ record_type: risk_register
 product_id: ""
 assessment_scope: ""
 scoring_model:
-  formula: "score = severity * probability"
-  severity_scale: [1, 2, 3, 4, 5]
-  probability_scale: [1, 2, 3, 4, 5]
+  formula: "risk_score = severity_value * probability_value"
+  severity_scale:
+    S1: {label: negligible, value: 1}
+    S2: {label: minor, value: 2}
+    S3: {label: moderate, value: 3}
+    S4: {label: serious, value: 4}
+    S5: {label: critical, value: 5}
+  probability_scale:
+    P1: {label: remote, value: 1}
+    P2: {label: low, value: 2}
+    P3: {label: occasional, value: 3}
+    P4: {label: probable, value: 4}
+    P5: {label: frequent_or_credible, value: 5}
+  acceptability_bands:
+    acceptable: "1-4"
+    alarp_or_justification: "5-9"
+    not_acceptable: "10-25"
 entries:
   - risk_id: "RISK-001"
     source_type: hazard_top_down
@@ -14,9 +28,12 @@ entries:
     hazardous_situation: ""
     possible_harm: ""
     initial_risk:
-      severity: 1
-      probability: 1
+      severity_code: S1
+      severity_value: 1
+      probability_code: P1
+      probability_value: 1
       score: 1
+      acceptability_decision: acceptable_with_rationale
       rationale: ""
     controls:
       - control_id: "CTRL-001"
@@ -24,10 +41,14 @@ entries:
         description: ""
         implementation_reference: ""
         effectiveness_verification_reference: ""
+        implementation_status: planned
     residual_risk:
-      severity: 1
-      probability: 1
+      severity_code: S1
+      severity_value: 1
+      probability_code: P1
+      probability_value: 1
       score: 1
+      acceptability_decision: acceptable_with_rationale
       rationale: ""
     benefit_risk_needed: false
     status: open

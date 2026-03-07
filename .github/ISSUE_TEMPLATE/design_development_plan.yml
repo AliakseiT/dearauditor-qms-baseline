@@ -1,0 +1,47 @@
+name: Design and Development Plan
+description: Plan the design-control record set for a product or major change.
+title: "DESIGN PLAN: "
+labels:
+  - design-control
+  - plan
+body:
+  - type: input
+    id: product_id
+    attributes:
+      label: Product ID
+      description: Product, subsystem, or study identifier.
+      placeholder: ACME-GENERIC-SAMD
+    validations:
+      required: true
+  - type: textarea
+    id: scope_summary
+    attributes:
+      label: Scope Summary
+      description: Product boundary, intended-use context, and major change scope.
+    validations:
+      required: true
+  - type: textarea
+    id: planned_records
+    attributes:
+      label: Planned Records
+      description: Planned design-plan, user-needs, requirements, architecture, traceability, risk, and V&V artifacts.
+      placeholder: |
+        - design_development_plan.yml
+        - user_needs.yml
+        - system_requirements_spec.yml
+        - software_architecture_spec.yml
+        - design_traceability_matrix.yml
+    validations:
+      required: true
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be complete before the design-plan issue can close.
+      placeholder: |
+        - design inputs baselined
+        - requirements/specs reviewed
+        - linked risk and V&V plans approved
+    validations:
+      required: true
+

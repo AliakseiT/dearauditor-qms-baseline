@@ -19,7 +19,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
-      TARGET_RECORD_REPO: ${{ github.repository }}
+      TARGET_RECORD_REPO: ${{ vars.QMS_RECORD_RELEASE_REPO || github.repository }}
       TARGET_RECORD_BRANCH: main
       PART11_TIMEOUT_SECONDS: "5400"
       PART11_POLL_SECONDS: "20"
@@ -357,7 +357,7 @@ jobs:
           PART11_ATTESTATIONS_JSON: ${{ steps.part11.outputs.attestations_json }}
         shell: bash
         run: |
-          python -m pip install --quiet markdown fpdf2
+          python -m pip install --quiet markdown fpdf2 pyyaml
           python <<'PY'
           import hashlib
           import json
@@ -368,6 +368,7 @@ jobs:
           from pathlib import Path
 
           import markdown as md
+          import yaml
           from fpdf import FPDF
 
           changed = [line.strip() for line in Path("changed_records.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -377,6 +378,7 @@ jobs:
           source_repo = os.environ["SOURCE_REPO"].strip()
           source_pr = os.environ["SOURCE_PR"].strip()
           source_merge_sha = os.environ["SOURCE_MERGE_SHA"].strip()
+          repo_root = Path.cwd().resolve()
 
           out_root = Path("record_bundles")
           out_root.mkdir(parents=True, exist_ok=True)
@@ -390,50 +392,194 @@ jobs:
             "verification_validation": "vv",
             "configuration": "cfg",
             "risk": "risk",
+            "usability": "ue",
+            "design": "dd",
           }
 
           def slugify(text: str) -> str:
             slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
             return slug or "record"
 
-          release_plan = []
+          def is_execution_record(path: str) -> bool:
+            path_obj = Path(path)
+            if not path.startswith("records/"):
+              return False
+            if path_obj.suffix.lower() not in {".md", ".yml", ".yaml", ".json"}:
+              return False
+            if path_obj.name.lower() == "readme.md":
+              return False
+            return not re.search(r"(^|[_-])template\.(md|ya?ml|json)$", path_obj.name, flags=re.IGNORECASE)
+
+          def family_name(path: Path) -> str:
+            return path.parts[1] if len(path.parts) > 1 else "general"
+
+          def scope_root_for_family(path: Path) -> Path:
+            if len(path.parts) >= 4:
+              return Path(*path.parts[:3])
+            return Path(path.parts[0], path.parts[1])
+
+          def execution_records_under(root: Path):
+            if not root.exists():
+              return []
+            seen = set()
+            records = []
+            for candidate in root.rglob("*"):
+              if not candidate.is_file():
+                continue
+              rel = candidate.resolve().relative_to(repo_root).as_posix()
+              if rel in seen or not is_execution_record(rel):
+                continue
+              seen.add(rel)
+              records.append(Path(rel))
+            return sorted(records, key=lambda item: item.as_posix())
+
+          def load_structured_document(path: Path):
+            text = path.read_text(encoding="utf-8")
+            if path.suffix.lower() == ".json":
+              return json.loads(text)
+            return yaml.safe_load(text) or {}
+
+          def iter_reference_strings(node):
+            if isinstance(node, str):
+              yield node
+            elif isinstance(node, list):
+              for item in node:
+                yield from iter_reference_strings(item)
+            elif isinstance(node, dict):
+              for value in node.values():
+                yield from iter_reference_strings(value)
+
+          def normalize_repo_relative(candidate: Path):
+            try:
+              return candidate.resolve().relative_to(repo_root).as_posix()
+            except Exception:
+              return None
+
+          def resolve_usability_members(index_path: Path):
+            members = set()
+            try:
+              document = load_structured_document(index_path)
+            except Exception:
+              return members
+
+            reference_nodes = []
+            if isinstance(document, dict):
+              if isinstance(document.get("records"), dict):
+                reference_nodes.append(document["records"])
+              required_fields = document.get("required_fields", {})
+              if isinstance(required_fields, dict) and isinstance(required_fields.get("records"), dict):
+                reference_nodes.append(required_fields["records"])
+
+            for node in reference_nodes:
+              for ref in iter_reference_strings(node):
+                ref = str(ref or "").strip()
+                if not ref:
+                  continue
+                candidate = Path(ref) if ref.startswith("records/") else (index_path.parent / ref)
+                if not candidate.exists():
+                  continue
+                rel = normalize_repo_relative(candidate)
+                if rel and is_execution_record(rel):
+                  members.add(rel)
+            return members
+
+          def extract_plain_text(source_path: Path, source_text: str) -> str:
+            if source_path.suffix.lower() == ".md":
+              html = md.markdown(source_text)
+              return re.sub(r"<[^>]+>", "", html)
+            return source_text
+
+          bundle_specs = []
+          grouped = {}
 
           for src in changed:
             src_path = Path(src)
-            if not src_path.exists():
-              raise RuntimeError(f"Changed record file no longer exists in merge commit: {src}")
+            family = family_name(src_path)
+            if family in {"risk", "usability"}:
+              scope_root = scope_root_for_family(src_path)
+              grouped.setdefault((family, scope_root.as_posix()), set()).add(src)
+              continue
 
-            source_text = src_path.read_text(encoding="utf-8")
-            source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+            bundle_specs.append({
+              "bundle_kind": "single_record",
+              "family": family,
+              "bundle_id": slugify(src_path.stem),
+              "base_tag": f"{type_prefix.get(family, 'record')}-{slugify(src_path.stem)}",
+              "title": f"{type_prefix.get(family, 'record').upper()} Record: {src_path.stem}",
+              "scope_path": src,
+              "member_paths": [src],
+            })
 
-            if src_path.suffix.lower() == ".md":
-              html = md.markdown(source_text)
-              plain = re.sub(r"<[^>]+>", "", html)
-            else:
-              plain = source_text
-            lines = plain.splitlines() or [""]
+          risk_bundle_pattern = re.compile(r"(risk[_-]?register|risk[_-]?management[_-]plan|risk[_-]?management[_-]?review)", re.IGNORECASE)
+          usability_index_pattern = re.compile(r"usability[_-]?file[_-]?index", re.IGNORECASE)
 
-            parent = src_path.parent.name if src_path.parent.name != "records" else "general"
-            prefix = type_prefix.get(parent, "record")
-            record_id = slugify(src_path.stem)
-            base_tag = f"{prefix}-{record_id}"
-            release_title = f"{prefix.upper()} Record: {src_path.stem}"
+          for (family, scope_root), changed_members in sorted(grouped.items()):
+            scope_path = Path(scope_root)
+            member_paths = set(changed_members)
+            scoped_records = execution_records_under(scope_path)
 
-            bundle_dir = out_root / base_tag
+            if family == "risk":
+              for candidate in scoped_records:
+                if risk_bundle_pattern.search(candidate.name):
+                  member_paths.add(candidate.as_posix())
+            elif family == "usability":
+              index_records = [candidate for candidate in scoped_records if usability_index_pattern.search(candidate.name)]
+              for index_record in index_records:
+                member_paths.add(index_record.as_posix())
+                member_paths.update(resolve_usability_members(index_record))
+
+            scope_slug = slugify("/".join(scope_path.parts[2:]) or f"{family}-root")
+            prefix = type_prefix.get(family, "record")
+            bundle_specs.append({
+              "bundle_kind": "risk_record_bundle" if family == "risk" else "usability_file_bundle",
+              "family": family,
+              "bundle_id": scope_slug,
+              "base_tag": f"{prefix}-{scope_slug}",
+              "title": f"{family.replace('_', ' ').title()} Bundle: {scope_path.as_posix()}",
+              "scope_path": scope_path.as_posix(),
+              "member_paths": sorted(member_paths),
+            })
+
+          release_plan = []
+
+          for spec in bundle_specs:
+            member_descriptors = []
+            bundle_dir = out_root / spec["base_tag"]
             bundle_dir.mkdir(parents=True, exist_ok=True)
 
-            source_asset_name = src_path.name
-            (bundle_dir / source_asset_name).write_text(source_text, encoding="utf-8")
+            for member_path in spec["member_paths"]:
+              src_path = Path(member_path)
+              if not src_path.exists():
+                raise RuntimeError(f"Changed record file no longer exists in merge commit: {member_path}")
+
+              source_text = src_path.read_text(encoding="utf-8")
+              source_sha = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+              plain_text = extract_plain_text(src_path, source_text)
+              flattened_name = src_path.name if len(spec["member_paths"]) == 1 else src_path.as_posix().replace("/", "__")
+              published_source_asset = flattened_name
+              (bundle_dir / published_source_asset).write_text(source_text, encoding="utf-8")
+              member_descriptors.append({
+                "source_record_path": member_path,
+                "source_record_sha256": source_sha,
+                "published_source_asset": published_source_asset,
+                "plain_text": plain_text,
+              })
 
             pdf = FPDF()
             pdf.set_auto_page_break(auto=True, margin=15)
             pdf.add_page()
             pdf.set_font("Helvetica", size=11)
-            for raw_line in lines:
-              line = raw_line.replace("\t", "    ")
-              pdf.multi_cell(0, 6, line if line else " ", new_x="LMARGIN", new_y="NEXT")
+            for member in member_descriptors:
+              header = f"Source: {member['source_record_path']}"
+              pdf.multi_cell(0, 6, header, new_x="LMARGIN", new_y="NEXT")
+              pdf.multi_cell(0, 6, "-" * min(len(header), 72), new_x="LMARGIN", new_y="NEXT")
+              for raw_line in member["plain_text"].splitlines() or [""]:
+                line = raw_line.replace("\t", "    ")
+                pdf.multi_cell(0, 6, line if line else " ", new_x="LMARGIN", new_y="NEXT")
+              pdf.ln(3)
 
-            pdf_path = bundle_dir / "record.pdf"
+            pdf_name = "record.pdf" if len(member_descriptors) == 1 else "bundle_index.pdf"
+            pdf_path = bundle_dir / pdf_name
             pdf.output(str(pdf_path))
             pdf_sha = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
 
@@ -462,23 +608,33 @@ jobs:
                 "--output",
                 str(title_page_path),
                 "--record-id",
-                record_id,
+                spec["bundle_id"],
               ],
               check=True,
             )
             title_page_sha = hashlib.sha256(title_page_path.read_bytes()).hexdigest()
 
+            manifest_members = [
+              {
+                "source_record_path": member["source_record_path"],
+                "source_record_sha256": member["source_record_sha256"],
+                "published_source_asset": member["published_source_asset"],
+              }
+              for member in member_descriptors
+            ]
             manifest = {
               "schema_version": 1,
-              "record_type": parent,
-              "record_id": record_id,
+              "bundle_kind": spec["bundle_kind"],
+              "record_family": spec["family"],
+              "bundle_id": spec["bundle_id"],
               "source_repository": source_repo,
               "source_pull_request": int(source_pr),
               "source_merge_commit": source_merge_sha,
-              "source_record_path": src,
-              "source_record_sha256": source_sha,
-              "published_source_asset": source_asset_name,
-              "record_pdf_sha256": pdf_sha,
+              "bundle_scope_path": spec["scope_path"],
+              "bundle_member_count": len(manifest_members),
+              "bundle_members": manifest_members,
+              "rendered_pdf_asset": pdf_name,
+              "rendered_pdf_sha256": pdf_sha,
               "electronic_signature_certificate_pdf_sha256": title_page_sha,
               "part11_title_page_pdf_sha256": title_page_sha,
               "part11_target_hash": target_hash,
@@ -495,21 +651,28 @@ jobs:
               ],
               "published_at_utc": datetime.now(timezone.utc).isoformat(),
             }
+            if len(manifest_members) == 1:
+              manifest["source_record_path"] = manifest_members[0]["source_record_path"]
+              manifest["source_record_sha256"] = manifest_members[0]["source_record_sha256"]
+              manifest["published_source_asset"] = manifest_members[0]["published_source_asset"]
+
             (bundle_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
+            asset_names = [member["published_source_asset"] for member in member_descriptors]
             notes = "\n".join([
               f"# Immutable QMS Record Package",
               "",
               f"- Source repo: `{source_repo}`",
               f"- Source PR: `#{source_pr}`",
-              f"- Source record path: `{src}`",
+              f"- Bundle kind: `{spec['bundle_kind']}`",
+              f"- Bundle scope: `{spec['scope_path']}`",
               f"- Source merge commit: `{source_merge_sha}`",
               f"- Part 11 target hash: `{target_hash}`",
               f"- Signatures captured: `{len(attestations)}`",
               "",
               "Assets:",
-              f"- `{source_asset_name}`",
-              "- `record.pdf`",
+              *[f"- `{asset_name}`" for asset_name in asset_names],
+              f"- `{pdf_name}`",
               "- `manifest.json`",
               "- `signed_attestation.json`",
               f"- `{certificate_name}`",
@@ -517,13 +680,19 @@ jobs:
             notes_path = bundle_dir / "release_notes.md"
             notes_path.write_text(notes + "\n", encoding="utf-8")
 
+            assets = [str(bundle_dir / asset_name) for asset_name in asset_names]
+            assets.extend([
+              str(bundle_dir / pdf_name),
+              str(bundle_dir / "manifest.json"),
+              str(bundle_dir / "signed_attestation.json"),
+              str(title_page_path),
+            ])
             release_plan.append({
-              "base_tag": base_tag,
-              "title": release_title,
+              "base_tag": spec["base_tag"],
+              "title": spec["title"],
               "bundle_dir": str(bundle_dir),
               "notes_file": str(notes_path),
-              "certificate_name": certificate_name,
-              "source_asset_name": source_asset_name,
+              "assets": assets,
             })
 
           Path("release_plan.json").write_text(json.dumps(release_plan, indent=2) + "\n", encoding="utf-8")
@@ -601,18 +770,8 @@ jobs:
                 max_rev = max(max_rev, int(m.group(1)))
 
             tag = f"{base_tag}-r{max_rev + 1:02d}"
-            bundle_dir = Path(entry["bundle_dir"])
             notes_file = entry["notes_file"]
-            certificate_name = entry.get("certificate_name", "Electronic_Signature_Certificate_PRunknown.pdf")
-            source_asset_name = entry.get("source_asset_name", "record.md")
-
-            assets = [
-              str(bundle_dir / source_asset_name),
-              str(bundle_dir / "record.pdf"),
-              str(bundle_dir / "manifest.json"),
-              str(bundle_dir / "signed_attestation.json"),
-              str(bundle_dir / certificate_name),
-            ]
+            assets = entry["assets"]
 
             create_cmd = [
               "gh", "release", "create", tag,

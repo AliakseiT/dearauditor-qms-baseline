@@ -1,0 +1,17 @@
+version: 1
+record_type: usability_file_index
+required_fields:
+  usability_file_id: "UF-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  intended_use_reference: "docs/regulatory/intended_use.md"
+  linked_risk_management_reference: "records/risk/risk_register_template.yml"
+  records:
+    use_specification: "records/usability/use_specification_template.yml"
+    ui_safety_characteristics: "records/usability/ui_safety_characteristics_template.yml"
+    hazard_related_use_scenarios: "records/usability/hazard_related_use_scenarios_template.yml"
+    formative_evaluation_log: "records/usability/formative_evaluation_log_template.yml"
+    summative_evaluation_record: "records/usability/summative_evaluation_record_template.yml"
+    uoup_evaluation: "records/usability/uoup_evaluation_template.yml"
+    post_production_usability_review: "records/usability/post_production_usability_review_template.yml"
+

@@ -1,0 +1,15 @@
+version: 1
+record_type: hazard_related_use_scenarios
+required_fields:
+  record_id: "HUS-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  scenarios:
+    - scenario_id: "USE-SCN-001"
+      task_reference: "CT-001"
+      use_error_or_misuse: ""
+      hazardous_situation: ""
+      possible_harm: ""
+      linked_risk_items: []
+      selected_for_summative_evaluation: true
+

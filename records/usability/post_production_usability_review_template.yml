@@ -1,0 +1,17 @@
+version: 1
+record_type: post_production_usability_review
+required_fields:
+  record_id: "PP-UE-<product>-<yyyy-mm-dd>"
+  product_id: ""
+  maintained_by_role: "usability_lead"
+  review_period: ""
+  inputs_reviewed:
+    complaints: []
+    incidents: []
+    support_signals: []
+  conclusions:
+    trends_identified: []
+    risk_updates_needed: false
+    design_updates_needed: false
+    action_summary: []
+

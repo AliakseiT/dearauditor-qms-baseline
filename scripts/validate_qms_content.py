@@ -415,11 +415,13 @@ class QMSContentGuardTests(unittest.TestCase):
             "failure_mode_bottom_up",
             "cybersecurity_threat",
         }
+        allowed_statuses = {"open", "closed", "accepted", "monitoring"}
+        allowed_control_statuses = {"planned", "implemented", "verified", "retired"}
 
         changed_risk_files = [
             path
             for path in self.ctx.changed
-            if path.startswith("records/risk/") and path.endswith(".yml")
+            if path.startswith("records/risk/") and path.endswith((".yml", ".yaml"))
         ]
 
         for file_path in changed_risk_files:
@@ -439,6 +441,34 @@ class QMSContentGuardTests(unittest.TestCase):
             for root_key in ["version", "product_id", "assessment_scope", "scoring_model", "entries"]:
                 if root_key not in doc:
                     failures.append(f"{file_path}: missing root key '{root_key}'")
+
+            scoring_model = doc.get("scoring_model", {}) or {}
+            severity_scale = scoring_model.get("severity_scale", {}) or {}
+            probability_scale = scoring_model.get("probability_scale", {}) or {}
+            acceptability_bands = scoring_model.get("acceptability_bands", {}) or {}
+
+            if str(scoring_model.get("formula", "")).strip() != "risk_score = severity_value * probability_value":
+                failures.append(f"{file_path}: scoring_model.formula must be 'risk_score = severity_value * probability_value'")
+
+            for scale_name, scale in [("severity_scale", severity_scale), ("probability_scale", probability_scale)]:
+                if not isinstance(scale, dict) or not scale:
+                    failures.append(f"{file_path}: scoring_model.{scale_name} must be a non-empty mapping")
+                    continue
+                for code, descriptor in scale.items():
+                    if not isinstance(descriptor, dict):
+                        failures.append(f"{file_path}: scoring_model.{scale_name}.{code} must be a mapping")
+                        continue
+                    if "label" not in descriptor or "value" not in descriptor:
+                        failures.append(f"{file_path}: scoring_model.{scale_name}.{code} must include label and value")
+                        continue
+                    try:
+                        int(descriptor.get("value"))
+                    except Exception:
+                        failures.append(f"{file_path}: scoring_model.{scale_name}.{code}.value must be an integer")
+
+            for band in ["acceptable", "alarp_or_justification", "not_acceptable"]:
+                if band not in acceptability_bands:
+                    failures.append(f"{file_path}: scoring_model.acceptability_bands missing '{band}'")
 
             entries = doc.get("entries", []) or []
             if not isinstance(entries, list) or not entries:
@@ -474,23 +504,77 @@ class QMSContentGuardTests(unittest.TestCase):
                     if not isinstance(risk_value, dict):
                         failures.append(f"{record_path}: {risk_key} must be a mapping")
                         continue
-                    for key in ["severity", "probability", "score"]:
+                    for key in [
+                        "severity_code",
+                        "severity_value",
+                        "probability_code",
+                        "probability_value",
+                        "score",
+                        "acceptability_decision",
+                    ]:
                         if key not in risk_value:
                             failures.append(f"{record_path}: {risk_key} missing '{key}'")
                     try:
-                        severity = int(risk_value.get("severity"))
-                        probability = int(risk_value.get("probability"))
+                        severity_value = int(risk_value.get("severity_value"))
+                        probability_value = int(risk_value.get("probability_value"))
                         score = int(risk_value.get("score"))
-                        if score != severity * probability:
+                        if score != severity_value * probability_value:
                             failures.append(
-                                f"{record_path}: {risk_key}.score ({score}) != severity*probability ({severity * probability})"
+                                f"{record_path}: {risk_key}.score ({score}) != severity_value*probability_value ({severity_value * probability_value})"
                             )
                     except Exception:
-                        failures.append(f"{record_path}: {risk_key} severity/probability/score must be integers")
+                        failures.append(
+                            f"{record_path}: {risk_key} severity_value/probability_value/score must be integers"
+                        )
+
+                    severity_code = str(risk_value.get("severity_code", "")).strip()
+                    probability_code = str(risk_value.get("probability_code", "")).strip()
+                    if severity_code and severity_code not in severity_scale:
+                        failures.append(f"{record_path}: {risk_key}.severity_code '{severity_code}' not present in scoring_model.severity_scale")
+                    if probability_code and probability_code not in probability_scale:
+                        failures.append(f"{record_path}: {risk_key}.probability_code '{probability_code}' not present in scoring_model.probability_scale")
+
+                    if severity_code in severity_scale:
+                        expected = int(severity_scale[severity_code].get("value"))
+                        if int(risk_value.get("severity_value")) != expected:
+                            failures.append(
+                                f"{record_path}: {risk_key}.severity_value ({risk_value.get('severity_value')}) does not match scoring_model.severity_scale.{severity_code}.value ({expected})"
+                            )
+                    if probability_code in probability_scale:
+                        expected = int(probability_scale[probability_code].get("value"))
+                        if int(risk_value.get("probability_value")) != expected:
+                            failures.append(
+                                f"{record_path}: {risk_key}.probability_value ({risk_value.get('probability_value')}) does not match scoring_model.probability_scale.{probability_code}.value ({expected})"
+                            )
+
+                    if not str(risk_value.get("acceptability_decision", "")).strip():
+                        failures.append(f"{record_path}: {risk_key}.acceptability_decision must not be empty")
 
                 controls = entry.get("controls", []) or []
                 if not isinstance(controls, list) or not controls:
                     failures.append(f"{record_path}: controls must be a non-empty list")
+                for ctrl_idx, control in enumerate(controls, start=1):
+                    ctrl_path = f"{record_path} controls[{ctrl_idx}]"
+                    if not isinstance(control, dict):
+                        failures.append(f"{ctrl_path}: control must be a mapping")
+                        continue
+                    for key in [
+                        "control_id",
+                        "control_type",
+                        "description",
+                        "implementation_reference",
+                        "effectiveness_verification_reference",
+                        "implementation_status",
+                    ]:
+                        if key not in control:
+                            failures.append(f"{ctrl_path}: missing '{key}'")
+                    status = str(control.get("implementation_status", "")).strip()
+                    if status and status not in allowed_control_statuses:
+                        failures.append(f"{ctrl_path}: invalid implementation_status '{status}'")
+
+                status = str(entry.get("status", "")).strip()
+                if status and status not in allowed_statuses:
+                    failures.append(f"{record_path}: invalid status '{status}'")
 
         self.assert_no_failures(failures)
 
