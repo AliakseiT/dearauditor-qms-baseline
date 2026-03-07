@@ -1,3 +1,6 @@
 wrangler-account.json
 .wrangler/
 services/signature-worker/.wrangler/
+.DS_Store
+services/signature-worker/assets/qms-lite-signature-badge.png
+ops/github-apps/qms-lite-bot/assets/qms-lite-bot-badge.png

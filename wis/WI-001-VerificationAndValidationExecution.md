@@ -1,7 +1,7 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R00
+revision: R01
 effective_date: 2026-03-06
 status: Published
 owner_role: software_engineer
@@ -27,14 +27,14 @@ Applies to software verification, software validation, and usability-validation 
 ### 3.2 Prepare Controlled Test Cases
 1. Use stable test-case identifiers (`TC-...`) for both automated and manual tests.
 2. Automated test cases remain near code; the controlled record references repository path, command, and exact commit or tag.
-3. Manual or mixed tests are maintained as controlled Markdown/YAML records under `records/verification_validation/`.
+3. Manual or mixed tests are maintained as controlled records in the designated product/study repository, typically using templates derived from `qms-lite/records/verification_validation/`.
 4. Each test case must define objective, requirement links, risk-control links, preconditions, steps or script reference, expected result, and evidence type.
 
 ### 3.3 Approve the Test Plan
 1. Open a PR that commits or updates:
-   - `vv_plan_template.yml`-derived plan record
+   - a `vv_plan_template.yml`-derived plan record in the target repository
    - test case index
-   - any new or revised manual test case records
+   - any new or revised manual test case records in the target repository
 2. The PR body must state:
    - `**Meaning of Signature:** Approved V&V Plan`
    - `**Signer Roles:** Quality Assurance Lead; Software Engineer`
@@ -45,7 +45,7 @@ Applies to software verification, software validation, and usability-validation 
 ### 3.4 Execute the Approved Plan
 1. Execute only against the frozen build, environment, and target commit named in the approved plan.
 2. Automated evidence may be generated in GitHub Actions or other validated tooling, but the controlled record must capture the exact job/run or artifact reference.
-3. Manual execution results are recorded in the execution log template.
+3. Manual execution results are recorded in the designated product/study repository using the execution log template or an equivalent controlled derivative.
 4. Deviations or failed results are logged immediately and linked to defects, nonconformities, CAPA, or change actions as applicable.
 
 ### 3.5 Review and Sign Evidence and the V&V Report
@@ -68,7 +68,13 @@ Applies to software verification, software validation, and usability-validation 
 
 ## 4. Required Records
 - V&V planning issue
-- Approved V&V plan record and test case index
+- Approved V&V plan record and test case index in the designated product/study repository
 - Test execution log and evidence index
 - Deviation log
 - V&V report with signed approval evidence
+
+## 5. Revision History
+| Revision | Effective Date | Change Summary |
+|---|---|---|
+| R00 | 2026-03-06 | Initial release defining GitHub-native V&V execution flow. |
+| R01 | 2026-03-06 | Clarified that product V&V execution records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |

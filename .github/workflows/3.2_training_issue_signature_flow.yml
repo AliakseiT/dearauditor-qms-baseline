@@ -1,5 +1,5 @@
-name: Training Issue Signature Flow
-run-name: Training issue signature flow (${{ github.event_name }})
+name: 3.2 Training Issue Signature Flow
+run-name: 3.2 training issue signature flow (${{ github.event_name }})
 
 on:
   issues:

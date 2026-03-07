@@ -1,5 +1,5 @@
-name: Auto Assign Signatory Reviewers
-run-name: Auto-assign signatory reviewers (PR #${{ github.event.pull_request.number }})
+name: 1.1 Auto Assign Signatory Reviewers
+run-name: 1.1 auto-assign signatory reviewers (PR #${{ github.event.pull_request.number }})
 
 on:
   pull_request:
@@ -112,10 +112,17 @@ jobs:
             });
             const paths = files.map((f) => String(f.filename || ''));
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const isRecordArtifactPath = (path) => path.startsWith('records/') && /\.(md|ya?ml|json)$/i.test(path);
+            const isTemplateRecordPath = (path) => /(^|[_-])template\.(md|ya?ml|json)$/i.test(path.split('/').pop() || '');
+            const isRecordIndexPath = (path) => path.startsWith('records/') && /(^|\/)README\.md$/i.test(path);
+            const isExecutionRecordPath = (path) =>
+              isRecordArtifactPath(path) &&
+              !isTemplateRecordPath(path) &&
+              !isRecordIndexPath(path);
             const reasons = [];
             if (hasPath('sops/')) reasons.push('SOP files (/sops)');
-            if (hasPath('records/')) reasons.push('records (/records)');
-            if (hasPath('records/management-reviews/')) reasons.push('management review records (/records/management-reviews)');
+            if (paths.some((path) => isExecutionRecordPath(path))) reasons.push('execution records (/records, excluding templates and index pages)');
+            if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');
 
             const baseRequired = Math.max(0, Number.parseInt(process.env.BASE_REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
@@ -215,6 +222,9 @@ jobs:
             }
             const alreadyRequested = new Set((prData.requested_reviewers || []).map((r) => (r.login || '').toLowerCase()));
             const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
+            const sameReviewerSet =
+              selected.length === alreadyRequested.size &&
+              selected.every((u) => alreadyRequested.has(u.toLowerCase()));
 
             if (toRequest.length > 0) {
               await github.rest.pulls.requestReviewers({
@@ -240,7 +250,7 @@ jobs:
               `Mapped role IDs: \`${roleIds.join(', ') || 'none'}\``,
               `Required signatures: \`${required}\``,
               `Author auto-included signer: @${pr.user?.login || 'unknown'}`,
-              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), records (`/records`, including management reviews), or matrix/role files (`/matrices`).',
+              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
               `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
               `Minimum reviewer approvals required for merge: \`${requiredReviewerSignatures}\``,
               `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
@@ -259,6 +269,10 @@ jobs:
               const login = String(c.user?.login || '').toLowerCase();
               return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
             });
+            if (sameReviewerSet) {
+              core.info('Assigned reviewer set is unchanged; skip auto-reviewer comment update.');
+              return;
+            }
             if (existing) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,

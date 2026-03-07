@@ -1,5 +1,5 @@
-name: Required Reviewer Approval Guard
-run-name: Required reviewer approval guard (PR #${{ github.event.pull_request.number }})
+name: 1.2 Required Reviewer Approval Gate
+run-name: 1.2 required reviewer approval gate (PR #${{ github.event.pull_request.number }})
 
 on:
   pull_request_review:
@@ -9,7 +9,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  approval_guard:
+  approval_gate:
     if: github.event.pull_request != null
     runs-on: ubuntu-latest
     steps:
@@ -23,13 +23,13 @@ jobs:
               return;
             }
             if (pr.draft) {
-              core.info(`PR #${pr.number} is draft; guard deferred.`);
+              core.info(`PR #${pr.number} is draft; gate deferred.`);
               return;
             }
 
             const labels = (pr.labels || []).map((l) => String(l.name || '').toLowerCase());
             if (labels.includes('review-only')) {
-              core.info(`PR #${pr.number} is labeled review-only; non-author approval guard skipped.`);
+              core.info(`PR #${pr.number} is labeled review-only; non-author approval gate skipped.`);
               return;
             }
 
@@ -48,7 +48,7 @@ jobs:
             })).data;
 
             if (fresh.state !== 'open') {
-              core.info(`PR #${pr.number} is ${fresh.state}; guard skipped.`);
+              core.info(`PR #${pr.number} is ${fresh.state}; gate skipped.`);
               return;
             }
 
@@ -71,10 +71,17 @@ jobs:
             });
             const paths = changedFiles.map((f) => String(f.filename || ''));
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+            const isRecordArtifactPath = (path) => path.startsWith('records/') && /\.(md|ya?ml|json)$/i.test(path);
+            const isTemplateRecordPath = (path) => /(^|[_-])template\.(md|ya?ml|json)$/i.test(path.split('/').pop() || '');
+            const isRecordIndexPath = (path) => path.startsWith('records/') && /(^|\/)README\.md$/i.test(path);
+            const isExecutionRecordPath = (path) =>
+              isRecordArtifactPath(path) &&
+              !isTemplateRecordPath(path) &&
+              !isRecordIndexPath(path);
             const coapprovalReasons = [];
             if (hasPath('sops/')) coapprovalReasons.push('SOP files (/sops)');
-            if (hasPath('records/')) coapprovalReasons.push('records (/records)');
-            if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
+            if (paths.some((path) => isExecutionRecordPath(path))) coapprovalReasons.push('execution records (/records, excluding templates and index pages)');
+            if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
             const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
             const requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
@@ -127,4 +134,4 @@ jobs:
               return;
             }
 
-            core.info(`Approval guard passed for PR #${pr.number}; valid approvers: ${approvedNonAuthorOnHead.map((x) => '@' + x).join(', ')}`);
+            core.info(`Approval gate passed for PR #${pr.number}; valid approvers: ${approvedNonAuthorOnHead.map((x) => '@' + x).join(', ')}`);

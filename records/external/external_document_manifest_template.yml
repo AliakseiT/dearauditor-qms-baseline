@@ -1,0 +1,26 @@
+version: 1
+record_type: external_document_manifest
+required_fields:
+  record_id: "EXTDOC-<context>-<yyyy-mm-dd>"
+  document_title: ""
+  owning_process_or_product: ""
+  repository_scope: "company-level | product | study"
+  source_system:
+    name: ""
+    document_identifier: ""
+    version_or_revision: ""
+    exported_at_utc: ""
+  controlled_artifacts:
+    rendered_pdf_path: ""
+    native_source_path: ""
+  integrity:
+    rendered_pdf_sha256: ""
+    native_source_sha256: ""
+  approval_context:
+    issue_reference: ""
+    pr_reference: ""
+    meaning_of_signature: "Approved External-Origin Controlled Document"
+  retention_and_location:
+    target_record_repository: ""
+    immutable_release_reference: ""
+  notes: ""

@@ -1,0 +1,35 @@
+name: 1.4 QMS Content Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - sops/*.md
+      - wis/*.md
+      - records/**
+      - README.md
+      - matrices/training_matrix.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate_content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run QMS content gate checks
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 scripts/validate_qms_content.py --base "$BASE_SHA" --head "$HEAD_SHA"

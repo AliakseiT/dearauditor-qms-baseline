@@ -1,5 +1,5 @@
-name: Part 11 Attestation Title Page
-run-name: Signature certificate publish (comment #${{ github.event.comment.id }})
+name: 2.4 Signature Attestation Title Page
+run-name: 2.4 signature certificate publish (comment #${{ github.event.comment.id }})
 
 on:
   issue_comment:
@@ -15,7 +15,7 @@ env:
   TARGET_RECORD_BRANCH: main
 
 concurrency:
-  group: part11-title-page-comment-${{ github.event.comment.id }}
+  group: signature-title-page-comment-${{ github.event.comment.id }}
   cancel-in-progress: false
 
 jobs:

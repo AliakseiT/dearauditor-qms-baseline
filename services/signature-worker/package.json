@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
+    "deploy": "node ./scripts/run_with_version.mjs deploy",
+    "dev": "node ./scripts/run_with_version.mjs dev",
+    "print-version": "node ./scripts/run_with_version.mjs print",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

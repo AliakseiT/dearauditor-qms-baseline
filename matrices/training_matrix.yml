@@ -1,5 +1,5 @@
 ---
-version: 4
+version: 5
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -33,13 +33,13 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      SOP-001: R04
+      SOP-001: R07
       SOP-002: R02
       SOP-003: R02
       SOP-004: R02
       SOP-005: R07
       SOP-010: R01
-      SOP-011: R01
+      SOP-011: R02
       SOP-018: R00
       SOP-019: R01
       SOP-020: R00
@@ -76,7 +76,7 @@ roles:
       - SOP-018
       - SOP-020
     required_revisions:
-      SOP-001: R04
+      SOP-001: R07
       SOP-002: R02
       SOP-006: R01
       SOP-008: R01
@@ -126,11 +126,11 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      SOP-001: R04
+      SOP-001: R07
       SOP-003: R02
       SOP-005: R07
       SOP-010: R01
-      SOP-011: R01
+      SOP-011: R02
       SOP-018: R00
       SOP-019: R01
       SOP-020: R00
@@ -155,14 +155,14 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      SOP-001: R04
+      SOP-001: R07
       SOP-002: R02
       SOP-004: R02
       SOP-005: R07
       SOP-007: R01
       SOP-009: R01
       SOP-010: R01
-      SOP-011: R01
+      SOP-011: R02
       SOP-018: R00
       SOP-019: R01
       SOP-020: R00

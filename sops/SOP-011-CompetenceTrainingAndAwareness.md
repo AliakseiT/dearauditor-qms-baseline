@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R01
-effective_date: 2026-03-05
+revision: R02
+effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -50,8 +50,8 @@ Training is required when:
 
 ### 6.3 Training Assignment and Review
 1. Automation opens training issues when mapped SOPs are revised.
-2. Manual onboarding workflow may generate review-only SOP baseline PRs.
-3. Trainee approval and Part 11 signoff evidence are captured per workflow rules.
+2. Training is executed through consolidated per-user training issues rather than review-only onboarding PRs.
+3. Trainee acknowledgement and electronic-signature evidence are captured per workflow rules.
 
 ### 6.4 Completion and Evidence
 1. Training completion is logged in the designated product/study record repository.
@@ -64,7 +64,7 @@ Training is required when:
 
 ## 7. Required Records
 - Training matrix revisions
-- Training assignment issues/PRs
+- Training assignment issues
 - User training logs and signed attestations
 
 ## 8. Traceability
@@ -81,3 +81,4 @@ Training is required when:
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Removed repository-specific naming and aligned training completion plus immutable publication wording to designated product/study record repositories. |
+| R02 | 2026-03-07 | Removed the deprecated review-only onboarding PR path and aligned training execution wording to the consolidated issue-based signature flow. |
