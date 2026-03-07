@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R11
+revision: R12
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -160,11 +160,11 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 4. Product lifecycle records are maintained in designated product/study repositories and linked into the medical device file.
 
 ### 8.15 GitHub Workflow Alignment Rule
-1. QMS SOP execution model follows a GitHub-native lifecycle: controlled change context is established in a separate issue or directly in the pull request, then work proceeds through branch -> pull request -> required checks/approvals -> merge -> Part 11 signature attestation -> immutable release evidence.
+1. QMS SOP execution model follows a GitHub-native lifecycle: controlled change context is established in a separate issue or directly in the pull request, then work proceeds through branch -> pull request -> required checks/approvals -> merge -> signature attestation -> immutable release evidence.
 2. Branch-only and PR-draft content may be used for collaboration, but it is not QMS-controlled approved state and must not be cited as the approved baseline.
 3. The controlled repository baseline exists on `main` and, where applicable, on approved immutable release tags and release assets created from `main`.
 4. SOP wording must reflect implemented GitHub workflow behavior; if automation sequence changes, impacted SOPs are revised in the same change set.
-5. Part 11 signing mechanism is common across QMS Lite and designated product/study record repositories.
+5. The signature mechanism is common across QMS Lite and designated product/study record repositories.
 
 ## 9. Required Records
 - Quality Manual revision and approval log
@@ -226,3 +226,4 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | R09 | 2026-03-07 | Renamed controlled lead roles to the simplified `*_lead`/`auditor` taxonomy and removed product-owner wording from governance responsibilities. |
 | R10 | 2026-03-07 | Added `usability_lead` to the controlled role taxonomy and clarified that usability ownership is distinct from regulatory oversight. |
 | R11 | 2026-03-07 | Clarified that only `main` and approved immutable releases are controlled baselines, and that the GitHub lifecycle may be initiated directly from PR-stated change context when no separate issue is used. |
+| R12 | 2026-03-07 | Removed overly specific signature-regulation terminology from the QMS workflow wording and used technology-neutral signature language. |

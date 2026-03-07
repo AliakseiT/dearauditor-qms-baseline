@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R05
+revision: R06
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -74,7 +74,7 @@ Applies to new products, major features, and significant lifecycle changes affec
    - `**Meaning of Signature:** Approved Design Inputs and Development Plan`
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
    - `**Required Signatures:** 3`
-4. Merge only after required approvals on the current head commit and post-merge Part 11 attestation collection.
+4. Merge only after required approvals on the current head commit and post-merge signature attestation collection.
 5. Changes to approved design inputs require a new PR revision before they are used as the basis for controlled implementation or release evidence.
 
 ### 6.4 Design Outputs
@@ -131,3 +131,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R03 | 2026-03-07 | Renamed lead roles to `engineering_lead` and `regulatory_lead` to remove owner-style role wording. |
 | R04 | 2026-03-07 | Clarified ownership of system requirements, regulatory design inputs, and usability inputs, and added `usability_lead` responsibilities. |
 | R05 | 2026-03-07 | Added the explicit design-input baseline gate requiring group approval of the development plan and approved input set before controlled implementation. |
+| R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the design-input approval wording and used technology-neutral signature language. |

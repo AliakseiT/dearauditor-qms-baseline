@@ -1,7 +1,7 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R06
+revision: R07
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -40,7 +40,7 @@ Applies to software verification, software validation, and usability-validation 
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
    - `**Required Signatures:** 2`
 3. Merge only after required approvals on the current head commit.
-4. After merge, the merged PR is PIN-signed through the standard Part 11 flow. That post-merge attestation is the formal approval of the plan baseline.
+4. After merge, the merged PR is PIN-signed through the standard signature flow. That post-merge attestation is the formal approval of the plan baseline.
 5. Branch-only plan or test-record drafts may be reviewed and iterated, but they are not controlled approved plan baselines until the PR is merged.
 
 ### 3.4 Execute the Approved Plan
@@ -72,7 +72,7 @@ Applies to software verification, software validation, and usability-validation 
    - `**Meaning of Signature:** Approved V&V Evidence and Report`
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
    - `**Required Signatures:** 2`
-4. After merge, collect the post-merge PIN-based Part 11 attestation on the merged PR.
+4. After merge, collect the post-merge PIN-based signature attestation on the merged PR.
 5. Route the approved V&V report into the final release-decision gate defined in WI-002 before shipment authorization.
 6. Publish the immutable release package and link it from the MDF, risk records, usability records, and release baseline as applicable.
 
@@ -98,3 +98,4 @@ Applies to software verification, software validation, and usability-validation 
 | R04 | 2026-03-07 | Distinguished dry runs from formal release-candidate V&V, required approved release-readiness entry before formal execution, and made per-run configuration capture mandatory. |
 | R05 | 2026-03-07 | Explicitly routed the approved V&V report into the separate final release-decision gate before shipment authorization. |
 | R06 | 2026-03-07 | Clarified that branch-only plan and test-record drafts remain uncontrolled until the approving PR is merged. |
+| R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the V&V signature wording and used technology-neutral language. |

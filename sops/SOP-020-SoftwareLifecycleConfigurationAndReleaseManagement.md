@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R05
+revision: R06
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -79,7 +79,7 @@ Applies to regulated software products and significant product changes that requ
 4. Dry-run executions may occur before formal release-readiness approval, but they are not release evidence until the candidate scope and binary deployment are formally approved and recorded.
 
 ### 6.5 Configuration Identification and Baseline Control
-1. All controlled software lifecycle changes follow GitHub-managed change context -> branch -> pull request -> merge -> Part 11 attestation -> immutable release evidence, where the change context may be established in a separate issue or directly in the PR.
+1. All controlled software lifecycle changes follow GitHub-managed change context -> branch -> pull request -> merge -> signature attestation -> immutable release evidence, where the change context may be established in a separate issue or directly in the PR.
 2. Working branches are collaboration and draft baselines only; they are not controlled release baselines and must not be used as the approved product state.
 3. Multiple approved product changes may exist in parallel on product `main`; the subsequent release is defined later by an explicit release-readiness decision, not by merge order alone.
 4. Before formal release-candidate V&V starts, record:
@@ -151,3 +151,4 @@ Applies to regulated software products and significant product changes that requ
 | R03 | 2026-03-07 | Clarified parallel change flow on product `main`, added the controlled release-readiness/V&V-entry gate, and made per-run execution configuration capture mandatory for formal release testing. |
 | R04 | 2026-03-07 | Added the explicit final release-decision gate after V&V and residual-risk review, separate from release-readiness approval. |
 | R05 | 2026-03-07 | Clarified that working branches are draft-only baselines and that controlled lifecycle changes may be initiated from PR-stated change context without a mandatory separate issue. |
+| R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the lifecycle signature wording and used technology-neutral language. |

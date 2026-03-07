@@ -1,7 +1,7 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R06
+revision: R07
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -37,7 +37,7 @@ Applies to product releases, significant maintenance drops, and other controlled
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
    - `**Required Signatures:** 3`
 5. Merge only after required approvals and mandatory checks complete.
-6. Pre-gate execution may continue as dry run only; formal release evidence starts after the post-merge Part 11 attestation on this release-readiness PR.
+6. Pre-gate execution may continue as dry run only; formal release evidence starts after the post-merge signature attestation on this release-readiness PR.
 
 ### 3.3 Prepare the Final Configuration Baseline
 1. Identify all configuration items required to reproduce the release baseline.
@@ -67,14 +67,14 @@ Applies to product releases, significant maintenance drops, and other controlled
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
    - `**Required Signatures:** 3`
 5. Merge only after required approvals and mandatory checks complete.
-6. The post-merge PIN-based Part 11 attestation on that merged PR is the formal release authorization.
+6. The post-merge PIN-based signature attestation on that merged PR is the formal release authorization.
 
 ### 3.5 Publish the Release
 1. Create the release tag defined in the approved manifest.
 2. Publish immutable GitHub release assets from the approved baseline commit.
 3. Ensure the release package links back to:
    - source PR
-   - Part 11 attestation
+   - signature attestation
    - approved release-readiness decision
    - approved final release decision
    - approved V&V report
@@ -104,3 +104,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 | R04 | 2026-03-07 | Added the explicit release-readiness/V&V-entry gate, clarified that changes may progress in parallel on product `main`, and required exact binary/configuration recording for formal release execution. |
 | R05 | 2026-03-07 | Added the explicit post-V&V final release-decision gate with group approval separate from release-readiness. |
 | R06 | 2026-03-07 | Clarified that release/hotfix changes may be initiated directly from PR-stated change context and that branch-only planning remains uncontrolled until merged approval. |
+| R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the release signature wording and used technology-neutral language. |

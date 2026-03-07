@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R08
+revision: R09
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -118,9 +118,10 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full procedure content implemented for ACME GmbH. |
 | R02 | 2026-03-05 | Updated Sections 5, 6.3, and 6.6 to formally define GitHub PR approvals as binding electronic signatures and clarify the structure of immutable cryptographic records. |
-| R03 | 2026-03-05 | Updated repository-of-record model: product/study records are maintained outside `qms-lite`, and SOP workflow wording now matches post-merge Part 11 signature collection before immutable publication. |
+| R03 | 2026-03-05 | Updated repository-of-record model: product/study records are maintained outside `qms-lite`, and SOP workflow wording now matches post-merge signature collection before immutable publication. |
 | R04 | 2026-03-06 | Added controlled WI document class and metadata rules for the targeted GitHub-native execution instructions. |
 | R05 | 2026-03-06 | Added normative control path for external-origin documents and clarified manifest/hash requirements for documents authored outside GitHub. |
 | R06 | 2026-03-07 | Updated workflow references and terminology to the current gate and electronic-signature naming model. |
 | R07 | 2026-03-07 | Updated workflow filename references to the per-automation numbering scheme. |
 | R08 | 2026-03-07 | Clarified that controlled state exists only after merge to `main` or required immutable publication, and that PRs may carry their own controlled change context without a mandatory linked issue. |
+| R09 | 2026-03-07 | Removed overly specific signature-regulation terminology from the controlled signature wording and kept the SOP language technology-neutral. |
