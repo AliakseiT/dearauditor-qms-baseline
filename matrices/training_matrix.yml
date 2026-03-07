@@ -39,7 +39,7 @@ roles:
       SOP-004: R02
       SOP-005: R07
       SOP-010: R01
-      SOP-011: R01
+      SOP-011: R02
       SOP-018: R00
       SOP-019: R01
       SOP-020: R00
@@ -130,7 +130,7 @@ roles:
       SOP-003: R02
       SOP-005: R07
       SOP-010: R01
-      SOP-011: R01
+      SOP-011: R02
       SOP-018: R00
       SOP-019: R01
       SOP-020: R00
@@ -162,7 +162,7 @@ roles:
       SOP-007: R01
       SOP-009: R01
       SOP-010: R01
-      SOP-011: R01
+      SOP-011: R02
       SOP-018: R00
       SOP-019: R01
       SOP-020: R00

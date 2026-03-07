@@ -36,7 +36,7 @@
   <rect class="event" x="1340" y="135" width="210" height="42" /><text x="1352" y="161" class="node-text">workflow_dispatch</text>
 
   <!-- PR controls panel -->
-  <rect class="panel" x="30" y="230" width="560" height="500" />
+  <rect class="panel" x="30" y="230" width="560" height="430" />
   <text x="50" y="260" class="panel-title">1 PR Controls and Approval Gates</text>
 
   <rect class="node" x="50" y="280" width="250" height="56" />
@@ -54,14 +54,6 @@
   <rect class="node" x="320" y="350" width="250" height="56" />
   <text x="332" y="372" class="node-text">1.4 QMS Content Gate</text>
   <text x="332" y="390" class="small">1.4_qms_content_gate.yml</text>
-
-  <rect class="node" x="50" y="420" width="250" height="56" />
-  <text x="62" y="442" class="node-text">1.6 Training PR Approval Gate</text>
-  <text x="62" y="460" class="small">1.6_training_pr_approval_gate.yml</text>
-
-  <rect class="node" x="320" y="420" width="250" height="56" />
-  <text x="332" y="442" class="node-text">1.5 Risk Record Schema Gate</text>
-  <text x="332" y="460" class="small">1.5_risk_record_schema_gate.yml</text>
 
   <path class="arrow" d="M175 177 L175 280" />
   <path class="arrow" d="M430 177 L430 280" />

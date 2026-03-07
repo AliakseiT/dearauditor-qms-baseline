@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import re
 import subprocess
 import sys
@@ -35,6 +36,23 @@ def changed_files(base_sha, head_sha):
 
 def file_at_revision(rev, path):
     return git_output(["show", f"{rev}:{path}"], allow_fail=True)
+
+
+def load_yaml_via_ruby(path):
+    script = (
+        "require 'yaml'; "
+        "require 'json'; "
+        "data = YAML.safe_load(File.read(ARGV[0]), permitted_classes: [], aliases: false) || {}; "
+        "print JSON.generate(data)"
+    )
+    proc = subprocess.run(
+        ["ruby", "-e", script, path],
+        text=True,
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.strip() or proc.stdout.strip() or "ruby YAML parse failed")
+    return json.loads(proc.stdout or "{}")
 
 
 def parse_front_matter_value(text, key):
@@ -393,6 +411,92 @@ class QMSContentGuardTests(unittest.TestCase):
                 failures.append(
                     f"{rule['name']} must be updated when these record files change: {', '.join(sorted(watched_records))}."
                 )
+        self.assert_no_failures(failures)
+
+    def test_risk_records_have_valid_schema(self):
+        failures = []
+        allowed_source_types = {
+            "hazard_top_down",
+            "failure_mode_bottom_up",
+            "cybersecurity_threat",
+        }
+
+        changed_risk_files = [
+            path
+            for path in self.ctx.changed
+            if path.startswith("records/risk/") and path.endswith(".yml")
+        ]
+
+        for file_path in changed_risk_files:
+            path = Path(file_path)
+            if not path.exists() or is_template_record(file_path):
+                continue
+
+            try:
+                doc = load_yaml_via_ruby(file_path) or {}
+            except Exception as exc:
+                failures.append(f"{file_path}: YAML could not be parsed ({exc}).")
+                continue
+
+            if str(doc.get("record_type", "")).strip() != "risk_register":
+                continue
+
+            for root_key in ["version", "product_id", "assessment_scope", "scoring_model", "entries"]:
+                if root_key not in doc:
+                    failures.append(f"{file_path}: missing root key '{root_key}'")
+
+            entries = doc.get("entries", []) or []
+            if not isinstance(entries, list) or not entries:
+                failures.append(f"{file_path}: entries must be a non-empty list")
+                continue
+
+            for idx, entry in enumerate(entries, start=1):
+                record_path = f"{file_path} entry[{idx}]"
+                if not isinstance(entry, dict):
+                    failures.append(f"{record_path}: entry must be a mapping")
+                    continue
+
+                for key in [
+                    "risk_id",
+                    "source_type",
+                    "hazard_or_threat",
+                    "hazardous_situation",
+                    "possible_harm",
+                    "initial_risk",
+                    "controls",
+                    "residual_risk",
+                    "status",
+                ]:
+                    if key not in entry:
+                        failures.append(f"{record_path}: missing '{key}'")
+
+                source_type = str(entry.get("source_type", "")).strip()
+                if source_type and source_type not in allowed_source_types:
+                    failures.append(f"{record_path}: invalid source_type '{source_type}'")
+
+                for risk_key in ["initial_risk", "residual_risk"]:
+                    risk_value = entry.get(risk_key, {}) or {}
+                    if not isinstance(risk_value, dict):
+                        failures.append(f"{record_path}: {risk_key} must be a mapping")
+                        continue
+                    for key in ["severity", "probability", "score"]:
+                        if key not in risk_value:
+                            failures.append(f"{record_path}: {risk_key} missing '{key}'")
+                    try:
+                        severity = int(risk_value.get("severity"))
+                        probability = int(risk_value.get("probability"))
+                        score = int(risk_value.get("score"))
+                        if score != severity * probability:
+                            failures.append(
+                                f"{record_path}: {risk_key}.score ({score}) != severity*probability ({severity * probability})"
+                            )
+                    except Exception:
+                        failures.append(f"{record_path}: {risk_key} severity/probability/score must be integers")
+
+                controls = entry.get("controls", []) or []
+                if not isinstance(controls, list) or not controls:
+                    failures.append(f"{record_path}: controls must be a non-empty list")
+
         self.assert_no_failures(failures)
 
 

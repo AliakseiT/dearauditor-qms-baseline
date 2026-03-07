@@ -57,9 +57,7 @@ Source file: `docs/automation/workflow-automation-map.svg`
 | `1.1_auto_assign_signatory_reviewers.yml` | `pull_request` | Resolves required signatory reviewers from requested signature roles and assigns them. | Active |
 | `1.2_required_reviewer_approval_gate.yml` | `pull_request_review` | Enforces at least one valid non-author approval on the current head SHA where required. | Active |
 | `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables merge only after assigned reviewer approvals are present. | Active |
-| `1.4_qms_content_gate.yml` | `pull_request` | Enforces revision-history, README navigation/index, training-matrix synchronization, and configured record-index sanity checks for controlled content changes. | Active |
-| `1.5_risk_record_schema_gate.yml` | `pull_request` | Validates controlled risk-record YAML structure and scoring consistency. | Active |
-| `1.6_training_pr_approval_gate.yml` | `pull_request`, `pull_request_review` | Enforces trainee approval for PRs updating designated training records. | Active |
+| `1.4_qms_content_gate.yml` | `pull_request` | Enforces revision-history, README navigation/index, training-matrix synchronization, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
 
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
