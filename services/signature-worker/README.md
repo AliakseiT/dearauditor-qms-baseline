@@ -72,6 +72,12 @@ The worker UI and `/healthz` expose the active worker version. The default forma
 - Manual: `npm run deploy`
 - GitHub Actions manual run (`workflow_dispatch`): `.github/workflows/4.1_deploy_signature_worker.yml`
 
+## Hosted Option
+
+This repository includes everything needed to self-host the signing worker.
+
+For adopters that prefer not to operate their own worker, the hosted endpoint `https://sign.qms.dearauditor.ch` may also be offered as a separate service for compatible GitHub-native signing workflows. Any commercial terms, onboarding conditions, or support commitments for hosted use are separate from the open-source repository and are not defined by this README.
+
 ## Bootstrap Helper
 
 Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:

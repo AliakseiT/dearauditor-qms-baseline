@@ -18,6 +18,8 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 | See role-based training requirements | [Training matrix](matrices/training_matrix.yml) |
 | See recorded training status | [User training log](records/training/user_training_log.yml) |
 | Browse record families and templates | [Records index](records/README.md) |
+| Understand how public upstream and private adopter repos fit together | [Open-source adoption model](docs/open-source/README.md) |
+| Ask about adoption, support, or pilot use | [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch) |
 | Understand workflows, automations, and trust boundaries | [System architecture](docs/architecture/README.md) |
 | Open the end-to-end automation diagram | [Workflow automation map](docs/architecture/README.md#6-automation-map) |
 | Check published releases in GitHub | [Releases](https://github.com/AliakseiT/qms-lite/releases) |
@@ -30,6 +32,32 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 - Current baseline shown in this README: `20` published SOPs and `2` published WIs
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNN`
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
+
+## Open-Source Distribution Model
+
+This repository remains the public upstream baseline. Adopting companies should not run their live QMS directly as a long-lived public fork. Instead:
+
+- a company creates a private adopter repository from a selected upstream baseline ref, normally a `QMS-YYYY-MM-DD-RNN` tag
+- the adopter repo records its current upstream baseline in `adoption/upstream-baseline.json`
+- later upstream changes are proposed into the adopter repo as controlled upgrade PRs that update only upstream-owned paths
+- company-owned matrices, signer assignments, training logs, supplier state, and operational records stay local to the adopter repository
+
+The machine-readable boundary is defined in [distribution-map.json](distribution-map.json). The generic bootstrap seeds for company-owned files live under [examples/bootstrap](examples/bootstrap/README.md), and the supported CLI entry points live under [tools/](tools).
+
+The upstream repository still keeps a dogfooded company baseline in the live `matrices/` and selected `records/` paths so the content and automations can be exercised end to end while the model is evolving. That is intentional. Adopters should treat those upstream files as upstream-only operating state and bootstrap their own company-owned copies from [examples/bootstrap](examples/bootstrap/README.md).
+
+Recommended scripts:
+
+- [tools/bootstrap_company_repo.sh](tools/bootstrap_company_repo.sh) to create a private adopter repo from an upstream baseline
+- [tools/open_upstream_upgrade_pr.sh](tools/open_upstream_upgrade_pr.sh) to propose a selected upstream update into a downstream repo
+- [tools/check_adoption_readiness.sh](tools/check_adoption_readiness.sh) to block incomplete onboarding and missing repo settings
+
+Signing service options:
+
+- self-host the GitHub signing worker described in [services/signature-worker](services/signature-worker/README.md)
+- optionally discuss use of the hosted signing endpoint `https://sign.qms.dearauditor.ch` for GitHub-native signing workflows; commercial terms and service conditions remain separate from the open-source baseline
+
+Contact for adoption, pilot use, or support: [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
 
 ## Training and Role Navigation
 

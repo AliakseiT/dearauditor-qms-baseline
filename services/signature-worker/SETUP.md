@@ -75,3 +75,7 @@ From repo root:
 - `./services/signature-worker/scripts/bootstrap_env.sh --deploy`
 
 This syncs `.env.local` values to GitHub/Cloudflare, validates KV IDs, and deploys worker.
+
+## 7. Hosted Alternative
+
+If an adopter does not want to self-host the worker, `https://sign.qms.dearauditor.ch` may be usable as a hosted signing endpoint by separate arrangement. In that model, the adopter would still need the repository-side GitHub configuration expected by QMS Lite, while commercial terms and service conditions remain outside this setup guide.

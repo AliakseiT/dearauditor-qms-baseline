@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "tracked_baseline_file": "adoption/upstream-baseline.json",
+  "tag_namespaces": {
+    "adoptable": "^QMS-\\d{4}-\\d{2}-\\d{2}-R\\d{2}$",
+    "preview": "^QMSPREVIEW-\\d{4}-\\d{2}-\\d{2}-R\\d{2}$",
+    "immutable_evidence_prefixes": [
+      "sig-",
+      "audit-",
+      "capa-",
+      "change-",
+      "ncr-",
+      "pms-",
+      "record-",
+      "risk-",
+      "trn-"
+    ]
+  },
+  "sync_includes": [
+    {
+      "kind": "path",
+      "value": ".github/ISSUE_TEMPLATE"
+    },
+    {
+      "kind": "path",
+      "value": ".github/workflows"
+    },
+    {
+      "kind": "path",
+      "value": "DISCLAIMER.md"
+    },
+    {
+      "kind": "path",
+      "value": "LICENSE"
+    },
+    {
+      "kind": "path",
+      "value": "LICENSES"
+    },
+    {
+      "kind": "path",
+      "value": "NOTICE"
+    },
+    {
+      "kind": "path",
+      "value": "README.md"
+    },
+    {
+      "kind": "path",
+      "value": "TRADEMARKS.md"
+    },
+    {
+      "kind": "path",
+      "value": "distribution-map.json"
+    },
+    {
+      "kind": "path",
+      "value": "docs/QMS-Lite-System-Architecture.md"
+    },
+    {
+      "kind": "path",
+      "value": "docs/open-source"
+    },
+    {
+      "kind": "path",
+      "value": "examples/bootstrap"
+    },
+    {
+      "kind": "path",
+      "value": "records/README.md"
+    },
+    {
+      "kind": "glob",
+      "value": "records/**/*template*.md"
+    },
+    {
+      "kind": "glob",
+      "value": "records/**/*template*.yml"
+    },
+    {
+      "kind": "glob",
+      "value": "records/**/*template*.yaml"
+    },
+    {
+      "kind": "glob",
+      "value": "records/**/*template*.json"
+    },
+    {
+      "kind": "path",
+      "value": "scripts"
+    },
+    {
+      "kind": "path",
+      "value": "services/signature-worker"
+    },
+    {
+      "kind": "path",
+      "value": "sops"
+    },
+    {
+      "kind": "path",
+      "value": "tools"
+    },
+    {
+      "kind": "path",
+      "value": "wis"
+    }
+  ],
+  "sync_excludes": [
+    {
+      "kind": "path",
+      "value": "services/signature-worker/.env.local"
+    },
+    {
+      "kind": "path",
+      "value": "services/signature-worker/.dev.vars"
+    }
+  ],
+  "company_owned_paths": [
+    "adoption/",
+    "matrices/",
+    "records/audits/",
+    "records/capas/",
+    "records/change/",
+    "records/feedback/",
+    "records/management-reviews/",
+    "records/nonconformity/",
+    "records/pms/",
+    "records/risk/",
+    "records/suppliers/approved_supplier_list.yml",
+    "records/training/user_training_log.yml",
+    "records/validation/"
+  ],
+  "bootstrap_overlays": [
+    {
+      "source": "examples/bootstrap/matrices/company_profile.yml",
+      "target": "matrices/company_profile.yml"
+    },
+    {
+      "source": "examples/bootstrap/matrices/regulatory_market_scope.yml",
+      "target": "matrices/regulatory_market_scope.yml"
+    },
+    {
+      "source": "examples/bootstrap/matrices/training_matrix.yml",
+      "target": "matrices/training_matrix.yml"
+    },
+    {
+      "source": "examples/bootstrap/matrices/signer_registry.json",
+      "target": "matrices/signer_registry.json"
+    },
+    {
+      "source": "examples/bootstrap/matrices/qms_tooling_inventory.yml",
+      "target": "matrices/qms_tooling_inventory.yml"
+    },
+    {
+      "source": "examples/bootstrap/records/training/user_training_log.yml",
+      "target": "records/training/user_training_log.yml"
+    },
+    {
+      "source": "examples/bootstrap/records/suppliers/approved_supplier_list.yml",
+      "target": "records/suppliers/approved_supplier_list.yml"
+    }
+  ],
+  "required_repo_variables": [
+    "SIGNATURE_UI_BASE_URL"
+  ],
+  "required_repo_secrets": [
+    "QMS_BOT_APP_ID",
+    "QMS_BOT_APP_PRIVATE_KEY",
+    "SIGNATURE_LINK_SECRET"
+  ],
+  "placeholder_scan_paths": [
+    "matrices/company_profile.yml",
+    "matrices/training_matrix.yml",
+    "matrices/signer_registry.json"
+  ],
+  "placeholder_prefixes": [
+    "REPLACE_WITH_"
+  ]
+}

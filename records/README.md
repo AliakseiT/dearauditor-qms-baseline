@@ -8,6 +8,12 @@ QMS Lite uses a mixed model:
 - reusable templates live here and are copied or adapted into designated product/study repositories
 - product-specific execution records such as design history, V&V evidence, MDF artifacts, release baselines, and post-market files belong in the designated product/study repository, not in `qms-lite`
 
+For downstream adopters, the practical rule is:
+
+- template files under `records/` can be proposed from upstream into a company repo
+- non-template operational records become company-owned immediately and are never auto-overwritten by upstream upgrade scripts
+- generic bootstrap seed files for adopter-owned records live under [`examples/bootstrap/`](../examples/bootstrap/README.md)
+
 Some folders are intentionally empty until the first signed and published company-level record exists.
 
 ## Start Here
@@ -72,5 +78,6 @@ Use the external manifest template when a controlled document is authored outsid
 ## Related Navigation
 
 - [QMS Lite landing page](../README.md)
+- [Open-source adoption model](../docs/open-source/README.md)
 - [QMS Lite system architecture](../docs/architecture/README.md)
 - [Workflow automation map](../docs/architecture/README.md#6-automation-map)

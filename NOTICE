@@ -1,0 +1,6 @@
+QMS Lite publishes reusable quality-system content and automation in a split-license model:
+
+- code and automation artifacts: Apache-2.0
+- SOPs, WIs, templates, docs, and example seed content: CC BY 4.0
+
+This repository also contains fictional company/example material used to dogfood the workflow model. Adopters are expected to validate suitability, tailor company-owned files, and operate their own controlled repositories.
