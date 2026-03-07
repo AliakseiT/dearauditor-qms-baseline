@@ -139,22 +139,22 @@ export default {
         if (!hasSignedContextParams(url.searchParams) && !hasRequestLocatorParams(url.searchParams)) {
           return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
         }
-        return handleSignPage(request, env);
+        return await handleSignPage(request, env);
       }
       if (path === "/auth/start" && request.method === "POST") {
-        return handleAuthStart(request, env);
+        return await handleAuthStart(request, env);
       }
       if (path === "/auth/callback" && request.method === "GET") {
-        return handleAuthCallback(request, env);
+        return await handleAuthCallback(request, env);
       }
       if (path === "/pin/complete" && request.method === "POST") {
-        return handlePinComplete(request, env);
+        return await handlePinComplete(request, env);
       }
       if (path === "/pin/setup" && request.method === "POST") {
-        return handlePinSetup(request, env);
+        return await handlePinSetup(request, env);
       }
       if (path === "/api/pin/status" && request.method === "POST") {
-        return handlePinStatusApi(request, env);
+        return await handlePinStatusApi(request, env);
       }
 
       return renderErrorResponse("Unknown route.", workerVersion);
