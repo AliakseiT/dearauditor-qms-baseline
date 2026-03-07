@@ -22,10 +22,13 @@ QMS Lite is a GitHub-native QMS operating model built from:
 
 The canonical controlled reading surface remains GitHub at the approved commit or tag. QMS releases are formalized by tags matching `QMS-YYYY-MM-DD-RNN`.
 
+For open-source distribution, this repository acts as the public upstream baseline. Adopting companies are expected to bootstrap a private repository from a selected upstream baseline ref and then pull later upstream changes through explicit upgrade PRs. The sync boundary is defined in [`distribution-map.json`](../../distribution-map.json), and the operational entry points are documented in [`../open-source/README.md`](../open-source/README.md).
+
 ## 4. Core Components
 | Component | Role in the architecture |
 |---|---|
 | GitHub repository (`qms-lite`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
+| `distribution-map.json` + `tools/` | Defines which paths remain upstream-owned, which files are bootstrapped as company-owned, and which repo settings must exist in downstream adopters. |
 | GitHub Issues | Planning and intake layer for CAPA, audit, risk, training, V&V, release, complaint, PMS, and change activities. |
 | GitHub Pull Requests | Controlled review, approval, and merge boundary for QMS document and record changes. |
 | GitHub Actions | Policy evaluation, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
@@ -41,6 +44,12 @@ The canonical controlled reading surface remains GitHub at the approved commit o
 4. Once merged, post-merge workflows request signatures, collect attestations, and publish immutable record evidence for execution records maintained in the target repository.
 5. Training automations derive additional work items from released or merged state.
 6. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
+
+For private adopter repos, the additional operating flow is:
+
+7. A company bootstraps a private adopter repo from a selected upstream baseline ref using `tools/bootstrap_company_repo.sh`.
+8. Company-owned matrices and operational records are tailored locally and validated before first use.
+9. Later upstream changes are proposed into the adopter repo by `tools/open_upstream_upgrade_pr.sh`, which updates only upstream-owned paths and records the proposed baseline in `adoption/upstream-baseline.json`.
 
 ## 6. Automation Map
 The current workflow topology is summarized below.
@@ -145,5 +154,15 @@ flowchart LR
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |
 
-## 9. Platform Caveat
+## 9. Tag Namespaces
+
+High-volume immutable publication tags and downstream-adoptable baseline tags must remain separate.
+
+- `QMS-*` is the formal upstream baseline namespace and the only namespace intended for downstream adoption by default.
+- `QMSPREVIEW-*` is reserved for immutable candidate baselines when a stable preview is needed.
+- record/signature tags such as `sig-*`, `record-*`, and `trn-*` are evidence-retention tags and are intentionally ignored by downstream upgrade tooling.
+
+This separation allows the repository to keep thousands of immutable publication tags without turning them into downstream upgrade inputs.
+
+## 10. Platform Caveat
 On private repositories using GitHub Free, GitHub does not provide branch protection or rulesets to hard-block merges. In that deployment model, QMS Lite workflows can validate approvals and avoid enabling auto-merge, but an accidental manual merge without the intended approvals remains technically possible.

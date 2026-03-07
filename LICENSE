@@ -1,0 +1,17 @@
+QMS Lite uses split licensing.
+
+Unless a file says otherwise:
+
+- Code, scripts, GitHub Actions workflows, automation assets, and service code are licensed under Apache License 2.0.
+- SOPs, work instructions, templates, docs, and other narrative content are licensed under Creative Commons Attribution 4.0 International.
+
+Practical mapping:
+
+- Apache-2.0: `.github/`, `scripts/`, `services/`, `tools/`, machine-readable config files intended as software or automation artifacts
+- CC BY 4.0: `README.md`, `docs/`, `sops/`, `wis/`, `records/`, `examples/`, `matrices/`, and other documentation/content unless a narrower notice is present
+
+Additional terms:
+
+- project names, logos, and badges are not granted under these licenses; see `TRADEMARKS.md`
+- no regulatory, legal, or quality-system warranty is provided; see `DISCLAIMER.md`
+- repository license notices and official license references are provided in `LICENSES/Apache-2.0.txt` and `LICENSES/CC-BY-4.0.txt`

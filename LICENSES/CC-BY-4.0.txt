@@ -1,0 +1,95 @@
+Repository license notice for Creative Commons Attribution 4.0 International.
+Official legal code:
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+By exercising the Licensed Rights, You accept and agree to be bound by the
+terms and conditions of this Creative Commons Attribution 4.0 International
+Public License.
+
+Section 1. Definitions.
+
+"Adapted Material" means material subject to Copyright and Similar Rights that
+is derived from or based upon the Licensed Material and in which the Licensed
+Material is translated, altered, arranged, transformed, or otherwise modified.
+
+"Adapter's License" means the license You apply to Your Copyright and Similar
+Rights in Your contributions to Adapted Material.
+
+"Copyright and Similar Rights" means copyright and/or similar rights closely
+related to copyright including performance, broadcast, sound recording, and
+Sui Generis Database Rights.
+
+"Licensed Material" means the artistic or literary work, database, or other
+material to which the Licensor applied this Public License.
+
+"Licensed Rights" means the rights granted to You subject to the terms and
+conditions of this Public License, which are limited to all Copyright and
+Similar Rights that apply to Your use of the Licensed Material.
+
+"Licensor" means the individual or entity granting rights under this Public
+License.
+
+"Share" means to provide material to the public by any means or process that
+requires permission under the Licensed Rights.
+
+Section 2. Scope.
+
+Subject to the terms and conditions of this Public License, the Licensor
+hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive,
+irrevocable license to exercise the Licensed Rights in the Licensed Material
+to reproduce and Share the Licensed Material, in whole or in part, and to
+produce, reproduce, and Share Adapted Material.
+
+Exceptions and Limitations. For the avoidance of doubt, where Exceptions and
+Limitations apply to Your use, this Public License does not apply, and You do
+not need to comply with its terms and conditions.
+
+No endorsement. Nothing in this Public License constitutes or may be construed
+as permission to assert or imply that You are, or that Your use of the Licensed
+Material is, connected with, sponsored, endorsed, or granted official status by,
+the Licensor or others designated to receive attribution.
+
+Section 3. License Conditions.
+
+If You Share the Licensed Material or Adapted Material, You must give
+appropriate credit, provide a link to this Public License, indicate if changes
+were made, and retain an indication of previous modifications. You may satisfy
+the conditions in any reasonable manner based on the medium, means, and context
+in which You Share the Licensed Material.
+
+Section 4. Sui Generis Database Rights.
+
+Where the Licensed Rights include Sui Generis Database Rights, You may extract,
+reuse, reproduce, and Share all or a substantial portion of the contents of the
+database, provided You follow the attribution conditions in Section 3.
+
+Section 5. Disclaimer of Warranties and Limitation of Liability.
+
+Unless otherwise separately undertaken by the Licensor, to the extent possible,
+the Licensor offers the Licensed Material as-is and as-available, and makes no
+representations or warranties of any kind concerning the Licensed Material. To
+the extent possible, in no event will the Licensor be liable to You on any legal
+theory for any direct, special, indirect, incidental, consequential, punitive,
+exemplary, or other losses, costs, expenses, or damages arising out of this
+Public License or use of the Licensed Material.
+
+Section 6. Term and Termination.
+
+This Public License applies for the term of the Copyright and Similar Rights
+licensed here. However, if You fail to comply with this Public License, then
+Your rights under this Public License terminate automatically. Where Your right
+to use the Licensed Material has terminated and is reinstated, this Public
+License continues to apply.
+
+Section 7. Other Terms and Conditions.
+
+The Licensor shall not be bound by any additional or different terms or
+conditions communicated by You unless expressly agreed.
+
+Section 8. Interpretation.
+
+This Public License does not reduce, limit, restrict, or impose conditions on
+any use of the Licensed Material that could lawfully be made without permission
+under this Public License.
+
+End of repository license notice.

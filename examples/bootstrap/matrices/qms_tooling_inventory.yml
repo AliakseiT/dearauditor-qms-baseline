@@ -1,0 +1,17 @@
+version: 1
+owner_role: qa_lead
+validation_basis: "ISO 13485 clause 4.1.6 risk-based software validation for QMS tools"
+qms_tools:
+  - tool_id: QMS-TOOL-001
+    name: GitHub
+    deployment: "GitHub Cloud"
+    purpose:
+      - "Source control for controlled QMS and product records"
+      - "Issue management for planning and workflow intake"
+      - "Pull request workflow for approvals, signatures, and immutable publication"
+      - "Actions workflow automation for guards, traceability, and record packaging"
+    validation_status: "planned_for_validation"
+    last_validation_review: "REPLACE_WITH_VALIDATION_REVIEW_DATE"
+    evidence_reference: "REPLACE_WITH_VALIDATION_EVIDENCE_REFERENCE"
+    change_control_required: true
+    criticality: "high"

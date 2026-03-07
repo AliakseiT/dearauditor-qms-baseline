@@ -1,0 +1,35 @@
+version: 1
+company:
+  legal_name: "REPLACE_WITH_COMPANY_LEGAL_NAME"
+  registered_address:
+    street: "REPLACE_WITH_COMPANY_STREET"
+    postal_code: "REPLACE_WITH_COMPANY_POSTAL_CODE"
+    city: "REPLACE_WITH_COMPANY_CITY"
+    country: "REPLACE_WITH_COMPANY_COUNTRY"
+  operating_model: "remote-first"
+  regulatory_role: "Manufacturer"
+  product_type: "Software-enabled healthcare products"
+  intended_use_policy: "Product-specific intended use, claims, indications, and classification are approved per product dossier."
+  infrastructure_policy: "Infrastructure architecture and validation are defined and approved per product or platform dossier."
+  qms_intent:
+    - "Maintain a controlled, evidence-driven quality management system."
+    - "Apply risk-based lifecycle controls to regulated software activities."
+    - "Retain objective evidence for quality, regulatory, and release decisions."
+quality_policy_statement:
+  approved_by_role: "management_representative"
+  statement: "REPLACE_WITH_COMPANY_LEGAL_NAME commits to delivering safe and effective products through a controlled quality management system and continuous improvement."
+quality_objective_framework:
+  governance_cadence: "quarterly"
+  objectives:
+    - id: "QO-001"
+      objective: "Close CAPA actions on time"
+      metric: "percent_closed_on_or_before_due_date"
+      target: ">=95%"
+    - id: "QO-002"
+      objective: "Complete required SOP training on time"
+      metric: "percent_training_requests_closed_by_due_date"
+      target: ">=98%"
+    - id: "QO-003"
+      objective: "Maintain management review cadence"
+      metric: "reviews_completed_per_plan"
+      target: "100%"

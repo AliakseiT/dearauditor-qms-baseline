@@ -1,0 +1,15 @@
+version: 1
+scope_owner_role: management_representative
+last_reviewed_on: "REPLACE_WITH_REVIEW_DATE"
+jurisdictions:
+  - jurisdiction: "REPLACE_WITH_PRIMARY_MARKET"
+    device_framework:
+      name: "REPLACE_WITH_DEVICE_FRAMEWORK"
+      citation: "REPLACE_WITH_FRAMEWORK_CITATION"
+      key_references:
+        - ref: "REPLACE_WITH_REFERENCE"
+          note: "Capture the primary qualification and classification reference for this market."
+      source_links:
+        - "REPLACE_WITH_SOURCE_LINK"
+classification_and_claims_policy:
+  principle: "Regulatory qualification, classification, intended use, and claims are maintained per product dossier and approved before release."

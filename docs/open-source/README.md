@@ -1,0 +1,45 @@
+# Open-Source Adoption Model
+
+QMS Lite can be published as a public upstream baseline without forcing adopters to expose their live QMS evidence.
+
+## Operating Model
+
+- this repository remains the public upstream source for reusable SOPs, WIs, templates, validators, automations, and example seed files
+- each adopting company creates a private repository from a selected upstream baseline ref, normally a `QMS-YYYY-MM-DD-RNN` tag
+- product or study execution records stay in separate designated private repositories as already described in [`../architecture/README.md`](../architecture/README.md)
+
+The downstream repo is not expected to ingest every upstream tag. It records one adopted upstream ref at a time in `adoption/upstream-baseline.json` and only moves when the company approves an upgrade PR.
+
+## Repo Boundaries
+
+The machine-readable source of truth is [`../../distribution-map.json`](../../distribution-map.json).
+
+- `sync_includes`: paths that can be proposed from upstream into downstream upgrade PRs
+- `company_owned_paths`: paths that belong to the adopter once bootstrapped
+- `bootstrap_overlays`: generic seed files copied into company-owned destinations during onboarding
+
+Current intent:
+
+- upstream-owned: `.github/`, `sops/`, `wis/`, `scripts/`, `services/signature-worker/`, record templates, open-source docs, licensing, and the distribution scripts
+- company-owned: `matrices/`, live operational records, signer assignments, training logs, supplier state, and downstream adoption metadata
+
+## CLI Entry Points
+
+Use the repository scripts instead of ad hoc copy/paste:
+
+1. [`../../tools/bootstrap_company_repo.sh`](../../tools/bootstrap_company_repo.sh)
+   Creates a downstream repo from a selected upstream ref and overlays generic company-owned seed files.
+2. [`../../tools/open_upstream_upgrade_pr.sh`](../../tools/open_upstream_upgrade_pr.sh)
+   Opens a controlled branch containing only upstream-owned changes from a selected upstream ref.
+3. [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh)
+   Fails if placeholder tokens remain or if required GitHub repo settings are missing.
+
+## Tag Namespaces
+
+The current automations treat `QMS-*` as the formal upstream baseline channel.
+
+- `QMS-*`: curated baseline refs intended to be eligible for downstream adoption
+- `QMSPREVIEW-*`: reserved for immutable upstream preview baselines when needed; these are not automatically treated as downstream-adoptable
+- `sig-*`, `record-*`, `trn-*`, and similar prefixes: immutable evidence/publication tags and explicitly out of scope for downstream sync tooling
+
+This keeps high-volume immutable record/signature tags available for evidence retention without making them part of the downstream upgrade surface.
