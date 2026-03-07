@@ -132,7 +132,7 @@ flowchart LR
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements, posts or refreshes signer-specific links for the signature ceremony, and marks merged PRs as `signatures/outstanding`. | Active |
+| `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts or refreshes signer-specific links for the signature ceremony. | Active |
 | `2.6_pr_signature_label_reconciliation.yml` | `issue_comment`, `workflow_dispatch` | Reconciles `signatures/outstanding` / `signatures/complete` on merged PRs based on the latest signature request comment and collected attestations. | Active |
 | `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, groups risk/usability bundles where required, and publishes immutable releases. | Active |
 | `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |

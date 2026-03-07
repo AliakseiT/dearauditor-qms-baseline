@@ -223,44 +223,6 @@ jobs:
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
-            async function ensureLabel(name, color, description) {
-              try {
-                await github.rest.issues.getLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name,
-                });
-              } catch (error) {
-                if (error.status !== 404) throw error;
-                await github.rest.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  name,
-                  color,
-                  description,
-                });
-              }
-            }
-            async function setOutstandingLabelState() {
-              await ensureLabel('signatures/outstanding', 'FBCA04', 'Merged PR is awaiting required electronic signatures.');
-              await ensureLabel('signatures/complete', '0E8A16', 'Merged PR has collected the required electronic signatures.');
-              await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: prNumber,
-                labels: ['signatures/outstanding'],
-              });
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  name: 'signatures/complete',
-                });
-              } catch (error) {
-                if (error.status !== 404) throw error;
-              }
-            }
             const buildLink = (signer) => {
               const params = new URLSearchParams({
                 repo: `${context.repo.owner}/${context.repo.repo}`,
@@ -336,7 +298,6 @@ jobs:
                 comment_id: latestRequest.id,
                 body,
               });
-              await setOutstandingLabelState();
               core.info(`Updated signature request comment for PR #${prNumber}.`);
               return;
             }
@@ -347,7 +308,6 @@ jobs:
               issue_number: prNumber,
               body,
             });
-            await setOutstandingLabelState();
         env:
           PR_NUMBER: ${{ steps.parse.outputs.pr_number }}
           MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
