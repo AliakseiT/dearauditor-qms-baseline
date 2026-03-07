@@ -23,6 +23,8 @@ Current intent:
 - upstream-owned: `.github/`, `sops/`, `wis/`, `scripts/`, `services/signature-worker/`, record templates, open-source docs, licensing, and the distribution scripts
 - company-owned: `matrices/`, live operational records, signer assignments, training logs, supplier state, and downstream adoption metadata
 
+While the upstream project is still being actively developed, it continues to dogfood the workflow model using named company/person data in the live upstream `matrices/` and selected `records/` paths. That state is retained on purpose so the automations can be exercised end to end. Downstream adopters should not copy it directly; they should start from the generic seed files in [`../../examples/bootstrap`](../../examples/bootstrap/README.md).
+
 ## CLI Entry Points
 
 Use the repository scripts instead of ad hoc copy/paste:
@@ -43,3 +45,7 @@ The current automations treat `QMS-*` as the formal upstream baseline channel.
 - `sig-*`, `record-*`, `trn-*`, and similar prefixes: immutable evidence/publication tags and explicitly out of scope for downstream sync tooling
 
 This keeps high-volume immutable record/signature tags available for evidence retention without making them part of the downstream upgrade surface.
+
+## Contact
+
+For adoption, pilot use, or support inquiries: [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
