@@ -1,10 +1,10 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R01
-effective_date: 2026-03-06
+revision: R03
+effective_date: 2026-03-07
 status: Published
-owner_role: software_engineer
+owner_role: engineering_lead
 related_sops:
   - SOP-008
   - SOP-019
@@ -37,7 +37,7 @@ Applies to software verification, software validation, and usability-validation 
    - any new or revised manual test case records in the target repository
 2. The PR body must state:
    - `**Meaning of Signature:** Approved V&V Plan`
-   - `**Signer Roles:** Quality Assurance Lead; Software Engineer`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
    - `**Required Signatures:** 2`
 3. Merge only after required approvals on the current head commit.
 4. After merge, the merged PR is PIN-signed through the standard Part 11 flow. That post-merge attestation is the formal approval of the plan baseline.
@@ -57,7 +57,7 @@ Applies to software verification, software validation, and usability-validation 
 2. The executor must not be the sole approver of this PR.
 3. The PR body must state:
    - `**Meaning of Signature:** Approved V&V Evidence and Report`
-   - `**Signer Roles:** Quality Assurance Lead; Software Engineer`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
    - `**Required Signatures:** 2`
 4. After merge, collect the post-merge PIN-based Part 11 attestation on the merged PR.
 5. Publish the immutable release package and link it from the MDF, risk records, usability records, and release baseline as applicable.
@@ -65,6 +65,7 @@ Applies to software verification, software validation, and usability-validation 
 ### 3.6 Change Control and Re-Execution
 1. If planned scope, environment, or acceptance criteria change, revise the plan through a new PR before further execution.
 2. If test outcomes invalidate prior approval assumptions, reopen affected risk, change, or release decisions before shipment.
+3. Individual engineers may execute tests and prepare evidence, but the engineering lead remains accountable for plan completeness, evidence disposition, and routing into release decisions.
 
 ## 4. Required Records
 - V&V planning issue
@@ -78,3 +79,5 @@ Applies to software verification, software validation, and usability-validation 
 |---|---|---|
 | R00 | 2026-03-06 | Initial release defining GitHub-native V&V execution flow. |
 | R01 | 2026-03-06 | Clarified that product V&V execution records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |
+| R02 | 2026-03-07 | Normalized V&V signoff accountability to the engineering owner role while keeping engineers as the minimum trained execution role. |
+| R03 | 2026-03-07 | Renamed the accountable technical signoff role to `engineering_lead`. |

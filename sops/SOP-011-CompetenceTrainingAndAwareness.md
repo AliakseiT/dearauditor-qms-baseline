@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R02
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -31,7 +31,7 @@ Applies to all personnel and contractors performing tasks that can affect produc
 | Role | Responsibilities |
 |---|---|
 | QA Lead | Owns training matrix and training process effectiveness. |
-| Line/Process Managers | Confirm assigned personnel complete required training. |
+| Role Leads | Confirm assigned personnel complete required training for the roles they assign or supervise. |
 | Trainees | Review material, acknowledge understanding, and complete required signoff. |
 | Management Representative | Approves training process adequacy and escalations. |
 
@@ -40,6 +40,9 @@ Applies to all personnel and contractors performing tasks that can affect produc
 ### 6.1 Competence Definition
 1. Define role-specific required SOPs in `matrices/training_matrix.yml`.
 2. Avoid broad over-assignment; include only SOPs needed for role responsibilities.
+3. Any user who changes code, prepares builds, or executes controlled verification/validation activities must hold the `engineer` role at minimum.
+4. Any user accountable for lifecycle planning, release readiness, or technical approval decisions must also hold the `engineering_lead` role.
+5. Any user accountable for usability-engineering records, formative/summative evaluation planning, or user-profile/use-environment definition must also hold the `usability_lead` role.
 
 ### 6.2 Triggering Training
 Training is required when:
@@ -82,3 +85,6 @@ Training is required when:
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Removed repository-specific naming and aligned training completion plus immutable publication wording to designated product/study record repositories. |
 | R02 | 2026-03-07 | Removed the deprecated review-only onboarding PR path and aligned training execution wording to the consolidated issue-based signature flow. |
+| R03 | 2026-03-07 | Added explicit minimum training role expectations for engineers and normalized manager language to role owners for small teams. |
+| R04 | 2026-03-07 | Renamed accountable roles to the simplified `*_lead` taxonomy and aligned training language to that naming. |
+| R05 | 2026-03-07 | Added explicit training-role criteria for `usability_lead` and aligned the matrix to required-versus-awareness training scope. |

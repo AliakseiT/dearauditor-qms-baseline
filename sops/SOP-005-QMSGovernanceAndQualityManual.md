@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance and Quality Manual
-revision: R07
-effective_date: 2026-03-06
+revision: R10
+effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -73,11 +73,10 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 ## 7. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Management Representative | Approves QMS/Quality Manual changes, confirms adequacy and effectiveness. |
+| Management Representative | Approves QMS/Quality Manual changes, confirms adequacy and effectiveness, and acts for top management in small-team deployments. |
 | QA Lead | Maintains QMS process inventory, drives updates, verifies records and traceability completeness. |
-| Process Owners | Maintain procedure content, execute controls, provide objective evidence. |
-| Lead Auditor | Independently verifies conformance of governed processes through audits. |
-| Top Management | Sets quality policy/objectives, ensures resources, reviews QMS performance. |
+| Engineering Lead / Regulatory Lead / Usability Lead / Technical QMS Maintainer | Maintain assigned procedure content, execute controls, and provide objective evidence. |
+| Auditor | Independently verifies conformance of governed processes through audits. |
 
 ## 8. Procedure
 
@@ -101,8 +100,8 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 3. Annual management review confirms suitability, adequacy, and effectiveness of the QMS.
 
 ### 8.4 Quality Policy and Objectives Control
-1. Top Management approves quality policy and quality objectives.
-2. Objectives must be measurable and mapped to process owners.
+1. Management Representative approves quality policy and quality objectives on behalf of top management in small-team deployments.
+2. Objectives must be measurable and mapped to accountable role leads.
 3. Objective changes require rationale, baseline metric definition, and inclusion in management review inputs.
 
 ### 8.5 Responsibility and Communication
@@ -221,3 +220,6 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 | R05 | 2026-03-02 | Added IEC 62366-1 adoption and usability engineering governance linkage to SOP-019 and the usability matrix baseline. |
 | R06 | 2026-03-05 | Added repository-of-record governance for product/study records, clarified IEC 62366 evidence location, and added explicit rule to keep SOP lifecycle wording aligned with implemented GitHub workflow. |
 | R07 | 2026-03-06 | Added IEC 62304 adoption, linked lifecycle execution instructions, and required product-level lifecycle/release record references. |
+| R08 | 2026-03-07 | Normalized small-team accountability language to role owners and management representative responsibilities used in the controlled role matrix. |
+| R09 | 2026-03-07 | Renamed controlled lead roles to the simplified `*_lead`/`auditor` taxonomy and removed product-owner wording from governance responsibilities. |
+| R10 | 2026-03-07 | Added `usability_lead` to the controlled role taxonomy and clarified that usability ownership is distinct from regulatory oversight. |

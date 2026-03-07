@@ -22,4 +22,4 @@ required_fields:
     meaning_of_signature: "Approved V&V Plan"
     signer_roles:
       - qa_lead
-      - software_engineer
+      - engineering_lead

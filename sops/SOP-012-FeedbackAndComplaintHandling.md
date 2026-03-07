@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-012
 title: Feedback and Complaint Handling
-revision: R00
-effective_date: 2026-03-02
+revision: R02
+effective_date: 2026-03-07
 status: Published
-owner_role: clinical_ops
+owner_role: regulatory_lead
 approver_role: qa_lead
 iso_13485_clauses:
   - 8.2.1
@@ -31,9 +31,9 @@ Applies to all product feedback and complaint signals from users, customers, par
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Clinical Ops | Owns intake, triage, and case communication. |
+| Regulatory Lead | Owns intake, triage, and case communication. |
 | QA Lead | Reviews complaint quality/risk classification and trend signals. |
-| Engineering Owner | Investigates technical causes and corrective actions. |
+| Engineering Lead | Investigates technical causes and corrective actions. |
 
 ## 6. Procedure
 
@@ -81,3 +81,5 @@ Applies to all product feedback and complaint signals from users, customers, par
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-07 | Renamed the complaint-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
+| R02 | 2026-03-07 | Simplified the complaint-process role names to `regulatory_lead` and `engineering_lead`. |

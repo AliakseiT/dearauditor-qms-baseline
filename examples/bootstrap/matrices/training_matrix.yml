@@ -1,5 +1,5 @@
 ---
-version: 1
+version: 2
 users:
   REPLACE_WITH_PRIMARY_GH_USERNAME:
     full_name: REPLACE_WITH_PRIMARY_FULL_NAME
@@ -13,9 +13,87 @@ roles:
       - SOP-001
       - SOP-002
       - SOP-003
+      - SOP-005
+      - SOP-006
+      - SOP-007
+      - SOP-008
+      - SOP-009
+      - SOP-010
+      - SOP-011
+      - SOP-012
+      - SOP-013
+      - SOP-014
+      - SOP-015
+      - SOP-016
+      - SOP-017
+      - SOP-018
+      - SOP-019
+      - SOP-020
+    awareness_sops:
+      - SOP-004
+
+  engineer:
+    users:
+      - REPLACE_WITH_PRIMARY_GH_USERNAME
+    required_sops:
+      - SOP-001
+      - SOP-008
+      - SOP-009
+      - SOP-011
+      - SOP-017
+      - SOP-018
+      - SOP-020
+    awareness_sops:
+      - SOP-002
+      - SOP-006
+      - SOP-015
+      - SOP-019
+
+  engineering_lead:
+    users:
+      - REPLACE_WITH_PRIMARY_GH_USERNAME
+    required_sops:
+      - SOP-001
+      - SOP-002
+      - SOP-007
+      - SOP-008
+      - SOP-009
+      - SOP-011
+      - SOP-015
+      - SOP-017
+      - SOP-018
+      - SOP-020
+    awareness_sops:
+      - SOP-006
+      - SOP-019
+
+  technical_qms_maintainer:
+    users:
+      - REPLACE_WITH_PRIMARY_GH_USERNAME
+    required_sops:
+      - SOP-001
+      - SOP-006
+      - SOP-009
+      - SOP-011
+      - SOP-017
+    awareness_sops:
+      - SOP-002
+      - SOP-007
+      - SOP-018
+      - SOP-020
+
+  regulatory_lead:
+    users:
+      - REPLACE_WITH_PRIMARY_GH_USERNAME
+    required_sops:
+      - SOP-001
+      - SOP-002
+      - SOP-003
       - SOP-004
       - SOP-005
       - SOP-006
+      - SOP-007
+      - SOP-008
       - SOP-009
       - SOP-010
       - SOP-011
@@ -29,62 +107,31 @@ roles:
       - SOP-019
       - SOP-020
 
-  software_engineer:
+  usability_lead:
     users:
       - REPLACE_WITH_PRIMARY_GH_USERNAME
     required_sops:
       - SOP-001
-      - SOP-002
-      - SOP-006
-      - SOP-007
       - SOP-008
-      - SOP-009
-      - SOP-015
-      - SOP-017
-      - SOP-018
-      - SOP-019
-      - SOP-020
-
-  technical_qms_maintainer:
-    users:
-      - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
-      - SOP-001
-      - SOP-002
-      - SOP-006
-      - SOP-007
-      - SOP-008
-      - SOP-009
-      - SOP-015
-      - SOP-017
-      - SOP-018
-      - SOP-020
-
-  clinical_ops:
-    users:
-      - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_sops:
-      - SOP-001
-      - SOP-004
-      - SOP-005
-      - SOP-007
       - SOP-011
       - SOP-012
-      - SOP-013
       - SOP-014
-      - SOP-015
       - SOP-018
       - SOP-019
+    awareness_sops:
       - SOP-020
 
-  lead_auditor:
-    users:
-      - REPLACE_WITH_PRIMARY_GH_USERNAME
+  auditor:
+    users: []
     required_sops:
       - SOP-001
+      - SOP-002
       - SOP-003
+      - SOP-004
       - SOP-005
       - SOP-006
+      - SOP-007
+      - SOP-008
       - SOP-009
       - SOP-010
       - SOP-011
@@ -104,13 +151,19 @@ roles:
     required_sops:
       - SOP-001
       - SOP-002
+      - SOP-003
       - SOP-004
       - SOP-005
+      - SOP-006
       - SOP-007
+      - SOP-008
       - SOP-009
       - SOP-010
       - SOP-011
+      - SOP-012
       - SOP-013
+      - SOP-014
+      - SOP-015
       - SOP-016
       - SOP-017
       - SOP-018

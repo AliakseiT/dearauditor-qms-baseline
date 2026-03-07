@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R00
-effective_date: 2026-03-06
+revision: R02
+effective_date: 2026-03-07
 status: Published
-owner_role: software_engineer
+owner_role: engineering_lead
 approver_role: qa_lead
 iso_13485_clauses:
   - 7.3
@@ -43,9 +43,10 @@ Applies to regulated software products and significant product changes that requ
 | Role | Responsibilities |
 |---|---|
 | Engineering Lead | Owns software lifecycle planning, configuration identification, and release readiness. |
+| Engineer | Prepares implementation, build, and test artifacts and executes approved lifecycle activities. |
 | QA Lead | Verifies procedure conformance, traceability, and record completeness. |
 | Management Representative | Approves major residual risk or release decisions requiring management review. |
-| Product/Engineering Owner | Maintains release scope, anomaly disposition, and maintenance follow-up actions. |
+| Regulatory Lead | Maintains release scope, anomaly disposition, and maintenance follow-up actions. |
 
 ## 6. Procedure
 
@@ -128,3 +129,5 @@ Applies to regulated software products and significant product changes that requ
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-06 | Initial release establishing IEC 62304 lifecycle, configuration, release, maintenance, and problem-resolution controls in the GitHub-native QMS model. |
+| R01 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and clarified the distinction between engineer execution and engineering-owner accountability. |
+| R02 | 2026-03-07 | Simplified lifecycle role names to `engineering_lead` and `regulatory_lead`. |

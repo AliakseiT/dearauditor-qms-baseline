@@ -13,8 +13,8 @@ required_fields:
     - production_post_production
   responsible_roles:
     qa_lead: ""
-    engineering_owner: ""
-    clinical_ops: ""
+    engineering_lead: ""
+    regulatory_lead: ""
     management_representative: ""
   risk_acceptability:
     method: "severity_x_probability"
