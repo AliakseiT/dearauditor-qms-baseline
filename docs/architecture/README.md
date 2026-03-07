@@ -41,7 +41,7 @@ For open-source distribution, this repository acts as the public upstream baseli
 1. A QMS activity starts from an issue, a release tag, or a manual workflow dispatch.
 2. Controlled changes are implemented on a branch and proposed through a pull request.
 3. Gate workflows evaluate approval and structural rules on the PR and can drive auto-merge behavior where repository settings allow enforcement.
-4. Once merged, post-merge workflows request signatures, collect attestations, and publish immutable record evidence for execution records maintained in the target repository.
+4. Once merged, post-merge workflows request signatures, maintain PR signature-status labels, collect attestations, and publish immutable record evidence for execution records maintained in the target repository.
 5. Training automations derive additional work items from released or merged state.
 6. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
 
@@ -74,6 +74,7 @@ flowchart LR
 
   subgraph signature_pub["2 Signature and Publication Gates"]
     w21["2.1 PR signature request gate<br/>2.1_pr_signature_request_gate.yml"]
+    w26["2.6 PR signature label reconciliation<br/>2.6_pr_signature_label_reconciliation.yml"]
     signer_ui["Signature worker<br/>(Cloudflare Worker + GitHub OAuth + PIN)"]
     w24["2.4 signature attestation title page<br/>2.4_signature_attestation_title_page.yml"]
     w22["2.2 publish QMS records<br/>2.2_publish_qms_records.yml"]
@@ -100,8 +101,10 @@ flowchart LR
   qms_tag --> w23
   qms_tag --> w31
   issue_events --> w24
+  issue_events --> w26
   issue_events --> w32
   manual --> w21
+  manual --> w26
   manual --> w25
   manual --> w31
   manual --> w32
@@ -110,6 +113,7 @@ flowchart LR
 
   w21 --> signer_ui
   signer_ui --> w24
+  signer_ui --> w26
   signer_ui --> w22
   signer_ui -. fallback unavailable .-> w25
   w31 --> w32
@@ -128,7 +132,8 @@ flowchart LR
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
-| `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts signer-specific links for the signature ceremony. | Active |
+| `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements, posts or refreshes signer-specific links for the signature ceremony, and marks merged PRs as `signatures/outstanding`. | Active |
+| `2.6_pr_signature_label_reconciliation.yml` | `issue_comment`, `workflow_dispatch` | Reconciles `signatures/outstanding` / `signatures/complete` on merged PRs based on the latest signature request comment and collected attestations. | Active |
 | `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, groups risk/usability bundles where required, and publishes immutable releases. | Active |
 | `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
@@ -153,6 +158,11 @@ flowchart LR
 | Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through the GitHub App. |
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |
+
+PR signature-status labels are part of the operating model:
+
+- `signatures/outstanding` means the merged PR has an active signature request and is still awaiting the required attestations.
+- `signatures/complete` means the latest active signature request has enough valid attestations for that PR/hash/meaning combination.
 
 ## 9. Tag Namespaces
 
