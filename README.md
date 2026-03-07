@@ -84,7 +84,7 @@ Use the grouped links below for navigation. The raw machine-readable published i
 - [SOP-005 QMS Governance and Quality Manual](sops/SOP-005-QMSGovernanceAndQualityManual.md) - `R09`
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R04`
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R02`
-- [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R01`
+- [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R02`
 
 #### Development, Risk, and Release
 
