@@ -1,7 +1,7 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R04
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -72,7 +72,8 @@ Applies to software verification, software validation, and usability-validation 
    - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
    - `**Required Signatures:** 2`
 4. After merge, collect the post-merge PIN-based Part 11 attestation on the merged PR.
-5. Publish the immutable release package and link it from the MDF, risk records, usability records, and release baseline as applicable.
+5. Route the approved V&V report into the final release-decision gate defined in WI-002 before shipment authorization.
+6. Publish the immutable release package and link it from the MDF, risk records, usability records, and release baseline as applicable.
 
 ### 3.6 Change Control and Re-Execution
 1. If planned scope, environment, or acceptance criteria change, revise the plan through a new PR before further execution.
@@ -94,3 +95,4 @@ Applies to software verification, software validation, and usability-validation 
 | R02 | 2026-03-07 | Normalized V&V signoff accountability to the engineering owner role while keeping engineers as the minimum trained execution role. |
 | R03 | 2026-03-07 | Renamed the accountable technical signoff role to `engineering_lead`. |
 | R04 | 2026-03-07 | Distinguished dry runs from formal release-candidate V&V, required approved release-readiness entry before formal execution, and made per-run configuration capture mandatory. |
+| R05 | 2026-03-07 | Explicitly routed the approved V&V report into the separate final release-decision gate before shipment authorization. |

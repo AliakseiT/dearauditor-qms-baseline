@@ -16,6 +16,11 @@ required_fields:
     system_requirements_reference: "records/design/system_requirements_spec_template.yml"
     risk_management_plan_reference: "records/risk/risk_management_plan_template.yml"
     usability_file_index_reference: "records/usability/usability_file_index_template.yml"
+    deferred_inputs_or_constraints: []
+  implementation_entry_gate:
+    approved_for_controlled_implementation: false
+    open_assumptions: []
+    planned_vv_strategy_reference: "records/verification_validation/vv_plan_template.yml"
   planned_outputs:
     architecture_spec_reference: "records/design/software_architecture_spec_template.yml"
     traceability_matrix_reference: "records/design/design_traceability_matrix_template.yml"
@@ -40,8 +45,8 @@ required_fields:
       exit_criteria:
         - "release baseline approved"
   signoff:
-    meaning_of_signature: "Approved Design and Development Plan"
+    meaning_of_signature: "Approved Design Inputs and Development Plan"
     signer_roles:
       - qa_lead
       - engineering_lead
-
+      - regulatory_lead

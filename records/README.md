@@ -49,7 +49,7 @@ Some folders are intentionally empty until the first signed and published compan
 - [Usability engineering](usability/) - usability file index, use specification, hazard-related scenarios, formative/summative, and post-production usability review templates
 - [Medical device file](mdf/) - classification, file index, and traceability summary templates
 - [Verification and validation](verification_validation/) - V&V plan, test case, execution log, and report templates for designated product/study repositories
-- [Configuration and release](configuration/) - release plan and release baseline manifest templates for designated product/study repositories
+- [Configuration and release](configuration/) - release readiness, final release decision, and release baseline manifest templates for designated product/study repositories
 - [Validation](validation/qms-tools/) - QMS tooling validation evidence
 - [Post-market surveillance](pms/) - PMS plan and periodic report templates
 - [Feedback and complaints](feedback/complaint_case_log_template.yml) - complaint case log template
@@ -82,11 +82,12 @@ Use the external manifest template when a controlled document is authored outsid
 - [Start a complaint intake issue](https://github.com/AliakseiT/qms-lite/issues/new?template=complaint_intake.yml)
 - [Start a nonconformity intake issue](https://github.com/AliakseiT/qms-lite/issues/new?template=nonconformity_intake.yml)
 - [Start a PMS review issue](https://github.com/AliakseiT/qms-lite/issues/new?template=pms_review.yml)
-- [Start a design and development plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=design_development_plan.yml)
+- [Start a design input baseline issue](https://github.com/AliakseiT/qms-lite/issues/new?template=design_development_plan.yml)
 - [Start a risk management plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=risk_management_plan.yml)
 - [Start a usability engineering plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=usability_engineering_plan.yml)
 - [Start a verification and validation plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=verification_validation_plan.yml)
 - [Start a release plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=release_plan.yml)
+- [Start a final release decision issue](https://github.com/AliakseiT/qms-lite/issues/new?template=final_release_decision.yml)
 
 ## Related Navigation
 

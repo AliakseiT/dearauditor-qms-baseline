@@ -62,8 +62,9 @@ body:
     id: linked_records
     attributes:
       label: Linked Records
-      description: V&V, risk, change, anomaly, or approval records required for release readiness and release.
+      description: Design-input baseline, V&V, risk, change, anomaly, or approval records required for release readiness and later final release decision.
       placeholder: |
+        - design input baseline
         - VVR-...
         - RISK-...
         - CHANGE-...
@@ -86,7 +87,7 @@ body:
         - Release readiness PR merged and signed before formal V&V
         - Included/deferred change set frozen for the candidate
         - Formal V&V executed against the recorded candidate binary
-        - Release baseline PR merged and signed
+        - Final release decision PR merged and signed
         - Immutable release published
         - MDF and traceability links updated
     validations:

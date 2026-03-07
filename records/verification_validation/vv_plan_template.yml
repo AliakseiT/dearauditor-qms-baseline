@@ -9,6 +9,7 @@ required_fields:
   activity_type: "verification|validation|verification_and_validation|usability_validation"
   software_safety_classification: "A|B|C|not_applicable_with_rationale"
   linked_inputs:
+    design_input_baseline_reference: ""
     requirements: []
     risk_items: []
     design_traceability_reference: ""

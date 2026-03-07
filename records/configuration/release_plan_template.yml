@@ -11,6 +11,7 @@ required_fields:
   formal_vv_entry_binary_reference: ""
   pre_gate_execution_policy: "dry_run_only"
   linked_records:
+    design_input_baseline_reference: ""
     design_traceability_reference: ""
     verification_validation_report: ""
     residual_risk_decision: ""

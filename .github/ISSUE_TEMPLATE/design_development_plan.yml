@@ -1,6 +1,6 @@
-name: Design and Development Plan
-description: Plan the design-control record set for a product or major change.
-title: "DESIGN PLAN: "
+name: Design Input Baseline
+description: Approve the development plan and baseline design inputs before controlled implementation.
+title: "DESIGN INPUT BASELINE: "
 labels:
   - design-control
   - plan
@@ -24,7 +24,7 @@ body:
     id: planned_records
     attributes:
       label: Planned Records
-      description: Planned design-plan, user-needs, requirements, architecture, traceability, risk, and V&V artifacts.
+      description: Baseline records that will be approved at the design-input gate and the downstream outputs they authorize.
       placeholder: |
         - design_development_plan.yml
         - user_needs.yml
@@ -34,14 +34,22 @@ body:
     validations:
       required: true
   - type: textarea
+    id: open_assumptions
+    attributes:
+      label: Open Assumptions or Deferred Inputs
+      description: Any input still constrained, intentionally deferred, or requiring follow-up before later gates.
+      placeholder: |
+        - usability study population to be finalized
+        - external interface requirement pending supplier confirmation
+  - type: textarea
     id: done_criteria
     attributes:
       label: Done Criteria
-      description: What must be complete before the design-plan issue can close.
+      description: What must be true before the design-input baseline can close.
       placeholder: |
-        - design inputs baselined
-        - requirements/specs reviewed
-        - linked risk and V&V plans approved
+        - design and development plan approved
+        - user needs and system requirements baselined
+        - risk plan and V&V strategy linked
+        - approved for controlled implementation
     validations:
       required: true
-

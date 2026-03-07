@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R03
+revision: R04
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -35,6 +35,7 @@ Applies to regulated software products and significant product changes that requ
 
 ## 4. Outputs
 - Approved software development and maintenance plan
+- Approved final release decision
 - Approved release-readiness and V&V-entry decision
 - Controlled software configuration baseline and release manifest
 - Linked verification/validation records and release decision evidence
@@ -100,9 +101,11 @@ Applies to regulated software products and significant product changes that requ
    - acceptable unresolved anomaly posture
    - completed required verification/validation activities
    - approved residual risk status
-2. If the release binary changes after formal V&V entry, assess the change through change/risk/release records, record the new binary deployment, and determine whether partial or full re-execution is required before release.
-3. Release evidence is published as immutable GitHub release assets using the QMS tag and record publication model.
-4. Product MDF and related dossiers must link to the released baseline and associated evidence package.
+2. Final release authorization must be made through a distinct group approval after the V&V report, residual-risk decision, anomaly posture, and exact binary/deployment reference are current.
+3. The normal final release decision group is QA Lead, Engineering Lead, and Regulatory Lead; Management Representative participates when escalation, exceptional residual risk, or management review is required.
+4. If the release binary changes after formal V&V entry, assess the change through change/risk/release records, record the new binary deployment, and determine whether partial or full re-execution is required before release.
+5. Release evidence is published as immutable GitHub release assets using the QMS tag and record publication model.
+6. Product MDF and related dossiers must link to the released baseline and associated evidence package.
 
 ### 6.7 Maintenance and Problem Resolution
 1. Maintenance inputs include anomalies, complaints, incidents, cybersecurity findings, supplier changes, and PMS signals.
@@ -112,6 +115,7 @@ Applies to regulated software products and significant product changes that requ
 ## 7. Required Records
 - Software development and maintenance plan
 - Software safety classification rationale
+- Final release decision record
 - Release-readiness and V&V-entry decision record
 - Configuration item list and release baseline manifest
 - Verification/validation plan, execution, configuration-capture, and report references
@@ -144,3 +148,4 @@ Applies to regulated software products and significant product changes that requ
 | R01 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and clarified the distinction between engineer execution and engineering-owner accountability. |
 | R02 | 2026-03-07 | Simplified lifecycle role names to `engineering_lead` and `regulatory_lead`. |
 | R03 | 2026-03-07 | Clarified parallel change flow on product `main`, added the controlled release-readiness/V&V-entry gate, and made per-run execution configuration capture mandatory for formal release testing. |
+| R04 | 2026-03-07 | Added the explicit final release-decision gate after V&V and residual-risk review, separate from release-readiness approval. |

@@ -1,7 +1,7 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R04
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -12,7 +12,7 @@ related_sops:
 ---
 
 ## 1. Purpose
-Define the default GitHub workflow for configuration identification, release planning, release-readiness approval, release baseline approval, and immutable publication of released software lifecycle records.
+Define the default GitHub workflow for configuration identification, release planning, release-readiness approval, final release decision approval, and immutable publication of released software lifecycle records.
 
 ## 2. Scope
 Applies to product releases, significant maintenance drops, and other controlled configuration baselines that must be reproducible and reviewable.
@@ -38,7 +38,7 @@ Applies to product releases, significant maintenance drops, and other controlled
 4. Merge only after required approvals and mandatory checks complete.
 5. Pre-gate execution may continue as dry run only; formal release evidence starts after the post-merge Part 11 attestation on this release-readiness PR.
 
-### 3.3 Define Controlled Configuration Items
+### 3.3 Prepare the Final Configuration Baseline
 1. Identify all configuration items required to reproduce the release baseline.
 2. At minimum capture:
    - repository and target commit
@@ -50,14 +50,23 @@ Applies to product releases, significant maintenance drops, and other controlled
    - execution-configuration references for the formal release test runs
 3. Record the baseline in the designated product/study repository using the release manifest template from `qms-lite/records/configuration/` or an approved derivative.
 
-### 3.4 Approve the Release Baseline
-1. Open a PR in the designated product/study repository that commits or updates the release plan and baseline manifest.
-2. The PR body must state:
-   - `**Meaning of Signature:** Approved Release Baseline`
-   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
-   - `**Required Signatures:** 2`
-3. Merge only after required approvals and mandatory checks complete.
-4. The post-merge PIN-based Part 11 attestation on that merged PR is the formal approval of the release baseline.
+### 3.4 Approve the Final Release Decision
+1. After the V&V report and residual-risk review are complete, open a PR in the designated product/study repository that commits or updates:
+   - final release decision record
+   - release baseline manifest
+2. The final release decision must capture:
+   - approved V&V report reference
+   - residual-risk decision reference
+   - unresolved anomaly posture and rationale
+   - exact binary, image, or deployment package accepted for shipment
+   - whether management escalation was required
+3. The normal signer set is QA Lead, Engineering Lead, and Regulatory Lead. Add Management Representative when escalation or exceptional release conditions require it.
+4. The PR body must state:
+   - `**Meaning of Signature:** Approved Final Release Decision`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
+   - `**Required Signatures:** 3`
+5. Merge only after required approvals and mandatory checks complete.
+6. The post-merge PIN-based Part 11 attestation on that merged PR is the formal release authorization.
 
 ### 3.5 Publish the Release
 1. Create the release tag defined in the approved manifest.
@@ -66,6 +75,7 @@ Applies to product releases, significant maintenance drops, and other controlled
    - source PR
    - Part 11 attestation
    - approved release-readiness decision
+   - approved final release decision
    - approved V&V report
    - current residual risk decision
 
@@ -78,6 +88,7 @@ Applies to product releases, significant maintenance drops, and other controlled
 ## 4. Required Records
 - Release planning issue
 - Approved release-readiness and formal V&V-entry record
+- Approved final release decision record
 - Configuration and release baseline manifest in the designated product/study repository
 - Release tag and immutable release package
 - Linked approval, V&V, risk, and rollback references
@@ -90,3 +101,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 | R02 | 2026-03-07 | Normalized release-baseline signoff accountability to the engineering owner role while keeping engineers as the minimum trained execution role. |
 | R03 | 2026-03-07 | Renamed the accountable technical signoff role to `engineering_lead`. |
 | R04 | 2026-03-07 | Added the explicit release-readiness/V&V-entry gate, clarified that changes may progress in parallel on product `main`, and required exact binary/configuration recording for formal release execution. |
+| R05 | 2026-03-07 | Added the explicit post-V&V final release-decision gate with group approval separate from release-readiness. |
