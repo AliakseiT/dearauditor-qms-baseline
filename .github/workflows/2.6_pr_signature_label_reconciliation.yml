@@ -38,6 +38,22 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            const ACTIVE_LABELS = {
+              outstanding: {
+                name: 'signature/outstanding',
+                color: 'FBCA04',
+                description: 'Merged PR is awaiting required electronic signatures.',
+              },
+              complete: {
+                name: 'signature/complete',
+                color: '0E8A16',
+                description: 'Merged PR has collected the required electronic signatures.',
+              },
+            };
+            const LEGACY_LABELS = [
+              'signatures/outstanding',
+              'signatures/complete',
+            ];
             const inputPrNumber = Number.parseInt((process.env.WORKFLOW_INPUT_PR_NUMBER || '').trim(), 10);
             const eventPrNumber = context.payload.issue?.number;
             const prNumber = Number.isInteger(inputPrNumber) && inputPrNumber > 0
@@ -150,11 +166,24 @@ jobs:
 
             async function ensureLabel(name, color, description) {
               try {
-                await github.rest.issues.getLabel({
+                const existing = await github.rest.issues.getLabel({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   name,
                 });
+                if (
+                  String(existing.data.color || '').toUpperCase() !== String(color || '').toUpperCase() ||
+                  String(existing.data.description || '') !== String(description || '')
+                ) {
+                  await github.rest.issues.updateLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name,
+                    new_name: name,
+                    color,
+                    description,
+                  });
+                }
               } catch (error) {
                 if (error.status !== 404) throw error;
                 await github.rest.issues.createLabel({
@@ -167,24 +196,34 @@ jobs:
               }
             }
 
-            async function applyState(labelToAdd, labelToRemove) {
-              await ensureLabel('signatures/outstanding', 'FBCA04', 'Merged PR is awaiting required electronic signatures.');
-              await ensureLabel('signatures/complete', '0E8A16', 'Merged PR has collected the required electronic signatures.');
+            async function applyState(labelToAdd, labelsToRemove) {
+              await ensureLabel(
+                ACTIVE_LABELS.outstanding.name,
+                ACTIVE_LABELS.outstanding.color,
+                ACTIVE_LABELS.outstanding.description
+              );
+              await ensureLabel(
+                ACTIVE_LABELS.complete.name,
+                ACTIVE_LABELS.complete.color,
+                ACTIVE_LABELS.complete.description
+              );
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
                 labels: [labelToAdd],
               });
-              try {
-                await github.rest.issues.removeLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  name: labelToRemove,
-                });
-              } catch (error) {
-                if (error.status !== 404) throw error;
+              for (const labelName of labelsToRemove) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    name: labelName,
+                  });
+                } catch (error) {
+                  if (error.status !== 404) throw error;
+                }
               }
             }
 
@@ -240,12 +279,18 @@ jobs:
             }
 
             if (signedBy.size >= request.requiredSignatures) {
-              await applyState('signatures/complete', 'signatures/outstanding');
-              core.info(`PR #${prNumber} has ${signedBy.size}/${request.requiredSignatures} required signatures. Marked signatures/complete.`);
+              await applyState(ACTIVE_LABELS.complete.name, [
+                ACTIVE_LABELS.outstanding.name,
+                ...LEGACY_LABELS,
+              ]);
+              core.info(`PR #${prNumber} has ${signedBy.size}/${request.requiredSignatures} required signatures. Marked ${ACTIVE_LABELS.complete.name}.`);
               return;
             }
 
-            await applyState('signatures/outstanding', 'signatures/complete');
-            core.info(`PR #${prNumber} has ${signedBy.size}/${request.requiredSignatures} required signatures. Marked signatures/outstanding.`);
+            await applyState(ACTIVE_LABELS.outstanding.name, [
+              ACTIVE_LABELS.complete.name,
+              ...LEGACY_LABELS,
+            ]);
+            core.info(`PR #${prNumber} has ${signedBy.size}/${request.requiredSignatures} required signatures. Marked ${ACTIVE_LABELS.outstanding.name}.`);
         env:
           WORKFLOW_INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number || '' }}

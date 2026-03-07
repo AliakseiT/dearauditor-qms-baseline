@@ -133,7 +133,7 @@ flowchart LR
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
 | `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts or refreshes signer-specific links for the signature ceremony. | Active |
-| `2.6_pr_signature_label_reconciliation.yml` | `issue_comment`, `workflow_dispatch` | Reconciles `signatures/outstanding` / `signatures/complete` on merged PRs based on the latest signature request comment and collected attestations. | Active |
+| `2.6_pr_signature_label_reconciliation.yml` | `issue_comment`, `workflow_dispatch` | Reconciles `signature/outstanding` / `signature/complete` on merged PRs based on the latest signature request comment and collected attestations. It also removes legacy plural label variants from PRs. | Active |
 | `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, groups risk/usability bundles where required, and publishes immutable releases. | Active |
 | `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
@@ -161,8 +161,8 @@ flowchart LR
 
 PR signature-status labels are part of the operating model:
 
-- `signatures/outstanding` means the merged PR has an active signature request and is still awaiting the required attestations.
-- `signatures/complete` means the latest active signature request has enough valid attestations for that PR/hash/meaning combination.
+- `signature/outstanding` means the merged PR has an active signature request and is still awaiting the required attestations.
+- `signature/complete` means the latest active signature request has enough valid attestations for that PR/hash/meaning combination.
 
 ## 9. Tag Namespaces
 
