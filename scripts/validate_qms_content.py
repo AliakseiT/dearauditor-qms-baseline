@@ -249,6 +249,8 @@ def build_context(base_sha, head_sha):
             and path.endswith(".md")
         ):
             continue
+        if not Path(path).exists():
+            continue
         head_text = Path(path).read_text(encoding="utf-8")
         base_text = file_at_revision(base_sha, path)
         if path.startswith("qm/"):
