@@ -1,0 +1,240 @@
+name: 2.6 PR Signature Label Reconciliation
+run-name: 2.6 reconcile PR signature labels (PR #${{ github.event.issue.number || inputs.pr_number }})
+
+on:
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Merged pull request number to reconcile signature labels for"
+        required: true
+
+permissions:
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: signature-label-reconcile-${{ github.event.issue.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  reconcile_labels:
+    if: github.event_name == 'workflow_dispatch' || github.event.issue.pull_request != null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reconcile signature labels on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const inputPrNumber = Number.parseInt((process.env.WORKFLOW_INPUT_PR_NUMBER || '').trim(), 10);
+            const eventPrNumber = context.payload.issue?.number;
+            const prNumber = Number.isInteger(inputPrNumber) && inputPrNumber > 0
+              ? inputPrNumber
+              : eventPrNumber;
+
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('A valid PR number is required.');
+              return;
+            }
+
+            try {
+              await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+              });
+            } catch (error) {
+              if (error.status === 404) {
+                core.info(`Issue #${prNumber} is not a pull request; skipping signature label reconciliation.`);
+                return;
+              }
+              throw error;
+            }
+
+            function parseJsonBlock(text) {
+              const match = String(text || '').match(/```json\s*([\s\S]*?)```/i);
+              if (!match || !match[1]) return null;
+              try {
+                return JSON.parse(match[1].trim());
+              } catch {
+                return null;
+              }
+            }
+
+            function parseRequestContext(body) {
+              const structuredMatch = String(body || '').match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+              let structured = null;
+              if (structuredMatch && structuredMatch[1]) {
+                try {
+                  structured = JSON.parse(structuredMatch[1].trim());
+                } catch {
+                  structured = null;
+                }
+              }
+
+              const hashMatch = String(body || '').match(/Target hash \(merge state\):\s*`([a-f0-9]{64})`/i);
+              const meaningMatch = String(body || '').match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i);
+              const requiredMatch = String(body || '').match(/Required signatures:\s*\*\*([0-9]+)\*\*/i);
+              const rolesMatch = String(body || '').match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i);
+              const eligibleMatch = String(body || '').match(/Eligible signers:\s*\*\*([^*]+)\*\*/i);
+
+              const roles = (rolesMatch?.[1] || '')
+                .split(/[;,]/)
+                .map((x) => x.trim())
+                .filter(Boolean);
+              const eligibleSigners = Array.from(String(eligibleMatch?.[1] || '').matchAll(/@([A-Za-z0-9-]+)/g))
+                .map((match) => match[1].toLowerCase());
+              const signers = Array.isArray(structured?.signers)
+                ? structured.signers
+                    .map((entry) => {
+                      const signer = String(entry?.signer || '').trim().toLowerCase();
+                      const role = String(entry?.role || '').trim();
+                      const signatureIndex = String(entry?.signature_index || entry?.signatureIndex || '').trim() || '1';
+                      if (!signer || !role) return null;
+                      return { signer, role, signatureIndex };
+                    })
+                    .filter(Boolean)
+                : [];
+
+              if (!hashMatch?.[1] || !meaningMatch?.[1]) {
+                return null;
+              }
+
+              return {
+                hash: hashMatch[1].trim().toLowerCase(),
+                meaning: meaningMatch[1].trim(),
+                requiredSignatures: Number.parseInt(String(structured?.required_signatures || structured?.requiredSignatures || requiredMatch?.[1] || '1'), 10) || 1,
+                roles,
+                eligibleSigners,
+                signers,
+              };
+            }
+
+            function normalizeAttestation(comment) {
+              const body = String(comment.body || '');
+              const payload = parseJsonBlock(body);
+              if (!payload) return null;
+
+              if (body.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') || body.includes('<!-- PART11_ATTESTATION_V1 -->')) {
+                return {
+                  signerLogin: String(payload.user_id || '').trim().toLowerCase(),
+                  signerRole: String(payload.signer_role || '').trim(),
+                  targetHash: String(payload.commit_hash || '').trim().toLowerCase(),
+                  meaning: String(payload.meaning_of_signature || '').trim(),
+                };
+              }
+
+              if (body.includes('<!-- signature-native-attestation -->') || body.includes('<!-- part11-native-attestation -->')) {
+                return {
+                  signerLogin: String(payload.actor_login || payload.user_id || '').trim().toLowerCase(),
+                  signerRole: String(payload.signer_role || '').trim(),
+                  targetHash: String(payload.target_hash || payload.commit_hash || '').trim().toLowerCase(),
+                  meaning: String(payload.meaning_of_signature || '').trim(),
+                };
+              }
+
+              return null;
+            }
+
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                  color,
+                  description,
+                });
+              }
+            }
+
+            async function applyState(labelToAdd, labelToRemove) {
+              await ensureLabel('signatures/outstanding', 'FBCA04', 'Merged PR is awaiting required electronic signatures.');
+              await ensureLabel('signatures/complete', '0E8A16', 'Merged PR has collected the required electronic signatures.');
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: [labelToAdd],
+              });
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: prNumber,
+                  name: labelToRemove,
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const requestComments = comments
+              .filter((comment) => {
+                const body = String(comment.body || '');
+                return body.includes('<!-- signature-native-signature-request -->') ||
+                  body.includes('<!-- part11-native-signature-request -->') ||
+                  body.includes('<!-- signature-request -->') ||
+                  body.includes('<!-- part11-signature-request -->');
+              })
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
+
+            if (requestComments.length === 0) {
+              core.info(`PR #${prNumber} has no signature request comment; leaving labels unchanged.`);
+              return;
+            }
+
+            const request = parseRequestContext(requestComments[requestComments.length - 1].body || '');
+            if (!request) {
+              core.warning(`Could not parse the latest signature request context for PR #${prNumber}; leaving labels unchanged.`);
+              return;
+            }
+
+            const signerRoleMap = new Map(request.signers.map((entry) => [entry.signer, entry.role.toLowerCase()]));
+            const roleSet = new Set(request.roles.map((role) => role.toLowerCase()));
+            const eligibleSignerSet = new Set(request.eligibleSigners.map((signer) => signer.toLowerCase()));
+            const signedBy = new Set();
+
+            for (const comment of comments) {
+              const attestation = normalizeAttestation(comment);
+              if (!attestation) continue;
+              if (attestation.targetHash !== request.hash) continue;
+              if (attestation.meaning !== request.meaning) continue;
+              if (!attestation.signerLogin) continue;
+              if (eligibleSignerSet.size > 0 && !eligibleSignerSet.has(attestation.signerLogin)) continue;
+
+              const expectedRole = signerRoleMap.get(attestation.signerLogin);
+              if (expectedRole) {
+                if (attestation.signerRole.toLowerCase() !== expectedRole) continue;
+              } else if (roleSet.size > 0 && !roleSet.has(attestation.signerRole.toLowerCase())) {
+                continue;
+              }
+
+              signedBy.add(attestation.signerLogin);
+            }
+
+            if (signedBy.size >= request.requiredSignatures) {
+              await applyState('signatures/complete', 'signatures/outstanding');
+              core.info(`PR #${prNumber} has ${signedBy.size}/${request.requiredSignatures} required signatures. Marked signatures/complete.`);
+              return;
+            }
+
+            await applyState('signatures/outstanding', 'signatures/complete');
+            core.info(`PR #${prNumber} has ${signedBy.size}/${request.requiredSignatures} required signatures. Marked signatures/outstanding.`);
+        env:
+          WORKFLOW_INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number || '' }}
