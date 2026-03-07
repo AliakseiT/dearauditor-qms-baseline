@@ -23,9 +23,20 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.event.issue.pull_request != null
     runs-on: ubuntu-latest
     steps:
+      - name: Create GitHub App token for label reconciliation
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
       - name: Reconcile signature labels on PR
         uses: actions/github-script@v7
         with:
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const inputPrNumber = Number.parseInt((process.env.WORKFLOW_INPUT_PR_NUMBER || '').trim(), 10);
             const eventPrNumber = context.payload.issue?.number;
