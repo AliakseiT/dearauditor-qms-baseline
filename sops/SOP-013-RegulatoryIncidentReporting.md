@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-013
 title: Regulatory Incident Reporting
-revision: R01
+revision: R02
 effective_date: 2026-03-07
 status: Published
-owner_role: product_regulatory_owner
+owner_role: regulatory_lead
 approver_role: management_representative
 iso_13485_clauses:
   - 8.2.3
@@ -30,7 +30,7 @@ Applies to post-release product events that may require mandatory reporting in S
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Product/Regulatory Owner | Detects and triages potential incidents. |
+| Regulatory Lead | Detects and triages potential incidents. |
 | Management Representative | Approves reportability decisions and submissions. |
 | QA Lead | Ensures process compliance and record completeness. |
 | Engineering/Medical Experts | Provide technical and clinical impact assessments. |
@@ -80,3 +80,4 @@ Applies to post-release product events that may require mandatory reporting in S
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Renamed the incident-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
+| R02 | 2026-03-07 | Simplified the incident-process business role name to `regulatory_lead`. |

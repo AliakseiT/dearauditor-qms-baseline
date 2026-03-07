@@ -11,7 +11,6 @@ users:
 roles:
   qa_lead:
     users:
-      - AliakseiT
       - InaTsitovich
     required_sops:
       - SOP-001
@@ -35,20 +34,20 @@ roles:
     required_revisions:
       SOP-001: R07
       SOP-002: R02
-      SOP-003: R02
-      SOP-004: R03
-      SOP-005: R08
-      SOP-009: R02
+      SOP-003: R03
+      SOP-004: R04
+      SOP-005: R09
+      SOP-009: R03
       SOP-010: R01
-      SOP-011: R03
-      SOP-012: R01
-      SOP-013: R01
-      SOP-014: R01
-      SOP-016: R01
-      SOP-017: R01
-      SOP-018: R01
-      SOP-019: R02
-      SOP-020: R01
+      SOP-011: R04
+      SOP-012: R02
+      SOP-013: R02
+      SOP-014: R02
+      SOP-016: R02
+      SOP-017: R02
+      SOP-018: R02
+      SOP-019: R03
+      SOP-020: R02
 
   engineer:
     users:
@@ -68,14 +67,14 @@ roles:
     required_revisions:
       SOP-001: R07
       SOP-002: R02
-      SOP-008: R02
-      SOP-009: R02
-      SOP-011: R03
-      SOP-017: R01
-      SOP-018: R01
-      SOP-020: R01
+      SOP-008: R03
+      SOP-009: R03
+      SOP-011: R04
+      SOP-017: R02
+      SOP-018: R02
+      SOP-020: R02
 
-  engineering_owner:
+  engineering_lead:
     users:
       - AliakseiT
     required_sops:
@@ -94,14 +93,14 @@ roles:
     required_revisions:
       SOP-001: R07
       SOP-002: R02
-      SOP-007: R02
-      SOP-008: R02
-      SOP-009: R02
-      SOP-011: R03
-      SOP-017: R01
-      SOP-018: R01
-      SOP-019: R02
-      SOP-020: R01
+      SOP-007: R03
+      SOP-008: R03
+      SOP-009: R03
+      SOP-011: R04
+      SOP-017: R02
+      SOP-018: R02
+      SOP-019: R03
+      SOP-020: R02
 
   technical_qms_maintainer:
     users:
@@ -121,17 +120,16 @@ roles:
       SOP-001: R07
       SOP-002: R02
       SOP-006: R01
-      SOP-007: R02
-      SOP-008: R02
-      SOP-009: R02
-      SOP-017: R01
-      SOP-018: R01
-      SOP-020: R01
+      SOP-007: R03
+      SOP-008: R03
+      SOP-009: R03
+      SOP-017: R02
+      SOP-018: R02
+      SOP-020: R02
 
-  product_regulatory_owner:
+  regulatory_lead:
     users:
       - AliakseiT
-      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-004
@@ -147,21 +145,19 @@ roles:
       - SOP-020
     required_revisions:
       SOP-001: R07
-      SOP-004: R03
-      SOP-005: R08
-      SOP-007: R02
-      SOP-011: R03
-      SOP-012: R01
-      SOP-013: R01
-      SOP-014: R01
-      SOP-018: R01
-      SOP-019: R02
-      SOP-020: R01
+      SOP-004: R04
+      SOP-005: R09
+      SOP-007: R03
+      SOP-011: R04
+      SOP-012: R02
+      SOP-013: R02
+      SOP-014: R02
+      SOP-018: R02
+      SOP-019: R03
+      SOP-020: R02
 
-  lead_auditor:
-    users:
-      - AliakseiT
-      - InaTsitovich
+  auditor:
+    users: []
     required_sops:
       - SOP-001
       - SOP-003
@@ -181,23 +177,22 @@ roles:
       - SOP-020
     required_revisions:
       SOP-001: R07
-      SOP-003: R02
-      SOP-005: R08
+      SOP-003: R03
+      SOP-005: R09
       SOP-010: R01
-      SOP-011: R03
-      SOP-012: R01
-      SOP-013: R01
-      SOP-014: R01
-      SOP-017: R01
-      SOP-016: R01
-      SOP-018: R01
-      SOP-019: R02
-      SOP-020: R01
+      SOP-011: R04
+      SOP-012: R02
+      SOP-013: R02
+      SOP-014: R02
+      SOP-017: R02
+      SOP-016: R02
+      SOP-018: R02
+      SOP-019: R03
+      SOP-020: R02
 
   management_representative:
     users:
       - AliakseiT
-      - InaTsitovich
     required_sops:
       - SOP-001
       - SOP-002
@@ -216,15 +211,15 @@ roles:
     required_revisions:
       SOP-001: R07
       SOP-002: R02
-      SOP-004: R03
-      SOP-005: R08
-      SOP-007: R02
-      SOP-009: R02
+      SOP-004: R04
+      SOP-005: R09
+      SOP-007: R03
+      SOP-009: R03
       SOP-010: R01
-      SOP-011: R03
-      SOP-013: R01
-      SOP-016: R01
-      SOP-017: R01
-      SOP-018: R01
-      SOP-019: R02
-      SOP-020: R01
+      SOP-011: R04
+      SOP-013: R02
+      SOP-016: R02
+      SOP-017: R02
+      SOP-018: R02
+      SOP-019: R03
+      SOP-020: R02

@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-017
 title: Infrastructure and Maintenance Control
-revision: R01
+revision: R02
 effective_date: 2026-03-07
 status: Published
-owner_role: engineering_owner
+owner_role: engineering_lead
 approver_role: qa_lead
 iso_13485_clauses:
   - 6.3
@@ -31,7 +31,7 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Engineering Owner | Operates and maintains infrastructure components and runbooks. |
+| Engineering Lead | Operates and maintains infrastructure components and runbooks. |
 | Technical QMS Maintainer | Maintains shared automation, workflow configuration, and evidence-preservation mechanisms supporting QMS operations. |
 | QA Lead | Ensures controls are documented and evidence is retained. |
 | Management Representative | Approves major infrastructure policy changes. |
@@ -84,3 +84,4 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Normalized infrastructure accountability to the controlled engineering-owner role and added technical QMS maintainer responsibilities for shared automation. |
+| R02 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |

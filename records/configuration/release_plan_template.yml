@@ -15,4 +15,4 @@ required_fields:
     meaning_of_signature: "Approved Release Baseline"
     signer_roles:
       - qa_lead
-      - engineering_owner
+      - engineering_lead

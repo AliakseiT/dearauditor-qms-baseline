@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-003
 title: Internal Audit
-revision: R02
-effective_date: 2026-03-05
+revision: R03
+effective_date: 2026-03-07
 status: Published
-owner_role: lead_auditor
+owner_role: auditor
 approver_role: management_representative
 iso_13485_clauses:
   - 8.2.4
@@ -30,7 +30,7 @@ Applies to all QMS processes and records, including document control, design con
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Lead Auditor | Plans audits, ensures auditor competence/independence, issues reports. |
+| Auditor | Plans audits, ensures auditor competence/independence, issues reports. |
 | Auditee Process Owner | Provides evidence and executes corrective actions. |
 | QA Lead | Tracks findings and CAPA integration. |
 | Management Representative | Reviews outcomes and ensures escalation where needed. |
@@ -83,3 +83,4 @@ Applies to all QMS processes and records, including document control, design con
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full internal audit planning/execution/follow-up procedure implemented. |
 | R02 | 2026-03-05 | Updated audit record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
+| R03 | 2026-03-07 | Renamed the controlled audit role to `auditor` and aligned wording to the simplified small-team role taxonomy. |

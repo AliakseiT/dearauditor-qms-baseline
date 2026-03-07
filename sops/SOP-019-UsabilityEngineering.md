@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R02
+revision: R03
 effective_date: 2026-03-07
 status: Published
-owner_role: product_regulatory_owner
+owner_role: regulatory_lead
 approver_role: qa_lead
 iso_13485_clauses:
   - 7.3
@@ -61,8 +61,8 @@ Applies to user interface design and evaluation activities that affect safety, i
 ## 6. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Product/Regulatory Owner | Owns use context, user profiles, and use-related safety assumptions. |
-| Engineering Owner | Implements UI risk controls and design updates. |
+| Regulatory Lead | Owns use context, user profiles, and use-related safety assumptions. |
+| Engineering Lead | Implements UI risk controls and design updates. |
 | QA Lead | Verifies process compliance and usability file completeness. |
 | Management Representative | Approves major residual use-risk decisions. |
 
@@ -167,3 +167,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R00 | 2026-03-02 | Initial full release with lightweight usability-file model for Git/GitHub execution. |
 | R01 | 2026-03-05 | Clarified multi-repository model for usability records, linked to Issue #44, and aligned procedure with implemented GitHub lifecycle (issue -> PR -> merge -> post-merge Part 11 attestation -> immutable release). |
 | R02 | 2026-03-07 | Renamed the usability process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
+| R03 | 2026-03-07 | Simplified usability role names to `regulatory_lead` and `engineering_lead`. |

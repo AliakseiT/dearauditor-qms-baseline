@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R03
+revision: R04
 effective_date: 2026-03-07
 status: Published
 owner_role: management_representative
@@ -37,7 +37,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 | Management Representative | Plans agenda, consolidates inputs, records outputs/actions. |
 | Management Representative and delegated management attendees | Evaluate QMS performance and approve decisions/resources. |
 | QA Lead | Presents quality indicators and compliance status. |
-| Role Owners | Present process performance and improvement plans for assigned areas. |
+| Role Leads | Present process performance and improvement plans for assigned areas. |
 
 ## 6. Procedure
 
@@ -92,3 +92,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 | R01 | 2026-03-02 | Full management review governance procedure implemented. |
 | R02 | 2026-03-05 | Updated management-review record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
 | R03 | 2026-03-07 | Normalized attendee and presenter role language to the controlled small-team role model. |
+| R04 | 2026-03-07 | Renamed generic presenter wording from role owners to role leads to match the simplified role taxonomy. |

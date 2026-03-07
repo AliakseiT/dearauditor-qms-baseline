@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R02
+revision: R03
 effective_date: 2026-03-07
 status: Published
 owner_role: management_representative
@@ -30,7 +30,7 @@ Applies to each product that may be regulated as medical device software in Swit
 | Role | Responsibilities |
 |---|---|
 | Management Representative | Ensures MDF completeness and regulatory coherence. |
-| Engineering Owner | Maintains technical artifact currency and release traceability references. |
+| Engineering Lead | Maintains technical artifact currency and release traceability references. |
 | QA Lead | Verifies file control and traceability quality. |
 
 ## 6. Procedure
@@ -80,3 +80,4 @@ Each product MDF must include at minimum:
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Clarified that product MDF records are maintained in designated product/study repositories and aligned release evidence model with GitHub PR plus post-merge Part 11 attestation. |
 | R02 | 2026-03-07 | Normalized responsibility labels to the controlled small-team role model and clarified engineering ownership of MDF technical traceability. |
+| R03 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |

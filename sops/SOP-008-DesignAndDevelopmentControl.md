@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R02
+revision: R03
 effective_date: 2026-03-07
 status: Published
-owner_role: engineering_owner
+owner_role: engineering_lead
 approver_role: qa_lead
 iso_13485_clauses:
   - 7.1
@@ -40,10 +40,10 @@ Applies to new products, major features, and significant lifecycle changes affec
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Engineering Owner | Owns design planning, technical outputs, and release-readiness accountability. |
+| Engineering Lead | Owns design planning, technical outputs, and release-readiness accountability. |
 | Engineer | Implements design outputs and executes assigned verification activities under approved plans. |
 | QA Lead | Ensures process conformance and evidence adequacy. |
-| Product/Regulatory Owner | Reviews intended-use, clinical, and regulatory adequacy of outputs. |
+| Regulatory Lead | Reviews intended-use, clinical, and regulatory adequacy of outputs. |
 
 ## 6. Procedure
 
@@ -109,3 +109,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-06 | Added IEC 62304 lifecycle/release linkage and default GitHub-native V&V execution reference. |
 | R02 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and added explicit engineer execution responsibilities under approved plans. |
+| R03 | 2026-03-07 | Renamed lead roles to `engineering_lead` and `regulatory_lead` to remove owner-style role wording. |

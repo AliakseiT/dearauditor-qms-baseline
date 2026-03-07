@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-015
 title: Nonconforming Product Control
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -34,7 +34,7 @@ Applies to nonconforming software releases, artifacts, or delivered outputs dete
 | Role | Responsibilities |
 |---|---|
 | QA Lead | Owns nonconformity classification and disposition control. |
-| Engineering Owner | Performs correction/rework and verification. |
+| Engineering Lead | Performs correction/rework and verification. |
 | Management Representative | Approves major disposition decisions and concessions. |
 
 ## 6. Procedure
@@ -86,3 +86,4 @@ Disposition options:
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
