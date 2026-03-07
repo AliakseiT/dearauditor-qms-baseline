@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R07
+revision: R08
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -52,9 +52,9 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 4. Revision format is `RNN` (for example `R03`).
 
 ### 6.3 Draft, Review, and Approval
-1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with linked issue context.
+1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with either linked issue context or sufficient change context stated directly in the PR.
 2. Branch-only and PR-draft states are work-in-progress and are not approved controlled revisions, released baselines, or record evidence.
-3. The PR must identify the execution issue and state the required electronic-signature meaning and roles.
+3. The PR must state the change or execution context and the required electronic-signature meaning and roles. A separate issue may be referenced when one is used.
 4. At least one designated approver reviews technical and compliance adequacy.
 5. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the `qms-lite` signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
 6. Merges are permitted only after required status checks and reviewer approvals are successfully completed.
@@ -87,8 +87,8 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
    - the native source file when retention is required by process or product needs
    - source-system identifier, source revision/version, and export timestamp
    - SHA-256 hashes for the controlled rendering and retained native source
-   - PR and issue references used for approval and immutable release publication
-5. Approval and retention of such external-origin documents follow the same issue -> PR -> merge -> signature attestation -> immutable release sequence used for GitHub-authored controlled records.
+   - PR reference and any associated issue reference used for approval and immutable release publication
+5. Approval and retention of such external-origin documents follow the same change-context -> PR -> merge -> signature attestation -> immutable release sequence used for GitHub-authored controlled records, where the change context may be established in a separate issue or directly in the PR.
 6. The approved rendering and manifest in the target repository are the QMS-controlled record of the approved state, even when the authoring system is external.
 
 ## 7. Required Records
@@ -123,3 +123,4 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | R05 | 2026-03-06 | Added normative control path for external-origin documents and clarified manifest/hash requirements for documents authored outside GitHub. |
 | R06 | 2026-03-07 | Updated workflow references and terminology to the current gate and electronic-signature naming model. |
 | R07 | 2026-03-07 | Updated workflow filename references to the per-automation numbering scheme. |
+| R08 | 2026-03-07 | Clarified that controlled state exists only after merge to `main` or required immutable publication, and that PRs may carry their own controlled change context without a mandatory linked issue. |

@@ -1,7 +1,7 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R05
+revision: R06
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -81,7 +81,7 @@ Applies to product releases, significant maintenance drops, and other controlled
    - current residual risk decision
 
 ### 3.6 Maintenance and Hotfix Releases
-1. Hotfixes and maintenance releases follow the same issue -> PR -> merge -> PIN signature -> immutable release sequence.
+1. Hotfixes and maintenance releases follow the same change-context -> PR -> merge -> PIN signature -> immutable release sequence, where a separate issue may be used but is not mandatory when the PR itself carries the controlled change context.
 2. If a binary upgrade is proposed inside the current release scope, update the change/risk/release records, record the new binary deployment identifier, and document why the remaining risk is acceptable.
 3. Reuse the prior baseline only by explicit reference; do not assume inherited approval without a new PR and manifest update.
 4. Individual engineers may prepare build and baseline artifacts, but the engineering lead remains accountable for release-readiness signoff and completeness of linked evidence.
@@ -103,3 +103,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 | R03 | 2026-03-07 | Renamed the accountable technical signoff role to `engineering_lead`. |
 | R04 | 2026-03-07 | Added the explicit release-readiness/V&V-entry gate, clarified that changes may progress in parallel on product `main`, and required exact binary/configuration recording for formal release execution. |
 | R05 | 2026-03-07 | Added the explicit post-V&V final release-decision gate with group approval separate from release-readiness. |
+| R06 | 2026-03-07 | Clarified that release/hotfix changes may be initiated directly from PR-stated change context and that branch-only planning remains uncontrolled until merged approval. |

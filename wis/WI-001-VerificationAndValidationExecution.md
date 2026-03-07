@@ -1,7 +1,7 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R05
+revision: R06
 effective_date: 2026-03-07
 status: Published
 owner_role: engineering_lead
@@ -97,3 +97,4 @@ Applies to software verification, software validation, and usability-validation 
 | R03 | 2026-03-07 | Renamed the accountable technical signoff role to `engineering_lead`. |
 | R04 | 2026-03-07 | Distinguished dry runs from formal release-candidate V&V, required approved release-readiness entry before formal execution, and made per-run configuration capture mandatory. |
 | R05 | 2026-03-07 | Explicitly routed the approved V&V report into the separate final release-decision gate before shipment authorization. |
+| R06 | 2026-03-07 | Clarified that branch-only plan and test-record drafts remain uncontrolled until the approving PR is merged. |

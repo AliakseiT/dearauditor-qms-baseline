@@ -416,24 +416,6 @@ class QMSContentGuardTests(unittest.TestCase):
                 )
         self.assert_no_failures(failures)
 
-    def test_execution_record_prs_reference_issue_in_pr_body(self):
-        changed_execution_records = [
-            path
-            for path in self.ctx.changed
-            if is_execution_record(path)
-        ]
-        if not changed_execution_records:
-            return
-
-        pr_body = self.ctx.pr_body or ""
-        if re.search(r"\bIssue\s+#\d+\b", pr_body, flags=re.IGNORECASE):
-            return
-
-        self.fail(
-            "Execution record PRs must reference an Issue number in PR body "
-            '(for example: "Issue #12"). Record templates and index pages do not trigger this rule.'
-        )
-
     def test_risk_records_have_valid_schema(self):
         failures = []
         allowed_source_types = {

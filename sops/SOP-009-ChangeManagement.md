@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R04
+revision: R05
 effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
@@ -56,7 +56,7 @@ Classify each change as one or more of:
 3. Approval must occur before implementation in controlled baseline.
 
 ### 6.4 Implementation and Verification
-1. Implement via PR with linked issue and evidence.
+1. Implement via PR with evidence and either a linked issue reference or sufficient change context stated directly in the PR.
 2. Execute required tests/reviews and attach objective evidence.
 3. Update published SOP index and training matrix where applicable.
 4. Branch implementations may be used for collaboration and interim verification, but branch-only state is draft/uncontrolled until merged to the controlled `main` baseline.
@@ -94,3 +94,4 @@ Classify each change as one or more of:
 | R02 | 2026-03-07 | Normalized change-execution responsibilities to the controlled small-team role model. |
 | R03 | 2026-03-07 | Renamed change-execution roles to the simplified `engineering_lead` and `regulatory_lead` taxonomy. |
 | R04 | 2026-03-07 | Clarified that multiple software changes may proceed in parallel on product `main`, and that formal release inclusion is decided later through the controlled release-readiness gate. |
+| R05 | 2026-03-07 | Clarified that branch-only implementations remain uncontrolled draft state and that PRs may provide the controlled change context directly when no separate issue is used. |
