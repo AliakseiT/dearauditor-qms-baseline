@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-016
 title: Quality Metrics and Data Analysis
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-07
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -33,7 +33,7 @@ Applies to QMS and product quality indicators used in operational monitoring and
 |---|---|
 | Management Representative | Owns metric governance and management reporting. |
 | QA Lead | Validates data quality and action follow-up. |
-| Process Owners | Provide source data and investigate out-of-target metrics. |
+| Role Owners | Provide source data and investigate out-of-target metrics for assigned processes. |
 
 ## 6. Procedure
 
@@ -81,3 +81,4 @@ Applies to QMS and product quality indicators used in operational monitoring and
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-07 | Normalized metric-source responsibility language to the controlled small-team role model and aligned objectives with the engineering evidence workflow. |

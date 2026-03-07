@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -73,7 +73,7 @@ This SOP covers:
 |---|---|
 | QA Lead | Owns risk process integrity, file completeness, and governance cadence. |
 | Engineering Owner | Identifies failure modes/threat scenarios and implements controls. |
-| Clinical Ops | Identifies foreseeable misuse and clinical workflow hazards. |
+| Product/Regulatory Owner | Identifies foreseeable misuse and clinical workflow hazards. |
 | Management Representative | Approves risk acceptability framework and overall residual risk decisions. |
 | Lead Auditor | Audits risk process execution and traceability quality. |
 
@@ -190,3 +190,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release with unified software, use-related, and cybersecurity risk method aligned to ISO 14971. |
+| R01 | 2026-03-07 | Renamed the business-owner risk role to the controlled product/regulatory owner role used in small-team deployments. |

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R01
-effective_date: 2026-03-06
+revision: R02
+effective_date: 2026-03-07
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -33,7 +33,7 @@ Applies to procedural, tooling, product, infrastructure, supplier, and regulator
 | Change Owner | Prepares change rationale, scope, and implementation plan. |
 | QA Lead | Reviews compliance and traceability impacts. |
 | Management Representative | Approves significant QMS/regulatory-impacting changes. |
-| Engineering/Process Owners | Execute and verify change. |
+| Engineering Owner / Product-Regulatory Owner / Technical QMS Maintainer | Execute and verify change within their assigned domain. |
 
 ## 6. Procedure
 
@@ -89,3 +89,4 @@ Classify each change as one or more of:
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-06 | Added software baseline and release-manifest impact controls for regulated software changes. |
+| R02 | 2026-03-07 | Normalized change-execution responsibilities to the controlled small-team role model. |

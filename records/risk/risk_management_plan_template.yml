@@ -14,7 +14,7 @@ required_fields:
   responsible_roles:
     qa_lead: ""
     engineering_owner: ""
-    clinical_ops: ""
+    product_regulatory_owner: ""
     management_representative: ""
   risk_acceptability:
     method: "severity_x_probability"

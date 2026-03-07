@@ -80,34 +80,34 @@ Use the grouped links below for navigation. The raw machine-readable published i
 - [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R07`
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R02`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R02`
-- [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R02`
-- [SOP-005 QMS Governance and Quality Manual](sops/SOP-005-QMSGovernanceAndQualityManual.md) - `R07`
-- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R02`
-- [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R00`
-- [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R00`
+- [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R03`
+- [SOP-005 QMS Governance and Quality Manual](sops/SOP-005-QMSGovernanceAndQualityManual.md) - `R08`
+- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R03`
+- [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R01`
+- [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R01`
 
 #### Development, Risk, and Release
 
 - [SOP-006 Software Validation (QMS Tools)](sops/SOP-006-SoftwareValidation.md) - `R00`
-- [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R01`
-- [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R01`
-- [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R01`
-- [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R00`
-- [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R01`
-- [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R00`
+- [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R02`
+- [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R02`
+- [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R02`
+- [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R01`
+- [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R02`
+- [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R01`
 
 #### Suppliers, Complaints, and Post-Market
 
 - [SOP-010 Supplier and Purchasing Control](sops/SOP-010-SupplierAndPurchasingControl.md) - `R01`
-- [SOP-012 Feedback and Complaint Handling](sops/SOP-012-FeedbackAndComplaintHandling.md) - `R00`
-- [SOP-013 Regulatory Incident Reporting](sops/SOP-013-RegulatoryIncidentReporting.md) - `R00`
-- [SOP-014 Post-Market Surveillance](sops/SOP-014-PostMarketSurveillance.md) - `R00`
+- [SOP-012 Feedback and Complaint Handling](sops/SOP-012-FeedbackAndComplaintHandling.md) - `R01`
+- [SOP-013 Regulatory Incident Reporting](sops/SOP-013-RegulatoryIncidentReporting.md) - `R01`
+- [SOP-014 Post-Market Surveillance](sops/SOP-014-PostMarketSurveillance.md) - `R01`
 - [SOP-015 Nonconforming Product Control](sops/SOP-015-NonconformingProductControl.md) - `R00`
 
 ### Work Instructions
 
-- [WI-001 Verification and Validation Execution](wis/WI-001-VerificationAndValidationExecution.md) - `R01`
-- [WI-002 Configuration and Release Management Execution](wis/WI-002-ConfigurationAndReleaseManagementExecution.md) - `R01`
+- [WI-001 Verification and Validation Execution](wis/WI-001-VerificationAndValidationExecution.md) - `R02`
+- [WI-002 Configuration and Release Management Execution](wis/WI-002-ConfigurationAndReleaseManagementExecution.md) - `R02`
 
 <details>
 <summary>Machine-readable published SOP index (used by release and training automation)</summary>
@@ -118,23 +118,23 @@ Use the grouped links below for navigation. The raw machine-readable published i
 | SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-07 | R07 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-05 | R02 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-05 | R02 | Published |
-| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-05 | R02 | Published |
-| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-06 | R07 | Published |
+| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-07 | R03 | Published |
+| SOP-005 | QMS Governance and Quality Manual | sops/SOP-005-QMSGovernanceAndQualityManual.md | 2026-03-07 | R08 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-02 | R00 | Published |
-| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-05 | R01 | Published |
-| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-06 | R01 | Published |
-| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-06 | R01 | Published |
+| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-07 | R02 | Published |
+| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-07 | R02 | Published |
+| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-07 | R02 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-05 | R01 | Published |
-| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-07 | R02 | Published |
-| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-02 | R00 | Published |
-| SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-02 | R00 | Published |
-| SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-02 | R00 | Published |
+| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-07 | R03 | Published |
+| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-07 | R01 | Published |
+| SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-07 | R01 | Published |
+| SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-07 | R01 | Published |
 | SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-02 | R00 | Published |
-| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-02 | R00 | Published |
-| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-02 | R00 | Published |
-| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-02 | R00 | Published |
-| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-05 | R01 | Published |
-| SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-06 | R00 | Published |
+| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-07 | R01 | Published |
+| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-07 | R01 | Published |
+| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-07 | R01 | Published |
+| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-07 | R02 | Published |
+| SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-07 | R01 | Published |
 <!-- PUBLISHED-SOP-INDEX:END -->
 
 </details>

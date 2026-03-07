@@ -48,9 +48,18 @@ jobs:
             "qms technical maintainer": "technical_qms_maintainer",
             "qms automation maintainer": "technical_qms_maintainer",
             "lead auditor": "lead_auditor",
-            "clinical ops": "clinical_ops",
-            "clinical operations": "clinical_ops",
-            "software engineer": "software_engineer",
+            "clinical ops": "product_regulatory_owner",
+            "clinical operations": "product_regulatory_owner",
+            "product/regulatory owner": "product_regulatory_owner",
+            "product regulatory owner": "product_regulatory_owner",
+            "product owner": "product_regulatory_owner",
+            "regulatory owner": "product_regulatory_owner",
+            "software engineer": "engineering_owner",
+            "software engineering owner": "engineering_owner",
+            "engineering lead": "engineering_owner",
+            "engineering owner": "engineering_owner",
+            "engineer": "engineer",
+            "software developer": "engineer",
           }
 
           def normalize_role_label(text: str) -> str:

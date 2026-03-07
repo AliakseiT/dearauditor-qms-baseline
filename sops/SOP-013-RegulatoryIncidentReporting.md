@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-013
 title: Regulatory Incident Reporting
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-07
 status: Published
-owner_role: clinical_ops
+owner_role: product_regulatory_owner
 approver_role: management_representative
 iso_13485_clauses:
   - 8.2.3
@@ -30,7 +30,7 @@ Applies to post-release product events that may require mandatory reporting in S
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Clinical Ops | Detects and triages potential incidents. |
+| Product/Regulatory Owner | Detects and triages potential incidents. |
 | Management Representative | Approves reportability decisions and submissions. |
 | QA Lead | Ensures process compliance and record completeness. |
 | Engineering/Medical Experts | Provide technical and clinical impact assessments. |
@@ -79,3 +79,4 @@ Applies to post-release product events that may require mandatory reporting in S
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-07 | Renamed the incident-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |

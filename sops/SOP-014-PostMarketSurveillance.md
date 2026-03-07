@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-014
 title: Post-Market Surveillance
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-07
 status: Published
-owner_role: clinical_ops
+owner_role: product_regulatory_owner
 approver_role: qa_lead
 iso_13485_clauses:
   - 8.2.1
@@ -33,7 +33,7 @@ Applies to all released products and product versions in active use.
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Clinical Ops | Owns PMS plan execution and trend analysis. |
+| Product/Regulatory Owner | Owns PMS plan execution and trend analysis. |
 | QA Lead | Reviews PMS outputs and escalation decisions. |
 | Engineering Owner | Implements product actions from PMS findings. |
 
@@ -82,3 +82,4 @@ Applies to all released products and product versions in active use.
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-07 | Renamed the PMS business owner role to the controlled product/regulatory owner role used in small-team deployments. |

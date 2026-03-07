@@ -1,10 +1,10 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R01
-effective_date: 2026-03-06
+revision: R02
+effective_date: 2026-03-07
 status: Published
-owner_role: software_engineer
+owner_role: engineering_owner
 related_sops:
   - SOP-009
   - SOP-017
@@ -38,7 +38,7 @@ Applies to product releases, significant maintenance drops, and other controlled
 1. Open a PR in the designated product/study repository that commits or updates the release plan and baseline manifest.
 2. The PR body must state:
    - `**Meaning of Signature:** Approved Release Baseline`
-   - `**Signer Roles:** Quality Assurance Lead; Management Representative`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Owner`
    - `**Required Signatures:** 2`
 3. Merge only after required approvals and mandatory checks complete.
 4. The post-merge PIN-based Part 11 attestation on that merged PR is the formal approval of the release baseline.
@@ -55,6 +55,7 @@ Applies to product releases, significant maintenance drops, and other controlled
 ### 3.5 Maintenance and Hotfix Releases
 1. Hotfixes and maintenance releases follow the same issue -> PR -> merge -> PIN signature -> immutable release sequence.
 2. Reuse the prior baseline only by explicit reference; do not assume inherited approval without a new PR and manifest update.
+3. Individual engineers may prepare build and baseline artifacts, but the engineering owner remains accountable for release-readiness signoff and completeness of linked evidence.
 
 ## 4. Required Records
 - Release planning issue
@@ -67,3 +68,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 |---|---|---|
 | R00 | 2026-03-06 | Initial release defining GitHub-native configuration and release-baseline execution flow. |
 | R01 | 2026-03-06 | Clarified that product release baseline records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |
+| R02 | 2026-03-07 | Normalized release-baseline signoff accountability to the engineering owner role while keeping engineers as the minimum trained execution role. |
