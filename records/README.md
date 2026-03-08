@@ -63,7 +63,7 @@ Use the external manifest template when a controlled document is authored outsid
 
 1. Export the controlled rendering that will be approved, typically PDF.
 2. Capture the source-system identifier, revision, export timestamp, and SHA-256 for both the exported PDF and the native source file.
-3. Commit the manifest and the controlled artifact set in the target record repository, then route approval through the normal issue -> PR -> merge -> Part 11 attestation flow.
+3. Commit the manifest and the controlled artifact set in the target record repository, then route approval through the normal change-context -> PR -> merge -> Part 11 attestation flow. The change context may be captured in a separate issue or directly in the PR.
 4. Publish the immutable release package with the exported artifact, manifest, and signature evidence so GitHub remains the approval and retention surface even when authoring happened elsewhere.
 
 ## Immutable Publication Notes

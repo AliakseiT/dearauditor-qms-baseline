@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R04
+revision: R06
 effective_date: 2026-03-07
 status: Published
 owner_role: usability_lead
@@ -136,16 +136,16 @@ The file index is the entrypoint for audits and must reference current revisions
 
 ### 8.12 GitHub Workflow Alignment
 1. Track usability-engineering activities through issues in the designated product/study repository.
-2. Implement usability record updates through pull requests that include linked issue context and required Part 11 signature meaning/roles.
+2. Implement usability record updates through pull requests that include either linked issue context or sufficient change context in the PR, plus the required signature meaning/roles.
 3. Require non-author review approval on current PR head commit before merge.
-4. Collect Part 11 attestations post-merge and publish immutable release assets (including manifest and signature evidence) for released usability records.
+4. Collect signature attestations post-merge and publish immutable release assets (including manifest and signature evidence) for released usability records.
 
 ## 9. Required Records
 - Product usability file index and referenced records in the designated product/study repository
 - Formative and summative evaluation evidence
 - UOUP evaluation record (if applicable)
 - Links to related risk and change records
-- Immutable release manifest and Part 11 attestation evidence for released usability records
+- Immutable release manifest and signature attestation evidence for released usability records
 
 ## 10. Traceability
 | Standard Clause | Control in this SOP |
@@ -166,7 +166,9 @@ The file index is the entrypoint for audits and must reference current revisions
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release with lightweight usability-file model for Git/GitHub execution. |
-| R01 | 2026-03-05 | Clarified multi-repository model for usability records, linked to Issue #44, and aligned procedure with implemented GitHub lifecycle (issue -> PR -> merge -> post-merge Part 11 attestation -> immutable release). |
+| R01 | 2026-03-05 | Clarified multi-repository model for usability records, linked to Issue #44, and aligned procedure with implemented GitHub lifecycle (issue -> PR -> merge -> post-merge signature attestation -> immutable release). |
 | R02 | 2026-03-07 | Renamed the usability process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
 | R03 | 2026-03-07 | Simplified usability role names to `regulatory_lead` and `engineering_lead`. |
 | R04 | 2026-03-07 | Introduced `usability_lead` as the accountable usability role and clarified the boundary between usability ownership and regulatory oversight. |
+| R05 | 2026-03-07 | Clarified that usability-record PRs may carry their own controlled change context without a mandatory linked issue. |
+| R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the usability signature workflow wording. |

@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R03
+revision: R04
 effective_date: 2026-03-07
 status: Published
 owner_role: management_representative
@@ -53,7 +53,7 @@ Each product MDF must include at minimum:
 1. MDF-impacting changes must be assessed in product change records.
 2. Regulatory-impacting changes require documented pathway reassessment.
 3. MDF index must be updated before release in the designated record repository.
-4. GitHub issue/PR workflow and post-merge Part 11 signature attestation are used as the approval evidence model for released MDF records.
+4. GitHub issue/PR workflow and post-merge signature attestation are used as the approval evidence model for released MDF records.
 
 ### 6.4 Periodic Review
 1. Review MDF completeness at least quarterly and before major release.
@@ -78,6 +78,7 @@ Each product MDF must include at minimum:
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
-| R01 | 2026-03-05 | Clarified that product MDF records are maintained in designated product/study repositories and aligned release evidence model with GitHub PR plus post-merge Part 11 attestation. |
+| R01 | 2026-03-05 | Clarified that product MDF records are maintained in designated product/study repositories and aligned release evidence model with GitHub PR plus post-merge signature attestation. |
 | R02 | 2026-03-07 | Normalized responsibility labels to the controlled small-team role model and clarified engineering ownership of MDF technical traceability. |
 | R03 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
+| R04 | 2026-03-07 | Removed overly specific signature-regulation terminology from the MDF approval evidence wording. |
