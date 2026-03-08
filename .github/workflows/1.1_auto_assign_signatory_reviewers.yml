@@ -142,6 +142,22 @@ jobs:
             
             const requiredReviewerSignatures = Math.max(0, Number.parseInt(process.env.REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
 
+            const marker = '<!-- signature-auto-reviewers -->';
+            const legacyMarker = '<!-- part11-auto-reviewers -->';
+            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => {
+              const body = c.body || '';
+              const login = String(c.user?.login || '').toLowerCase();
+              return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
+            });
+
             const prData = (await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -150,18 +166,30 @@ jobs:
 
             const existingReviewers = prData.requested_reviewers || [];
             
-            // IF NO REVIEWERS REQUIRED -> REMOVE EXISTING
+            // IF NO REVIEWERS REQUIRED -> REMOVE EXISTING (ONLY IF ASSIGNED BY BOT)
             if (requiredReviewerSignatures === 0) {
-              if (existingReviewers.length > 0) {
-                await github.rest.pulls.removeRequestedReviewers({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: pr.number,
-                  reviewers: existingReviewers.map(r => r.login)
-                });
-                core.info('Removed automatically assigned reviewers since PR path policy no longer requires them.');
+              if (existingReviewers.length > 0 && existing) {
+                const assignedLine = (existing.body || '').split('\n').find(line => line.startsWith('Assigned reviewers:'));
+                if (assignedLine) {
+                  const botAssigned = assignedLine.replace('Assigned reviewers:', '').split(',').map(u => u.replace(/@/g, '').trim().toLowerCase()).filter(Boolean);
+                  const toRemove = existingReviewers.filter(r => botAssigned.includes((r.login || '').toLowerCase())).map(r => r.login);
+                  
+                  if (toRemove.length > 0) {
+                    await github.rest.pulls.removeRequestedReviewers({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      pull_number: pr.number,
+                      reviewers: toRemove
+                    });
+                    core.info(`Removed automatically assigned reviewers: ${toRemove.join(', ')}`);
+                  } else {
+                    core.info('No automatically assigned reviewers found to remove.');
+                  }
+                } else {
+                  core.info('Could not parse assigned reviewers from bot comment.');
+                }
               } else {
-                core.info('No reviewers required, and none assigned.');
+                core.info('No reviewers required, and none assigned by bot to remove.');
               }
               return;
             }
@@ -198,9 +226,6 @@ jobs:
               });
             }
 
-            const marker = '<!-- signature-auto-reviewers -->';
-            const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
             const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
             const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
             const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
@@ -217,18 +242,6 @@ jobs:
               'Auto-merge workflow will enable merge only after all assigned reviewers approve.',
             ];
 
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              per_page: 100,
-            });
-            const existing = comments.find((c) => {
-              const body = c.body || '';
-              const login = String(c.user?.login || '').toLowerCase();
-              return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
-            });
-            
             // Check if existing assigned reviewers exactly match up the selection
             const sameReviewerSet = selected.length === alreadyRequested.size && selected.every((u) => alreadyRequested.has(u.toLowerCase()));
             if (sameReviewerSet) {
