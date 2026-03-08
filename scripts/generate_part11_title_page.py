@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -20,9 +21,10 @@ DISCLAIMER_TEXT = (
 
 
 class ElectronicSignatureCertificatePDF(FPDF):
-    def __init__(self, company_name: str) -> None:
+    def __init__(self, company_name: str, doc_title: str) -> None:
         super().__init__(orientation="P", unit="mm", format="A4")
         self.company_name = company_name
+        self.doc_title = doc_title
         self.alias_nb_pages()
         # 1-inch margins per specification.
         self.set_margins(25.4, 25.4, 25.4)
@@ -35,7 +37,7 @@ class ElectronicSignatureCertificatePDF(FPDF):
         right_width = content_width - left_width
 
         self.cell(left_width, 6, self.company_name, border=0, align="L")
-        self.cell(right_width, 6, "Electronic Signature Certificate", border=0, align="R")
+        self.cell(right_width, 6, self.doc_title, border=0, align="R")
         self.ln(8)
 
         y = self.get_y()
@@ -73,6 +75,15 @@ def _pick_value(attestation: dict[str, Any], keys: tuple[str, ...]) -> str:
 def _safe(value: str) -> str:
     return value if value else "n/a"
 
+def _friendly_timestamp(ts: str) -> str:
+    if not ts or ts == "n/a":
+        return ts
+    try:
+        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        return dt.strftime("%d %b %Y %H:%M:%S UTC")
+    except Exception:
+        return ts
+
 
 def _as_list(attestation: dict[str, Any]) -> list[dict[str, Any]]:
     if isinstance(attestation.get("signed_attestations"), list):
@@ -103,15 +114,18 @@ def _normalized_signers(attestation: dict[str, Any]) -> list[dict[str, str]]:
         full_name = str(signer.get("signer_full_name") or "").strip()
         role = str(signer.get("signer_role") or "").strip() or "Unspecified role"
         title = str(signer.get("signer_job_title") or "").strip() or "n/a"
-        meaning = str(signer.get("meaning_of_signature") or top_meaning or "").strip() or "n/a"
-        timestamp = str(signer.get("timestamp") or signer.get("timestamp_utc") or "").strip() or "n/a"
+        if role.lower() == title.lower() or title == "n/a" or role == "Unspecified role":
+            role_title = role if role != "Unspecified role" else (title if title != "n/a" else "Unspecified role")
+        else:
+            role_title = f"{role} / {title}"
+
+        timestamp = _friendly_timestamp(str(signer.get("timestamp") or signer.get("timestamp_utc") or "").strip() or "n/a")
         sig_hash = str(signer.get("attestation_sha256") or signer.get("attestation_id") or "").strip()
 
         normalized.append(
             {
                 "printed_user": f"{full_name or user_id or 'unknown'} (@{user_id or 'unknown'})",
-                "role_title": f"{role} / {title}",
-                "meaning": meaning,
+                "role_title": role_title,
                 "timestamp": timestamp,
                 "sig_hash": sig_hash,
             }
@@ -130,13 +144,25 @@ def _section_heading(pdf: FPDF, title: str) -> None:
 
 
 def _kv_lines(pdf: FPDF, rows: list[tuple[str, str]]) -> None:
+    usable_width = pdf.w - pdf.l_margin - pdf.r_margin
+    label_width = usable_width * 0.35
+    value_width = usable_width * 0.65
+    
     for label, value in rows:
+        start_x = pdf.get_x()
+        start_y = pdf.get_y()
+        
         pdf.set_font("Helvetica", "B", 10)
-        pdf.multi_cell(0, 6, f"{label}:", new_x="LMARGIN", new_y="NEXT")
+        pdf.multi_cell(label_width, 6, f"{label}:", border=0)
+        end_y_label = pdf.get_y()
+        
+        pdf.set_xy(start_x + label_width, start_y)
         pdf.set_font("Helvetica", "", 10)
-        # Force character wrapping to safely render long URLs/hashes.
-        pdf.multi_cell(0, 6, _safe(value), new_x="LMARGIN", new_y="NEXT", wrapmode="CHAR")
-        pdf.ln(1)
+        pdf.multi_cell(value_width, 6, _safe(value), border=0, wrapmode="CHAR")
+        end_y_value = pdf.get_y()
+        
+        # Advance Y to the maximum of label and value cells, adding some padding
+        pdf.set_y(max(end_y_label, end_y_value) + 1)
 
 
 def _wrap_text(pdf: FPDF, text: str, width: float) -> list[str]:
@@ -173,12 +199,11 @@ def _render_signature_manifest(pdf: FPDF, signers: list[dict[str, str]]) -> None
     headers = [
         "Printed Name & User ID",
         "Role / Title",
-        "Meaning of Signature",
         "Date & Time (UTC)",
     ]
 
     usable_width = pdf.w - pdf.l_margin - pdf.r_margin
-    widths = [usable_width * 0.31, usable_width * 0.20, usable_width * 0.29, usable_width * 0.20]
+    widths = [usable_width * 0.40, usable_width * 0.30, usable_width * 0.30]
 
     _draw_manifest_header(pdf, widths, headers)
 
@@ -186,7 +211,6 @@ def _render_signature_manifest(pdf: FPDF, signers: list[dict[str, str]]) -> None
         {
             "printed_user": "n/a",
             "role_title": "n/a",
-            "meaning": "n/a",
             "timestamp": "n/a",
             "sig_hash": "",
         }
@@ -196,8 +220,8 @@ def _render_signature_manifest(pdf: FPDF, signers: list[dict[str, str]]) -> None
     line_h = 4.6
 
     for row in rows:
-        values = [row["printed_user"], row["role_title"], row["meaning"], row["timestamp"]]
-        wrapped = [_wrap_text(pdf, values[i], widths[i] - 2) for i in range(4)]
+        values = [row["printed_user"], row["role_title"], row["timestamp"]]
+        wrapped = [_wrap_text(pdf, values[i], widths[i] - 2) for i in range(3)]
         row_height = max(8.0, max(len(lines) for lines in wrapped) * line_h + 2)
 
         if pdf.get_y() + row_height > (pdf.h - pdf.b_margin):
@@ -281,10 +305,10 @@ def _derive_output_path(attestation: dict[str, Any], output_arg: str) -> Path:
     return Path(f"Electronic_Signature_Certificate_PR{pr_clean}.pdf")
 
 
-def build_pdf(attestation: dict[str, Any], output_path: Path, record_id: str, company_name: str) -> None:
+def build_pdf(attestation: dict[str, Any], output_path: Path, record_id: str, company_name: str, doc_title: str) -> None:
     signers = _normalized_signers(attestation)
 
-    pdf = ElectronicSignatureCertificatePDF(company_name=company_name)
+    pdf = ElectronicSignatureCertificatePDF(company_name=company_name, doc_title=doc_title)
     pdf.add_page()
 
     _section_record_identification(pdf, attestation, record_id)
@@ -310,8 +334,10 @@ def main() -> None:
     if not company_name:
         company_name = os.environ.get("QMS_COMPANY_NAME", "").strip() or "ACME GmbH"
 
+    doc_title = _pick_value(attestation, ("meaning_of_signature",)) or "Electronic Signature Certificate"
+
     output_path = _derive_output_path(attestation, args.output)
-    build_pdf(attestation, output_path, args.record_id.strip(), company_name)
+    build_pdf(attestation, output_path, args.record_id.strip(), company_name, doc_title)
 
 
 if __name__ == "__main__":
