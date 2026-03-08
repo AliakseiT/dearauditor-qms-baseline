@@ -1,0 +1,46 @@
+name: 1.5 PR Description Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  validate_description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR body sections
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.info('Not a pull request event. Skipping.');
+              return;
+            }
+            
+            const body = pr.body || '';
+            const errors = [];
+            
+            // Check for Summary section
+            if (!/^##\s+Summary\b/mi.test(body)) {
+              errors.push('Missing "## Summary" section.');
+            }
+            
+            // Check for Why or Context section
+            if (!/^##\s+(Why|Context)\b/mi.test(body)) {
+              errors.push('Missing "## Why" or "## Context" section. Please explain the reason for the change.');
+            }
+            
+            // Check for Validation or Testing section
+            if (!/^##\s+(Validation|Testing)\b/mi.test(body)) {
+              errors.push('Missing "## Validation" or "## Testing" section. Please explain how the change was verified.');
+            }
+            
+            if (errors.length > 0) {
+              core.setFailed(`PR description does not meet QMS Lite structural requirements:\n- ${errors.join('\n- ')}`);
+            } else {
+              core.info('PR description structure is compliant.');
+            }
