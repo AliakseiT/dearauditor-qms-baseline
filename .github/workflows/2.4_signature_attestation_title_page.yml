@@ -228,7 +228,7 @@ jobs:
 
       - name: Install render dependencies
         if: steps.aggregate.outputs.all_required_collected == 'true'
-        run: python -m pip install --quiet fpdf2
+        run: python -m pip install --quiet fpdf2 pyyaml
 
       - name: Generate signature title-page PDF
         if: steps.aggregate.outputs.all_required_collected == 'true'
@@ -393,14 +393,40 @@ jobs:
               return;
             }
 
+            function markdownLink(label, url) {
+              const cleanLabel = String(label || '').replace(/[[\]]/g, '\\$&');
+              return url ? `[${cleanLabel}](${url})` : cleanLabel;
+            }
+
+            function fileNameFromUrl(url, fallback) {
+              if (!url) return fallback;
+              try {
+                const pathname = new URL(url).pathname;
+                const parts = pathname.split('/').filter(Boolean);
+                return decodeURIComponent(parts[parts.length - 1] || fallback);
+              } catch {
+                return fallback;
+              }
+            }
+
             const lines = [
               '<!-- signature-title-page-published -->',
-              '📄 Signature page published.',
-              'Release assets contain the Electronic Signature Certificate PDF and signed attestation JSON.',
+              '**Signature page published.**',
+              '',
+              'Release assets contain the **Electronic Signature Certificate PDF** and **signed attestation JSON**.',
+              '',
+              '| Key | Value |',
+              '| --- | --- |',
             ];
-            if (releaseUrl) lines.push(`Immutable release: ${releaseUrl}`);
-            if (pdfUrl) lines.push(`PDF: ${pdfUrl}`);
-            if (jsonUrl) lines.push(`Attestation JSON: ${jsonUrl}`);
+            if (releaseUrl) {
+              lines.push(`| **Immutable release** | ${markdownLink(`\`${releaseTag || fileNameFromUrl(releaseUrl, 'release')}\``, releaseUrl)} |`);
+            }
+            if (pdfUrl) {
+              lines.push(`| **PDF** | ${markdownLink(`\`${fileNameFromUrl(pdfUrl, 'Electronic_Signature_Certificate.pdf')}\``, pdfUrl)} |`);
+            }
+            if (jsonUrl) {
+              lines.push(`| **Attestation JSON** | ${markdownLink('`signed_attestation.json`', jsonUrl)} |`);
+            }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
