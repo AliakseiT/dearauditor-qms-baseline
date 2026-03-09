@@ -1,5 +1,5 @@
 name: 2.4 Signature Attestation Title Page
-run-name: 2.4 Signature Certificate Publish (Comment #${{ github.event.comment.id }})
+run-name: 2.4 Signature Certificate Publish
 
 on:
   issue_comment:

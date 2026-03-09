@@ -1,5 +1,5 @@
 name: 1.2 Required Reviewer Approval Gate
-run-name: 1.2 Reviewer Approval Gate (PR #${{ github.event.pull_request.number }})
+run-name: 1.2 Reviewer Approval Gate
 
 on:
   pull_request_review:

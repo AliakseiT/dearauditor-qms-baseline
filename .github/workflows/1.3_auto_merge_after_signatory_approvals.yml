@@ -1,5 +1,5 @@
 name: 1.3 Auto Merge After Assigned Approvals
-run-name: 1.3 Auto-Merge Gate (PR #${{ github.event.pull_request.number }})
+run-name: 1.3 Auto-Merge Gate
 
 on:
   pull_request_review:

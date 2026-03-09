@@ -1,5 +1,5 @@
 name: 3.1 Release Training Diff
-run-name: 3.1 Release Training Diff (${{ github.event_name }})
+run-name: 3.1 Release Training Diff
 
 on:
   push:

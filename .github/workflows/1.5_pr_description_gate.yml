@@ -1,5 +1,5 @@
 name: 1.5 PR Description Gate
-run-name: 1.5 PR Description Gate (PR #${{ github.event.pull_request.number }})
+run-name: 1.5 PR Description Gate
 
 on:
   pull_request:

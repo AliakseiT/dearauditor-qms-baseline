@@ -1,5 +1,5 @@
 name: 2.1 PR Signature Request Gate
-run-name: 2.1 Signature Request (PR #${{ github.event.pull_request.number || inputs.pr_number }})
+run-name: 2.1 Signature Request
 
 on:
   pull_request:
