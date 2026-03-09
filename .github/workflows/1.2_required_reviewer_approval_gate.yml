@@ -11,7 +11,7 @@ permissions:
 jobs:
   approval_gate:
     if: github.event.pull_request != null
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Require non-author approval on current head
         uses: actions/github-script@v7

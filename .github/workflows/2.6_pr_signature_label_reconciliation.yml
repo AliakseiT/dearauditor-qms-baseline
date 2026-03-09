@@ -21,7 +21,7 @@ concurrency:
 jobs:
   reconcile_labels:
     if: github.event_name == 'workflow_dispatch' || github.event.issue.pull_request != null
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Create GitHub App token for label reconciliation
         id: app_token

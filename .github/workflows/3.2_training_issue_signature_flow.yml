@@ -19,7 +19,7 @@ jobs:
     if: >-
       github.event_name == 'issues' &&
       github.event.issue.pull_request == null
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Create GitHub App token for issue updates
         id: app_token
@@ -177,7 +177,7 @@ jobs:
 
   reconcile_signed_training_issues:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Create GitHub App token for issue updates
         id: app_token

@@ -70,6 +70,7 @@ flowchart LR
     w12["1.2 required reviewer approval gate<br/>1.2_required_reviewer_approval_gate.yml"]
     w13["1.3 auto merge after signatory approvals<br/>1.3_auto_merge_after_signatory_approvals.yml"]
     w14["1.4 qms content gate<br/>1.4_qms_content_gate.yml<br/>Includes risk-record schema validation"]
+    w15["1.5 PR description gate<br/>1.5_pr_description_gate.yml"]
   end
 
   subgraph signature_pub["2 Signature and Publication Gates"]
@@ -94,6 +95,7 @@ flowchart LR
 
   pr_open --> w11
   pr_open --> w14
+  pr_open --> w15
   pr_review --> w12
   pr_review --> w13
   pr_closed --> w21
@@ -128,6 +130,7 @@ flowchart LR
 | `1.2_required_reviewer_approval_gate.yml` | `pull_request_review` | Validates that at least one required non-author approval exists on the current head SHA. | Active |
 | `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables auto-merge after assigned reviewer approvals are present; repository-level branch protection or rulesets are still required to hard-block manual merges. | Active |
 | `1.4_qms_content_gate.yml` | `pull_request` | Validates revision-history, README navigation/index, training-matrix synchronization, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
+| `1.5_pr_description_gate.yml` | `pull_request` | Validates that the PR body contains structural headers for `Summary`, `Why` (or `Context`), and `Validation` (or `Testing`). | Active |
 
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
@@ -154,7 +157,7 @@ flowchart LR
 ## 8. External Dependencies and Trust Boundaries
 | Dependency | Boundary | Purpose |
 |---|---|---|
-| GitHub-hosted Actions runners | External platform runtime | Execute automation logic, evaluate configured gates, and publish releases. |
+| Self-hosted GitHub Actions runner | External platform runtime | Execute automation logic, evaluate configured gates, and publish releases. |
 | Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through the GitHub App. |
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |

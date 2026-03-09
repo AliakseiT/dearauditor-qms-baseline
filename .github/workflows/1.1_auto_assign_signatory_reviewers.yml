@@ -13,7 +13,7 @@ permissions:
 jobs:
   assign_reviewers:
     if: github.event.pull_request.draft == false && github.event.pull_request.state == 'open'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,72 +25,20 @@ jobs:
 
       - name: Build reviewer candidates from role matrix
         id: plan
-        env:
-          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           python3 -m pip install --quiet pyyaml
           python3 <<'PY'
           import os
-          import re
           from pathlib import Path
-
           import yaml
 
-          body = os.environ.get("PR_BODY") or ""
           matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
           roles = matrix.get("roles", {}) or {}
 
-          role_aliases = {
-            "quality assurance lead": "qa_lead",
-            "qa lead": "qa_lead",
-            "management representative": "management_representative",
-            "technical qms maintainer": "technical_qms_maintainer",
-            "qms technical maintainer": "technical_qms_maintainer",
-            "qms automation maintainer": "technical_qms_maintainer",
-            "auditor": "auditor",
-            "lead auditor": "auditor",
-            "clinical ops": "regulatory_lead",
-            "clinical operations": "regulatory_lead",
-            "product/regulatory owner": "regulatory_lead",
-            "product regulatory owner": "regulatory_lead",
-            "product/regulatory lead": "regulatory_lead",
-            "product regulatory lead": "regulatory_lead",
-            "product owner": "regulatory_lead",
-            "regulatory owner": "regulatory_lead",
-            "regulatory lead": "regulatory_lead",
-            "usability lead": "usability_lead",
-            "ux lead": "usability_lead",
-            "human factors lead": "usability_lead",
-            "software engineer": "engineering_lead",
-            "software engineering owner": "engineering_lead",
-            "software engineering lead": "engineering_lead",
-            "engineering lead": "engineering_lead",
-            "engineering owner": "engineering_lead",
-            "engineer": "engineer",
-            "software developer": "engineer",
-          }
-
-          def normalize_role_label(text: str) -> str:
-            cleaned = re.sub(r"\s+", " ", (text or "").strip().lower())
-            return role_aliases.get(cleaned, cleaned)
-
-          roles_match = re.search(r"\*\*Signer Roles:\*\*\s*([^\n]+)", body, flags=re.IGNORECASE)
-          roles_raw = roles_match.group(1).strip() if roles_match else "Quality Assurance Lead"
-          if not roles_raw or roles_raw.startswith("["):
-            roles_raw = "Quality Assurance Lead"
-
-          role_tokens = [t.strip() for t in re.split(r"[;,]", roles_raw) if t.strip()]
-          role_ids = [normalize_role_label(t) for t in role_tokens]
-          role_ids = [r for r in role_ids if r in roles]
-          if not role_ids and "qa_lead" in roles:
-            role_ids = ["qa_lead"]
-
-          sig_match = re.search(r"\*\*Required Signatures:\*\*\s*([^\n]+)", body, flags=re.IGNORECASE)
-          required = int(sig_match.group(1).strip()) if sig_match and sig_match.group(1).strip().isdigit() else 1
-          if required < 1:
-            required = 1
-          required_reviewer_signatures = max(0, required - 1)
-
+          # If co-approval triggered by paths, we default to assigning the QA Lead or Management Representative
+          # (Modify these default fallback roles if your QMS prefers different explicit roles for path triggers)
+          role_ids = ["qa_lead"] 
+          
           ordered_candidates = []
           seen = set()
           for role_id in role_ids:
@@ -106,11 +54,8 @@ jobs:
 
           output = Path(os.environ["GITHUB_OUTPUT"])
           with output.open("a", encoding="utf-8") as fh:
-            fh.write(f"required_signatures={required}\n")
-            fh.write(f"required_reviewer_signatures={required_reviewer_signatures}\n")
-            fh.write(f"role_ids={','.join(role_ids)}\n")
-            fh.write(f"roles_raw={roles_raw}\n")
             fh.write("candidates_csv=" + ",".join(ordered_candidates) + "\n")
+            fh.write(f"role_ids={','.join(role_ids)}\n")
           PY
 
       - name: Detect co-approval policy from changed paths
@@ -142,9 +87,8 @@ jobs:
             if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');
 
-            const baseRequired = Math.max(0, Number.parseInt(process.env.BASE_REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
             const policyMin = reasons.length > 0 ? 1 : 0;
-            const effectiveRequired = Math.max(baseRequired, policyMin);
+            const effectiveRequired = policyMin;
 
             core.setOutput('coapproval_required', reasons.length > 0 ? 'true' : 'false');
             core.setOutput('coapproval_reasons', reasons.join('; '));
@@ -173,15 +117,12 @@ jobs:
           repositories: |
             ${{ github.event.repository.name }}
 
-      - name: Request reviewers from collaborators
-        if: steps.plan.outputs.candidates_csv != ''
+      - name: Request or Remove reviewers from collaborators
         uses: actions/github-script@v7
         env:
           CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
-          REQUIRED_SIGNATURES: ${{ steps.plan.outputs.required_signatures }}
           REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
           ROLE_IDS: ${{ steps.plan.outputs.role_ids }}
-          ROLES_RAW: ${{ steps.plan.outputs.roles_raw }}
           COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
           COAPPROVAL_REASONS: ${{ steps.policy.outputs.coapproval_reasons }}
         with:
@@ -192,14 +133,68 @@ jobs:
               core.info('Pull request is not open; reviewer assignment skipped.');
               return;
             }
+
             const author = (pr.user?.login || '').toLowerCase();
             const candidates = (process.env.CANDIDATES_CSV || '')
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
-            const required = Math.max(1, Number.parseInt(process.env.REQUIRED_SIGNATURES || '1', 10) || 1);
+            
             const requiredReviewerSignatures = Math.max(0, Number.parseInt(process.env.REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
 
+            const marker = '<!-- signature-auto-reviewers -->';
+            const legacyMarker = '<!-- part11-auto-reviewers -->';
+            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => {
+              const body = c.body || '';
+              const login = String(c.user?.login || '').toLowerCase();
+              return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
+            });
+
+            const prData = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            })).data;
+
+            const existingReviewers = prData.requested_reviewers || [];
+            
+            // IF NO REVIEWERS REQUIRED -> REMOVE EXISTING (ONLY IF ASSIGNED BY BOT)
+            if (requiredReviewerSignatures === 0) {
+              if (existingReviewers.length > 0 && existing) {
+                const assignedLine = (existing.body || '').split('\n').find(line => line.startsWith('Assigned reviewers:'));
+                if (assignedLine) {
+                  const botAssigned = assignedLine.replace('Assigned reviewers:', '').split(',').map(u => u.replace(/@/g, '').trim().toLowerCase()).filter(Boolean);
+                  const toRemove = existingReviewers.filter(r => botAssigned.includes((r.login || '').toLowerCase())).map(r => r.login);
+                  
+                  if (toRemove.length > 0) {
+                    await github.rest.pulls.removeRequestedReviewers({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      pull_number: pr.number,
+                      reviewers: toRemove
+                    });
+                    core.info(`Removed automatically assigned reviewers: ${toRemove.join(', ')}`);
+                  } else {
+                    core.info('No automatically assigned reviewers found to remove.');
+                  }
+                } else {
+                  core.info('Could not parse assigned reviewers from bot comment.');
+                }
+              } else {
+                core.info('No reviewers required, and none assigned by bot to remove.');
+              }
+              return;
+            }
+
+            // IF REVIEWERS REQUIRED -> ADD THEM
             const collaborators = await github.paginate(github.rest.repos.listCollaborators, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -213,36 +208,15 @@ jobs:
               return collaboratorSet.has(key);
             });
 
-            if (requiredReviewerSignatures > 0 && eligible.length === 0) {
-              core.warning('No eligible collaborator matched signatory role matrix for reviewer assignment.');
-              return;
-            }
             if (eligible.length < requiredReviewerSignatures) {
-              core.setFailed(
-                `Required signatures is ${required} (author auto-signs 1), so ${requiredReviewerSignatures} reviewer signature(s) are required; only ${eligible.length} eligible collaborator(s) were found from role matrix.`
-              );
+              core.setFailed(`Co-approval policy requires ${requiredReviewerSignatures} reviewer signature(s). Only ${eligible.length} eligible collaborator(s) were found.`);
               return;
             }
 
-            const selected = requiredReviewerSignatures > 0
-              ? eligible.slice(0, requiredReviewerSignatures)
-              : [];
-
-            const prData = (await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-            })).data;
-            if (prData.state !== 'open') {
-              core.info(`PR #${pr.number} is ${prData.state}; skip requesting reviewers.`);
-              return;
-            }
-            const alreadyRequested = new Set((prData.requested_reviewers || []).map((r) => (r.login || '').toLowerCase()));
+            const selected = eligible.slice(0, requiredReviewerSignatures);
+            const alreadyRequested = new Set(existingReviewers.map((r) => (r.login || '').toLowerCase()));
             const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
-            const sameReviewerSet =
-              selected.length === alreadyRequested.size &&
-              selected.every((u) => alreadyRequested.has(u.toLowerCase()));
-
+            
             if (toRequest.length > 0) {
               await github.rest.pulls.requestReviewers({
                 owner: context.repo.owner,
@@ -252,21 +226,14 @@ jobs:
               });
             }
 
-            const marker = '<!-- signature-auto-reviewers -->';
-            const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
             const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
-            const rolesRaw = process.env.ROLES_RAW || '';
             const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
             const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
             const lines = [
               marker,
               '🤖 Auto-assigned signature reviewers from role matrix',
               '',
-              `Signer roles requested: \`${rolesRaw}\``,
-              `Mapped role IDs: \`${roleIds.join(', ') || 'none'}\``,
-              `Required signatures: \`${required}\``,
-              `Author auto-included signer: @${pr.user?.login || 'unknown'}`,
+              `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,
               'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
               `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
               `Minimum reviewer approvals required for merge: \`${requiredReviewerSignatures}\``,
@@ -275,21 +242,13 @@ jobs:
               'Auto-merge workflow will enable merge only after all assigned reviewers approve.',
             ];
 
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              per_page: 100,
-            });
-            const existing = comments.find((c) => {
-              const body = c.body || '';
-              const login = String(c.user?.login || '').toLowerCase();
-              return (body.includes(marker) || body.includes(legacyMarker)) && automationBotLogins.has(login);
-            });
+            // Check if existing assigned reviewers exactly match up the selection
+            const sameReviewerSet = selected.length === alreadyRequested.size && selected.every((u) => alreadyRequested.has(u.toLowerCase()));
             if (sameReviewerSet) {
               core.info('Assigned reviewer set is unchanged; skip auto-reviewer comment update.');
               return;
             }
+
             if (existing) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
