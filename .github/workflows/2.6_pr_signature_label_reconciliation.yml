@@ -14,10 +14,6 @@ permissions:
   issues: write
   pull-requests: read
 
-concurrency:
-  group: signature-label-reconcile-${{ github.event.issue.number || inputs.pr_number }}
-  cancel-in-progress: true
-
 jobs:
   reconcile_labels:
     if: >-
@@ -35,6 +31,9 @@ jobs:
           contains(github.event.comment.body, '<!-- part11-native-attestation -->')
         )
       )
+    concurrency:
+      group: signature-label-reconcile-${{ github.event.issue.number || inputs.pr_number }}
+      cancel-in-progress: true
     runs-on: self-hosted
     steps:
       - name: Create GitHub App token for label reconciliation
