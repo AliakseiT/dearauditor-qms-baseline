@@ -220,6 +220,12 @@ jobs:
             core.setOutput('all_required_collected', allRequiredCollected ? 'true' : 'false');
             core.setOutput('source_target_commit', sourceTargetCommit);
 
+      - name: Setup Python
+        if: steps.aggregate.outputs.all_required_collected == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Install render dependencies
         if: steps.aggregate.outputs.all_required_collected == 'true'
         run: python -m pip install --quiet fpdf2
