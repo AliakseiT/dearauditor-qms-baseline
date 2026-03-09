@@ -157,7 +157,7 @@ flowchart LR
 ## 8. External Dependencies and Trust Boundaries
 | Dependency | Boundary | Purpose |
 |---|---|---|
-| GitHub-hosted Actions runners | External platform runtime | Execute automation logic, evaluate configured gates, and publish releases. |
+| Self-hosted GitHub Actions runner | External platform runtime | Execute automation logic, evaluate configured gates, and publish releases. |
 | Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through the GitHub App. |
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |

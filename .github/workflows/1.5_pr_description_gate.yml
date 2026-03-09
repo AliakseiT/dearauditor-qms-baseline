@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   validate_description:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Check PR body sections
         uses: actions/github-script@v7
