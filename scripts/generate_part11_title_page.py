@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from fpdf import FPDF
+import yaml
 
 DISCLAIMER_TEXT = (
     "This document is a human-readable manifestation of a cryptographically secure electronic "
@@ -106,7 +107,41 @@ def _as_list(attestation: dict[str, Any]) -> list[dict[str, Any]]:
     return []
 
 
-def _normalized_signers(attestation: dict[str, Any]) -> list[dict[str, str]]:
+def _load_company_profile(profile_path: Path | None) -> dict[str, Any]:
+    if not profile_path or not profile_path.exists():
+        return {}
+    try:
+        data = yaml.safe_load(profile_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _resolve_preferred_display_role(
+    company_profile: dict[str, Any],
+    signer: dict[str, Any],
+) -> str:
+    prefs = company_profile.get("signature_preferences")
+    if not isinstance(prefs, dict):
+        return ""
+    role_map = prefs.get("preferred_display_roles")
+    if not isinstance(role_map, dict):
+        return ""
+
+    user_id = str(signer.get("user_id") or signer.get("actor_login") or "").strip().lower()
+    full_name = str(signer.get("signer_full_name") or "").strip().lower()
+
+    for raw_key, raw_value in role_map.items():
+        key = str(raw_key or "").strip().lower()
+        value = str(raw_value or "").strip()
+        if not value:
+            continue
+        if key and key in {user_id, full_name}:
+            return value
+    return ""
+
+
+def _normalized_signers(attestation: dict[str, Any], company_profile: dict[str, Any]) -> list[dict[str, str]]:
     top_meaning = _pick_value(attestation, ("meaning_of_signature",))
     normalized: list[dict[str, str]] = []
     for signer in _as_list(attestation):
@@ -114,7 +149,10 @@ def _normalized_signers(attestation: dict[str, Any]) -> list[dict[str, str]]:
         full_name = str(signer.get("signer_full_name") or "").strip()
         role = str(signer.get("signer_role") or "").strip() or "Unspecified role"
         title = str(signer.get("signer_job_title") or "").strip() or "n/a"
-        if role.lower() == title.lower() or title == "n/a" or role == "Unspecified role":
+        preferred_role = _resolve_preferred_display_role(company_profile, signer)
+        if preferred_role:
+            role_title = preferred_role
+        elif role.lower() == title.lower() or title == "n/a" or role == "Unspecified role":
             role_title = role if role != "Unspecified role" else (title if title != "n/a" else "Unspecified role")
         else:
             role_title = f"{role} / {title}"
@@ -305,8 +343,15 @@ def _derive_output_path(attestation: dict[str, Any], output_arg: str) -> Path:
     return Path(f"Electronic_Signature_Certificate_PR{pr_clean}.pdf")
 
 
-def build_pdf(attestation: dict[str, Any], output_path: Path, record_id: str, company_name: str, doc_title: str) -> None:
-    signers = _normalized_signers(attestation)
+def build_pdf(
+    attestation: dict[str, Any],
+    output_path: Path,
+    record_id: str,
+    company_name: str,
+    doc_title: str,
+    company_profile: dict[str, Any],
+) -> None:
+    signers = _normalized_signers(attestation, company_profile)
 
     pdf = ElectronicSignatureCertificatePDF(company_name=company_name, doc_title=doc_title)
     pdf.add_page()
@@ -325,19 +370,28 @@ def main() -> None:
     parser.add_argument("--output", default="", help="Output PDF path")
     parser.add_argument("--record-id", default="", help="Record identifier")
     parser.add_argument("--company", default="", help="Company name shown in header (default: ACME GmbH)")
+    parser.add_argument(
+        "--company-profile",
+        default="matrices/company_profile.yml",
+        help="Path to company_profile.yml for company metadata and display preferences",
+    )
     args = parser.parse_args()
 
     attestation_path = Path(args.attestation)
     attestation = json.loads(attestation_path.read_text(encoding="utf-8"))
+    company_profile_path = Path(args.company_profile).expanduser()
+    company_profile = _load_company_profile(company_profile_path)
 
     company_name = args.company.strip() or _pick_value(attestation, ("company_name", "company", "organization"))
+    if not company_name:
+        company_name = _pick_value(company_profile.get("company", {}), ("legal_name",))
     if not company_name:
         company_name = os.environ.get("QMS_COMPANY_NAME", "").strip() or "ACME GmbH"
 
     doc_title = _pick_value(attestation, ("meaning_of_signature",)) or "Electronic Signature Certificate"
 
     output_path = _derive_output_path(attestation, args.output)
-    build_pdf(attestation, output_path, args.record_id.strip(), company_name, doc_title)
+    build_pdf(attestation, output_path, args.record_id.strip(), company_name, doc_title, company_profile)
 
 
 if __name__ == "__main__":

@@ -18,6 +18,9 @@ company:
 quality_policy_statement:
   approved_by_role: "management_representative"
   statement: "REPLACE_WITH_COMPANY_LEGAL_NAME commits to delivering safe and effective products through a controlled quality management system and continuous improvement."
+signature_preferences:
+  preferred_display_roles:
+    replace_with_signer_login: "REPLACE_WITH_PREFERRED_DISPLAY_ROLE"
 quality_objective_framework:
   governance_cadence: "quarterly"
   objectives:

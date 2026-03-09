@@ -21,6 +21,10 @@ company:
 quality_policy_statement:
   approved_by_role: "management_representative"
   statement: "ACME GmbH commits to delivering safe and effective healthcare software through a risk-based, evidence-driven quality management system and continuous improvement."
+signature_preferences:
+  preferred_display_roles:
+    aliakseit: "Management Representative"
+    inatsitovich: "Quality Assurance Lead"
 quality_objective_framework:
   governance_cadence: "quarterly"
   objectives:
