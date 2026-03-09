@@ -1,5 +1,5 @@
 name: 2.5 Manual Signature Attestation Fallback
-run-name: 2.5 manual signature fallback PR #${{ github.event.inputs.pr_number }}
+run-name: 2.5 Manual Signature Fallback (PR #${{ github.event.inputs.pr_number }})
 
 on:
   workflow_dispatch:
