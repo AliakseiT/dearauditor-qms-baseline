@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   publish_qms_release:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       RELEASE_TAG: ${{ github.ref_name }}
     steps:
