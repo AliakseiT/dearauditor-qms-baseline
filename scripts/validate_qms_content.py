@@ -85,12 +85,12 @@ def parse_markdown_revision_row_pairs(text):
 def parse_readme_doc_nav(text):
     entries = {}
     pattern = re.compile(
-        r"^- \[[^\]]+\]\((?P<path>(?:sops|wis)/[^)]+)\) - `(?P<revision>R\d{2})`$",
+        r"^- \[[^\]]+\]\((?P<path>(?:qm|sops|wis)/[^)]+)\) - `(?P<revision>R\d{2})`$",
         flags=re.MULTILINE,
     )
     for match in pattern.finditer(text):
         path = match.group("path").strip()
-        id_match = re.search(r"((?:SOP|WI)-\d+)", path, flags=re.IGNORECASE)
+        id_match = re.search(r"((?:QM|SOP|WI)-\d+)", path, flags=re.IGNORECASE)
         if not id_match:
             continue
         doc_id = id_match.group(1).upper()
@@ -101,9 +101,9 @@ def parse_readme_doc_nav(text):
     return entries
 
 
-def parse_readme_sop_index(text):
-    start = "<!-- PUBLISHED-SOP-INDEX:START -->"
-    end = "<!-- PUBLISHED-SOP-INDEX:END -->"
+def parse_readme_doc_index(text):
+    start = "<!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->"
+    end = "<!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->"
     if start not in text or end not in text:
         return {}
     block = text.split(start, 1)[1].split(end, 1)[0]
@@ -112,15 +112,15 @@ def parse_readme_sop_index(text):
         row = line.strip()
         if not row.startswith("|"):
             continue
-        if row.startswith("| SOP ID ") or row.startswith("|---"):
+        if row.startswith("| Document ID ") or row.startswith("|---"):
             continue
         cols = [col.strip() for col in row.strip("|").split("|")]
         if len(cols) < 6:
             continue
-        sop_id, _title, path, date, revision, _status = cols[:6]
-        if not re.fullmatch(r"SOP-\d+", sop_id):
+        doc_id, _title, path, date, revision, _status = cols[:6]
+        if not re.fullmatch(r"(?:QM|SOP|WI)-\d+", doc_id):
             continue
-        entries[sop_id] = {"path": path, "date": date, "revision": revision}
+        entries[doc_id] = {"path": path, "date": date, "revision": revision}
     return entries
 
 
@@ -163,12 +163,13 @@ class QMSContext:
     changed_set: set[str]
     readme_text: str
     readme_nav: dict
-    readme_sop_index: dict
+    readme_doc_index: dict
     changed_doc_infos: list[DocInfo]
+    changed_qms: list[DocInfo]
     changed_sops: list[DocInfo]
     changed_wis: list[DocInfo]
     training_matrix: dict
-    sop_to_roles: dict
+    doc_to_roles: dict
 
 
 def parse_training_matrix(text):
@@ -190,7 +191,7 @@ def parse_training_matrix(text):
         role_match = re.match(r"^  ([A-Za-z0-9_]+):\s*$", line)
         if role_match:
             current_role = role_match.group(1)
-            roles[current_role] = {"required_sops": [], "required_revisions": {}}
+            roles[current_role] = {"required_documents": [], "required_revisions": {}}
             current_section = None
             continue
 
@@ -202,10 +203,10 @@ def parse_training_matrix(text):
             current_section = section_match.group(1)
             continue
 
-        if current_section == "required_sops":
+        if current_section in {"required_documents", "required_sops"}:
             item_match = re.match(r"^      - (.+?)\s*$", line)
             if item_match:
-                roles[current_role]["required_sops"].append(item_match.group(1).strip())
+                roles[current_role]["required_documents"].append(item_match.group(1).strip())
                 continue
 
         if current_section == "required_revisions":
@@ -226,30 +227,38 @@ def build_context(base_sha, head_sha):
     pr_body = os.environ.get("PR_BODY", "")
     readme_text = Path("README.md").read_text(encoding="utf-8")
     readme_nav = parse_readme_doc_nav(readme_text)
-    readme_sop_index = parse_readme_sop_index(readme_text)
+    readme_doc_index = parse_readme_doc_index(readme_text)
 
     matrix_path = Path("matrices/training_matrix.yml")
     training_matrix = parse_training_matrix(matrix_path.read_text(encoding="utf-8"))
     roles = training_matrix.get("roles", {}) or {}
-    sop_to_roles = {}
+    doc_to_roles = {}
     for role_name, role_def in roles.items():
-        for item in role_def.get("required_sops", []) or []:
-            match = re.search(r"(SOP-\d+)", str(item), flags=re.IGNORECASE)
+        required_documents = role_def.get("required_documents", []) or role_def.get("required_sops", []) or []
+        for item in required_documents:
+            match = re.search(r"((?:QM|SOP)-\d+)", str(item), flags=re.IGNORECASE)
             if not match:
                 continue
-            sop_id = match.group(1).upper()
-            sop_to_roles.setdefault(sop_id, set()).add(role_name)
+            doc_id = match.group(1).upper()
+            doc_to_roles.setdefault(doc_id, set()).add(role_name)
 
     changed_doc_infos = []
     for path in changed:
         if not (
-            (path.startswith("sops/") or path.startswith("wis/"))
+            (path.startswith("qm/") or path.startswith("sops/") or path.startswith("wis/"))
             and path.endswith(".md")
         ):
             continue
+        if not Path(path).exists():
+            continue
         head_text = Path(path).read_text(encoding="utf-8")
         base_text = file_at_revision(base_sha, path)
-        id_key = "sop_id" if path.startswith("sops/") else "wi_id"
+        if path.startswith("qm/"):
+            id_key = "qm_id"
+        elif path.startswith("sops/"):
+            id_key = "sop_id"
+        else:
+            id_key = "wi_id"
         changed_doc_infos.append(
             DocInfo(
                 path=path,
@@ -261,6 +270,7 @@ def build_context(base_sha, head_sha):
             )
         )
 
+    changed_qms = [doc for doc in changed_doc_infos if doc.path.startswith("qm/")]
     changed_sops = [doc for doc in changed_doc_infos if doc.path.startswith("sops/")]
     changed_wis = [doc for doc in changed_doc_infos if doc.path.startswith("wis/")]
 
@@ -272,12 +282,13 @@ def build_context(base_sha, head_sha):
         changed_set=changed_set,
         readme_text=readme_text,
         readme_nav=readme_nav,
-        readme_sop_index=readme_sop_index,
+        readme_doc_index=readme_doc_index,
         changed_doc_infos=changed_doc_infos,
+        changed_qms=changed_qms,
         changed_sops=changed_sops,
         changed_wis=changed_wis,
         training_matrix=training_matrix,
-        sop_to_roles=sop_to_roles,
+        doc_to_roles=doc_to_roles,
     )
 
 
@@ -291,16 +302,21 @@ class QMSContentGuardTests(unittest.TestCase):
 
     def test_readme_updated_when_sops_or_wis_change(self):
         failures = []
-        if self.ctx.changed_sops or self.ctx.changed_wis:
+        if self.ctx.changed_doc_infos:
             if "README.md" not in self.ctx.changed_set:
-                failures.append("README.md must be updated when SOP or WI files change.")
+                failures.append("README.md must be updated when controlled document files change.")
         self.assert_no_failures(failures)
 
     def test_changed_documents_have_valid_metadata(self):
         failures = []
         for doc in self.ctx.changed_doc_infos:
-            id_key = "sop_id" if doc.path.startswith("sops/") else "wi_id"
-            if not re.fullmatch(r"(?:SOP|WI)-\d+", doc.doc_id or ""):
+            if doc.path.startswith("qm/"):
+                id_key = "qm_id"
+            elif doc.path.startswith("sops/"):
+                id_key = "sop_id"
+            else:
+                id_key = "wi_id"
+            if not re.fullmatch(r"(?:QM|SOP|WI)-\d+", doc.doc_id or ""):
                 failures.append(f"{doc.path}: missing or invalid {id_key} in front matter.")
             if not re.fullmatch(r"R\d{2}", doc.revision or ""):
                 failures.append(f"{doc.path}: missing or invalid revision in front matter.")
@@ -346,55 +362,55 @@ class QMSContentGuardTests(unittest.TestCase):
                 )
         self.assert_no_failures(failures)
 
-    def test_readme_published_sop_index_matches_changed_sops(self):
+    def test_readme_published_doc_index_matches_changed_documents(self):
         failures = []
-        for doc in self.ctx.changed_sops:
-            entry = self.ctx.readme_sop_index.get((doc.doc_id or "").upper())
+        for doc in self.ctx.changed_doc_infos:
+            entry = self.ctx.readme_doc_index.get((doc.doc_id or "").upper())
             if not entry:
-                failures.append(f"README.md published SOP index is missing entry for {doc.doc_id or doc.path}.")
+                failures.append(f"README.md published controlled document index is missing entry for {doc.doc_id or doc.path}.")
                 continue
             if entry["path"] != doc.path:
                 failures.append(
-                    f"README.md published SOP index path mismatch for {doc.doc_id}: {entry['path']} != {doc.path}."
+                    f"README.md published controlled document index path mismatch for {doc.doc_id}: {entry['path']} != {doc.path}."
                 )
             if doc.revision and entry["revision"] != doc.revision:
                 failures.append(
-                    f"README.md published SOP index revision mismatch for {doc.doc_id}: {entry['revision']} != {doc.revision}."
+                    f"README.md published controlled document index revision mismatch for {doc.doc_id}: {entry['revision']} != {doc.revision}."
                 )
             if doc.date and entry["date"] != doc.date:
                 failures.append(
-                    f"README.md published SOP index effective date mismatch for {doc.doc_id}: {entry['date']} != {doc.date}."
+                    f"README.md published controlled document index effective date mismatch for {doc.doc_id}: {entry['date']} != {doc.date}."
                 )
         self.assert_no_failures(failures)
 
-    def test_training_matrix_updated_when_sops_change(self):
+    def test_training_matrix_updated_when_training_scoped_docs_change(self):
         failures = []
-        if self.ctx.changed_sops and "matrices/training_matrix.yml" not in self.ctx.changed_set:
-            failures.append("matrices/training_matrix.yml must be updated when SOP files change.")
+        if (self.ctx.changed_qms or self.ctx.changed_sops) and "matrices/training_matrix.yml" not in self.ctx.changed_set:
+            failures.append("matrices/training_matrix.yml must be updated when QM or SOP files change.")
         self.assert_no_failures(failures)
 
-    def test_changed_sops_are_mapped_to_training_roles(self):
+    def test_changed_training_scoped_docs_are_mapped_to_roles(self):
         failures = []
-        for doc in self.ctx.changed_sops:
-            if not self.ctx.sop_to_roles.get((doc.doc_id or "").upper(), set()):
+        for doc in [*self.ctx.changed_qms, *self.ctx.changed_sops]:
+            if not self.ctx.doc_to_roles.get((doc.doc_id or "").upper(), set()):
                 failures.append(f"{doc.doc_id or doc.path} has no roles mapped in training_matrix.yml.")
         self.assert_no_failures(failures)
 
-    def test_training_matrix_explicit_revisions_match_changed_sops(self):
+    def test_training_matrix_explicit_revisions_match_changed_training_scoped_docs(self):
         failures = []
         roles = (self.ctx.training_matrix.get("roles", {}) or {})
-        for doc in self.ctx.changed_sops:
-            sop_id = (doc.doc_id or "").upper()
+        for doc in [*self.ctx.changed_qms, *self.ctx.changed_sops]:
+            doc_id = (doc.doc_id or "").upper()
             for role_name, role_def in roles.items():
                 required_revisions = role_def.get("required_revisions", {}) or {}
                 for key, value in required_revisions.items():
-                    match = re.search(r"(SOP-\d+)", str(key), flags=re.IGNORECASE)
-                    if not match or match.group(1).upper() != sop_id:
+                    match = re.search(r"((?:QM|SOP)-\d+)", str(key), flags=re.IGNORECASE)
+                    if not match or match.group(1).upper() != doc_id:
                         continue
                     expected_revision = str(value).strip().upper()
                     if expected_revision != doc.revision:
                         failures.append(
-                            f"training_matrix.yml role {role_name} pins {sop_id} to {expected_revision}, expected {doc.revision}."
+                            f"training_matrix.yml role {role_name} pins {doc_id} to {expected_revision}, expected {doc.revision}."
                         )
         self.assert_no_failures(failures)
 

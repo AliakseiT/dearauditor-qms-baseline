@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-006
 title: Software Validation (QMS Tools)
-revision: R00
-effective_date: 2026-03-02
+revision: R01
+effective_date: 2026-03-08
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -73,9 +73,10 @@ Revalidation is required when:
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control
-- SOP-005 QMS Governance and Quality Manual
+- SOP-005 QMS Governance
 
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
+| R01 | 2026-03-08 | Updated governance cross-reference after the Quality Manual was split out of SOP-005. |

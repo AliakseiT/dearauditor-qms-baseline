@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R09
-effective_date: 2026-03-07
+revision: R10
+effective_date: 2026-03-08
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -32,24 +32,26 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | Role | Responsibilities |
 |---|---|
 | QA Lead | Maintains document control process and naming/version rules. |
-| Management Representative | Approves new/revised SOPs and critical records. |
+| Management Representative | Approves new or revised controlled documents and critical records. |
 | Process Owner | Drafts/updates document content and verifies technical correctness. |
 | All Personnel | Use only current approved revisions. Responsible for maintaining the security of their GitHub credentials. The use of a user's GitHub account to approve a pull request under this QMS constitutes their legally binding electronic signature. |
 
 ## 6. Procedure
 
 ### 6.1 Document Classes
-1. `SOP`: controlled procedures in `sops/`.
-2. `WI`: controlled work instructions in `wis/` that define default execution detail for selected SOP activities.
-3. `Matrix`: structured governance references in `matrices/`.
-4. `Template`: forms for planning/execution in `.github/ISSUE_TEMPLATE` and template artifacts in `records/*`.
-5. `Execution Record`: objective evidence maintained in approved target record repositories.
+1. `QM`: top-level quality manual documents in `qm/`.
+2. `SOP`: controlled procedures in `sops/`.
+3. `WI`: controlled work instructions in `wis/` that define default execution detail for selected SOP activities.
+4. `Matrix`: structured governance references in `matrices/`.
+5. `Template`: forms for planning/execution in `.github/ISSUE_TEMPLATE` and template artifacts in `records/*`.
+6. `Execution Record`: objective evidence maintained in approved target record repositories.
 
 ### 6.2 Identification and Metadata
-1. SOP files must use `SOP-XXX-Title.md` naming.
-2. WI files must use `WI-XXX-Title.md` naming and include YAML front matter fields: `wi_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `related_sops`.
-3. SOPs must include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`, `iso_13485_clauses`.
-4. Revision format is `RNN` (for example `R03`).
+1. QM files must use `QM-XXX-Title.md` naming and include YAML front matter fields: `qm_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`.
+2. SOP files must use `SOP-XXX-Title.md` naming.
+3. WI files must use `WI-XXX-Title.md` naming and include YAML front matter fields: `wi_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `related_sops`.
+4. SOPs must include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`, `iso_13485_clauses`.
+5. Revision format is `RNN` (for example `R03`).
 
 ### 6.3 Draft, Review, and Approval
 1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with either linked issue context or sufficient change context stated directly in the PR.
@@ -62,13 +64,13 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 8. Signature collection and attestation evidence are captured post-merge on the merged PR and must complete before immutable record publication.
 
 ### 6.4 Published Index Synchronization
-1. Any SOP text change must update the Published SOP Index in `README.md`.
-2. Index entries must include SOP ID, title, file, effective date, revision, and status.
-3. `1.4_qms_content_gate.yml` blocks PRs where SOP updates are not reflected in index changes.
+1. Any QM, SOP, or WI text change must update the Published Controlled Document Index in `README.md`.
+2. Index entries must include document ID, title, file, effective date, revision, and status.
+3. `1.4_qms_content_gate.yml` blocks PRs where controlled-document updates are not reflected in index changes.
 
 ### 6.5 Training and Role Impact Synchronization
-1. SOP revisions must be evaluated for role/training impact.
-2. `matrices/training_matrix.yml` must be updated when role coverage changes.
+1. QM and SOP revisions must be evaluated for role and training impact.
+2. `matrices/training_matrix.yml` must be updated when role coverage or required document revisions change.
 3. Training assignment automation creates issues only for mapped roles/users.
 
 ### 6.6 Record Retention and Immutability
@@ -93,7 +95,7 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 
 ## 7. Required Records
 - PR with approvals and signature attestation
-- Updated `README.md` published SOP index
+- Updated `README.md` published controlled document index
 - Record release manifest and immutable release assets in the designated record repository when applicable
 - External document manifest and hash evidence when external-origin controlled documents are used
 - Training issue/record when applicable
@@ -105,12 +107,13 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | 4.2.5 | Defines record identification, retention, and immutability expectations. |
 
 ## 9. Related Controlled Documents
-- SOP-005 QMS Governance and Quality Manual
+- QM-001 Quality Manual
+- SOP-005 QMS Governance
 - SOP-009 Change Management
 - WI-001 Verification and Validation Execution
 - WI-002 Configuration and Release Management Execution
 - `records/external/external_document_manifest_template.yml`
-- `README.md` Published SOP Index
+- `README.md` Published Controlled Document Index
 
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
@@ -125,3 +128,4 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 | R07 | 2026-03-07 | Updated workflow filename references to the per-automation numbering scheme. |
 | R08 | 2026-03-07 | Clarified that controlled state exists only after merge to `main` or required immutable publication, and that PRs may carry their own controlled change context without a mandatory linked issue. |
 | R09 | 2026-03-07 | Removed overly specific signature-regulation terminology from the controlled signature wording and kept the SOP language technology-neutral. |
+| R10 | 2026-03-08 | Added `QM` as a first-class controlled document class and generalized the published index and training-sync rules from SOP-only to controlled-document scope. |

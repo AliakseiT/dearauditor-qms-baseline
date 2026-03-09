@@ -37,7 +37,7 @@ quality_objective_framework:
       metric: "percent_critical_quality_actions_closed_on_or_before_due_date"
       target: ">=95%"
     - id: "QO-004"
-      objective: "Complete required SOP training on time"
+      objective: "Complete required controlled-document training on time"
       metric: "percent_training_requests_closed_by_due_date"
       target: ">=98%"
     - id: "QO-005"

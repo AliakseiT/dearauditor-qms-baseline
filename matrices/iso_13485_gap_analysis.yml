@@ -1,9 +1,9 @@
-version: 2
-analysis_date: "2026-03-02"
+version: 3
+analysis_date: "2026-03-08"
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
-analysis_scope: "ACME GmbH QMS-Lite repository controls and SOP corpus"
+analysis_scope: "ACME GmbH QMS-Lite repository controls and controlled-document corpus"
 summary:
   covered_clause_groups:
     - "4.1-4.2"
@@ -17,20 +17,20 @@ summary:
     - clause: "7.6 monitoring and measuring equipment"
       rationale: "No physical measuring equipment in scope for this software-only baseline; if introduced, product-level SOP/controls are required."
   outstanding_gaps: []
-clause_to_sop_map:
+clause_to_document_map:
   "4.1.4": ["SOP-005", "SOP-009"]
   "4.1.5": ["SOP-010"]
   "4.1.6": ["SOP-006", "SOP-005"]
-  "4.2.1": ["SOP-005"]
-  "4.2.2": ["SOP-005"]
+  "4.2.1": ["QM-001", "SOP-005"]
+  "4.2.2": ["QM-001"]
   "4.2.3": ["SOP-007"]
   "4.2.4": ["SOP-001"]
   "4.2.5": ["SOP-001"]
-  "5.1": ["SOP-005"]
-  "5.3": ["SOP-005"]
-  "5.4.1": ["SOP-005", "SOP-016"]
-  "5.4.2": ["SOP-005"]
-  "5.5": ["SOP-005", "SOP-011"]
+  "5.1": ["QM-001", "SOP-004"]
+  "5.3": ["QM-001", "SOP-004"]
+  "5.4.1": ["QM-001", "SOP-016"]
+  "5.4.2": ["QM-001"]
+  "5.5": ["QM-001", "SOP-005", "SOP-011"]
   "5.6": ["SOP-004"]
   "6.2": ["SOP-011"]
   "6.3": ["SOP-017"]

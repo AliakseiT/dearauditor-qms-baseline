@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R06
-effective_date: 2026-03-07
+revision: R07
+effective_date: 2026-03-08
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -133,7 +133,7 @@ Applies to regulated software products and significant product changes that requ
 | IEC 62304 9 | Defines problem-resolution recording and feedback. |
 
 ## 9. Related Controlled Documents
-- SOP-005 QMS Governance and Quality Manual
+- SOP-005 QMS Governance
 - SOP-007 Medical Device File Control
 - SOP-008 Design and Development Control
 - SOP-009 Change Management
@@ -152,3 +152,4 @@ Applies to regulated software products and significant product changes that requ
 | R04 | 2026-03-07 | Added the explicit final release-decision gate after V&V and residual-risk review, separate from release-readiness approval. |
 | R05 | 2026-03-07 | Clarified that working branches are draft-only baselines and that controlled lifecycle changes may be initiated from PR-stated change context without a mandatory separate issue. |
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the lifecycle signature wording and used technology-neutral language. |
+| R07 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
