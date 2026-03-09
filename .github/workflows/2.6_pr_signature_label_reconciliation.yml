@@ -1,5 +1,5 @@
 name: 2.6 PR Signature Label Reconciliation
-run-name: 2.6 reconcile PR signature labels (PR #${{ github.event.issue.number || inputs.pr_number }})
+run-name: 2.6 Signature Label Reconciliation (PR #${{ github.event.issue.number || inputs.pr_number }})
 
 on:
   issue_comment:
