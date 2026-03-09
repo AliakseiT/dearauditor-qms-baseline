@@ -57,6 +57,17 @@ interface PinSessionState {
   nonce: string;
 }
 
+interface RepostSessionState {
+  type: "repost_session";
+  full_name: string;
+  ctx: SignatureContext;
+  signer_login: string;
+  attestation_id: string;
+  iat: number;
+  exp_state: number;
+  nonce: string;
+}
+
 interface GithubUser {
   login: string;
   id: number;
@@ -101,6 +112,12 @@ interface ErrorPresentation {
   summary: string;
   nextSteps: string[];
   technicalDetails?: string;
+}
+
+interface ExistingAttestation {
+  attestation_id: string;
+  comment_body: string;
+  comment_url: string;
 }
 
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
@@ -152,6 +169,9 @@ export default {
       }
       if (path === "/pin/setup" && request.method === "POST") {
         return await handlePinSetup(request, env);
+      }
+      if (path === "/attestation/repost" && request.method === "POST") {
+        return await handleAttestationRepost(request, env);
       }
       if (path === "/api/pin/status" && request.method === "POST") {
         return await handlePinStatusApi(request, env);
@@ -279,6 +299,16 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
 
   const duplicate = await findExistingAttestation(state.ctx, signerLogin, repoToken, env);
   if (duplicate) {
+    const repostToken = await signToken(buildRepostSessionState(state.ctx, signerLogin, registryFullName, duplicate.attestation_id), env.SIGNATURE_STATE_SECRET);
+    if (apiMode || wantsJson(request)) {
+      return json({
+        ok: true,
+        already_signed: true,
+        attestation_id: duplicate.attestation_id,
+        repost_available: true,
+        repost_session_token: repostToken,
+      });
+    }
     return html(renderSuccessPage({
       repo: state.ctx.repo,
       pr: state.ctx.pr,
@@ -290,7 +320,9 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
       timestamp: new Date().toISOString(),
       attestationId: duplicate.attestation_id,
       alreadySigned: true,
+      statusMessage: "This signature is already on record. If you need to retrigger downstream automation, you can re-post the existing attestation without creating a new signature.",
       pinExpiringSoon: false,
+      repostToken,
       workerVersion: resolveWorkerVersion(env),
     }), 200);
   }
@@ -401,6 +433,9 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
   let attestationId = duplicate?.attestation_id || "";
   let timestamp = new Date().toISOString();
   let alreadySigned = Boolean(duplicate);
+  const repostToken = duplicate
+    ? await signToken(buildRepostSessionState(session.ctx, session.signer_login, session.full_name, duplicate.attestation_id), env.SIGNATURE_STATE_SECRET)
+    : "";
 
   if (!duplicate) {
     const attestation = {
@@ -454,6 +489,8 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
       ok: true,
       already_signed: alreadySigned,
       attestation_id: attestationId,
+      repost_available: alreadySigned,
+      repost_session_token: repostToken || undefined,
       pin_expiring_soon: pinStatusAfter.expiringSoon,
       pin_expires_at_epoch: pinStatusAfter.expiresAtEpoch,
       pin_policy: {
@@ -478,7 +515,11 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
     timestamp,
     attestationId,
     alreadySigned,
+    statusMessage: alreadySigned
+      ? "This signature is already on record. If you need to retrigger downstream automation, you can re-post the existing attestation without creating a new signature."
+      : "",
     pinExpiringSoon: pinStatusAfter.expiringSoon,
+    repostToken: repostToken || undefined,
     workerVersion: resolveWorkerVersion(env),
   }), 200);
 }
@@ -498,6 +539,64 @@ async function handlePinSetup(request: Request, env: Env): Promise<Response> {
     throw new Error("PIN session expired. Restart signing from the PR link.");
   }
   return html(renderPinSetupPage(session, sessionToken, resolveWorkerVersion(env)), 200);
+}
+
+async function handleAttestationRepost(request: Request, env: Env): Promise<Response> {
+  assertBaseConfig(env);
+  const form = await request.formData();
+  const repostToken = String(form.get("repost_token") || "").trim();
+  if (!repostToken) {
+    throw new Error("Missing attestation repost session token.");
+  }
+
+  const session = (await verifyToken(repostToken, env.SIGNATURE_STATE_SECRET)) as RepostSessionState;
+  if (session.type !== "repost_session") {
+    throw new Error("Invalid attestation repost session token.");
+  }
+  if (session.exp_state < nowEpoch()) {
+    throw new Error("Attestation repost session expired. Restart from the PR link.");
+  }
+
+  const repoToken = await resolveRepoAccessToken(session.ctx.repo, env);
+  const requestMeta = await resolveLatestRequestComment(session.ctx.repo, Number.parseInt(session.ctx.pr, 10), repoToken, env);
+  validateRequestAgainstContext(requestMeta, session.ctx);
+
+  const existing = await findExistingAttestation(session.ctx, session.signer_login, repoToken, env);
+  if (!existing) {
+    throw new Error("Existing attestation not found. Restart signing from the PR link.");
+  }
+  if (existing.attestation_id !== session.attestation_id) {
+    throw new Error("Attestation repost target changed. Restart signing from the PR link.");
+  }
+
+  await githubPost(
+    `/repos/${session.ctx.repo}/issues/${session.ctx.pr}/comments`,
+    repoToken,
+    { body: existing.comment_body },
+    env
+  );
+
+  const freshRepostToken = await signToken(
+    buildRepostSessionState(session.ctx, session.signer_login, session.full_name, existing.attestation_id),
+    env.SIGNATURE_STATE_SECRET
+  );
+
+  return html(renderSuccessPage({
+    repo: session.ctx.repo,
+    pr: session.ctx.pr,
+    hash: session.ctx.hash,
+    meaning: session.ctx.meaning,
+    role: session.ctx.role,
+    signer: session.signer_login,
+    signerFullName: session.full_name,
+    timestamp: new Date().toISOString(),
+    attestationId: existing.attestation_id,
+    alreadySigned: true,
+    statusMessage: "The existing attestation was re-posted to retrigger downstream automation. No new signature was created.",
+    pinExpiringSoon: false,
+    repostToken: freshRepostToken,
+    workerVersion: resolveWorkerVersion(env),
+  }), 200);
 }
 
 async function handlePinStatusApi(request: Request, env: Env): Promise<Response> {
@@ -639,13 +738,31 @@ function canonicalString(map: Record<string, string>): string {
     .join("&");
 }
 
-async function signToken(payload: OAuthState | PinSessionState, secret: string): Promise<string> {
+function buildRepostSessionState(
+  ctx: SignatureContext,
+  signerLogin: string,
+  fullName: string,
+  attestationId: string
+): RepostSessionState {
+  return {
+    type: "repost_session",
+    full_name: fullName,
+    ctx,
+    signer_login: signerLogin,
+    attestation_id: attestationId,
+    iat: nowEpoch(),
+    exp_state: nowEpoch() + 10 * 60,
+    nonce: randomHex(12),
+  };
+}
+
+async function signToken(payload: OAuthState | PinSessionState | RepostSessionState, secret: string): Promise<string> {
   const encoded = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
   const signature = await hmacHexAsync(encoded, secret);
   return `${encoded}.${signature}`;
 }
 
-async function verifyToken(token: string, secret: string): Promise<OAuthState | PinSessionState> {
+async function verifyToken(token: string, secret: string): Promise<OAuthState | PinSessionState | RepostSessionState> {
   const parts = token.split(".");
   if (parts.length !== 2) throw new Error("Invalid token.");
   const [encoded, sig] = parts;
@@ -659,9 +776,9 @@ async function verifyToken(token: string, secret: string): Promise<OAuthState | 
   } catch {
     throw new Error("Invalid token encoding.");
   }
-  let parsed: OAuthState | PinSessionState;
+  let parsed: OAuthState | PinSessionState | RepostSessionState;
   try {
-    parsed = JSON.parse(new TextDecoder().decode(bytes)) as OAuthState | PinSessionState;
+    parsed = JSON.parse(new TextDecoder().decode(bytes)) as OAuthState | PinSessionState | RepostSessionState;
   } catch {
     throw new Error("Invalid token payload.");
   }
@@ -894,8 +1011,8 @@ async function readSignerProfile(repo: string, login: string, token: string, env
   }
 }
 
-async function findExistingAttestation(ctx: SignatureContext, signer: string, token: string, env: Env): Promise<{ attestation_id: string } | null> {
-  const comments = await githubGet<Array<{ body?: string }>>(
+async function findExistingAttestation(ctx: SignatureContext, signer: string, token: string, env: Env): Promise<ExistingAttestation | null> {
+  const comments = await githubGet<Array<{ body?: string; html_url?: string }>>(
     `/repos/${ctx.repo}/issues/${ctx.pr}/comments?per_page=100`,
     token,
     env
@@ -915,7 +1032,11 @@ async function findExistingAttestation(ctx: SignatureContext, signer: string, to
         String(parsed.signer_role || "").toLowerCase() === ctx.role.toLowerCase() &&
         String(parsed.user_id || "").toLowerCase() === signer.toLowerCase()
       ) {
-        return { attestation_id: String(parsed.attestation_id || "") };
+        return {
+          attestation_id: String(parsed.attestation_id || ""),
+          comment_body: body,
+          comment_url: String(c.html_url || ""),
+        };
       }
     } catch {
       continue;
@@ -2147,12 +2268,24 @@ function renderSuccessPage(input: {
   timestamp: string;
   attestationId: string;
   alreadySigned: boolean;
+  statusMessage?: string;
   pinExpiringSoon: boolean;
+  repostToken?: string;
   workerVersion: string;
 }): string {
   const prUrl = `https://github.com/${input.repo}/pull/${input.pr}`;
   const pinWarning = input.pinExpiringSoon
     ? `<p style="background:#fff4e5;border:1px solid #ffd39b;border-radius:10px;padding:10px;color:#7a4a00;">Your signature PIN expires in less than 7 days. Renew it during your next signature flow.</p>`
+    : "";
+  const statusMessage = input.statusMessage
+    ? `<p style="background:#eef5ff;border:1px solid #c9daf8;border-radius:10px;padding:10px;color:#21375f;">${escapeHtml(input.statusMessage)}</p>`
+    : "";
+  const repostAction = input.alreadySigned && input.repostToken
+    ? `<form action="/attestation/repost" method="post" data-submit-guard="1">
+        <input type="hidden" name="repost_token" value="${escapeHtml(input.repostToken)}" />
+        <button class="btn" type="submit" data-processing-text="Re-posting...">Re-post Existing Attestation</button>
+      </form>
+      <p style="margin-top:10px;color:#5d6f92;font-size:13px;">Use this only to retrigger downstream automation from the already-recorded signature. It does not create a new signature.</p>`
     : "";
 
   return `<!doctype html>
@@ -2169,6 +2302,8 @@ function renderSuccessPage(input: {
     .body { padding: 16px 20px; }
     .k { color: #4d5f84; font-size: 13px; margin-top: 8px; }
     .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; background: #f2f6ff; border: 1px solid #d6deef; border-radius: 8px; padding: 8px; }
+    .btn { margin-top: 14px; border: none; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-weight: 650; background: #0f3d7a; color: #fff; cursor: pointer; }
+    .btn[disabled] { opacity: .68; cursor: not-allowed; }
     .version { margin-top: 14px; color: #5d6f92; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     a { color: #1b4ea4; }
   </style>
@@ -2181,17 +2316,61 @@ function renderSuccessPage(input: {
       </div>
       <div class="body">
         ${pinWarning}
+        ${statusMessage}
         <div class="k">Repository / PR</div><div class="v">${escapeHtml(input.repo)} #${escapeHtml(input.pr)}</div>
         <div class="k">Signer</div><div class="v">${escapeHtml(input.signerFullName)} (@${escapeHtml(input.signer)})</div>
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(input.role)} / ${escapeHtml(input.meaning)}</div>
         <div class="k">Target Hash</div><div class="v">${escapeHtml(input.hash)}</div>
         <div class="k">Timestamp</div><div class="v">${escapeHtml(input.timestamp)}</div>
         <div class="k">Attestation ID</div><div class="v">${escapeHtml(input.attestationId || "n/a")}</div>
+        ${repostAction}
         <p><a href="${escapeHtml(prUrl)}" rel="noreferrer">Open PR</a></p>
         <div class="version">Worker version: ${escapeHtml(input.workerVersion)}</div>
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var UNLOCK_MS = 12000;
+      var forms = document.querySelectorAll('form[data-submit-guard]');
+      if (!forms.length) return;
+      forms.forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          var target = event.currentTarget;
+          if (!(target instanceof HTMLFormElement)) return;
+          if (target.dataset.submitting === '1') {
+            event.preventDefault();
+            return;
+          }
+          target.dataset.submitting = '1';
+          var submit = target.querySelector('button[type="submit"], input[type="submit"]');
+          if (submit instanceof HTMLButtonElement) {
+            submit.dataset.originalText = submit.textContent || '';
+            submit.textContent = submit.dataset.processingText || 'Processing...';
+            submit.disabled = true;
+          } else if (submit instanceof HTMLInputElement) {
+            submit.dataset.originalValue = submit.value || '';
+            submit.value = submit.dataset.processingText || 'Processing...';
+            submit.disabled = true;
+          }
+          window.setTimeout(function () {
+            delete target.dataset.submitting;
+            if (submit instanceof HTMLButtonElement) {
+              submit.disabled = false;
+              if (submit.dataset.originalText !== undefined) {
+                submit.textContent = submit.dataset.originalText;
+              }
+            } else if (submit instanceof HTMLInputElement) {
+              submit.disabled = false;
+              if (submit.dataset.originalValue !== undefined) {
+                submit.value = submit.dataset.originalValue;
+              }
+            }
+          }, UNLOCK_MS);
+        });
+      });
+    })();
+  </script>
 </body>
 </html>`;
 }
