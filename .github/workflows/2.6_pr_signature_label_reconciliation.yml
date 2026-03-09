@@ -20,7 +20,21 @@ concurrency:
 
 jobs:
   reconcile_labels:
-    if: github.event_name == 'workflow_dispatch' || github.event.issue.pull_request != null
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.issue.pull_request != null &&
+        (
+          contains(github.event.comment.body, '<!-- signature-native-signature-request -->') ||
+          contains(github.event.comment.body, '<!-- part11-native-signature-request -->') ||
+          contains(github.event.comment.body, '<!-- signature-request -->') ||
+          contains(github.event.comment.body, '<!-- part11-signature-request -->') ||
+          contains(github.event.comment.body, '<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+          contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+          contains(github.event.comment.body, '<!-- signature-native-attestation -->') ||
+          contains(github.event.comment.body, '<!-- part11-native-attestation -->')
+        )
+      )
     runs-on: self-hosted
     steps:
       - name: Create GitHub App token for label reconciliation
