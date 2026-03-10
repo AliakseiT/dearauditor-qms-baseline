@@ -1811,7 +1811,6 @@ function renderSignatureBadgeSvg(): string {
   <circle cx="256" cy="256" r="226" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/>
   <circle cx="256" cy="256" r="186" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
   <path d="M122 152h268" fill="none" stroke="url(#badgeAccent)" stroke-width="18" stroke-linecap="round"/>
-  <path d="M154 352l80-95" fill="none" stroke="#f2c86a" stroke-width="18" stroke-linecap="round"/>
   <rect x="150" y="174" width="212" height="122" rx="34" fill="#f6efe2"/>
   <path d="M188 206h136" fill="none" stroke="#d9d1c3" stroke-width="10" stroke-linecap="round" opacity=".7"/>
   <circle cx="186" cy="238" r="10" fill="#203040"/>
