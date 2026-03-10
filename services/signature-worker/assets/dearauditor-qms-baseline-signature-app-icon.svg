@@ -3,17 +3,18 @@
   <desc id="desc">Square upload icon for the QMS SIGN OAuth app by DearAuditor.</desc>
   <rect x="0" y="0" width="1024" height="1024" fill="#212933" />
 
-  <rect x="252" y="280" width="520" height="308" rx="96" fill="#F1E9DB" />
-  <rect x="348" y="356" width="328" height="22" rx="11" fill="#D8D0C1" />
-  <circle cx="364" cy="438" r="28" fill="#1E2733" />
-  <circle cx="428" cy="438" r="28" fill="#1E2733" />
-  <circle cx="492" cy="438" r="28" fill="#1E2733" />
-  <circle cx="556" cy="438" r="28" fill="#1E2733" />
-  <circle cx="620" cy="438" r="28" fill="#1E2733" />
-  <circle cx="684" cy="438" r="28" fill="#86D0DE" />
-  <rect x="408" y="494" width="208" height="30" rx="15" fill="#EAC15C" />
+  <rect x="212" y="236" width="600" height="360" rx="112" fill="#F1E9DB" />
+  <rect x="328" y="328" width="368" height="26" rx="13" fill="#D8D0C1" />
+  <circle cx="352" cy="424" r="34" fill="#1E2733" />
+  <circle cx="432" cy="424" r="34" fill="#1E2733" />
+  <circle cx="512" cy="424" r="34" fill="#1E2733" />
+  <circle cx="592" cy="424" r="34" fill="#1E2733" />
+  <circle cx="672" cy="424" r="34" fill="#1E2733" />
+  <circle cx="752" cy="424" r="34" fill="#86D0DE" />
+  <rect x="392" y="502" width="240" height="36" rx="18" fill="#EAC15C" />
 
   <g fill="#F7FBFF" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="512" y="732" font-size="112" font-weight="800" letter-spacing="10">SIGN</text>
+    <text x="512" y="760" font-size="120" font-weight="800" letter-spacing="10">SIGN</text>
+    <text x="512" y="834" font-size="48" font-weight="700" letter-spacing="3" opacity=".84">by DearAuditor</text>
   </g>
 </svg>
