@@ -12,7 +12,16 @@ jobs:
   validate_description:
     runs-on: self-hosted
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Check PR body sections
+        id: structure
         uses: actions/github-script@v7
         with:
           script: |
@@ -39,9 +48,32 @@ jobs:
             if (!/^##\s+(Validation|Testing)\b/mi.test(body)) {
               errors.push('Missing "## Validation" or "## Testing" section. Please explain how the change was verified.');
             }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
             
             if (errors.length > 0) {
               core.setFailed(`PR description does not meet QMS Lite structural requirements:\n- ${errors.join('\n- ')}`);
             } else {
               core.info('PR description structure is compliant.');
             }
+
+            core.setOutput('author_login', pr.user?.login || '');
+            core.setOutput('pr_body_base64', Buffer.from(body, 'utf8').toString('base64'));
+            core.setOutput('changed_paths_json', JSON.stringify(files.map((f) => String(f.filename || ''))));
+
+      - name: Validate signer-role policy
+        run: |
+          python3 scripts/resolve_signature_policy.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --author "${AUTHOR_LOGIN}" \
+            --body-base64 "${PR_BODY_BASE64}" \
+            --paths-json "${CHANGED_PATHS_JSON}"
+        env:
+          AUTHOR_LOGIN: ${{ steps.structure.outputs.author_login }}
+          PR_BODY_BASE64: ${{ steps.structure.outputs.pr_body_base64 }}
+          CHANGED_PATHS_JSON: ${{ steps.structure.outputs.changed_paths_json }}

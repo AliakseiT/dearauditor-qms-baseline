@@ -30,6 +30,7 @@ jobs:
         with:
           script: |
             const crypto = require('crypto');
+            const bodyBase64 = (text) => Buffer.from(String(text || ''), 'utf8').toString('base64');
             const inputPrNumber = Number.parseInt((process.env.WORKFLOW_INPUT_PR_NUMBER || '').trim(), 10);
             const eventPr = context.payload.pull_request;
             const prNumber = Number.isInteger(inputPrNumber) && inputPrNumber > 0
@@ -54,12 +55,6 @@ jobs:
             let meaning = meaningMatch ? meaningMatch[1].trim() : '';
             if (!meaning || meaning.startsWith('[')) {
               meaning = 'Approved Quality Record';
-            }
-
-            const rolesMatch = body.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
-            let roles = rolesMatch ? rolesMatch[1].trim() : '';
-            if (!roles || roles.startsWith('[')) {
-              roles = 'Quality Assurance Lead';
             }
 
             const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
@@ -174,7 +169,6 @@ jobs:
 
             core.setOutput('pr_number', String(prNumber));
             core.setOutput('meaning_of_signature', meaning);
-            core.setOutput('signatory_roles', roles);
             core.setOutput('required_signatures', String(requiredSignaturesForRequest));
             core.setOutput('required_reviewer_signatures', String(requiredReviewerSignatures));
             core.setOutput('target_hash', targetHash);
@@ -182,8 +176,32 @@ jobs:
             core.setOutput('author_login', authorLogin);
             core.setOutput('approved_signers_csv', finalSigners.join(','));
             core.setOutput('coapproval_reasons', coapprovalReasons.join('; '));
+            core.setOutput('pr_body_base64', bodyBase64(body));
+            core.setOutput('changed_paths_json', JSON.stringify(paths));
         env:
           WORKFLOW_INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number || '' }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Resolve signer roles from PR content
+        id: roles
+        run: |
+          python3 scripts/resolve_signature_policy.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --author "${AUTHOR_LOGIN}" \
+            --body-base64 "${PR_BODY_BASE64}" \
+            --paths-json "${CHANGED_PATHS_JSON}" \
+            --github-output "$GITHUB_OUTPUT"
+        env:
+          AUTHOR_LOGIN: ${{ steps.parse.outputs.author_login }}
+          PR_BODY_BASE64: ${{ steps.parse.outputs.pr_body_base64 }}
+          CHANGED_PATHS_JSON: ${{ steps.parse.outputs.changed_paths_json }}
 
       - name: Create GitHub App token for signature comments
         id: app_token
@@ -311,7 +329,7 @@ jobs:
         env:
           PR_NUMBER: ${{ steps.parse.outputs.pr_number }}
           MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
-          ROLES: ${{ steps.parse.outputs.signatory_roles }}
+          ROLES: ${{ steps.roles.outputs.signatory_roles }}
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
           TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
