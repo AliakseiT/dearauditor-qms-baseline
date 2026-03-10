@@ -71,7 +71,10 @@ Required GitHub App repository permissions:
 - Issues: `Read and write`
 - Pull requests: `Read-only`
 - Contents: `Read-only`
+- Workflows: `Read and write`
 - Metadata: `Read-only`
+
+`Workflows: Read and write` is needed because the same GitHub App token is also used by repository automation to merge PRs, including PRs that may modify `.github/workflows/`.
 
 ## Local Development
 

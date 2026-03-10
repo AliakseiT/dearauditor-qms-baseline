@@ -34,7 +34,7 @@ For open-source distribution, this repository acts as the public upstream baseli
 | GitHub Actions | Policy evaluation, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
 | GitHub Releases | Immutable publication surface for quality records and formal QMS release packages. |
 | Cloudflare signature worker | External signer UI and OAuth/PIN ceremony for the primary electronic-signature path. |
-| GitHub App token | Required for posting signature-attestation comments back to PRs. |
+| GitHub App token | Required for signature-attestation comments, PR automation, and merges, including PRs that modify workflow files. |
 | Signer registry (`matrices/signer_registry.json`) | Source for resolved signatory legal names and job titles in attestation output. |
 
 ## 5. Primary Data Flows

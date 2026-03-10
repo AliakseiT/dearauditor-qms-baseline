@@ -47,7 +47,10 @@ Use a GitHub App installation for repository access. Minimum repository permissi
 - Issues: `Read and write`
 - Pull requests: `Read-only`
 - Contents: `Read-only`
+- Workflows: `Read and write`
 - Metadata: `Read-only`
+
+The workflow permission is required because the repository uses the GitHub App token for automation that may merge PRs touching `.github/workflows/`.
 
 ## 4. qms-lite Repository Settings
 
