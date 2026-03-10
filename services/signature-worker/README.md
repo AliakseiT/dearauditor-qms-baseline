@@ -41,7 +41,6 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - `QMS_BOT_APP_INSTALLATION_ID` (optional; the worker can resolve the installation automatically when omitted)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER` (server-side pepper for PIN KDF)
-- `SIGNATURE_LINK_SECRET` (optional; only needed to keep legacy signed links working)
 
 ### KV Binding
 
@@ -106,7 +105,7 @@ What it does:
 
 - Upserts repo variable `SIGNATURE_UI_BASE_URL`.
 - Sets repo secrets `QMS_BOT_APP_ID` and `QMS_BOT_APP_PRIVATE_KEY`, plus Cloudflare deploy secrets when values are present.
-- Sets worker secrets for OAuth, GitHub App access, signing state, and the optional legacy link secret.
+- Sets worker secrets for OAuth, GitHub App access, and signing state.
 - Writes worker runtime values into `wrangler.toml` and `.dev.vars`.
 - Writes `.dev.vars` for local `wrangler dev`.
 - Validates that KV namespace IDs in `wrangler.toml` are not placeholders before deploy.

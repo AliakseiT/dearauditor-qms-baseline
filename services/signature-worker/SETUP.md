@@ -25,7 +25,6 @@ Worker secrets:
 - `QMS_BOT_APP_INSTALLATION_ID` (optional)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER`
-- `SIGNATURE_LINK_SECRET` (optional; only for legacy signed-link compatibility)
 
 KV binding in `wrangler.toml`:
 
@@ -60,7 +59,6 @@ Repository secrets:
 
 - `QMS_BOT_APP_ID`
 - `QMS_BOT_APP_PRIVATE_KEY`
-- `SIGNATURE_LINK_SECRET` (optional; only if you need legacy signed-link compatibility)
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
