@@ -23,7 +23,7 @@ env:
 jobs:
   sign_and_attest:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for signature processing
         id: app_token

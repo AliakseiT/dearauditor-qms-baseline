@@ -34,7 +34,7 @@ jobs:
     concurrency:
       group: signature-label-reconcile-${{ github.event.issue.number || inputs.pr_number }}
       cancel-in-progress: true
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for label reconciliation
         id: app_token
