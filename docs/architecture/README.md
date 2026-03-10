@@ -147,6 +147,7 @@ flowchart LR
 |---|---|---|---|
 | `3.1_release_training_diff.yml` | `push` on QMS release tag, `workflow_dispatch` | Compares required controlled-document revisions to the current training status register and opens one consolidated training issue per user. | Active |
 | `3.2_training_issue_signature_flow.yml` | `issues`, `workflow_dispatch` | Manages signature collection and closure flow for consolidated training issues. | Active |
+| `3.3_refresh_training_status_pr.yml` | `workflow_dispatch` | Exports training issue evidence, rebuilds the generated training status artifacts, and opens or updates a PR when those generated files change. | Active |
 
 ### 7.4 Platform and Maintenance Operations
 | Workflow | Primary trigger | Purpose | Status |
