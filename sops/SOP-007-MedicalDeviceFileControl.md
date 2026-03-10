@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R04
-effective_date: 2026-03-07
+revision: R05
+effective_date: 2026-03-10
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -82,3 +82,4 @@ Each product MDF must include at minimum:
 | R02 | 2026-03-07 | Normalized responsibility labels to the controlled small-team role model and clarified engineering ownership of MDF technical traceability. |
 | R03 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
 | R04 | 2026-03-07 | Removed overly specific signature-regulation terminology from the MDF approval evidence wording. |
+| R05 | 2026-03-10 | Updated the upstream baseline repository naming reference used for product MDF record separation guidance. |

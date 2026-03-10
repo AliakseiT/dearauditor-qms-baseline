@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R00
-effective_date: 2026-03-08
+revision: R01
+effective_date: 2026-03-10
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -137,3 +137,4 @@ QMS tooling and validation baselines are maintained in:
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-08 | Initial release split from SOP-005 so the QMS intent, scope, policy, objectives, and process structure are available as a standalone Quality Manual. |
+| R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |

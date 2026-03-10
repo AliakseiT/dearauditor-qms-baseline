@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R13
-effective_date: 2026-03-08
+revision: R14
+effective_date: 2026-03-10
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -142,3 +142,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R11 | 2026-03-07 | Clarified that only `main` and approved immutable releases are controlled baselines, and that the GitHub lifecycle may be initiated directly from PR-stated change context when no separate issue is used. |
 | R12 | 2026-03-07 | Removed overly specific signature-regulation terminology from the QMS workflow wording and used technology-neutral signature language. |
 | R13 | 2026-03-08 | Split the reader-facing Quality Manual into `QM-001` and limited `SOP-005` to governance, ownership, cadence, and control interfaces. |
+| R14 | 2026-03-10 | Updated DearAuditor Open QMS Baseline naming, licensing, and open-source governance references. |

@@ -12,7 +12,7 @@
   <path d="M400 536c42 38 182 38 224 0" fill="none" stroke="#EAC15C" stroke-width="28" stroke-linecap="round" />
 
   <g fill="#F7FBFF" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="512" y="760" font-size="132" font-weight="800" letter-spacing="12">BOT</text>
+    <text x="512" y="728" font-size="118" font-weight="800" letter-spacing="11">QMS BOT</text>
     <text x="512" y="834" font-size="48" font-weight="700" letter-spacing="3" opacity=".84">by DearAuditor</text>
   </g>
 </svg>

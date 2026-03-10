@@ -1,8 +1,8 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R07
-effective_date: 2026-03-07
+revision: R08
+effective_date: 2026-03-10
 status: Published
 owner_role: engineering_lead
 related_sops:
@@ -105,3 +105,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 | R05 | 2026-03-07 | Added the explicit post-V&V final release-decision gate with group approval separate from release-readiness. |
 | R06 | 2026-03-07 | Clarified that release/hotfix changes may be initiated directly from PR-stated change context and that branch-only planning remains uncontrolled until merged approval. |
 | R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the release signature wording and used technology-neutral language. |
+| R08 | 2026-03-10 | Updated upstream template-baseline naming references for product release-baseline records. |

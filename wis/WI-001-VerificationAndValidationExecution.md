@@ -1,8 +1,8 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R07
-effective_date: 2026-03-07
+revision: R08
+effective_date: 2026-03-10
 status: Published
 owner_role: engineering_lead
 related_sops:
@@ -99,3 +99,4 @@ Applies to software verification, software validation, and usability-validation 
 | R05 | 2026-03-07 | Explicitly routed the approved V&V report into the separate final release-decision gate before shipment authorization. |
 | R06 | 2026-03-07 | Clarified that branch-only plan and test-record drafts remain uncontrolled until the approving PR is merged. |
 | R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the V&V signature wording and used technology-neutral language. |
+| R08 | 2026-03-10 | Updated upstream template-baseline naming references for product V&V execution records. |

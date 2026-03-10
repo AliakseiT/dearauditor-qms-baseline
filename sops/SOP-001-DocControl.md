@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R10
-effective_date: 2026-03-08
+revision: R11
+effective_date: 2026-03-10
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -129,3 +129,4 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 | R08 | 2026-03-07 | Clarified that controlled state exists only after merge to `main` or required immutable publication, and that PRs may carry their own controlled change context without a mandatory linked issue. |
 | R09 | 2026-03-07 | Removed overly specific signature-regulation terminology from the controlled signature wording and kept the SOP language technology-neutral. |
 | R10 | 2026-03-08 | Added `QM` as a first-class controlled document class and generalized the published index and training-sync rules from SOP-only to controlled-document scope. |
+| R11 | 2026-03-10 | Updated upstream baseline naming, licensing, and open-source publication references used in document control. |
