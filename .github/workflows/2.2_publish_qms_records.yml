@@ -17,7 +17,7 @@ permissions:
 jobs:
   publish_records:
     if: github.event.pull_request.merged == true
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       TARGET_RECORD_REPO: ${{ vars.QMS_RECORD_RELEASE_REPO || github.repository }}
       TARGET_RECORD_BRANCH: main

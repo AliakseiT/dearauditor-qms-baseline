@@ -12,7 +12,7 @@ permissions:
 jobs:
   auto_merge:
     if: github.event.pull_request.draft == false
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for PR merge/comment
         id: app_token
