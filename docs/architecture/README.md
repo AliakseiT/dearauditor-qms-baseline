@@ -27,7 +27,7 @@ For open-source distribution, this repository acts as the public upstream baseli
 ## 4. Core Components
 | Component | Role in the architecture |
 |---|---|
-| GitHub repository (currently `AliakseiT/qms-lite`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
+| GitHub repository (`AliakseiT/dearauditor-qms-baseline`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
 | `distribution-map.json` + `tools/` | Defines which paths remain upstream-owned, which files are bootstrapped as company-owned, and which repo settings must exist in downstream adopters. |
 | GitHub Issues | Planning and intake layer for CAPA, audit, risk, training, V&V, release, complaint, PMS, and change activities. |
 | GitHub Pull Requests | Controlled review, approval, and merge boundary for QMS document and record changes. |

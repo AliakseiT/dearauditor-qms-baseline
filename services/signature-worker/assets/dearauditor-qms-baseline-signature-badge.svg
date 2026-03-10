@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">DearAuditor Open QMS Baseline Signature badge</title>
+  <desc id="desc">Full-bleed GitHub-circle badge for the DearAuditor Open QMS Baseline Signature OAuth app.</desc>
+  <defs>
+    <linearGradient id="badgeBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d2432"/>
+      <stop offset="55%" stop-color="#15384b"/>
+      <stop offset="100%" stop-color="#0a1822"/>
+    </linearGradient>
+    <linearGradient id="badgeAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f2c86a"/>
+      <stop offset="100%" stop-color="#86d5de"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="256" fill="url(#badgeBg)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/>
+  <circle cx="256" cy="256" r="182" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+  <path d="M116 356c56-73 136-118 236-131" fill="none" stroke="url(#badgeAccent)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M326 155l44 44-92 92h-44z" fill="#f6efe2"/>
+  <path d="M322 159l16 48 48-16z" fill="#86d5de"/>
+
+  <g fill="#f6fbff" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="234" y="248" font-size="150" font-weight="800" letter-spacing="-10">DA</text>
+    <text x="256" y="340" font-size="54" font-weight="800" letter-spacing="7">SIGN</text>
+  </g>
+</svg>

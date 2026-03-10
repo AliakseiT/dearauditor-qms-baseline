@@ -15,7 +15,7 @@ related_issue: "#3"
 Define structure, ownership, and control of product-specific medical device files (MDF) for ACME software products.
 
 ## 2. Scope
-Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets. Product MDF records are maintained in designated product/study repositories, not in `qms-lite`.
+Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets. Product MDF records are maintained in designated product/study repositories, not in `dearauditor-qms-baseline`.
 
 ## 3. Inputs
 - Product intended use and claims

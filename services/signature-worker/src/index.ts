@@ -127,15 +127,15 @@ const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const PIN_KDF_ITERATIONS = 100000;
 const PIN_SALT_BYTES = 16;
 const DEFAULT_AUTOMATION_BOT_LOGINS = [
-  "qms-lite-bot",
-  "qms-lite-bot[bot]",
-  "qms-lite-sign",
-  "qms-lite-sign[bot]",
+  "dearauditor-qms-baseline-bot",
+  "dearauditor-qms-baseline-bot[bot]",
+  "dearauditor-qms-baseline-sign",
+  "dearauditor-qms-baseline-sign[bot]",
   "github-actions[bot]",
 ];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
-const PROJECT_REPO_URL = "https://github.com/AliakseiT/qms-lite";
+const PROJECT_REPO_URL = "https://github.com/AliakseiT/dearauditor-qms-baseline";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
 
 export default {
@@ -1231,7 +1231,7 @@ function githubHeaders(token: string): Record<string, string> {
   return {
     authorization: `Bearer ${token}`,
     accept: "application/vnd.github+json",
-    "user-agent": "qms-lite-bot-signature-service",
+    "user-agent": "dearauditor-qms-baseline-signature-service",
     "x-github-api-version": "2022-11-28",
   };
 }
@@ -1796,16 +1796,27 @@ function renderLandingPage(baseUrl: string, workerVersion: string): string {
 
 function renderSignatureBadgeSvg(): string {
   return `<svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DearAuditor Open QMS Baseline Signature logo">
-  <rect width="512" height="512" rx="116" fill="#edf3f6"/>
-  <circle cx="256" cy="256" r="182" fill="#143046"/>
-  <circle cx="256" cy="256" r="164" fill="#f5fbff"/>
-  <rect x="132" y="138" width="248" height="22" rx="11" fill="#69b8db"/>
-  <g fill="#143246" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="256" y="228" font-size="40" font-weight="800" letter-spacing="2">DEARAUDITOR</text>
-    <text x="256" y="316" font-size="92" font-weight="900" letter-spacing="7">SIGN</text>
+  <defs>
+    <linearGradient id="badgeBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d2432"/>
+      <stop offset="55%" stop-color="#15384b"/>
+      <stop offset="100%" stop-color="#0a1822"/>
+    </linearGradient>
+    <linearGradient id="badgeAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f2c86a"/>
+      <stop offset="100%" stop-color="#86d5de"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="256" fill="url(#badgeBg)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/>
+  <circle cx="256" cy="256" r="182" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+  <path d="M116 356c56-73 136-118 236-131" fill="none" stroke="url(#badgeAccent)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M326 155l44 44-92 92h-44z" fill="#f6efe2"/>
+  <path d="M322 159l16 48 48-16z" fill="#86d5de"/>
+  <g fill="#f6fbff" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="234" y="248" font-size="150" font-weight="800" letter-spacing="-10">DA</text>
+    <text x="256" y="340" font-size="54" font-weight="800" letter-spacing="7">SIGN</text>
   </g>
-  <path d="M318 350l34-34 22 22-34 34h-22z" fill="#143246"/>
-  <path d="M316 352l8 24 24-8z" fill="#7dd4de"/>
 </svg>`;
 }
 

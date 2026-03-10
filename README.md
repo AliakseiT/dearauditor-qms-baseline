@@ -5,7 +5,7 @@ DearAuditor Open QMS Baseline serves two purposes at the same time:
 - the published front page and controlled index for the fictional `ACME GmbH` quality management system
 - the open-source base template for remote-first, engineering-friendly medical device companies building a GitHub-native QMS
 
-The current GitHub repository slug remains `qms-lite` for now, so repository links in this documentation still point to `AliakseiT/qms-lite`.
+Repository links in this documentation assume the finalized GitHub slug `AliakseiT/dearauditor-qms-baseline`.
 
 If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the release landing page for that published QMS baseline.
 
@@ -17,7 +17,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 | Start with the top-level QMS explanation | [Quality Manual](#quality-manual) |
 | Jump straight to a SOP | [SOP library by topic](#sop-library-by-topic) |
 | Open the work instructions | [Work instructions](#work-instructions) |
-| See my training work as a logged-in GitHub user | [My open training issues](https://github.com/AliakseiT/qms-lite/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) |
+| See my training work as a logged-in GitHub user | [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) |
 | See role-based training requirements | [Training matrix](matrices/training_matrix.yml) |
 | See recorded training status | [User training log](records/training/user_training_log.yml) |
 | Browse record families and templates | [Records index](records/README.md) |
@@ -25,7 +25,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 | Ask about adoption, support, or pilot use | [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch) |
 | Understand workflows, automations, and trust boundaries | [System architecture](docs/architecture/README.md) |
 | Open the end-to-end automation diagram | [Workflow automation map](docs/architecture/README.md#6-automation-map) |
-| Check published releases in GitHub | [Releases](https://github.com/AliakseiT/qms-lite/releases) |
+| Check published releases in GitHub | [Releases](https://github.com/AliakseiT/dearauditor-qms-baseline/releases) |
 
 ## Publication Status
 
@@ -66,7 +66,7 @@ Contact for adoption, pilot use, or support: [aliaksei@dearauditor.ch](mailto:al
 
 GitHub README pages cannot personalize content by the viewer's login, so the GitHub-native training entry points are:
 
-- [My open training issues](https://github.com/AliakseiT/qms-lite/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) for the logged-in user
+- [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) for the logged-in user
 - [Training matrix](matrices/training_matrix.yml) for GitHub user-to-role mappings plus required versus awareness training scope
 - [User training log](records/training/user_training_log.yml) for recorded completion state
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) for the governing procedure

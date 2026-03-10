@@ -144,7 +144,7 @@ jobs:
 
             const marker = '<!-- signature-auto-reviewers -->';
             const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['qms-lite-bot', 'qms-lite-sign', 'github-actions[bot]']);
+            const automationBotLogins = new Set(['dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
 
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
