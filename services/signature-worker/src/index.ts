@@ -137,6 +137,7 @@ const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
 const PROJECT_REPO_URL = "https://github.com/AliakseiT/dearauditor-qms-baseline";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
+const githubCanonicalRepoCache = new Map<string, string>();
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -889,7 +890,7 @@ function parseHiddenRequestContext(body: string): {
 }
 
 async function resolveCurrentContextForSigner(repo: string, pr: string, signer: string, env: Env): Promise<SignatureContext> {
-  const normalizedRepo = repo.trim();
+  const normalizedRepo = await resolveCanonicalRepo(repo.trim(), env);
   const normalizedPr = pr.trim();
   const normalizedSigner = signer.trim().toLowerCase();
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedRepo)) throw new Error("Invalid repository.");
@@ -988,12 +989,13 @@ function resolveBotInstallationId(env: Env): string {
 }
 
 async function resolveRepoAccessToken(repo: string, env: Env): Promise<string> {
+  const canonicalRepo = await resolveCanonicalRepo(repo, env);
   const appId = resolveBotAppId(env);
   const privateKey = resolveBotAppPrivateKey(env);
   if (!appId || !privateKey) {
     throw new Error("QMS_BOT_APP_ID and QMS_BOT_APP_PRIVATE_KEY must both be configured.");
   }
-  return mintGithubInstallationToken(repo, appId, privateKey, resolveBotInstallationId(env), env);
+  return mintGithubInstallationToken(canonicalRepo, appId, privateKey, resolveBotInstallationId(env), env);
 }
 
 async function mintGithubInstallationToken(
@@ -1038,6 +1040,41 @@ async function resolveInstallationId(repo: string, appId: string, privateKeyPem:
     throw new Error(`Unable to resolve GitHub App installation for ${repo}.`);
   }
   return installationId;
+}
+
+async function resolveCanonicalRepo(repo: string, env: Env): Promise<string> {
+  const normalizedRepo = repo.trim();
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedRepo)) {
+    throw new Error("Invalid repository.");
+  }
+
+  const cached = githubCanonicalRepoCache.get(normalizedRepo.toLowerCase());
+  if (cached) {
+    return cached;
+  }
+
+  const appId = resolveBotAppId(env);
+  const privateKey = resolveBotAppPrivateKey(env);
+  if (!appId || !privateKey) {
+    githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), normalizedRepo);
+    return normalizedRepo;
+  }
+
+  try {
+    const appJwt = await createGithubAppJwt(appId, privateKey);
+    const repoInfo = await githubGet<{ full_name?: string }>(`/repos/${normalizedRepo}`, appJwt, env);
+    const canonical = String(repoInfo.full_name || "").trim();
+    if (/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(canonical)) {
+      githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), canonical);
+      githubCanonicalRepoCache.set(canonical.toLowerCase(), canonical);
+      return canonical;
+    }
+  } catch {
+    // Fall back to the provided locator if the repository metadata lookup is unavailable.
+  }
+
+  githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), normalizedRepo);
+  return normalizedRepo;
 }
 
 async function createGithubAppJwt(appId: string, privateKeyPem: string): Promise<string> {

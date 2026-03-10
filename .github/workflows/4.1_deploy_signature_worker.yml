@@ -31,6 +31,39 @@ jobs:
         working-directory: services/signature-worker
         run: npm run print-version
 
+      - name: Materialize Wrangler config
+        working-directory: services/signature-worker
+        env:
+          PIN_KV_NAMESPACE_ID: ${{ vars.PIN_KV_NAMESPACE_ID }}
+          PIN_KV_PREVIEW_NAMESPACE_ID: ${{ vars.PIN_KV_PREVIEW_NAMESPACE_ID }}
+          SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          values = {
+              "id": os.environ.get("PIN_KV_NAMESPACE_ID", "").strip(),
+              "preview_id": os.environ.get("PIN_KV_PREVIEW_NAMESPACE_ID", "").strip(),
+              "PUBLIC_BASE_URL": os.environ.get("SIGNATURE_UI_BASE_URL", "").strip(),
+          }
+
+          missing = [key for key, value in values.items() if not value]
+          if missing:
+              raise SystemExit(f"Missing required GitHub Actions variables for deploy: {', '.join(missing)}")
+
+          path = Path("wrangler.toml")
+          content = path.read_text(encoding="utf-8")
+          for key, value in values.items():
+              pattern = rf'(^\s*{re.escape(key)}\s*=\s*)".*?"(\s*$)'
+              updated, count = re.subn(pattern, rf'\1"{value}"\2', content, count=1, flags=re.MULTILINE)
+              if count != 1:
+                  raise SystemExit(f"Could not update {key} in {path}")
+              content = updated
+          path.write_text(content, encoding="utf-8")
+          PY
+
       - name: Deploy to Cloudflare Workers
         working-directory: services/signature-worker
         env:

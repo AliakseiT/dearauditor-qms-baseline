@@ -57,6 +57,8 @@ The workflow permission is required because the repository uses the GitHub App t
 Repository variable:
 
 - `SIGNATURE_UI_BASE_URL=https://sign.qms.dearauditor.ch`
+- `PIN_KV_NAMESPACE_ID=<cloudflare kv namespace id>`
+- `PIN_KV_PREVIEW_NAMESPACE_ID=<cloudflare kv preview namespace id>`
 
 Repository secrets:
 
@@ -70,7 +72,7 @@ Repository secrets:
 Manual:
 
 - `cd services/signature-worker`
-- `npm install`
+- `npm ci`
 - `npm run deploy`
 
 The deploy command injects `WORKER_VERSION` automatically using the format `YYYY-MM-DD-<short git hash>` in UTC, and the active version is shown in the worker UI and `/healthz`.
@@ -78,6 +80,7 @@ The deploy command injects `WORKER_VERSION` automatically using the format `YYYY
 GitHub Actions:
 
 - run workflow `4.1 Deploy Signature Worker` manually (`workflow_dispatch`)
+- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, and `PIN_KV_PREVIEW_NAMESPACE_ID` before deploy
 
 ## 6. One-Command Bootstrap
 

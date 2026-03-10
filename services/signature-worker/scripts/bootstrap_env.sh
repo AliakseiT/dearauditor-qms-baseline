@@ -165,6 +165,17 @@ upsert_repo_variable() {
   fi
 }
 
+upsert_repo_variable_if_present() {
+  local repo="$1"
+  local name="$2"
+  local value="$3"
+  if is_placeholder "$value"; then
+    echo "Skip repo variable ${name}: value missing/placeholder"
+    return 0
+  fi
+  upsert_repo_variable "$repo" "$name" "$value"
+}
+
 set_repo_secret_if_present() {
   local repo="$1"
   local name="$2"
@@ -279,7 +290,9 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   require_cmd gh
   gh auth status >/dev/null
 
-  upsert_repo_variable "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
+  upsert_repo_variable_if_present "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
+  upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_NAMESPACE_ID" "${PIN_KV_NAMESPACE_ID:-}"
+  upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_PREVIEW_NAMESPACE_ID" "${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"
