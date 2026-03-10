@@ -89,7 +89,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R03`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R05`
 - [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R14`
-- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R06`
+- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R07`
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R02`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R02`
 
@@ -133,7 +133,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-07 | R06 | Published |
 | SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-08 | R06 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-05 | R01 | Published |
-| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-08 | R06 | Published |
+| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-10 | R07 | Published |
 | SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-07 | R02 | Published |
 | SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-07 | R02 | Published |
 | SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-07 | R02 | Published |

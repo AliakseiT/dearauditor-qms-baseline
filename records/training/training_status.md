@@ -1,6 +1,6 @@
 # Training Status Report
 
-- Generated at: `2026-03-10T22:39:54Z`
+- Generated at: `2026-03-10T22:49:46Z`
 - Source repository: `AliakseiT/dearauditor-qms-baseline`
 - Signed training events considered: `1`
 
@@ -21,7 +21,7 @@ This report is generated from signed training issues and their immutable evidenc
 | Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-001` | `R11` | `R01` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
 | Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-008` | `R06` | `R00` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
 | Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-009` | `R06` | `R01` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
-| Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-011` | `R06` | `R00` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
+| Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-011` | `R07` | `R00` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
 | Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-017` | `R02` | `R01` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
 | Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-018` | `R04` | `R00` | Outdated | 2026-03-05T02:17:31.036Z | n/a; [#143](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143) |
 | Aliaksei Tsitovich | `@AliakseiT` | engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead | `SOP-020` | `R07` | `UNTRAINED` | Missing | n/a | n/a; n/a |
@@ -48,7 +48,7 @@ This report is generated from signed training issues and their immutable evidenc
 | Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-008` | `R06` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-009` | `R06` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-010` | `R01` | `UNTRAINED` | Missing | n/a | n/a; n/a |
-| Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-011` | `R06` | `UNTRAINED` | Missing | n/a | n/a; n/a |
+| Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-011` | `R07` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-012` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-013` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Ina Tsitovich | `@InaTsitovich` | engineer, qa_lead | `SOP-014` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
