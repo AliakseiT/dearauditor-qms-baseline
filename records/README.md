@@ -1,12 +1,12 @@
 # Records Index
 
-This page is the GitHub navigation hub for controlled record families and reusable record templates in QMS Lite.
+This page is the GitHub navigation hub for controlled record families and reusable record templates in DearAuditor Open QMS Baseline.
 
-QMS Lite uses a mixed model:
+DearAuditor Open QMS Baseline uses a mixed model:
 
 - company-level operational records may be maintained in this repository
 - reusable templates live here and are copied or adapted into designated product/study repositories
-- product-specific execution records such as design history, V&V evidence, MDF artifacts, release baselines, and post-market files belong in the designated product/study repository, not in `qms-lite`
+- product-specific execution records such as design history, V&V evidence, MDF artifacts, release baselines, and post-market files belong in the designated product/study repository, not in this upstream repository
 
 For downstream adopters, the practical rule is:
 
@@ -31,7 +31,7 @@ Some folders are intentionally empty until the first signed and published compan
 | Start with V&V templates | [Verification and validation templates](verification_validation/) |
 | Start with release/configuration templates | [Configuration and release templates](configuration/) |
 | Record a Word/PDF-origin controlled document | [External document manifest template](external/external_document_manifest_template.yml) |
-| Go back to the top-level QMS index | [QMS Lite landing page](../README.md) |
+| Go back to the top-level project index | [DearAuditor Open QMS Baseline README](../README.md) |
 
 ## Operational Record Families
 
@@ -75,23 +75,23 @@ Use the external manifest template when a controlled document is authored outsid
 
 ## GitHub Workflow Entry Points
 
-- [Start a management review issue](https://github.com/AliakseiT/qms-lite/issues/new?template=mgmt_review_plan.yml)
-- [Start an audit issue](https://github.com/AliakseiT/qms-lite/issues/new?template=audit_plan.yml)
-- [Start a CAPA issue](https://github.com/AliakseiT/qms-lite/issues/new?template=capa_plan.yml)
-- [Start a change assessment issue](https://github.com/AliakseiT/qms-lite/issues/new?template=change_impact_assessment.yml)
-- [Start a complaint intake issue](https://github.com/AliakseiT/qms-lite/issues/new?template=complaint_intake.yml)
-- [Start a nonconformity intake issue](https://github.com/AliakseiT/qms-lite/issues/new?template=nonconformity_intake.yml)
-- [Start a PMS review issue](https://github.com/AliakseiT/qms-lite/issues/new?template=pms_review.yml)
-- [Start a design input baseline issue](https://github.com/AliakseiT/qms-lite/issues/new?template=design_development_plan.yml)
-- [Start a risk management plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=risk_management_plan.yml)
-- [Start a usability engineering plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=usability_engineering_plan.yml)
-- [Start a verification and validation plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=verification_validation_plan.yml)
-- [Start a release plan issue](https://github.com/AliakseiT/qms-lite/issues/new?template=release_plan.yml)
-- [Start a final release decision issue](https://github.com/AliakseiT/qms-lite/issues/new?template=final_release_decision.yml)
+- [Start a management review issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=mgmt_review_plan.yml)
+- [Start an audit issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=audit_plan.yml)
+- [Start a CAPA issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=capa_plan.yml)
+- [Start a change assessment issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=change_impact_assessment.yml)
+- [Start a complaint intake issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=complaint_intake.yml)
+- [Start a nonconformity intake issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=nonconformity_intake.yml)
+- [Start a PMS review issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=pms_review.yml)
+- [Start a design input baseline issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=design_development_plan.yml)
+- [Start a risk management plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=risk_management_plan.yml)
+- [Start a usability engineering plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=usability_engineering_plan.yml)
+- [Start a verification and validation plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=verification_validation_plan.yml)
+- [Start a release plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=release_plan.yml)
+- [Start a final release decision issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=final_release_decision.yml)
 
 ## Related Navigation
 
-- [QMS Lite landing page](../README.md)
+- [DearAuditor Open QMS Baseline README](../README.md)
 - [Open-source adoption model](../docs/open-source/README.md)
-- [QMS Lite system architecture](../docs/architecture/README.md)
+- [DearAuditor Open QMS Baseline system architecture](../docs/architecture/README.md)
 - [Workflow automation map](../docs/architecture/README.md#6-automation-map)

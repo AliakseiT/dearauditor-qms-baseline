@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R06
-effective_date: 2026-03-07
+revision: R07
+effective_date: 2026-03-10
 status: Published
 owner_role: usability_lead
 approver_role: qa_lead
@@ -45,7 +45,7 @@ Applies to user interface design and evaluation activities that affect safety, i
 2. Keep records concise and structured in YAML/Markdown.
 3. Store only evidence needed to justify safety-related usability decisions.
 4. Link usability findings directly to ISO 14971 risk items and product changes.
-5. QMS Lite maintains governance SOPs and traceability baselines; operational usability records are maintained outside `qms-lite`.
+5. This upstream baseline maintains governance SOPs and traceability baselines; operational usability records are maintained outside the upstream repository.
 
 ## 4. Required Inputs
 - Product intended use and user profiles
@@ -172,3 +172,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R04 | 2026-03-07 | Introduced `usability_lead` as the accountable usability role and clarified the boundary between usability ownership and regulatory oversight. |
 | R05 | 2026-03-07 | Clarified that usability-record PRs may carry their own controlled change context without a mandatory linked issue. |
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the usability signature workflow wording. |
+| R07 | 2026-03-10 | Updated open-source baseline naming and publication references used in the usability procedure set. |

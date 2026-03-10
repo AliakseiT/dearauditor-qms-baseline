@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R00
-effective_date: 2026-03-08
+revision: R01
+effective_date: 2026-03-10
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -24,7 +24,7 @@ related_issue: "#1"
 Describe why ACME GmbH maintains a Quality Management System (QMS), what the QMS covers, how the controlled document set fits together, and how quality objectives are translated into operating procedures and records.
 
 ## 2. Scope
-Applies to the ACME GmbH QMS for healthcare software products, including products that may qualify as software as a medical device (SaMD), and to the company-level governance baseline maintained in `qms-lite`.
+Applies to the ACME GmbH QMS for healthcare software products, including products that may qualify as software as a medical device (SaMD), and to the company-level governance baseline maintained in this upstream baseline repository.
 
 ## 3. Organization and Context
 - Legal Entity: ACME GmbH
@@ -107,7 +107,7 @@ Jurisdiction references currently maintained in the regulatory scope baseline in
 Document-control rules are defined in `SOP-001`, governance rules in `SOP-005`, and role-specific training expectations in `SOP-011` plus `matrices/training_matrix.yml`.
 
 The record model is:
-- company-level governance baselines and selected operational records may live in `qms-lite`
+- company-level governance baselines and selected operational records may live in this upstream baseline repository
 - reusable templates are published here for downstream product/study repositories
 - product and study execution records are maintained in designated repositories and linked back into the medical device file and release evidence
 
@@ -137,3 +137,4 @@ QMS tooling and validation baselines are maintained in:
 | Revision | Effective Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-08 | Initial release split from SOP-005 so the QMS intent, scope, policy, objectives, and process structure are available as a standalone Quality Manual. |
+| R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |

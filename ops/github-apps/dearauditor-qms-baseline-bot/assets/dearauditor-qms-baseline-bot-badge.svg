@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">QMS BOT by DearAuditor badge</title>
+  <desc id="desc">Full-bleed GitHub-circle badge for the neutral QMS BOT GitHub App, by DearAuditor.</desc>
+  <defs>
+    <linearGradient id="botBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f2833"/>
+      <stop offset="55%" stop-color="#2a3542"/>
+      <stop offset="100%" stop-color="#161d25"/>
+    </linearGradient>
+    <linearGradient id="botAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f3c969"/>
+      <stop offset="100%" stop-color="#dd8d3c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="256" fill="url(#botBg)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/>
+  <circle cx="256" cy="256" r="186" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+  <path d="M122 152h268" fill="none" stroke="url(#botAccent)" stroke-width="18" stroke-linecap="round"/>
+  <rect x="168" y="176" width="176" height="116" rx="38" fill="#f6efe2"/>
+  <circle cx="214" cy="234" r="18" fill="#202c38"/>
+  <circle cx="298" cy="234" r="18" fill="#202c38"/>
+  <circle cx="188" cy="258" r="8" fill="#f3c969" opacity=".85"/>
+  <circle cx="324" cy="258" r="8" fill="#f3c969" opacity=".85"/>
+  <path d="M214 302c18 18 66 18 84 0" fill="none" stroke="#f3c969" stroke-width="16" stroke-linecap="round"/>
+
+  <g fill="#f6fbff" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="256" y="370" font-size="46" font-weight="800" letter-spacing="7">QMS BOT</text>
+    <text x="256" y="414" font-size="24" font-weight="700" letter-spacing="2.5" opacity=".82">by DearAuditor</text>
+  </g>
+</svg>

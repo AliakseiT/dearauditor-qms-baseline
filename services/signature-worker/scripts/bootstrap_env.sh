@@ -34,7 +34,6 @@ Expected env keys in .env.local:
   GITHUB_OAUTH_CLIENT_SECRET
   QMS_BOT_APP_ID
   QMS_BOT_APP_PRIVATE_KEY
-  SIGNATURE_LINK_SECRET
   SIGNATURE_STATE_SECRET
   PIN_PEPPER
 
@@ -121,9 +120,9 @@ require_non_placeholder_for_deploy() {
   return 0
 }
 
-wrangler_has_kv_placeholders() {
+wrangler_has_config_placeholders() {
   [[ -f "$WRANGLER_TOML" ]] || return 1
-  grep -Eq 'REPLACE_WITH_PIN_KV_NAMESPACE_ID|REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID' "$WRANGLER_TOML"
+  grep -Eq 'REPLACE_WITH_PIN_KV_NAMESPACE_ID|REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID|REPLACE_WITH_SIGNING_BASE_URL' "$WRANGLER_TOML"
 }
 
 validate_deploy_config() {
@@ -131,7 +130,6 @@ validate_deploy_config() {
   require_non_placeholder_for_deploy "GITHUB_OAUTH_CLIENT_SECRET"
   require_non_placeholder_for_deploy "QMS_BOT_APP_ID"
   require_non_placeholder_for_deploy "QMS_BOT_APP_PRIVATE_KEY"
-  require_non_placeholder_for_deploy "SIGNATURE_LINK_SECRET"
   require_non_placeholder_for_deploy "SIGNATURE_STATE_SECRET"
   require_non_placeholder_for_deploy "PIN_PEPPER"
 
@@ -140,7 +138,7 @@ validate_deploy_config() {
     require_non_placeholder_for_deploy "CLOUDFLARE_ACCOUNT_ID"
   fi
 
-  if wrangler_has_kv_placeholders; then
+  if wrangler_has_config_placeholders; then
     require_non_placeholder_for_deploy "PIN_KV_NAMESPACE_ID"
     require_non_placeholder_for_deploy "PIN_KV_PREVIEW_NAMESPACE_ID"
   fi
@@ -191,37 +189,41 @@ set_worker_secret_if_present() {
   echo "Set worker secret: ${name}"
 }
 
-sync_kv_namespace_ids_from_env() {
+update_wrangler_string_value() {
+  local key="$1"
+  local value="$2"
+  python3 - "$WRANGLER_TOML" "$key" "$value" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+path = Path(sys.argv[1])
+key = sys.argv[2]
+value = sys.argv[3]
+content = path.read_text()
+pattern = rf'(^\s*{re.escape(key)}\s*=\s*)".*?"(\s*$)'
+updated, count = re.subn(pattern, rf'\1"{value}"\2', content, count=1, flags=re.MULTILINE)
+if count != 1:
+    raise SystemExit(f"Could not update {key} in {path}")
+path.write_text(updated)
+PY
+}
+
+sync_wrangler_config_from_env() {
   [[ -f "$WRANGLER_TOML" ]] || return 0
 
   local kv_id="${PIN_KV_NAMESPACE_ID:-}"
   local preview_id="${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
+  local public_base_url="${PUBLIC_BASE_URL:-}"
 
   if ! is_placeholder "$kv_id"; then
-    python3 - "$WRANGLER_TOML" "REPLACE_WITH_PIN_KV_NAMESPACE_ID" "$kv_id" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-placeholder = sys.argv[2]
-value = sys.argv[3]
-content = path.read_text()
-content = content.replace(placeholder, value)
-path.write_text(content)
-PY
+    update_wrangler_string_value "id" "$kv_id"
   fi
   if ! is_placeholder "$preview_id"; then
-    python3 - "$WRANGLER_TOML" "REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID" "$preview_id" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-placeholder = sys.argv[2]
-value = sys.argv[3]
-content = path.read_text()
-content = content.replace(placeholder, value)
-path.write_text(content)
-PY
+    update_wrangler_string_value "preview_id" "$preview_id"
+  fi
+  if ! is_placeholder "$public_base_url"; then
+    update_wrangler_string_value "PUBLIC_BASE_URL" "$public_base_url"
   fi
 }
 
@@ -234,9 +236,9 @@ assert_kv_binding_configured() {
   fi
 
   local has_placeholder
-  has_placeholder="$(grep -E 'REPLACE_WITH_PIN_KV_NAMESPACE_ID|REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID' "$WRANGLER_TOML" || true)"
+  has_placeholder="$(grep -E 'REPLACE_WITH_PIN_KV_NAMESPACE_ID|REPLACE_WITH_PIN_KV_PREVIEW_NAMESPACE_ID|REPLACE_WITH_SIGNING_BASE_URL' "$WRANGLER_TOML" || true)"
   if [[ -n "$has_placeholder" ]]; then
-    echo "wrangler.toml still has placeholder KV namespace IDs. Set PIN_KV_NAMESPACE_ID and PIN_KV_PREVIEW_NAMESPACE_ID in .env.local and rerun this script." >&2
+    echo "wrangler.toml still has placeholder runtime values. Set PUBLIC_BASE_URL and any required KV namespace IDs in .env.local and rerun this script." >&2
     return 1
   fi
 
@@ -255,7 +257,6 @@ GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
 QMS_BOT_APP_ID=${QMS_BOT_APP_ID:-}
 QMS_BOT_APP_PRIVATE_KEY=${QMS_BOT_APP_PRIVATE_KEY:-}
 QMS_BOT_APP_INSTALLATION_ID=${QMS_BOT_APP_INSTALLATION_ID:-}
-SIGNATURE_LINK_SECRET=${SIGNATURE_LINK_SECRET:-}
 SIGNATURE_STATE_SECRET=${SIGNATURE_STATE_SECRET:-}
 PIN_PEPPER=${PIN_PEPPER:-}
 DEVVARS
@@ -265,12 +266,12 @@ DEVVARS
 
 if [[ "$DO_DEPLOY" -eq 1 ]]; then
   validate_deploy_config
-  sync_kv_namespace_ids_from_env
+  sync_wrangler_config_from_env
   assert_kv_binding_configured
 fi
 
 if [[ "$DO_DEPLOY" -eq 0 ]]; then
-  sync_kv_namespace_ids_from_env
+  sync_wrangler_config_from_env
 fi
 write_dev_vars
 
@@ -281,7 +282,6 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   upsert_repo_variable "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
-  set_repo_secret_if_present "$GH_REPO" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_ACCOUNT_ID" "${CLOUDFLARE_ACCOUNT_ID:-}"
 fi
@@ -294,7 +294,6 @@ if [[ "$SKIP_CF" -eq 0 ]]; then
   set_worker_secret_if_present "$WORKER_NAME" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
   set_worker_secret_if_present "$WORKER_NAME" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
   set_worker_secret_if_present "$WORKER_NAME" "QMS_BOT_APP_INSTALLATION_ID" "${QMS_BOT_APP_INSTALLATION_ID:-}"
-  set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_LINK_SECRET" "${SIGNATURE_LINK_SECRET:-}"
   set_worker_secret_if_present "$WORKER_NAME" "SIGNATURE_STATE_SECRET" "${SIGNATURE_STATE_SECRET:-}"
   set_worker_secret_if_present "$WORKER_NAME" "PIN_PEPPER" "${PIN_PEPPER:-}"
 fi

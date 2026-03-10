@@ -8,7 +8,6 @@ interface Env {
   QMS_BOT_APP_ID?: string;
   QMS_BOT_APP_PRIVATE_KEY?: string;
   QMS_BOT_APP_INSTALLATION_ID?: string;
-  SIGNATURE_LINK_SECRET?: string;
   SIGNATURE_STATE_SECRET: string;
   PIN_PEPPER: string;
   GITHUB_API_BASE_URL?: string;
@@ -128,15 +127,15 @@ const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const PIN_KDF_ITERATIONS = 100000;
 const PIN_SALT_BYTES = 16;
 const DEFAULT_AUTOMATION_BOT_LOGINS = [
-  "qms-lite-bot",
-  "qms-lite-bot[bot]",
-  "qms-lite-sign",
-  "qms-lite-sign[bot]",
+  "dearauditor-qms-baseline-bot",
+  "dearauditor-qms-baseline-bot[bot]",
+  "dearauditor-qms-baseline-sign",
+  "dearauditor-qms-baseline-sign[bot]",
   "github-actions[bot]",
 ];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
-const QMS_LITE_REPO_URL = "https://github.com/AliakseiT/qms-lite";
+const PROJECT_REPO_URL = "https://github.com/AliakseiT/dearauditor-qms-baseline";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
 
 export default {
@@ -153,7 +152,7 @@ export default {
         return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
       }
       if (path === "/sign" && request.method === "GET") {
-        if (!hasSignedContextParams(url.searchParams) && !hasRequestLocatorParams(url.searchParams)) {
+        if (!hasLegacySignedContextParams(url.searchParams) && !hasRequestLocatorParams(url.searchParams)) {
           return html(renderLandingPage(env.PUBLIC_BASE_URL || url.origin, workerVersion), 200);
         }
         return await handleSignPage(request, env);
@@ -194,14 +193,11 @@ async function handleSignPage(request: Request, env: Env): Promise<Response> {
   );
 
   let context: SignatureContext;
-  if (hasSignedContextParams(url.searchParams)) {
-    context = parseContextFromParams(url.searchParams);
-    const signature = (url.searchParams.get("sig") || "").trim();
-    await assertValidSignedContext(context, signature, requireLegacyLinkSecret(env));
-  } else {
-    const locator = parseRequestLocatorFromParams(url.searchParams);
-    context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
+  if (hasLegacySignedContextParams(url.searchParams)) {
+    throw new Error("Legacy signing link expired. A new signature request is required.");
   }
+  const locator = parseRequestLocatorFromParams(url.searchParams);
+  context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
 
   return html(
     renderSignPage(context, provider, env.PUBLIC_BASE_URL, resolveWorkerVersion(env)),
@@ -220,13 +216,10 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
 
   let context: SignatureContext;
   if (hasLegacySignedContextFormData(form)) {
-    context = contextFromFormData(form);
-    const signature = String(form.get("sig") || "").trim();
-    await assertValidSignedContext(context, signature, requireLegacyLinkSecret(env));
-  } else {
-    const locator = requestLocatorFromFormData(form);
-    context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
+    throw new Error("Legacy signing link expired. A new signature request is required.");
   }
+  const locator = requestLocatorFromFormData(form);
+  context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
 
   const state: OAuthState = {
     type: "oauth",
@@ -668,74 +661,6 @@ function resolveProvider(provider: string, env: Env): string {
     throw new Error(`OAuth provider '${provider}' is not allowed.`);
   }
   return provider;
-}
-
-function parseContextFromParams(params: URLSearchParams): SignatureContext {
-  return {
-    repo: (params.get("repo") || "").trim(),
-    pr: (params.get("pr") || "").trim(),
-    hash: (params.get("hash") || "").trim().toLowerCase(),
-    meaning: (params.get("meaning") || "").trim(),
-    role: (params.get("role") || "").trim(),
-    signer: (params.get("signer") || "").trim().toLowerCase(),
-    required_signatures: (params.get("required_signatures") || "1").trim(),
-    signature_index: (params.get("signature_index") || "1").trim(),
-    exp: (params.get("exp") || "").trim(),
-  };
-}
-
-function contextFromFormData(form: FormData): SignatureContext {
-  return {
-    repo: String(form.get("repo") || "").trim(),
-    pr: String(form.get("pr") || "").trim(),
-    hash: String(form.get("hash") || "").trim().toLowerCase(),
-    meaning: String(form.get("meaning") || "").trim(),
-    role: String(form.get("role") || "").trim(),
-    signer: String(form.get("signer") || "").trim().toLowerCase(),
-    required_signatures: String(form.get("required_signatures") || "1").trim(),
-    signature_index: String(form.get("signature_index") || "1").trim(),
-    exp: String(form.get("exp") || "").trim(),
-  };
-}
-
-async function assertValidSignedContext(ctx: SignatureContext, sig: string, secret: string): Promise<void> {
-  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(ctx.repo)) throw new Error("Invalid repository.");
-  if (!/^\d+$/.test(ctx.pr)) throw new Error("Invalid PR number.");
-  if (!/^[a-f0-9]{64}$/.test(ctx.hash)) throw new Error("Invalid target hash.");
-  if (!ctx.meaning) throw new Error("Missing meaning of signature.");
-  if (!ctx.role) throw new Error("Missing signer role.");
-  if (!/^[A-Za-z0-9-]+$/.test(ctx.signer)) throw new Error("Invalid signer login.");
-  if (!/^\d+$/.test(ctx.exp)) throw new Error("Invalid expiry.");
-  if (!/^[a-f0-9]{64}$/.test(sig.toLowerCase())) throw new Error("Invalid signature token.");
-
-  const exp = Number.parseInt(ctx.exp, 10);
-  if (!Number.isFinite(exp) || exp < nowEpoch()) {
-    throw new Error("Signing link expired.");
-  }
-
-  const canonical = canonicalString({
-    exp: ctx.exp,
-    hash: ctx.hash,
-    meaning: ctx.meaning,
-    pr: ctx.pr,
-    repo: ctx.repo,
-    required_signatures: ctx.required_signatures,
-    role: ctx.role,
-    signature_index: ctx.signature_index,
-    signer: ctx.signer,
-  });
-
-  const expected = await hmacHexAsync(canonical, secret);
-  if (!timingSafeEqual(expected, sig.toLowerCase())) {
-    throw new Error("Invalid signed link payload.");
-  }
-}
-
-function canonicalString(map: Record<string, string>): string {
-  return Object.keys(map)
-    .sort()
-    .map((k) => `${k}=${map[k]}`)
-    .join("&");
 }
 
 function buildRepostSessionState(
@@ -1306,7 +1231,7 @@ function githubHeaders(token: string): Record<string, string> {
   return {
     authorization: `Bearer ${token}`,
     accept: "application/vnd.github+json",
-    "user-agent": "qms-lite-bot-signature-service",
+    "user-agent": "dearauditor-qms-baseline-signature-service",
     "x-github-api-version": "2022-11-28",
   };
 }
@@ -1557,14 +1482,6 @@ function resolveWorkerVersion(env: Env): string {
   return raw || "dev-unversioned";
 }
 
-function requireLegacyLinkSecret(env: Env): string {
-  const secret = String(env.SIGNATURE_LINK_SECRET || "").trim();
-  if (!secret) {
-    throw new Error("Legacy signed links are not enabled. Open the latest signature request link from GitHub.");
-  }
-  return secret;
-}
-
 function parseRequestLocatorFromParams(params: URLSearchParams): { repo: string; pr: string; signer: string } {
   return {
     repo: String(params.get("repo") || "").trim(),
@@ -1581,7 +1498,7 @@ function requestLocatorFromFormData(form: FormData): { repo: string; pr: string;
   };
 }
 
-function hasSignedContextParams(params: URLSearchParams): boolean {
+function hasLegacySignedContextParams(params: URLSearchParams): boolean {
   const required = ["repo", "pr", "hash", "meaning", "role", "signer", "exp", "sig"];
   return required.every((key) => String(params.get(key) || "").trim() !== "");
 }
@@ -1640,6 +1557,7 @@ function classifyError(error: unknown): ErrorPresentation {
 
   if (
     normalized.includes("signing link expired") ||
+    normalized.includes("legacy signing link expired") ||
     normalized.includes("sign session expired") ||
     normalized.includes("pin session expired") ||
     normalized.includes("invalid signature token") ||
@@ -1730,8 +1648,7 @@ function classifyError(error: unknown): ErrorPresentation {
   if (
     normalized.includes("missing required configuration") ||
     normalized.includes("missing required repository access configuration") ||
-    normalized.includes("missing required kv binding") ||
-    normalized.includes("legacy signed links are not enabled")
+    normalized.includes("missing required kv binding")
   ) {
     return {
       status: 500,
@@ -1773,7 +1690,7 @@ function classifyError(error: unknown): ErrorPresentation {
 }
 
 function renderLandingPage(baseUrl: string, workerVersion: string): string {
-  const title = "QMS Lite Signature";
+  const title = "DearAuditor Open QMS Baseline Signature";
   const safeBaseUrl = stripTrailingSlash(baseUrl);
   return `<!doctype html>
 <html lang="en">
@@ -1865,10 +1782,10 @@ function renderLandingPage(baseUrl: string, workerVersion: string): string {
 <body>
   <main class="card">
     ${renderSignatureBadgeSvg()}
-    <h1>QMS Lite Signature</h1>
-    <p>Signature service for QMS Lite, a GitHub-based QMS aligned with ISO 13485, ISO 14971, IEC 62304, and IEC 62366-1.</p>
+    <h1>DearAuditor Open QMS Baseline Signature</h1>
+    <p>Signature service for DearAuditor Open QMS Baseline, a GitHub-based QMS aligned with ISO 13485, ISO 14971, IEC 62304, and IEC 62366-1.</p>
     <div class="links">
-      <a class="link" href="${escapeHtml(QMS_LITE_REPO_URL)}" target="_blank" rel="noreferrer">Open QMS Lite Repository</a>
+      <a class="link" href="${escapeHtml(PROJECT_REPO_URL)}" target="_blank" rel="noreferrer">Open Baseline Repository</a>
     </div>
     <div class="meta">Service URL: ${escapeHtml(safeBaseUrl)}</div>
     <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
@@ -1878,17 +1795,35 @@ function renderLandingPage(baseUrl: string, workerVersion: string): string {
 }
 
 function renderSignatureBadgeSvg(): string {
-  return `<svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="QMS Lite Signature logo">
-  <rect width="512" height="512" rx="116" fill="#edf3f6"/>
-  <circle cx="256" cy="256" r="182" fill="#143046"/>
-  <circle cx="256" cy="256" r="164" fill="#f5fbff"/>
-  <rect x="132" y="138" width="248" height="22" rx="11" fill="#69b8db"/>
-  <g fill="#143246" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="256" y="234" font-size="62" font-weight="800" letter-spacing="5">QMS LITE</text>
-    <text x="256" y="316" font-size="92" font-weight="900" letter-spacing="7">SIGN</text>
+  return `<svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="QMS SIGN by DearAuditor logo">
+  <defs>
+    <linearGradient id="badgeBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d2432"/>
+      <stop offset="55%" stop-color="#15384b"/>
+      <stop offset="100%" stop-color="#0a1822"/>
+    </linearGradient>
+    <linearGradient id="badgeAccent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f2c86a"/>
+      <stop offset="100%" stop-color="#86d5de"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="256" fill="url(#badgeBg)"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="14"/>
+  <circle cx="256" cy="256" r="186" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+  <path d="M122 152h268" fill="none" stroke="url(#badgeAccent)" stroke-width="18" stroke-linecap="round"/>
+  <rect x="150" y="174" width="212" height="122" rx="34" fill="#f6efe2"/>
+  <path d="M188 206h136" fill="none" stroke="#d9d1c3" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+  <circle cx="186" cy="238" r="10" fill="#203040"/>
+  <circle cx="214" cy="238" r="10" fill="#203040"/>
+  <circle cx="242" cy="238" r="10" fill="#203040"/>
+  <circle cx="270" cy="238" r="10" fill="#203040"/>
+  <circle cx="298" cy="238" r="10" fill="#203040"/>
+  <circle cx="326" cy="238" r="10" fill="#86d5de"/>
+  <path d="M198 268h116" fill="none" stroke="#f2c86a" stroke-width="14" stroke-linecap="round"/>
+  <g fill="#f6fbff" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="256" y="368" font-size="44" font-weight="800" letter-spacing="6">QMS SIGN</text>
+    <text x="256" y="412" font-size="24" font-weight="700" letter-spacing="2.5" opacity=".82">by DearAuditor</text>
   </g>
-  <path d="M318 350l34-34 22 22-34 34h-22z" fill="#143246"/>
-  <path d="M316 352l8 24 24-8z" fill="#7dd4de"/>
 </svg>`;
 }
 
@@ -1898,7 +1833,7 @@ function renderSignPage(
   baseUrl: string,
   workerVersion: string
 ): string {
-  const title = "QMS Lite Sign";
+  const title = "DearAuditor Open QMS Baseline Sign";
   const providerLabel = provider === "github" ? "GitHub" : provider;
   const formAction = `${stripTrailingSlash(baseUrl)}/auth/start`;
   const requestUrl = `https://github.com/${ctx.repo}/issues/${ctx.pr}`;

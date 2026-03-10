@@ -1,8 +1,8 @@
-# QMS Lite Sign Setup
+# DearAuditor Open QMS Baseline Sign Setup
 
 ## 1. GitHub OAuth App Configuration
 
-OAuth app name: `QMS Lite Sign`
+Suggested OAuth app name: `DearAuditor Open QMS Baseline Sign`
 
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
@@ -20,8 +20,9 @@ Worker secrets:
 
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
-- `GITHUB_REPO_TOKEN`
-- `SIGNATURE_LINK_SECRET` (optional; only for legacy signed-link compatibility)
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
+- `QMS_BOT_APP_INSTALLATION_ID` (optional)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER`
 
@@ -32,17 +33,26 @@ KV binding in `wrangler.toml`:
 binding = "PIN_KV"
 id = "<prod-namespace-id>"
 preview_id = "<preview-namespace-id>"
+
+[vars]
+PUBLIC_BASE_URL = "https://sign.example.com"
 ```
 
-## 3. Token Requirements for `GITHUB_REPO_TOKEN`
+The committed `wrangler.toml` in this repository uses placeholders. Replace them before deploy, or let `./services/signature-worker/scripts/bootstrap_env.sh` write the values from `.env.local`.
 
-Use a token with access to the target QMS repository and minimum permissions required by the worker:
+## 3. GitHub App Requirements
 
-- Issues: `read/write` (read existing comments, post attestation comment)
-- Pull requests: `read` (read PR context and metadata)
-- Contents: `read` (read `matrices/signer_registry.json`)
+Use a GitHub App installation for repository access. Minimum repository permissions:
 
-## 4. qms-lite Repository Settings
+- Issues: `Read and write`
+- Pull requests: `Read-only`
+- Contents: `Read-only`
+- Workflows: `Read and write`
+- Metadata: `Read-only`
+
+The workflow permission is required because the repository uses the GitHub App token for automation that may merge PRs touching `.github/workflows/`.
+
+## 4. Repository Settings
 
 Repository variable:
 
@@ -50,7 +60,8 @@ Repository variable:
 
 Repository secrets:
 
-- `SIGNATURE_LINK_SECRET` (optional; only if you need legacy signed-link compatibility)
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
@@ -78,4 +89,4 @@ This syncs `.env.local` values to GitHub/Cloudflare, validates KV IDs, and deplo
 
 ## 7. Hosted Alternative
 
-If an adopter does not want to self-host the worker, `https://sign.qms.dearauditor.ch` may be usable as a hosted signing endpoint by separate arrangement. In that model, the adopter would still need the repository-side GitHub configuration expected by QMS Lite, while commercial terms and service conditions remain outside this setup guide.
+If an adopter does not want to self-host the worker, `https://sign.qms.dearauditor.ch` may be usable as a hosted signing endpoint by separate arrangement. In that model, the adopter would still need the repository-side GitHub configuration expected by DearAuditor Open QMS Baseline, while commercial terms and service conditions remain outside this setup guide.

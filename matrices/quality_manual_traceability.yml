@@ -116,7 +116,7 @@ supporting_definitions:
   - item: "Usability engineering baseline and usability file model"
     status: "implemented"
     reference: "sops/SOP-019-UsabilityEngineering.md, <product-or-study-repo>/records/usability/*"
-    note: "QMS Lite defines governance; usability-file execution records are maintained in designated product/study repositories and signed with the same Part 11 mechanism."
+    note: "The upstream baseline defines governance; usability-file execution records are maintained in designated product/study repositories and signed with the same Part 11 mechanism."
   - item: "Software lifecycle and release baseline model"
     status: "implemented"
     reference: "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md, wis/WI-001-VerificationAndValidationExecution.md, wis/WI-002-ConfigurationAndReleaseManagementExecution.md"

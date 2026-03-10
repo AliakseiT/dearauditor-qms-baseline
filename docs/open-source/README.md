@@ -1,6 +1,6 @@
 # Open-Source Adoption Model
 
-QMS Lite can be published as a public upstream baseline without forcing adopters to expose their live QMS evidence.
+DearAuditor Open QMS Baseline can be published as a public upstream baseline without forcing adopters to expose their live QMS evidence.
 
 ## Operating Model
 
@@ -24,6 +24,8 @@ Current intent:
 - company-owned: `matrices/`, live operational records, signer assignments, training logs, supplier state, and downstream adoption metadata
 
 While the upstream project is still being actively developed, it continues to dogfood the workflow model using named company/person data in the live upstream `matrices/` and selected `records/` paths. That state is retained on purpose so the automations can be exercised end to end. Downstream adopters should not copy it directly; they should start from the generic seed files in [`../../examples/bootstrap`](../../examples/bootstrap/README.md).
+
+Historical validation or mock-trial artifacts that are useful as public reference examples should live under `docs/open-source/` rather than under live operational record paths.
 
 ## CLI Entry Points
 

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R04
-effective_date: 2026-03-07
+revision: R05
+effective_date: 2026-03-10
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -15,7 +15,7 @@ related_issue: "#3"
 Define structure, ownership, and control of product-specific medical device files (MDF) for ACME software products.
 
 ## 2. Scope
-Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets. Product MDF records are maintained in designated product/study repositories, not in `qms-lite`.
+Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets. Product MDF records are maintained in designated product/study repositories, not in `dearauditor-qms-baseline`.
 
 ## 3. Inputs
 - Product intended use and claims
@@ -82,3 +82,4 @@ Each product MDF must include at minimum:
 | R02 | 2026-03-07 | Normalized responsibility labels to the controlled small-team role model and clarified engineering ownership of MDF technical traceability. |
 | R03 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
 | R04 | 2026-03-07 | Removed overly specific signature-regulation terminology from the MDF approval evidence wording. |
+| R05 | 2026-03-10 | Updated the upstream baseline repository naming reference used for product MDF record separation guidance. |

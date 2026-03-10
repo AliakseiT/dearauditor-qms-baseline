@@ -196,7 +196,7 @@ def cmd_required_settings(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="QMS Lite distribution helper")
+    parser = argparse.ArgumentParser(description="DearAuditor Open QMS Baseline distribution helper")
     sub = parser.add_subparsers(dest="command", required=True)
 
     resolve_parser = sub.add_parser("resolve-sync-files")

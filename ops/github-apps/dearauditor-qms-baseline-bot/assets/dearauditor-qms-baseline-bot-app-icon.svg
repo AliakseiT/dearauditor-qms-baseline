@@ -1,0 +1,18 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">QMS BOT GitHub App icon</title>
+  <desc id="desc">Square upload icon for the QMS BOT GitHub App by DearAuditor.</desc>
+  <rect x="0" y="0" width="1024" height="1024" fill="#212933" />
+
+  <rect x="246" y="198" width="532" height="34" rx="17" fill="#E39A3A" />
+  <rect x="240" y="274" width="544" height="332" rx="112" fill="#F1E9DB" />
+  <circle cx="400" cy="432" r="40" fill="#1E2733" />
+  <circle cx="624" cy="432" r="40" fill="#1E2733" />
+  <circle cx="318" cy="504" r="18" fill="#EAC15C" />
+  <circle cx="706" cy="504" r="18" fill="#EAC15C" />
+  <path d="M400 536c42 38 182 38 224 0" fill="none" stroke="#EAC15C" stroke-width="28" stroke-linecap="round" />
+
+  <g fill="#F7FBFF" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
+    <text x="512" y="728" font-size="118" font-weight="800" letter-spacing="11">QMS BOT</text>
+    <text x="512" y="834" font-size="48" font-weight="700" letter-spacing="3" opacity=".84">by DearAuditor</text>
+  </g>
+</svg>

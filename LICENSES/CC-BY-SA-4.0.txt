@@ -1,0 +1,6 @@
+Repository license notice for Creative Commons Attribution-ShareAlike 4.0 International.
+Official legal code:
+https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+Human-readable summary:
+https://creativecommons.org/licenses/by-sa/4.0/

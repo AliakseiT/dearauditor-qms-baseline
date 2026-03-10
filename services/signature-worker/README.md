@@ -36,8 +36,9 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
-- `GITHUB_REPO_TOKEN` (token used by worker backend to read signer registry and post PR comments)
-- `SIGNATURE_LINK_SECRET` (optional; only needed to keep legacy signed links working)
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
+- `QMS_BOT_APP_INSTALLATION_ID` (optional; the worker can resolve the installation automatically when omitted)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER` (server-side pepper for PIN KDF)
 
@@ -48,6 +49,9 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - `[[kv_namespaces]]`
 - `binding = "PIN_KV"`
 - valid `id` and `preview_id`
+- a valid `PUBLIC_BASE_URL` under `[vars]`
+
+The committed `wrangler.toml` uses neutral placeholder values. Replace them before deploy, or let [`scripts/bootstrap_env.sh`](./scripts/bootstrap_env.sh) write the values from `.env.local`.
 
 ## GitHub OAuth App
 
@@ -57,6 +61,20 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 - Authorization callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
 - OAuth scope requested by worker: `read:user`
 - Signer full legal name is resolved from `matrices/signer_registry.json` (no manual name entry in UI).
+
+## GitHub App Access
+
+Repository reads and attestation-comment posting use a GitHub App installation, not a personal access token.
+
+Required GitHub App repository permissions:
+
+- Issues: `Read and write`
+- Pull requests: `Read-only`
+- Contents: `Read-only`
+- Workflows: `Read and write`
+- Metadata: `Read-only`
+
+`Workflows: Read and write` is needed because the same GitHub App token is also used by repository automation to merge PRs, including PRs that may modify `.github/workflows/`.
 
 ## Local Development
 
@@ -76,7 +94,7 @@ The worker UI and `/healthz` expose the active worker version. The default forma
 
 This repository includes everything needed to self-host the signing worker.
 
-For adopters that prefer not to operate their own worker, the hosted endpoint `https://sign.qms.dearauditor.ch` may also be offered as a separate service for compatible GitHub-native signing workflows. Any commercial terms, onboarding conditions, or support commitments for hosted use are separate from the open-source repository and are not defined by this README.
+For adopters that prefer not to operate their own worker, the hosted endpoint `https://sign.qms.dearauditor.ch` may also be offered as a separate service for compatible DearAuditor Open QMS Baseline signing workflows. Any commercial terms, onboarding conditions, or support commitments for hosted use are separate from the open-source repository and are not defined by this README.
 
 ## Bootstrap Helper
 
@@ -89,7 +107,8 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 What it does:
 
 - Upserts repo variable `SIGNATURE_UI_BASE_URL`.
-- Sets repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` when values are present, plus `SIGNATURE_LINK_SECRET` only when legacy signed-link compatibility is desired.
-- Sets worker secrets for OAuth + PR comment token + signing secrets.
+- Sets repo secrets `QMS_BOT_APP_ID` and `QMS_BOT_APP_PRIVATE_KEY`, plus Cloudflare deploy secrets when values are present.
+- Sets worker secrets for OAuth, GitHub App access, and signing state.
+- Writes worker runtime values into `wrangler.toml` and `.dev.vars`.
 - Writes `.dev.vars` for local `wrangler dev`.
 - Validates that KV namespace IDs in `wrangler.toml` are not placeholders before deploy.

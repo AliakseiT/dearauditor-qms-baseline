@@ -55,7 +55,7 @@
     },
     {
       "kind": "path",
-      "value": "docs/QMS-Lite-System-Architecture.md"
+      "value": "docs/architecture"
     },
     {
       "kind": "path",
@@ -170,8 +170,7 @@
   ],
   "required_repo_secrets": [
     "QMS_BOT_APP_ID",
-    "QMS_BOT_APP_PRIVATE_KEY",
-    "SIGNATURE_LINK_SECRET"
+    "QMS_BOT_APP_PRIVATE_KEY"
   ],
   "placeholder_scan_paths": [
     "matrices/company_profile.yml",

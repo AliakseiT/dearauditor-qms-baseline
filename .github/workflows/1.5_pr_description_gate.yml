@@ -58,7 +58,7 @@ jobs:
             });
             
             if (errors.length > 0) {
-              core.setFailed(`PR description does not meet QMS Lite structural requirements:\n- ${errors.join('\n- ')}`);
+              core.setFailed(`PR description does not meet DearAuditor Open QMS Baseline structural requirements:\n- ${errors.join('\n- ')}`);
             } else {
               core.info('PR description structure is compliant.');
             }

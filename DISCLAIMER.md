@@ -1,6 +1,6 @@
 # Disclaimer
 
-QMS Lite is a reusable baseline and workflow model. It is not legal advice, regulatory advice, quality-system certification, or a warranty of compliance for any company, product, jurisdiction, or intended use.
+DearAuditor Open QMS Baseline is a reusable baseline and workflow model. It is not legal advice, regulatory advice, quality-system certification, or a warranty of compliance for any company, product, jurisdiction, or intended use.
 
 Each adopting company remains responsible for:
 

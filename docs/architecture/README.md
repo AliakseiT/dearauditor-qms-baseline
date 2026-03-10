@@ -1,8 +1,8 @@
-# QMS Lite System Architecture
+# DearAuditor Open QMS Baseline System Architecture
 
 ## 1. TL;DR
 - GitHub is the canonical controlled surface for both content and workflow execution.
-- `qms-lite` governs the QMS baseline; product/study execution records may live in designated repositories that reuse the same templates and signature model.
+- this upstream baseline repository governs the QMS baseline; product/study execution records may live in designated repositories that reuse the same templates and signature model.
 - PR review on a specific head SHA is the approval boundary before merge.
 - Post-merge attestation is the formal electronic signature manifestation step.
 - Immutable GitHub Releases are the long-term evidence package for records and QMS releases.
@@ -12,7 +12,7 @@
 This document describes how the QMS operates as a system: where controlled content lives, which GitHub Actions enforce policy, how signatures and publication work, and where the external trust boundaries are. Process rules remain in the SOPs and WIs; this document explains the platform behavior around them.
 
 ## 3. Architecture Overview
-QMS Lite is a GitHub-native QMS operating model built from:
+DearAuditor Open QMS Baseline is a GitHub-native QMS operating model built from:
 - controlled content in `qm/`, `sops/`, `matrices/`, selected company-level records, reusable templates, and `.github/`
 - GitHub Issues for planning and coordination
 - GitHub Pull Requests for controlled review and approval
@@ -27,14 +27,14 @@ For open-source distribution, this repository acts as the public upstream baseli
 ## 4. Core Components
 | Component | Role in the architecture |
 |---|---|
-| GitHub repository (`qms-lite`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
+| GitHub repository (`AliakseiT/dearauditor-qms-baseline`) | System of record for QMS procedures, matrices, workflow definitions, reusable templates, and selected company-level records. |
 | `distribution-map.json` + `tools/` | Defines which paths remain upstream-owned, which files are bootstrapped as company-owned, and which repo settings must exist in downstream adopters. |
 | GitHub Issues | Planning and intake layer for CAPA, audit, risk, training, V&V, release, complaint, PMS, and change activities. |
 | GitHub Pull Requests | Controlled review, approval, and merge boundary for QMS document and record changes. |
 | GitHub Actions | Policy evaluation, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
 | GitHub Releases | Immutable publication surface for quality records and formal QMS release packages. |
 | Cloudflare signature worker | External signer UI and OAuth/PIN ceremony for the primary electronic-signature path. |
-| GitHub App token | Required for posting signature-attestation comments back to PRs. |
+| GitHub App token | Required for signature-attestation comments, PR automation, and merges, including PRs that modify workflow files. |
 | Signer registry (`matrices/signer_registry.json`) | Source for resolved signatory legal names and job titles in attestation output. |
 
 ## 5. Primary Data Flows
@@ -178,4 +178,4 @@ High-volume immutable publication tags and downstream-adoptable baseline tags mu
 This separation allows the repository to keep thousands of immutable publication tags without turning them into downstream upgrade inputs.
 
 ## 10. Platform Caveat
-On private repositories using GitHub Free, GitHub does not provide branch protection or rulesets to hard-block merges. In that deployment model, QMS Lite workflows can validate approvals and avoid enabling auto-merge, but an accidental manual merge without the intended approvals remains technically possible.
+On private repositories using GitHub Free, GitHub does not provide branch protection or rulesets to hard-block merges. In that deployment model, DearAuditor Open QMS Baseline workflows can validate approvals and avoid enabling auto-merge, but an accidental manual merge without the intended approvals remains technically possible.
