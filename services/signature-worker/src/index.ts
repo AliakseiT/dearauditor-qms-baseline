@@ -3,6 +3,7 @@ interface Env {
   WORKER_VERSION?: string;
   DEFAULT_OAUTH_PROVIDER?: string;
   ALLOWED_OAUTH_PROVIDERS?: string;
+  REPO_ALIASES_JSON?: string;
   GITHUB_OAUTH_CLIENT_ID: string;
   GITHUB_OAUTH_CLIENT_SECRET: string;
   QMS_BOT_APP_ID?: string;
@@ -135,6 +136,9 @@ const DEFAULT_AUTOMATION_BOT_LOGINS = [
   "dearauditor-qms-baseline-sign[bot]",
   "github-actions[bot]",
 ];
+const DEFAULT_REPO_ALIASES = {
+  "aliakseit/qms-lite": "AliakseiT/dearauditor-qms-baseline",
+} as const;
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
 const PROJECT_REPO_URL = "https://github.com/AliakseiT/dearauditor-qms-baseline";
@@ -1050,33 +1054,77 @@ async function resolveCanonicalRepo(repo: string, env: Env): Promise<string> {
     throw new Error("Invalid repository.");
   }
 
+  const repoAliases = resolveRepoAliases(env);
+  const aliasTarget = repoAliases.get(normalizedRepo.toLowerCase()) || normalizedRepo;
+
   const cached = githubCanonicalRepoCache.get(normalizedRepo.toLowerCase());
   if (cached) {
     return cached;
+  }
+  const aliasedCached = githubCanonicalRepoCache.get(aliasTarget.toLowerCase());
+  if (aliasedCached) {
+    githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), aliasedCached);
+    return aliasedCached;
   }
 
   const appId = resolveBotAppId(env);
   const privateKey = resolveBotAppPrivateKey(env);
   if (!appId || !privateKey) {
-    githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), normalizedRepo);
-    return normalizedRepo;
+    githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), aliasTarget);
+    githubCanonicalRepoCache.set(aliasTarget.toLowerCase(), aliasTarget);
+    return aliasTarget;
   }
 
   try {
     const appJwt = await createGithubAppJwt(appId, privateKey);
-    const repoInfo = await githubGet<{ full_name?: string }>(`/repos/${normalizedRepo}`, appJwt, env);
+    const repoInfo = await githubGet<{ full_name?: string }>(`/repos/${aliasTarget}`, appJwt, env);
     const canonical = String(repoInfo.full_name || "").trim();
     if (/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(canonical)) {
       githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), canonical);
+      githubCanonicalRepoCache.set(aliasTarget.toLowerCase(), canonical);
       githubCanonicalRepoCache.set(canonical.toLowerCase(), canonical);
       return canonical;
     }
   } catch {
-    // Fall back to the provided locator if the repository metadata lookup is unavailable.
+    // Fall back to the explicit alias target or provided locator if metadata lookup is unavailable.
   }
 
-  githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), normalizedRepo);
-  return normalizedRepo;
+  githubCanonicalRepoCache.set(normalizedRepo.toLowerCase(), aliasTarget);
+  githubCanonicalRepoCache.set(aliasTarget.toLowerCase(), aliasTarget);
+  return aliasTarget;
+}
+
+function resolveRepoAliases(env: Env): Map<string, string> {
+  const aliases = new Map<string, string>();
+  for (const [source, target] of Object.entries(DEFAULT_REPO_ALIASES)) {
+    aliases.set(source.toLowerCase(), target);
+  }
+
+  const raw = String(env.REPO_ALIASES_JSON || "").trim();
+  if (!raw) {
+    return aliases;
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return aliases;
+    }
+    for (const [source, target] of Object.entries(parsed)) {
+      const normalizedSource = String(source || "").trim();
+      const normalizedTarget = String(target || "").trim();
+      if (
+        /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedSource) &&
+        /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedTarget)
+      ) {
+        aliases.set(normalizedSource.toLowerCase(), normalizedTarget);
+      }
+    }
+  } catch {
+    // Ignore malformed alias configuration and keep built-in compatibility aliases.
+  }
+
+  return aliases;
 }
 
 async function createGithubAppJwt(appId: string, privateKeyPem: string): Promise<string> {

@@ -15,6 +15,7 @@ Worker vars:
 - `PUBLIC_BASE_URL=https://sign.qms.dearauditor.ch`
 - `DEFAULT_OAUTH_PROVIDER=github`
 - `ALLOWED_OAUTH_PROVIDERS=github`
+- `REPO_ALIASES_JSON={"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}` (optional; add old-slug to current-slug mappings after repo renames)
 
 Worker secrets:
 
@@ -59,6 +60,7 @@ Repository variable:
 - `SIGNATURE_UI_BASE_URL=https://sign.qms.dearauditor.ch`
 - `PIN_KV_NAMESPACE_ID=<cloudflare kv namespace id>`
 - `PIN_KV_PREVIEW_NAMESPACE_ID=<cloudflare kv preview namespace id>`
+- `SIGNATURE_REPO_ALIASES_JSON={"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}` (optional; recommended after repo renames)
 
 Repository secrets:
 
@@ -80,7 +82,7 @@ The deploy command injects `WORKER_VERSION` automatically using the format `YYYY
 GitHub Actions:
 
 - run workflow `4.1 Deploy Signature Worker` manually (`workflow_dispatch`)
-- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, and `PIN_KV_PREVIEW_NAMESPACE_ID` before deploy
+- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and optionally `SIGNATURE_REPO_ALIASES_JSON` before deploy
 
 ## 6. One-Command Bootstrap
 
