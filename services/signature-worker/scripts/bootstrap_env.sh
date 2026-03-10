@@ -42,6 +42,7 @@ Optional env keys:
   GITHUB_API_BASE_URL
   DEFAULT_OAUTH_PROVIDER
   ALLOWED_OAUTH_PROVIDERS
+  REPO_ALIASES_JSON
   SIGNATURE_UI_BASE_URL
   PIN_KV_NAMESPACE_ID
   PIN_KV_PREVIEW_NAMESPACE_ID
@@ -205,6 +206,7 @@ update_wrangler_string_value() {
   local value="$2"
   python3 - "$WRANGLER_TOML" "$key" "$value" <<'PY'
 from pathlib import Path
+import json
 import re
 import sys
 
@@ -213,7 +215,8 @@ key = sys.argv[2]
 value = sys.argv[3]
 content = path.read_text()
 pattern = rf'(^\s*{re.escape(key)}\s*=\s*)".*?"(\s*$)'
-updated, count = re.subn(pattern, rf'\1"{value}"\2', content, count=1, flags=re.MULTILINE)
+serialized = json.dumps(value)
+updated, count = re.subn(pattern, lambda m: f"{m.group(1)}{serialized}{m.group(2)}", content, count=1, flags=re.MULTILINE)
 if count != 1:
     raise SystemExit(f"Could not update {key} in {path}")
 path.write_text(updated)
@@ -226,6 +229,7 @@ sync_wrangler_config_from_env() {
   local kv_id="${PIN_KV_NAMESPACE_ID:-}"
   local preview_id="${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
   local public_base_url="${PUBLIC_BASE_URL:-}"
+  local repo_aliases_json="${REPO_ALIASES_JSON:-}"
 
   if ! is_placeholder "$kv_id"; then
     update_wrangler_string_value "id" "$kv_id"
@@ -235,6 +239,9 @@ sync_wrangler_config_from_env() {
   fi
   if ! is_placeholder "$public_base_url"; then
     update_wrangler_string_value "PUBLIC_BASE_URL" "$public_base_url"
+  fi
+  if ! is_placeholder "$repo_aliases_json"; then
+    update_wrangler_string_value "REPO_ALIASES_JSON" "$repo_aliases_json"
   fi
 }
 
@@ -262,6 +269,7 @@ write_dev_vars() {
 PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-}
 DEFAULT_OAUTH_PROVIDER=${DEFAULT_OAUTH_PROVIDER:-github}
 ALLOWED_OAUTH_PROVIDERS=${ALLOWED_OAUTH_PROVIDERS:-github}
+REPO_ALIASES_JSON=${REPO_ALIASES_JSON:-}
 GITHUB_API_BASE_URL=${GITHUB_API_BASE_URL:-https://api.github.com}
 GITHUB_OAUTH_CLIENT_ID=${GITHUB_OAUTH_CLIENT_ID:-}
 GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
@@ -293,6 +301,7 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   upsert_repo_variable_if_present "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
   upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_NAMESPACE_ID" "${PIN_KV_NAMESPACE_ID:-}"
   upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_PREVIEW_NAMESPACE_ID" "${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
+  upsert_repo_variable_if_present "$GH_REPO" "SIGNATURE_REPO_ALIASES_JSON" "${REPO_ALIASES_JSON:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"

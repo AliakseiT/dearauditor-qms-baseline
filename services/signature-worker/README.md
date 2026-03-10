@@ -30,6 +30,7 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - `WORKER_VERSION` (automatically injected as `YYYY-MM-DD-<short git hash>` during `npm run dev` and `npm run deploy`)
 - `DEFAULT_OAUTH_PROVIDER` (`github`)
 - `ALLOWED_OAUTH_PROVIDERS` (`github`)
+- `REPO_ALIASES_JSON` (optional JSON object for old-slug to current-slug mapping; example: `{"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}`)
 - `GITHUB_API_BASE_URL` (optional; default `https://api.github.com`)
 
 ### Worker Secrets
@@ -52,6 +53,8 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - a valid `PUBLIC_BASE_URL` under `[vars]`
 
 The committed `wrangler.toml` uses neutral placeholder values. Replace them before deploy, or let [`scripts/bootstrap_env.sh`](./scripts/bootstrap_env.sh) write the values from `.env.local`.
+
+`REPO_ALIASES_JSON` is optional but useful after a repository rename. The worker includes a built-in compatibility alias from `AliakseiT/qms-lite` to `AliakseiT/dearauditor-qms-baseline`, and the JSON map lets you add future rename aliases without code changes.
 
 ## GitHub OAuth App
 
@@ -106,7 +109,7 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 
 What it does:
 
-- Upserts repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, and `PIN_KV_PREVIEW_NAMESPACE_ID` when values are present.
+- Upserts repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and `SIGNATURE_REPO_ALIASES_JSON` when values are present.
 - Sets repo secrets `QMS_BOT_APP_ID` and `QMS_BOT_APP_PRIVATE_KEY`, plus Cloudflare deploy secrets when values are present.
 - Sets worker secrets for OAuth, GitHub App access, and signing state.
 - Writes worker runtime values into `wrangler.toml` and `.dev.vars`.

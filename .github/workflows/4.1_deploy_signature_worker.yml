@@ -37,9 +37,11 @@ jobs:
           PIN_KV_NAMESPACE_ID: ${{ vars.PIN_KV_NAMESPACE_ID }}
           PIN_KV_PREVIEW_NAMESPACE_ID: ${{ vars.PIN_KV_PREVIEW_NAMESPACE_ID }}
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
+          SIGNATURE_REPO_ALIASES_JSON: ${{ vars.SIGNATURE_REPO_ALIASES_JSON }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import json
           import os
           import re
 
@@ -47,9 +49,11 @@ jobs:
               "id": os.environ.get("PIN_KV_NAMESPACE_ID", "").strip(),
               "preview_id": os.environ.get("PIN_KV_PREVIEW_NAMESPACE_ID", "").strip(),
               "PUBLIC_BASE_URL": os.environ.get("SIGNATURE_UI_BASE_URL", "").strip(),
+              "REPO_ALIASES_JSON": os.environ.get("SIGNATURE_REPO_ALIASES_JSON", "").strip() or "{\"AliakseiT/qms-lite\":\"AliakseiT/dearauditor-qms-baseline\"}",
           }
 
-          missing = [key for key, value in values.items() if not value]
+          required_keys = ("id", "preview_id", "PUBLIC_BASE_URL")
+          missing = [key for key in required_keys if not values[key]]
           if missing:
               raise SystemExit(f"Missing required GitHub Actions variables for deploy: {', '.join(missing)}")
 
@@ -57,7 +61,8 @@ jobs:
           content = path.read_text(encoding="utf-8")
           for key, value in values.items():
               pattern = rf'(^\s*{re.escape(key)}\s*=\s*)".*?"(\s*$)'
-              updated, count = re.subn(pattern, rf'\1"{value}"\2', content, count=1, flags=re.MULTILINE)
+              serialized = json.dumps(value)
+              updated, count = re.subn(pattern, lambda match: f"{match.group(1)}{serialized}{match.group(2)}", content, count=1, flags=re.MULTILINE)
               if count != 1:
                   raise SystemExit(f"Could not update {key} in {path}")
               content = updated

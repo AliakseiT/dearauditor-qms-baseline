@@ -1,6 +1,7 @@
 PUBLIC_BASE_URL=https://sign.qms.dearauditor.ch
 DEFAULT_OAUTH_PROVIDER=github
 ALLOWED_OAUTH_PROVIDERS=github
+REPO_ALIASES_JSON={"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}
 GITHUB_API_BASE_URL=https://api.github.com
 
 GITHUB_OAUTH_CLIENT_ID=
