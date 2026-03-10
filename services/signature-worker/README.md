@@ -106,7 +106,7 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 
 What it does:
 
-- Upserts repo variable `SIGNATURE_UI_BASE_URL`.
+- Upserts repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, and `PIN_KV_PREVIEW_NAMESPACE_ID` when values are present.
 - Sets repo secrets `QMS_BOT_APP_ID` and `QMS_BOT_APP_PRIVATE_KEY`, plus Cloudflare deploy secrets when values are present.
 - Sets worker secrets for OAuth, GitHub App access, and signing state.
 - Writes worker runtime values into `wrangler.toml` and `.dev.vars`.
