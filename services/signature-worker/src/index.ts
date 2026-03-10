@@ -1812,10 +1812,16 @@ function renderSignatureBadgeSvg(): string {
   <circle cx="256" cy="256" r="186" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
   <path d="M122 152h268" fill="none" stroke="url(#badgeAccent)" stroke-width="18" stroke-linecap="round"/>
   <path d="M154 352l80-95" fill="none" stroke="#f2c86a" stroke-width="18" stroke-linecap="round"/>
-  <path d="M224 184l72 40-42 56h-38l-16-24z" fill="#f6efe2"/>
-  <path d="M281 216l58 20-56 36-18-24z" fill="#86d5de"/>
+  <rect x="150" y="174" width="212" height="122" rx="34" fill="#f6efe2"/>
+  <path d="M188 206h136" fill="none" stroke="#d9d1c3" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+  <circle cx="186" cy="238" r="10" fill="#203040"/>
+  <circle cx="214" cy="238" r="10" fill="#203040"/>
+  <circle cx="242" cy="238" r="10" fill="#203040"/>
+  <circle cx="270" cy="238" r="10" fill="#203040"/>
+  <circle cx="298" cy="238" r="10" fill="#203040"/>
+  <circle cx="326" cy="238" r="10" fill="#86d5de"/>
+  <path d="M198 268h116" fill="none" stroke="#f2c86a" stroke-width="14" stroke-linecap="round"/>
   <g fill="#f6fbff" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="205" y="238" font-size="112" font-weight="800" letter-spacing="-6">DA</text>
     <text x="256" y="368" font-size="44" font-weight="800" letter-spacing="6">QMS SIGN</text>
     <text x="256" y="412" font-size="24" font-weight="700" letter-spacing="2.5" opacity=".82">by DearAuditor</text>
   </g>
