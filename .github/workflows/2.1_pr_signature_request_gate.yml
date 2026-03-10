@@ -129,7 +129,7 @@ jobs:
             if (reviewerPool.length === 0) {
               const marker = '<!-- signature-auto-reviewers -->';
               const legacyMarker = '<!-- part11-auto-reviewers -->';
-              const automationBotLogins = new Set(['dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
+              const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
