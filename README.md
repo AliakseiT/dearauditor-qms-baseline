@@ -1,11 +1,8 @@
 # DearAuditor Open QMS Baseline
 
-DearAuditor Open QMS Baseline serves two purposes at the same time:
+This repository publishes the open-source baseline behind [qms.dearauditor.ch](https://qms.dearauditor.ch/). It exists to provide a GitHub-native, reusable QMS baseline for remote-first medical device teams and to expose the controlled documents, templates, and workflows that make up the published example system.
 
-- the published front page and controlled index for the fictional `ACME GmbH` quality management system
-- the open-source base template for remote-first, engineering-friendly medical device companies building a GitHub-native QMS
-
-Repository links in this documentation assume the finalized GitHub slug `AliakseiT/dearauditor-qms-baseline`.
+If you are here to use or read the QMS, start with the end-user links below. If you need repository/adoption background, use the [landing page](https://qms.dearauditor.ch/), the [open-source adoption model](docs/open-source/README.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the release landing page for that published QMS baseline.
 
@@ -13,21 +10,21 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 
 | I need to... | Open |
 |---|---|
-| Read the current controlled document set | [Published library](#published-library) |
-| Start with the top-level QMS explanation | [Quality Manual](#quality-manual) |
-| Jump straight to a SOP | [SOP library by topic](#sop-library-by-topic) |
+| Understand what this QMS is for | [Landing page](https://qms.dearauditor.ch/) |
+| Read the top-level QMS explanation | [QM-001 Quality Manual](qm/QM-001-QualityManual.md) |
+| Jump straight to the current published document set | [Published library](#published-library) |
+| Find a specific SOP by topic | [SOP library by topic](#sop-library-by-topic) |
 | Open the work instructions | [Work instructions](#work-instructions) |
 | See my training work as a logged-in GitHub user | [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) |
 | See role-based training requirements | [Training matrix](matrices/training_matrix.yml) |
 | See recorded training status | [User training log](records/training/user_training_log.yml) |
 | Browse record families and templates | [Records index](records/README.md) |
-| Understand how public upstream and private adopter repos fit together | [Open-source adoption model](docs/open-source/README.md) |
-| Ask about adoption, support, or pilot use | [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch) |
 | Understand workflows, automations, and trust boundaries | [System architecture](docs/architecture/README.md) |
 | Open the end-to-end automation diagram | [Workflow automation map](docs/architecture/README.md#6-automation-map) |
-| Check published releases in GitHub | [Releases](https://github.com/AliakseiT/dearauditor-qms-baseline/releases) |
+| Check published GitHub releases | [Releases](https://github.com/AliakseiT/dearauditor-qms-baseline/releases) |
+| Ask about adoption, support, or pilot use | [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch) |
 
-## Publication Status
+## Baseline Snapshot
 
 - Legal entity: `ACME GmbH`
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
@@ -36,41 +33,13 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNN`
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
 
-## Open-Source Distribution Model
-
-This repository remains the public upstream baseline. Adopting companies should not run their live QMS directly as a long-lived public fork. Instead:
-
-- a company creates a private adopter repository from a selected upstream baseline ref, normally a `QMS-YYYY-MM-DD-RNN` tag
-- the adopter repo records its current upstream baseline in `adoption/upstream-baseline.json`
-- later upstream changes are proposed into the adopter repo as controlled upgrade PRs that update only upstream-owned paths
-- company-owned matrices, signer assignments, training logs, supplier state, and operational records stay local to the adopter repository
-
-The machine-readable boundary is defined in [distribution-map.json](distribution-map.json). The generic bootstrap seeds for company-owned files live under [examples/bootstrap](examples/bootstrap/README.md), and the supported CLI entry points live under [tools/](tools).
-
-The upstream repository still keeps a dogfooded company baseline in the live `matrices/` and selected `records/` paths so the content and automations can be exercised end to end while the model is evolving. That is intentional. Adopters should treat those upstream files as upstream-only operating state and bootstrap their own company-owned copies from [examples/bootstrap](examples/bootstrap/README.md).
-
-Recommended scripts:
-
-- [tools/bootstrap_company_repo.sh](tools/bootstrap_company_repo.sh) to create a private adopter repo from an upstream baseline
-- [tools/open_upstream_upgrade_pr.sh](tools/open_upstream_upgrade_pr.sh) to propose a selected upstream update into a downstream repo
-- [tools/check_adoption_readiness.sh](tools/check_adoption_readiness.sh) to block incomplete onboarding and missing repo settings
-
-Signing service options:
-
-- self-host the GitHub signing worker described in [services/signature-worker](services/signature-worker/README.md)
-- optionally discuss use of the hosted signing endpoint `https://sign.qms.dearauditor.ch` for GitHub-native signing workflows; commercial terms and service conditions remain separate from the open-source baseline
-
-Contact for adoption, pilot use, or support: [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
-
 ## Training and Role Navigation
-
-GitHub README pages cannot personalize content by the viewer's login, so the GitHub-native training entry points are:
 
 - [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) for the logged-in user
 - [Training matrix](matrices/training_matrix.yml) for GitHub user-to-role mappings plus required versus awareness training scope
 - [User training log](records/training/user_training_log.yml) for recorded completion state
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) for the governing procedure
-- [System architecture](docs/architecture/README.md) and [workflow automation map](docs/architecture/README.md#6-automation-map) for the training workflow model
+- [System architecture](docs/architecture/README.md) and [workflow automation map](docs/architecture/README.md#6-automation-map) for the workflow model
 
 ## Published Library
 
@@ -149,9 +118,9 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 </details>
 
-## Records and Baselines
+## Records and Templates
 
-- [Records index](records/README.md) for company-level records kept here, reusable record templates, and links to record families used in designated product/study repositories
+- [Records index](records/README.md) for reusable record templates and record families
 - [Company profile baseline](matrices/company_profile.yml)
 - [Regulatory market scope baseline](matrices/regulatory_market_scope.yml)
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)
@@ -161,8 +130,13 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 ## Architecture and Automation
 
-Process detail lives in the Quality Manual, SOPs, and WIs. System behavior, workflow boundaries, and automation relationships live in the architecture docs.
-
-- [DearAuditor Open QMS Baseline system architecture](docs/architecture/README.md)
+- [System architecture](docs/architecture/README.md)
 - [Workflow automation map](docs/architecture/README.md#6-automation-map)
 - [Signature worker service](services/signature-worker/README.md)
+
+## Repository Context
+
+- [Landing page](https://qms.dearauditor.ch/) for the higher-level explanation of why this project exists
+- [Open-source adoption model](docs/open-source/README.md) for public-upstream versus private-adopter repo boundaries
+- [examples/bootstrap](examples/bootstrap/README.md) for downstream bootstrap seeds
+- [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and validation expectations
