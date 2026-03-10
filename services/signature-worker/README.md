@@ -36,10 +36,12 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
-- `GITHUB_REPO_TOKEN` (token used by worker backend to read signer registry and post PR comments)
-- `SIGNATURE_LINK_SECRET` (optional; only needed to keep legacy signed links working)
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
+- `QMS_BOT_APP_INSTALLATION_ID` (optional; the worker can resolve the installation automatically when omitted)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER` (server-side pepper for PIN KDF)
+- `SIGNATURE_LINK_SECRET` (optional; only needed to keep legacy signed links working)
 
 ### KV Binding
 
@@ -48,6 +50,9 @@ Cloudflare Worker that hosts the QMS signature ceremony UI and callback backend.
 - `[[kv_namespaces]]`
 - `binding = "PIN_KV"`
 - valid `id` and `preview_id`
+- a valid `PUBLIC_BASE_URL` under `[vars]`
+
+The committed `wrangler.toml` uses neutral placeholder values. Replace them before deploy, or let [`scripts/bootstrap_env.sh`](./scripts/bootstrap_env.sh) write the values from `.env.local`.
 
 ## GitHub OAuth App
 
@@ -57,6 +62,17 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 - Authorization callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
 - OAuth scope requested by worker: `read:user`
 - Signer full legal name is resolved from `matrices/signer_registry.json` (no manual name entry in UI).
+
+## GitHub App Access
+
+Repository reads and attestation-comment posting use a GitHub App installation, not a personal access token.
+
+Required GitHub App repository permissions:
+
+- Issues: `Read and write`
+- Pull requests: `Read-only`
+- Contents: `Read-only`
+- Metadata: `Read-only`
 
 ## Local Development
 
@@ -89,7 +105,8 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 What it does:
 
 - Upserts repo variable `SIGNATURE_UI_BASE_URL`.
-- Sets repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` when values are present, plus `SIGNATURE_LINK_SECRET` only when legacy signed-link compatibility is desired.
-- Sets worker secrets for OAuth + PR comment token + signing secrets.
+- Sets repo secrets `QMS_BOT_APP_ID` and `QMS_BOT_APP_PRIVATE_KEY`, plus Cloudflare deploy secrets when values are present.
+- Sets worker secrets for OAuth, GitHub App access, signing state, and the optional legacy link secret.
+- Writes worker runtime values into `wrangler.toml` and `.dev.vars`.
 - Writes `.dev.vars` for local `wrangler dev`.
 - Validates that KV namespace IDs in `wrangler.toml` are not placeholders before deploy.

@@ -21,7 +21,11 @@ jobs:
 
       - name: Install dependencies
         working-directory: services/signature-worker
-        run: npm install --no-fund --no-audit
+        run: npm ci --no-fund --no-audit
+
+      - name: Typecheck worker
+        working-directory: services/signature-worker
+        run: npm run typecheck
 
       - name: Show worker version
         working-directory: services/signature-worker

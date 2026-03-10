@@ -20,10 +20,12 @@ Worker secrets:
 
 - `GITHUB_OAUTH_CLIENT_ID`
 - `GITHUB_OAUTH_CLIENT_SECRET`
-- `GITHUB_REPO_TOKEN`
-- `SIGNATURE_LINK_SECRET` (optional; only for legacy signed-link compatibility)
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
+- `QMS_BOT_APP_INSTALLATION_ID` (optional)
 - `SIGNATURE_STATE_SECRET`
 - `PIN_PEPPER`
+- `SIGNATURE_LINK_SECRET` (optional; only for legacy signed-link compatibility)
 
 KV binding in `wrangler.toml`:
 
@@ -32,15 +34,21 @@ KV binding in `wrangler.toml`:
 binding = "PIN_KV"
 id = "<prod-namespace-id>"
 preview_id = "<preview-namespace-id>"
+
+[vars]
+PUBLIC_BASE_URL = "https://sign.example.com"
 ```
 
-## 3. Token Requirements for `GITHUB_REPO_TOKEN`
+The committed `wrangler.toml` in this repository uses placeholders. Replace them before deploy, or let `./services/signature-worker/scripts/bootstrap_env.sh` write the values from `.env.local`.
 
-Use a token with access to the target QMS repository and minimum permissions required by the worker:
+## 3. GitHub App Requirements
 
-- Issues: `read/write` (read existing comments, post attestation comment)
-- Pull requests: `read` (read PR context and metadata)
-- Contents: `read` (read `matrices/signer_registry.json`)
+Use a GitHub App installation for repository access. Minimum repository permissions:
+
+- Issues: `Read and write`
+- Pull requests: `Read-only`
+- Contents: `Read-only`
+- Metadata: `Read-only`
 
 ## 4. qms-lite Repository Settings
 
@@ -50,6 +58,8 @@ Repository variable:
 
 Repository secrets:
 
+- `QMS_BOT_APP_ID`
+- `QMS_BOT_APP_PRIVATE_KEY`
 - `SIGNATURE_LINK_SECRET` (optional; only if you need legacy signed-link compatibility)
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
