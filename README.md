@@ -19,7 +19,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 | Open the work instructions | [Work instructions](#work-instructions) |
 | See my training work as a logged-in GitHub user | [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) |
 | See role-based training requirements | [Training matrix](matrices/training_matrix.yml) |
-| See recorded training status | [User training log](records/training/user_training_log.yml) |
+| See recorded training status | [Training status report](records/training/training_status.md) |
 | Browse record families and templates | [Records index](records/README.md) |
 | Understand how public upstream and private adopter repos fit together | [Open-source adoption model](docs/open-source/README.md) |
 | Ask about adoption, support, or pilot use | [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch) |
@@ -68,7 +68,7 @@ GitHub README pages cannot personalize content by the viewer's login, so the Git
 
 - [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) for the logged-in user
 - [Training matrix](matrices/training_matrix.yml) for GitHub user-to-role mappings plus required versus awareness training scope
-- [User training log](records/training/user_training_log.yml) for recorded completion state
+- [Training status report](records/training/training_status.md) for auditor-friendly current completion state
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) for the governing procedure
 - [System architecture](docs/architecture/README.md) and [workflow automation map](docs/architecture/README.md#6-automation-map) for the training workflow model
 

@@ -46,10 +46,11 @@ jobs:
               return;
             }
 
+            const checklistSectionRegex = /### (?:Controlled Document Checklist|SOP Delta Checklist)([\s\S]*?)(?:\n###\s|\n##\s|$)/i;
             const body = String(issue.body || '');
-            const sectionMatch = body.match(/### SOP Delta Checklist([\s\S]*?)(?:\n###\s|\n##\s|$)/i);
+            const sectionMatch = body.match(checklistSectionRegex);
             if (!sectionMatch) {
-              core.info(`Issue #${issue.number} has no SOP Delta Checklist section; skipping.`);
+              core.info(`Issue #${issue.number} has no controlled-document checklist section; skipping.`);
               return;
             }
             const checklistSection = sectionMatch[1] || '';
@@ -189,6 +190,17 @@ jobs:
           repositories: |
             ${{ github.event.repository.name }}
 
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app_token.outputs.token }}
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Close signed training issues and publish immutable release
         uses: actions/github-script@v7
         with:
@@ -198,6 +210,40 @@ jobs:
               const m = String(text || '').match(/```json\s*([\s\S]*?)```/i);
               if (!m || !m[1]) return null;
               try { return JSON.parse(m[1]); } catch { return null; }
+            }
+
+            const checklistSectionRegex = /### (?:Controlled Document Checklist|SOP Delta Checklist)([\s\S]*?)(?:\n###\s|\n##\s|$)/i;
+
+            function parseChecklistItems(body) {
+              const sectionMatch = String(body || '').match(checklistSectionRegex);
+              if (!sectionMatch) return [];
+              const section = sectionMatch[1] || '';
+              const items = [];
+              const regex = /^- \[(?: |x|X)\]\s+`?((?:QM|SOP|WI)-\d+)`?(?:.*?):\s+`?([^`\n]+?)`?\s*->\s*`?([^`\n]+?)`?\s*$/gm;
+              let match;
+              while ((match = regex.exec(section)) !== null) {
+                items.push({
+                  doc_id: String(match[1] || '').trim().toUpperCase(),
+                  from_revision: String(match[2] || '').trim().toUpperCase(),
+                  to_revision: String(match[3] || '').trim().toUpperCase(),
+                });
+              }
+              return items;
+            }
+
+            function parseRolesInScope(body) {
+              const match = String(body || '').match(/- Roles in scope:\s+`([^`]+)`/i);
+              if (!match || !match[1]) return [];
+              return String(match[1]).split(',').map((part) => part.trim()).filter(Boolean);
+            }
+
+            function parseTrainingUser(body) {
+              const match = String(body || '').match(/- Training user:\s+`([^`]+)`\s+\(`@([A-Za-z0-9-]+)`\)/i);
+              if (!match) return { fullName: '', login: '' };
+              return {
+                fullName: String(match[1] || '').trim(),
+                login: String(match[2] || '').trim(),
+              };
             }
 
             const issues = await github.paginate(github.rest.issues.listForRepo, {
@@ -215,7 +261,7 @@ jobs:
               if (issue.pull_request) continue;
 
               const issueBody = String(issue.body || '');
-              const checklistMatch = issueBody.match(/### SOP Delta Checklist([\s\S]*?)(?:\n###\s|\n##\s|$)/i);
+              const checklistMatch = issueBody.match(checklistSectionRegex);
               if (!checklistMatch) { skippedCount += 1; continue; }
               const checklistSection = checklistMatch[1] || '';
               const openTasks = (checklistSection.match(/^- \[ \] .+$/gm) || []).length;
@@ -269,6 +315,11 @@ jobs:
 
               if (!selected) { skippedCount += 1; continue; }
 
+              const checklistItems = parseChecklistItems(issueBody);
+              if (checklistItems.length === 0) { skippedCount += 1; continue; }
+              const parsedUser = parseTrainingUser(issueBody);
+              const rolesInScope = parseRolesInScope(issueBody);
+
               const targetHash = String(selected.commit_hash || selected.target_hash || '').toLowerCase();
               const hashShort = (targetHash || 'nohash').slice(0, 12);
               const baseTag = `sig-train-${issue.number}-h${hashShort}`;
@@ -321,6 +372,7 @@ jobs:
                   '',
                   'Assets:',
                   '- `signed_attestation.json`',
+                  '- `training_completion_manifest.json`',
                 ].join('\n'),
                 draft: false,
                 prerelease: false,
@@ -336,6 +388,36 @@ jobs:
                 },
               });
 
+              const completionContext = {
+                version: 1,
+                source_repository: `${context.repo.owner}/${context.repo.repo}`,
+                source_issue: issue.number,
+                source_issue_title: String(issue.title || ''),
+                source_issue_url: String(issue.html_url || ''),
+                trainee_login: expectedSigner,
+                trainee_full_name: parsedUser.fullName || expectedSigner,
+                roles_in_scope: rolesInScope,
+                completed_at_utc: String(selected.timestamp || new Date().toISOString()),
+                source_attestation_comment_url: selectedCommentUrl,
+                evidence_release_tag: tagName,
+                evidence_release_url: String(release.data.html_url || ''),
+                signer_login: String(selected.user_id || selected.actor_login || ''),
+                signer_full_name: String(selected.signer_full_name || ''),
+                meaning_of_signature: String(selected.meaning_of_signature || 'Completed QMS Training Review'),
+                documents: checklistItems,
+              };
+              const completionJson = `${JSON.stringify(completionContext, null, 2)}\n`;
+
+              await github.request('POST {upload_url}', {
+                upload_url: release.data.upload_url,
+                name: 'training_completion_manifest.json',
+                data: Buffer.from(completionJson, 'utf8'),
+                headers: {
+                  'content-type': 'application/json',
+                  'content-length': Buffer.byteLength(completionJson),
+                },
+              });
+
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -345,6 +427,9 @@ jobs:
 
               const lines = [
                 '<!-- training-signature-complete -->',
+                '<!-- TRAINING_COMPLETION_CONTEXT_V1',
+                JSON.stringify(completionContext, null, 2),
+                '-->',
                 '✅ Training checklist signed. Issue closed automatically.',
                 `Immutable signature release: ${String(release.data.html_url || '')}`,
                 `Release tag: \`${tagName}\``,
@@ -364,3 +449,70 @@ jobs:
               .addRaw(`Closed issues: ${closedCount}\n`, true)
               .addRaw(`Skipped issues: ${skippedCount}\n`, true)
               .write();
+
+      - name: Export all training issues with comments
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              labels: 'training-diff',
+              per_page: 100,
+            });
+
+            const payload = [];
+            for (const issue of issues) {
+              if (issue.pull_request) continue;
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                per_page: 100,
+              });
+              payload.push({
+                number: issue.number,
+                title: String(issue.title || ''),
+                html_url: String(issue.html_url || ''),
+                state: String(issue.state || ''),
+                body: String(issue.body || ''),
+                assignees: (issue.assignees || []).map((assignee) => ({
+                  login: String(assignee.login || ''),
+                })),
+                comments: comments.map((comment) => ({
+                  html_url: String(comment.html_url || ''),
+                  created_at: String(comment.created_at || ''),
+                  body: String(comment.body || ''),
+                })),
+              });
+            }
+
+            fs.writeFileSync('training_issues.json', `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+
+      - name: Rebuild training status artifacts
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python -m pip install --quiet pyyaml
+          python3 scripts/rebuild_training_status.py \
+            --issues-json training_issues.json \
+            --training-matrix matrices/training_matrix.yml \
+            --status-yaml records/training/training_status.yml \
+            --report-md records/training/training_status.md \
+            --report-csv records/training/training_status.csv \
+            --repository "$GITHUB_REPOSITORY"
+
+      - name: Commit rebuilt training status artifacts
+        run: |
+          if git diff --quiet -- records/training/training_status.yml records/training/training_status.md records/training/training_status.csv; then
+            echo "No training status artifact changes to commit."
+            exit 0
+          fi
+          git config user.name "qms-bot"
+          git config user.email "qms-bot@users.noreply.github.com"
+          git add records/training/training_status.yml records/training/training_status.md records/training/training_status.csv
+          git commit -m "Rebuild training status register"
+          git push

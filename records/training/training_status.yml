@@ -1,0 +1,414 @@
+version: 1
+generated_at_utc: '2026-03-10T22:39:54Z'
+source_repository: AliakseiT/dearauditor-qms-baseline
+source_event_count: 1
+users:
+  AliakseiT:
+    full_name: Aliaksei Tsitovich
+    current_roles:
+    - engineer
+    - engineering_lead
+    - management_representative
+    - regulatory_lead
+    - technical_qms_maintainer
+    - usability_lead
+    documents:
+      SOP-001:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-002:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-003:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-004:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-005:
+        trained_revision: R05
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-006:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-007:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-008:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-009:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-010:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-011:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-012:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-013:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-014:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-015:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-016:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-017:
+        trained_revision: R01
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-018:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-019:
+        trained_revision: R00
+        trained_at_utc: '2026-03-05T02:17:31.036Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - clinical_ops
+        - lead_auditor
+        - management_representative
+        - qa_lead
+        - software_engineer
+        - technical_qms_maintainer
+        source_issue: 143
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001648254
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143#issuecomment-4001647554
+        evidence_release_tag: ''
+        evidence_release_url: ''
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review

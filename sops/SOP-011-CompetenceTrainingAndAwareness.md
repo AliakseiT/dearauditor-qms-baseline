@@ -25,7 +25,7 @@ Applies to all personnel and contractors performing tasks that can affect produc
 ## 4. Outputs
 - Assigned training tasks/issues
 - Completed and signed training records
-- Current user training log
+- Current training status register and auditor-facing training status report
 
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
@@ -68,7 +68,7 @@ Training is required when:
 ## 7. Required Records
 - Training matrix revisions
 - Training assignment issues
-- User training logs and signed attestations
+- Training status register, status report, and signed attestations
 
 ## 8. Traceability
 | ISO 13485 Clause | Control in this SOP |
