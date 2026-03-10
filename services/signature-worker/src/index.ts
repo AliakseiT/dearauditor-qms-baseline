@@ -127,6 +127,8 @@ const PIN_WARNING_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const PIN_KDF_ITERATIONS = 100000;
 const PIN_SALT_BYTES = 16;
 const DEFAULT_AUTOMATION_BOT_LOGINS = [
+  "dearauditor-open-qms-bot",
+  "dearauditor-open-qms-bot[bot]",
   "dearauditor-qms-baseline-bot",
   "dearauditor-qms-baseline-bot[bot]",
   "dearauditor-qms-baseline-sign",
