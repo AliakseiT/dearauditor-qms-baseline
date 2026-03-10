@@ -24,7 +24,7 @@ related_issue: "#1"
 Describe why ACME GmbH maintains a Quality Management System (QMS), what the QMS covers, how the controlled document set fits together, and how quality objectives are translated into operating procedures and records.
 
 ## 2. Scope
-Applies to the ACME GmbH QMS for healthcare software products, including products that may qualify as software as a medical device (SaMD), and to the company-level governance baseline maintained in `qms-lite`.
+Applies to the ACME GmbH QMS for healthcare software products, including products that may qualify as software as a medical device (SaMD), and to the company-level governance baseline maintained in this upstream baseline repository.
 
 ## 3. Organization and Context
 - Legal Entity: ACME GmbH
@@ -107,7 +107,7 @@ Jurisdiction references currently maintained in the regulatory scope baseline in
 Document-control rules are defined in `SOP-001`, governance rules in `SOP-005`, and role-specific training expectations in `SOP-011` plus `matrices/training_matrix.yml`.
 
 The record model is:
-- company-level governance baselines and selected operational records may live in `qms-lite`
+- company-level governance baselines and selected operational records may live in this upstream baseline repository
 - reusable templates are published here for downstream product/study repositories
 - product and study execution records are maintained in designated repositories and linked back into the medical device file and release evidence
 

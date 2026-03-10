@@ -45,7 +45,7 @@ Applies to user interface design and evaluation activities that affect safety, i
 2. Keep records concise and structured in YAML/Markdown.
 3. Store only evidence needed to justify safety-related usability decisions.
 4. Link usability findings directly to ISO 14971 risk items and product changes.
-5. QMS Lite maintains governance SOPs and traceability baselines; operational usability records are maintained outside `qms-lite`.
+5. This upstream baseline maintains governance SOPs and traceability baselines; operational usability records are maintained outside the upstream repository.
 
 ## 4. Required Inputs
 - Product intended use and user profiles

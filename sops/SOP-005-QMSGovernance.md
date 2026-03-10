@@ -97,7 +97,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 1. Controlled QMS changes follow a GitHub-native lifecycle: change context is established in a separate issue or directly in the pull request, then work proceeds through branch -> pull request -> required checks/approvals -> merge -> signature attestation -> immutable release evidence.
 2. Branch-only and PR-draft content may be used for collaboration, but it is not approved controlled state.
 3. The controlled repository baseline exists on `main` and, where applicable, on approved immutable release tags and release assets created from `main`.
-4. The signature mechanism is common across QMS Lite and designated product/study record repositories.
+4. The signature mechanism is common across this upstream baseline and designated product/study record repositories.
 
 ## 7. Required Records
 - QMS governance review minutes and action log

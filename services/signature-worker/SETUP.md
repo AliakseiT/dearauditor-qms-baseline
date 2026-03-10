@@ -1,8 +1,8 @@
-# QMS Lite Sign Setup
+# DearAuditor Open QMS Baseline Sign Setup
 
 ## 1. GitHub OAuth App Configuration
 
-OAuth app name: `QMS Lite Sign`
+Suggested OAuth app name: `DearAuditor Open QMS Baseline Sign`
 
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
@@ -52,7 +52,7 @@ Use a GitHub App installation for repository access. Minimum repository permissi
 
 The workflow permission is required because the repository uses the GitHub App token for automation that may merge PRs touching `.github/workflows/`.
 
-## 4. qms-lite Repository Settings
+## 4. Repository Settings
 
 Repository variable:
 
@@ -89,4 +89,4 @@ This syncs `.env.local` values to GitHub/Cloudflare, validates KV IDs, and deplo
 
 ## 7. Hosted Alternative
 
-If an adopter does not want to self-host the worker, `https://sign.qms.dearauditor.ch` may be usable as a hosted signing endpoint by separate arrangement. In that model, the adopter would still need the repository-side GitHub configuration expected by QMS Lite, while commercial terms and service conditions remain outside this setup guide.
+If an adopter does not want to self-host the worker, `https://sign.qms.dearauditor.ch` may be usable as a hosted signing endpoint by separate arrangement. In that model, the adopter would still need the repository-side GitHub configuration expected by DearAuditor Open QMS Baseline, while commercial terms and service conditions remain outside this setup guide.

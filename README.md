@@ -1,9 +1,11 @@
-# QMS Lite
+# DearAuditor Open QMS Baseline
 
-QMS Lite serves two purposes at the same time:
+DearAuditor Open QMS Baseline serves two purposes at the same time:
 
 - the published front page and controlled index for the fictional `ACME GmbH` quality management system
 - the open-source base template for remote-first, engineering-friendly medical device companies building a GitHub-native QMS
+
+The current GitHub repository slug remains `qms-lite` for now, so repository links in this documentation still point to `AliakseiT/qms-lite`.
 
 If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the release landing page for that published QMS baseline.
 
@@ -161,6 +163,6 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 Process detail lives in the Quality Manual, SOPs, and WIs. System behavior, workflow boundaries, and automation relationships live in the architecture docs.
 
-- [QMS Lite system architecture](docs/architecture/README.md)
+- [DearAuditor Open QMS Baseline system architecture](docs/architecture/README.md)
 - [Workflow automation map](docs/architecture/README.md#6-automation-map)
 - [Signature worker service](services/signature-worker/README.md)

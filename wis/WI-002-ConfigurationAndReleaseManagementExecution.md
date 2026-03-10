@@ -49,7 +49,7 @@ Applies to product releases, significant maintenance drops, and other controlled
    - build or deployment package identifier
    - rollback or containment note
    - execution-configuration references for the formal release test runs
-3. Record the baseline in the designated product/study repository using the release manifest template from `qms-lite/records/configuration/` or an approved derivative.
+3. Record the baseline in the designated product/study repository using the release manifest template from this upstream repository's `records/configuration/` or an approved derivative.
 
 ### 3.4 Approve the Final Release Decision
 1. After the V&V report and residual-risk review are complete, open a PR in the designated product/study repository that commits or updates:

@@ -1,12 +1,12 @@
 # Records Index
 
-This page is the GitHub navigation hub for controlled record families and reusable record templates in QMS Lite.
+This page is the GitHub navigation hub for controlled record families and reusable record templates in DearAuditor Open QMS Baseline.
 
-QMS Lite uses a mixed model:
+DearAuditor Open QMS Baseline uses a mixed model:
 
 - company-level operational records may be maintained in this repository
 - reusable templates live here and are copied or adapted into designated product/study repositories
-- product-specific execution records such as design history, V&V evidence, MDF artifacts, release baselines, and post-market files belong in the designated product/study repository, not in `qms-lite`
+- product-specific execution records such as design history, V&V evidence, MDF artifacts, release baselines, and post-market files belong in the designated product/study repository, not in this upstream repository
 
 For downstream adopters, the practical rule is:
 
@@ -31,7 +31,7 @@ Some folders are intentionally empty until the first signed and published compan
 | Start with V&V templates | [Verification and validation templates](verification_validation/) |
 | Start with release/configuration templates | [Configuration and release templates](configuration/) |
 | Record a Word/PDF-origin controlled document | [External document manifest template](external/external_document_manifest_template.yml) |
-| Go back to the top-level QMS index | [QMS Lite landing page](../README.md) |
+| Go back to the top-level project index | [DearAuditor Open QMS Baseline README](../README.md) |
 
 ## Operational Record Families
 
@@ -91,7 +91,7 @@ Use the external manifest template when a controlled document is authored outsid
 
 ## Related Navigation
 
-- [QMS Lite landing page](../README.md)
+- [DearAuditor Open QMS Baseline README](../README.md)
 - [Open-source adoption model](../docs/open-source/README.md)
-- [QMS Lite system architecture](../docs/architecture/README.md)
+- [DearAuditor Open QMS Baseline system architecture](../docs/architecture/README.md)
 - [Workflow automation map](../docs/architecture/README.md#6-automation-map)

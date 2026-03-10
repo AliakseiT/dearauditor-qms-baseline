@@ -141,7 +141,7 @@ if [[ "${OPEN_PR}" -eq 1 ]]; then
   if [[ -z "${PR_TITLE}" ]]; then
     PR_TITLE="Adopt upstream baseline ${UPSTREAM_REF}"
   fi
-  gh pr create --title "${PR_TITLE}" --body "Controlled update of upstream-owned QMS Lite paths from \`${UPSTREAM_REF}\`. Company-owned matrices and operational records were intentionally left untouched."
+  gh pr create --title "${PR_TITLE}" --body "Controlled update of upstream-owned DearAuditor Open QMS Baseline paths from \`${UPSTREAM_REF}\`. Company-owned matrices and operational records were intentionally left untouched."
 fi
 
 cat <<EOF

@@ -16,7 +16,7 @@ related_issue: "#1"
 Define how ACME GmbH creates, reviews, approves, revises, distributes, and archives controlled QMS documents and quality records.
 
 ## 2. Scope
-Applies to controlled QMS documentation in `qms-lite` and to quality records maintained in designated GitHub product/study record repositories. Product/study execution records are not maintained in `qms-lite`.
+Applies to controlled QMS documentation in this upstream baseline repository and to quality records maintained in designated GitHub product/study record repositories. Product/study execution records are not maintained in this upstream baseline repository.
 
 ## 3. Inputs
 - Change request, issue, CAPA, audit finding, or management review action
@@ -58,7 +58,7 @@ Applies to controlled QMS documentation in `qms-lite` and to quality records mai
 2. Branch-only and PR-draft states are work-in-progress and are not approved controlled revisions, released baselines, or record evidence.
 3. The PR must state the change or execution context and the required electronic-signature meaning and roles. A separate issue may be referenced when one is used.
 4. At least one designated approver reviews technical and compliance adequacy.
-5. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the `qms-lite` signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
+5. Electronic Signature Declaration: Execution of a PR approval in GitHub, when captured by the baseline signature automation, constitutes a legally binding electronic signature equivalent to a handwritten signature.
 6. Merges are permitted only after required status checks and reviewer approvals are successfully completed.
 7. Controlled state exists only after merge to `main` in the governing repository and, where required by process, after the associated immutable release/tag evidence is created.
 8. Signature collection and attestation evidence are captured post-merge on the merged PR and must complete before immutable record publication.

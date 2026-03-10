@@ -1,6 +1,6 @@
 # Open-Source Adoption Model
 
-QMS Lite can be published as a public upstream baseline without forcing adopters to expose their live QMS evidence.
+DearAuditor Open QMS Baseline can be published as a public upstream baseline without forcing adopters to expose their live QMS evidence.
 
 ## Operating Model
 

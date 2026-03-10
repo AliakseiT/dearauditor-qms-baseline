@@ -26,7 +26,7 @@ usage() {
   cat <<'EOF'
 Usage: tools/bootstrap_company_repo.sh --target-dir <path> --upstream-ref <git-ref> [options]
 
-Creates a private adopter repo from an upstream QMS Lite baseline, overlays generic
+Creates a private adopter repo from an upstream DearAuditor Open QMS Baseline ref, overlays generic
 company-owned seed files, and optionally creates/pushes a GitHub repository.
 
 Options:

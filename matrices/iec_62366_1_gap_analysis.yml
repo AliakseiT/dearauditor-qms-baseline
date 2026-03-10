@@ -28,4 +28,4 @@ clause_to_artifact_map:
 notes:
   - "Mapping based on provided 62366 mapping dataset and IEC 62366-1:2015+A1:2020 clause structure."
   - "No copyrighted standard text is included; only clause references and implementation decisions."
-  - "QMS Lite stores governance SOPs/matrices; usability execution records are maintained in designated product/study repositories."
+  - "The upstream baseline stores governance SOPs and matrices; usability execution records are maintained in designated product/study repositories."

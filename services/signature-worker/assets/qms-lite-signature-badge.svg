@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">QMS Lite Signature badge</title>
-  <desc id="desc">Circular-safe badge for the QMS Lite Signature OAuth app.</desc>
+  <title id="title">DearAuditor Open QMS Baseline Signature badge</title>
+  <desc id="desc">Circular-safe badge for the DearAuditor Open QMS Baseline Signature OAuth app.</desc>
   <defs>
     <linearGradient id="sigBg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#143046"/>
@@ -18,7 +18,7 @@
   <rect x="132" y="138" width="248" height="22" rx="11" fill="url(#sigAccent)"/>
 
   <g fill="#143246" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="256" y="234" font-size="62" font-weight="800" letter-spacing="5">QMS LITE</text>
+    <text x="256" y="228" font-size="40" font-weight="800" letter-spacing="2">DEARAUDITOR</text>
     <text x="256" y="316" font-size="92" font-weight="900" letter-spacing="7">SIGN</text>
   </g>
 

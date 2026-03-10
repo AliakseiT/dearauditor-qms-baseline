@@ -94,7 +94,7 @@ The worker UI and `/healthz` expose the active worker version. The default forma
 
 This repository includes everything needed to self-host the signing worker.
 
-For adopters that prefer not to operate their own worker, the hosted endpoint `https://sign.qms.dearauditor.ch` may also be offered as a separate service for compatible GitHub-native signing workflows. Any commercial terms, onboarding conditions, or support commitments for hosted use are separate from the open-source repository and are not defined by this README.
+For adopters that prefer not to operate their own worker, the hosted endpoint `https://sign.qms.dearauditor.ch` may also be offered as a separate service for compatible DearAuditor Open QMS Baseline signing workflows. Any commercial terms, onboarding conditions, or support commitments for hosted use are separate from the open-source repository and are not defined by this README.
 
 ## Bootstrap Helper
 

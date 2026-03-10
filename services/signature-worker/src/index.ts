@@ -135,7 +135,7 @@ const DEFAULT_AUTOMATION_BOT_LOGINS = [
 ];
 const PIN_EXPLANATION_TEXT =
   "This 6-digit PIN acts as your secure electronic signature component for the Quality Management System, ensuring your approvals meet strict regulatory and FDA compliance standards without forcing you to re-authenticate with GitHub for every single signature.";
-const QMS_LITE_REPO_URL = "https://github.com/AliakseiT/qms-lite";
+const PROJECT_REPO_URL = "https://github.com/AliakseiT/qms-lite";
 const githubInstallationTokenCache = new Map<string, { token: string; expiresAtEpoch: number }>();
 
 export default {
@@ -1690,7 +1690,7 @@ function classifyError(error: unknown): ErrorPresentation {
 }
 
 function renderLandingPage(baseUrl: string, workerVersion: string): string {
-  const title = "QMS Lite Signature";
+  const title = "DearAuditor Open QMS Baseline Signature";
   const safeBaseUrl = stripTrailingSlash(baseUrl);
   return `<!doctype html>
 <html lang="en">
@@ -1782,10 +1782,10 @@ function renderLandingPage(baseUrl: string, workerVersion: string): string {
 <body>
   <main class="card">
     ${renderSignatureBadgeSvg()}
-    <h1>QMS Lite Signature</h1>
-    <p>Signature service for QMS Lite, a GitHub-based QMS aligned with ISO 13485, ISO 14971, IEC 62304, and IEC 62366-1.</p>
+    <h1>DearAuditor Open QMS Baseline Signature</h1>
+    <p>Signature service for DearAuditor Open QMS Baseline, a GitHub-based QMS aligned with ISO 13485, ISO 14971, IEC 62304, and IEC 62366-1.</p>
     <div class="links">
-      <a class="link" href="${escapeHtml(QMS_LITE_REPO_URL)}" target="_blank" rel="noreferrer">Open QMS Lite Repository</a>
+      <a class="link" href="${escapeHtml(PROJECT_REPO_URL)}" target="_blank" rel="noreferrer">Open Baseline Repository</a>
     </div>
     <div class="meta">Service URL: ${escapeHtml(safeBaseUrl)}</div>
     <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
@@ -1795,13 +1795,13 @@ function renderLandingPage(baseUrl: string, workerVersion: string): string {
 }
 
 function renderSignatureBadgeSvg(): string {
-  return `<svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="QMS Lite Signature logo">
+  return `<svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DearAuditor Open QMS Baseline Signature logo">
   <rect width="512" height="512" rx="116" fill="#edf3f6"/>
   <circle cx="256" cy="256" r="182" fill="#143046"/>
   <circle cx="256" cy="256" r="164" fill="#f5fbff"/>
   <rect x="132" y="138" width="248" height="22" rx="11" fill="#69b8db"/>
   <g fill="#143246" font-family="'Avenir Next', 'Segoe UI', sans-serif" text-anchor="middle">
-    <text x="256" y="234" font-size="62" font-weight="800" letter-spacing="5">QMS LITE</text>
+    <text x="256" y="228" font-size="40" font-weight="800" letter-spacing="2">DEARAUDITOR</text>
     <text x="256" y="316" font-size="92" font-weight="900" letter-spacing="7">SIGN</text>
   </g>
   <path d="M318 350l34-34 22 22-34 34h-22z" fill="#143246"/>
@@ -1815,7 +1815,7 @@ function renderSignPage(
   baseUrl: string,
   workerVersion: string
 ): string {
-  const title = "QMS Lite Sign";
+  const title = "DearAuditor Open QMS Baseline Sign";
   const providerLabel = provider === "github" ? "GitHub" : provider;
   const formAction = `${stripTrailingSlash(baseUrl)}/auth/start`;
   const requestUrl = `https://github.com/${ctx.repo}/issues/${ctx.pr}`;
