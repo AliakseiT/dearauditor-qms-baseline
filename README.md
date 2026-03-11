@@ -132,6 +132,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 - [System architecture](docs/architecture/README.md)
 - [Workflow automation map](docs/architecture/README.md#6-automation-map)
+- [GitHub backup and validation](docs/architecture/GITHUB_BACKUP_AND_VALIDATION.md)
 - [Signature worker service](services/signature-worker/README.md)
 
 ## Repository Context
