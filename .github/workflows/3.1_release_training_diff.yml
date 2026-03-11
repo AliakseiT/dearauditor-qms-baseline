@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Training release tag (QMS-YYYY-MM-DD-RNN)"
-        required: true
+        description: "Optional training release tag (QMS-YYYY-MM-DD-RNN or refs/tags/QMS-YYYY-MM-DD-RNN). Blank => latest QMS tag, then HEAD."
+        required: false
       training_user:
         description: "Optional GitHub username to limit issue creation to one user"
         required: false
@@ -36,19 +36,124 @@ jobs:
         with:
           script: |
             const eventName = context.eventName;
+            const defaultBranch = String(context.payload?.repository?.default_branch || 'main').trim() || 'main';
+            const serverUrl = String(process.env.GITHUB_SERVER_URL || context.serverUrl || 'https://github.com').replace(/\/+$/g, '');
+            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
+            const regexSource = process.env.TRAINING_RELEASE_TAG_REGEX || '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{2}$';
+            const regex = new RegExp(regexSource);
+
+            function normalizeTag(value) {
+              return String(value || '').trim().replace(/^refs\/tags\//, '');
+            }
+
+            function parseTag(tag) {
+              const match = /^QMS-(\d{4})-(\d{2})-(\d{2})-R(\d{2})$/.exec(tag);
+              if (!match) return null;
+              return {
+                tag,
+                year: Number.parseInt(match[1], 10),
+                month: Number.parseInt(match[2], 10),
+                day: Number.parseInt(match[3], 10),
+                revision: Number.parseInt(match[4], 10),
+              };
+            }
+
+            function compareParsedTags(left, right) {
+              return (
+                left.year - right.year ||
+                left.month - right.month ||
+                left.day - right.day ||
+                left.revision - right.revision
+              );
+            }
+
+            async function listMatchingReleaseTags() {
+              const refs = await github.paginate(github.rest.git.listMatchingRefs, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/QMS-',
+                per_page: 100,
+              });
+              return refs
+                .map((ref) => normalizeTag(String(ref.ref || '')))
+                .filter((tag) => regex.test(tag))
+                .map((tag) => parseTag(tag))
+                .filter(Boolean)
+                .sort((a, b) => compareParsedTags(b, a))
+                .map((entry) => entry.tag);
+            }
+
+            async function resolveReleaseTarget(requestedTag) {
+              if (requestedTag) {
+                if (!regex.test(requestedTag)) {
+                  core.setFailed(`workflow_dispatch input release_tag must match ${regex} when provided.`);
+                  return null;
+                }
+                try {
+                  await github.rest.git.getRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: `tags/${requestedTag}`,
+                  });
+                } catch (error) {
+                  core.setFailed(`workflow_dispatch input release_tag '${requestedTag}' was not found in ${repoFull}.`);
+                  return null;
+                }
+                return {
+                  checkoutRef: requestedTag,
+                  releaseLabel: requestedTag,
+                  releaseUrl: `${serverUrl}/${repoFull}/releases/tag/${requestedTag}`,
+                  releaseSource: 'input_tag',
+                };
+              }
+
+              const matchingTags = await listMatchingReleaseTags();
+              if (matchingTags.length > 0) {
+                const latestTag = matchingTags[0];
+                core.info(`No release_tag provided. Using latest matching QMS tag '${latestTag}'.`);
+                return {
+                  checkoutRef: latestTag,
+                  releaseLabel: latestTag,
+                  releaseUrl: `${serverUrl}/${repoFull}/releases/tag/${latestTag}`,
+                  releaseSource: 'latest_tag',
+                };
+              }
+
+              core.info(`No release_tag provided and no matching QMS tags found. Falling back to ${defaultBranch} HEAD.`);
+              return {
+                checkoutRef: defaultBranch,
+                releaseLabel: 'HEAD',
+                releaseUrl: `${serverUrl}/${repoFull}/tree/${defaultBranch}`,
+                releaseSource: 'head',
+              };
+            }
+
             let tag = '';
             let trainingUser = '';
             let additionalDocuments = '';
+            let resolved = null;
             if (eventName === 'workflow_dispatch') {
-              tag = String(core.getInput('release_tag') || '').trim();
-              trainingUser = String(core.getInput('training_user') || '').trim().replace(/^@/, '');
-              additionalDocuments = String(core.getInput('additional_documents') || '').trim();
+              const inputs = context.payload.inputs || {};
+              tag = normalizeTag(inputs.release_tag);
+              trainingUser = String(inputs.training_user || '').trim().replace(/^@/, '');
+              additionalDocuments = String(inputs.additional_documents || '').trim();
+              resolved = await resolveReleaseTarget(tag);
+              if (!resolved) {
+                return;
+              }
             } else if (eventName === 'push') {
-              tag = String(context.ref || '').replace(/^refs\/tags\//, '').trim();
+              tag = normalizeTag(context.ref);
+              resolved = {
+                checkoutRef: tag,
+                releaseLabel: tag,
+                releaseUrl: `${serverUrl}/${repoFull}/releases/tag/${tag}`,
+                releaseSource: 'push_tag',
+              };
             }
-            const regex = new RegExp(process.env.TRAINING_RELEASE_TAG_REGEX || '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{2}$');
-            if (!regex.test(tag)) {
-              core.info(`Skipping training issue generation. Release tag '${tag}' does not match training pattern ${regex}.`);
+
+            const validationTarget = tag || resolved?.releaseLabel || '';
+            if (resolved?.releaseSource !== 'head' && !regex.test(validationTarget)) {
+              core.info(`Skipping training issue generation. Release tag '${validationTarget}' does not match training pattern ${regex}.`);
               core.setOutput('run_training', 'false');
               return;
             }
@@ -56,15 +161,22 @@ jobs:
               core.setFailed('workflow_dispatch input additional_documents requires training_user.');
               return;
             }
-            core.info(`Training release tag accepted: ${tag}`);
+            core.info(`Training release target accepted: ${resolved.releaseLabel} (${resolved.releaseSource}).`);
             core.setOutput('run_training', 'true');
-            core.setOutput('release_tag', tag);
+            core.setOutput('release_tag', resolved.releaseLabel);
+            core.setOutput('release_url', resolved.releaseUrl);
+            core.setOutput('release_source', resolved.releaseSource);
+            core.setOutput('checkout_ref', resolved.checkoutRef);
             core.setOutput('training_user', trainingUser);
             core.setOutput('additional_documents', additionalDocuments);
 
       - name: Checkout
         if: steps.gate.outputs.run_training == 'true'
         uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.gate.outputs.checkout_ref }}
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup Python
         if: steps.gate.outputs.run_training == 'true'
@@ -77,7 +189,8 @@ jobs:
         id: payload
         env:
           RELEASE_TAG: ${{ steps.gate.outputs.release_tag }}
-          RELEASE_URL: ${{ format('{0}/{1}/releases/tag/{2}', github.server_url, github.repository, steps.gate.outputs.release_tag) }}
+          RELEASE_URL: ${{ steps.gate.outputs.release_url }}
+          RELEASE_SOURCE: ${{ steps.gate.outputs.release_source }}
           REPOSITORY: ${{ github.repository }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           TRAINING_USER: ${{ steps.gate.outputs.training_user }}
@@ -261,11 +374,18 @@ jobs:
 
           release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
           release_url = os.environ.get("RELEASE_URL", "").strip() or ""
+          release_source = os.environ.get("RELEASE_SOURCE", "").strip() or "manual-dispatch"
           repository = os.environ.get("REPOSITORY", "").strip()
           default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
           training_user = os.environ.get("TRAINING_USER", "").strip().lstrip("@")
           additional_documents_raw = os.environ.get("ADDITIONAL_DOCUMENTS", "").strip()
           additional_doc_ids = list(dict.fromkeys(extract_doc_ids(additional_documents_raw)))
+
+          if release_source == "head":
+            head_sha = git_output_allow_fail(["rev-parse", "HEAD"])
+            if head_sha:
+              release_tag = f"HEAD-{head_sha[:12]}"
+              release_url = f"https://github.com/{repository}/commit/{head_sha}"
 
           roles = matrix.get("roles", {}) or {}
           users_cfg = matrix.get("users", {}) or {}
