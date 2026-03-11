@@ -1,5 +1,5 @@
 ---
-version: 13
+version: 14
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -46,7 +46,7 @@ roles:
       SOP-008: R06
       SOP-009: R06
       SOP-010: R01
-      SOP-011: R06
+      SOP-011: R07
       SOP-012: R02
       SOP-013: R02
       SOP-014: R02
@@ -80,7 +80,7 @@ roles:
       SOP-001: R11
       SOP-008: R06
       SOP-009: R06
-      SOP-011: R06
+      SOP-011: R07
       SOP-017: R02
       SOP-018: R04
       SOP-020: R07
@@ -110,7 +110,7 @@ roles:
       SOP-007: R05
       SOP-008: R06
       SOP-009: R06
-      SOP-011: R06
+      SOP-011: R07
       SOP-015: R01
       SOP-017: R02
       SOP-018: R04
@@ -136,7 +136,7 @@ roles:
       SOP-001: R11
       SOP-006: R01
       SOP-009: R06
-      SOP-011: R06
+      SOP-011: R07
       SOP-017: R02
 
   regulatory_lead:
@@ -176,7 +176,7 @@ roles:
       SOP-008: R06
       SOP-009: R06
       SOP-010: R01
-      SOP-011: R06
+      SOP-011: R07
       SOP-012: R02
       SOP-013: R02
       SOP-014: R02
@@ -205,7 +205,7 @@ roles:
       QM-001: R01
       SOP-001: R11
       SOP-008: R06
-      SOP-011: R06
+      SOP-011: R07
       SOP-012: R02
       SOP-014: R02
       SOP-018: R04
@@ -247,7 +247,7 @@ roles:
       SOP-008: R06
       SOP-009: R06
       SOP-010: R01
-      SOP-011: R06
+      SOP-011: R07
       SOP-012: R02
       SOP-013: R02
       SOP-014: R02
@@ -295,7 +295,7 @@ roles:
       SOP-008: R06
       SOP-009: R06
       SOP-010: R01
-      SOP-011: R06
+      SOP-011: R07
       SOP-012: R02
       SOP-013: R02
       SOP-014: R02

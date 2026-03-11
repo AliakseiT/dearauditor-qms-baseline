@@ -132,7 +132,9 @@
     "records/pms/",
     "records/risk/",
     "records/suppliers/approved_supplier_list.yml",
-    "records/training/user_training_log.yml",
+    "records/training/training_status.yml",
+    "records/training/training_status.md",
+    "records/training/training_status.csv",
     "records/validation/"
   ],
   "bootstrap_overlays": [
@@ -157,8 +159,12 @@
       "target": "matrices/qms_tooling_inventory.yml"
     },
     {
-      "source": "examples/bootstrap/records/training/user_training_log.yml",
-      "target": "records/training/user_training_log.yml"
+      "source": "examples/bootstrap/records/training/training_status.yml",
+      "target": "records/training/training_status.yml"
+    },
+    {
+      "source": "examples/bootstrap/records/training/training_status.md",
+      "target": "records/training/training_status.md"
     },
     {
       "source": "examples/bootstrap/records/suppliers/approved_supplier_list.yml",

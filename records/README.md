@@ -20,7 +20,7 @@ Some folders are intentionally empty until the first signed and published compan
 
 | I need to... | Open |
 |---|---|
-| See training completion status | [Training log](training/user_training_log.yml) |
+| See training completion status | [Training status report](training/training_status.md) |
 | Browse management review outputs | [Management reviews](management-reviews/) |
 | Browse audit records | [Audits](audits/) |
 | Open the approved supplier list | [Approved supplier list](suppliers/approved_supplier_list.yml) |
@@ -35,7 +35,8 @@ Some folders are intentionally empty until the first signed and published compan
 
 ## Operational Record Families
 
-- [Training log](training/user_training_log.yml) - consolidated per-user training completion state
+- [Training status report](training/training_status.md) - auditor-facing current training completion state
+- [Training status register](training/training_status.yml) - machine-readable current training state derived from signed evidence
 - [Management reviews](management-reviews/) - signed management review records
 - [Audits](audits/) - internal and external audit records
 - [CAPA](capas/) - corrective and preventive action records
