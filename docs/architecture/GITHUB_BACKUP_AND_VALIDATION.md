@@ -42,6 +42,8 @@ Validation checks performed by the export validator:
 - JSON parse validation of exported JSON artifacts
 - `git bundle verify` for the repository bundle
 - gzip/tar readability of the selected snapshot archive
+- release-by-release asset expectation checks for known QMS release types
+- deep attestation JSON validation for known release types when release assets are included in the export
 - summary report generation in JSON and Markdown
 
 Validation output:
@@ -50,6 +52,13 @@ Validation output:
 - `analysis/validation_report.md`
 
 This gives one scriptable result for automation and one result suitable for review in GitHub, email, or a retained evidence store.
+
+Known release validation rules currently cover:
+
+- formal QMS release bundles (`QMS-*`)
+- immutable PR signature page releases (`sig-pr*`)
+- immutable training signature releases (`sig-train*`)
+- immutable record bundle releases that publish `manifest.json` plus `signed_attestation.json`
 
 ## Repo Boundary Versus SDLC
 
