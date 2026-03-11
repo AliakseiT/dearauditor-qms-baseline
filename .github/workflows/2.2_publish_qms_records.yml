@@ -100,7 +100,7 @@ jobs:
       - name: Wait for Git-native Part 11 attestations
         id: part11
         if: steps.records.outputs.has_records == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           TIMEOUT_SECONDS: ${{ env.PART11_TIMEOUT_SECONDS }}
           POLL_SECONDS: ${{ env.PART11_POLL_SECONDS }}

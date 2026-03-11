@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Resolve and validate training release tag
         id: gate
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           TRAINING_RELEASE_TAG_REGEX: ${{ env.TRAINING_RELEASE_TAG_REGEX }}
         with:
@@ -495,7 +495,7 @@ jobs:
 
       - name: Open consolidated training diff issues
         if: steps.gate.outputs.run_training == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           ENTRIES_JSON: ${{ steps.payload.outputs.entries_json }}
         with:

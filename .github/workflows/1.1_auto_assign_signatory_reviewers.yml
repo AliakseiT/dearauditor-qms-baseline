@@ -60,7 +60,7 @@ jobs:
 
       - name: Detect co-approval policy from changed paths
         id: policy
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           BASE_REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
         with:
@@ -118,7 +118,7 @@ jobs:
             ${{ github.event.repository.name }}
 
       - name: Request or Remove reviewers from collaborators
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
           REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
