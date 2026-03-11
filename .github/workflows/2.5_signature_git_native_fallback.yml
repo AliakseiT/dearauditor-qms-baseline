@@ -37,7 +37,7 @@ jobs:
 
       - name: Resolve signature inputs
         id: siginput
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
@@ -65,7 +65,7 @@ jobs:
 
       - name: Resolve PR and target hash
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
@@ -279,7 +279,7 @@ jobs:
           INPUT_AUTH_METHOD: ${{ steps.siginput.outputs.auth_method }}
 
       - name: Build attestation manifest
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
           PR_URL: ${{ steps.pr.outputs.pr_url }}
@@ -395,7 +395,7 @@ jobs:
           retention-days: 5
 
       - name: Post attestation comment to PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
           TARGET_HASH: ${{ steps.pr.outputs.target_hash }}

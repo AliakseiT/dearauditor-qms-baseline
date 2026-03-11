@@ -32,7 +32,7 @@ jobs:
             ${{ github.event.repository.name }}
 
       - name: Post signature request when checklist is complete
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
         with:
@@ -202,7 +202,7 @@ jobs:
           python-version: '3.11'
 
       - name: Close signed training issues and publish immutable release
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |

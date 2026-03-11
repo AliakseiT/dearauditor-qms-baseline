@@ -43,7 +43,7 @@ jobs:
 
       - name: Aggregate signature context from PR comments
         id: aggregate
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
@@ -355,7 +355,7 @@ jobs:
 
       - name: Comment PR with signature page preview
         if: steps.aggregate.outputs.all_required_collected == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
           RELEASE_TAG: ${{ steps.publish.outputs.tag }}
