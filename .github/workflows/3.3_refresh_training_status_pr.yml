@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: write
-  issues: read
+  issues: write
   pull-requests: write
 
 concurrency:
@@ -188,3 +188,120 @@ jobs:
         if: steps.diff.outputs.changed != 'true'
         run: |
           echo "Training status artifacts are already current; no PR created."
+
+  clear_refresh_failure_notice:
+    needs: refresh_training_status_pr
+    if: >-
+      always() &&
+      needs.refresh_training_status_pr.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Close open refresh failure notice
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const marker = '<!-- training-status-refresh-failure -->';
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const failureIssue = openIssues.find((issue) => String(issue.body || '').includes(marker));
+            if (!failureIssue) {
+              core.info('No open training status refresh failure notice found.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: failureIssue.number,
+              body: `Recovered by workflow run ${runUrl}. Closing notice.`,
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: failureIssue.number,
+              state: 'closed',
+            });
+
+  report_refresh_failure:
+    needs: refresh_training_status_pr
+    if: >-
+      always() &&
+      needs.refresh_training_status_pr.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Open or update refresh failure notice
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const marker = '<!-- training-status-refresh-failure -->';
+            const title = 'Automation failure: refresh training status register';
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = [
+              marker,
+              '# Training status refresh failure',
+              '',
+              'The training status refresh workflow failed while rebuilding or publishing the generated training status artifacts.',
+              '',
+              `- Workflow run: ${runUrl}`,
+              '- Retry workflow: `3.3 Refresh Training Status PR`',
+              '- Retry branch: `automation/refresh-training-status`',
+              '',
+              'Retry after fixing the underlying problem:',
+              `- Re-run the failed workflow run: ${runUrl}`,
+              '- Or run `3.3 Refresh Training Status PR` again via `workflow_dispatch`.',
+            ].join('\n');
+
+            const openIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const failureIssue = openIssues.find((issue) => String(issue.body || '').includes(marker));
+
+            if (failureIssue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: failureIssue.number,
+                title,
+                body,
+              });
+              core.info(`Updated failure notice issue #${failureIssue.number}.`);
+              return;
+            }
+
+            const created = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+            });
+            core.info(`Created failure notice issue #${created.data.number}.`);
