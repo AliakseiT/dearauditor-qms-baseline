@@ -1,6 +1,6 @@
-name: Design Input Baseline
-description: Approve the development plan and baseline design inputs before controlled implementation.
-title: "DESIGN INPUT BASELINE: "
+name: Design Input Baseline and Development Plan
+description: Baseline the GitHub-native design and development plan plus the approved design-input set before controlled implementation.
+title: "DESIGN PLAN BASELINE: "
 labels:
   - design-control
   - plan
@@ -20,17 +20,159 @@ body:
       description: Product boundary, intended-use context, and major change scope.
     validations:
       required: true
-  - type: textarea
-    id: planned_records
+  - type: dropdown
+    id: lifecycle_model
     attributes:
-      label: Planned Records
-      description: Baseline records that will be approved at the design-input gate and the downstream outputs they authorize.
+      label: Lifecycle Model
+      options:
+        - Incremental
+        - Iterative
+        - Waterfall with Iterations
+    validations:
+      required: true
+  - type: textarea
+    id: safety_classification
+    attributes:
+      label: Software Safety Classification and Rationale
+      description: State the IEC 62304 software safety classification or justify why it is not applicable.
       placeholder: |
-        - design_development_plan.yml
-        - user_needs.yml
-        - system_requirements_spec.yml
-        - software_architecture_spec.yml
-        - design_traceability_matrix.yml
+        - classification: B
+        - rationale: hazardous situations can lead to delayed or incorrect output if uncontrolled
+    validations:
+      required: true
+  - type: textarea
+    id: accountable_roles
+    attributes:
+      label: Accountable Roles
+      description: Map the controlled roles and named GitHub users responsible for planning, regulatory inputs, QA, and usability.
+      placeholder: |
+        - engineering_lead: @user
+        - regulatory_lead: @user
+        - qa_lead: @user
+        - usability_lead: @user or N/A
+    validations:
+      required: true
+  - type: textarea
+    id: design_input_gate_records
+    attributes:
+      label: Gate 1 Records Reviewed - Design Planning and Input Baseline
+      description: List the records that must be reviewed and approved before controlled implementation starts.
+      placeholder: |
+        - design_development_plan.md
+        - intended use or equivalent scope statement
+        - classification decision
+        - user_needs.md
+        - system_requirements_spec.md
+        - risk_management_plan.md
+        - vv_plan.md
+        - usability file index or equivalent reference
+    validations:
+      required: true
+  - type: textarea
+    id: verification_readiness_gate_records
+    attributes:
+      label: Gate 2 Records Reviewed - Verification Readiness
+      description: List the records that must be current before formal verification or validation execution can start.
+      placeholder: |
+        - software_architecture_spec.md
+        - design_traceability_matrix.md
+        - vv_plan.md
+        - test_case_index.md
+        - release_readiness decision or release plan
+        - risk register / current risk references
+        - open anomaly or change summary
+    validations:
+      required: true
+  - type: textarea
+    id: release_readiness_gate_records
+    attributes:
+      label: Gate 3 Records Reviewed - Release Readiness
+      description: List the records that must be reviewed before shipment or release authorization.
+      placeholder: |
+        - vv_report.md
+        - test_execution_log.md and evidence index
+        - residual risk review / risk management review
+        - release_baseline_manifest.md
+        - final_release_decision.md
+        - medical_device_file_index.md
+        - complaint / PMS / incident references, if applicable
+    validations:
+      required: true
+  - type: textarea
+    id: github_native_working_model
+    attributes:
+      label: GitHub-Native Working Model
+      description: Describe how this product will operate in the repository so developers and coding agents can follow the controlled process.
+      placeholder: |
+        - designated repository:
+        - protected branch: main
+        - change context model: issue or PR
+        - branch and PR flow:
+        - evidence and traceability locations:
+    validations:
+      required: true
+  - type: textarea
+    id: standard_planning_areas
+    attributes:
+      label: Standard Planning Areas Covered by the SDP
+      description: Cover the standard planning areas that remain inside the SDP. Keep SVVP and RMP as separate linked plans.
+      placeholder: |
+        - development deliverables and design reviews
+        - configuration and baseline management approach
+        - external dependency / SOUP-like component approach
+        - maintenance and problem-resolution approach
+        - release-planning interface
+    validations:
+      required: true
+  - type: textarea
+    id: linked_separate_plans
+    attributes:
+      label: Linked Separate Plans
+      description: Reference the separate plans or files that this SDP depends on.
+      placeholder: |
+        - risk management plan:
+        - verification and validation plan:
+        - usability file or plan:
+        - release plan:
+    validations:
+      required: true
+  - type: textarea
+    id: technical_file_deliverables
+    attributes:
+      label: Expected Technical File Deliverables
+      description: List the planned dossier or technical-file artifacts expected for this product or major change.
+      placeholder: |
+        - intended use and claims
+        - classification rationale
+        - design and development plan
+        - user needs
+        - system requirements
+        - software architecture
+        - design traceability matrix
+        - risk management file
+        - V&V records
+        - release baseline and final release decision
+        - medical device file index
+    validations:
+      required: true
+  - type: textarea
+    id: milestones_and_gates
+    attributes:
+      label: Milestones and Gates
+      description: Define the planned lifecycle milestones and the entry/exit criteria for each major gate.
+      placeholder: |
+        - design inputs baselined:
+          entry:
+          exit:
+        - architecture ready:
+          entry:
+          exit:
+        - formal V&V entry ready:
+          entry:
+          exit:
+        - release ready:
+          entry:
+          exit:
     validations:
       required: true
   - type: textarea
@@ -48,8 +190,9 @@ body:
       description: What must be true before the design-input baseline can close.
       placeholder: |
         - design and development plan approved
-        - user needs and system requirements baselined
-        - risk plan and V&V strategy linked
+        - baseline records approved and linked
+        - lifecycle model, roles, and milestones agreed
+        - separate RMP and SVVP references linked
         - approved for controlled implementation
     validations:
       required: true
