@@ -1,16 +1,13 @@
 ---
 sop_id: SOP-006
 title: Software Validation (QMS Tools)
-revision: R01
-effective_date: 2026-03-08
+revision: R02
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 4.1.6
 related_issue: "#2"
 ---
-
 ## 1. Purpose
 Define risk-based validation and revalidation of software used in the QMS (including GitHub repositories, workflows, and automation).
 
@@ -80,3 +77,4 @@ Revalidation is required when:
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-08 | Updated governance cross-reference after the Quality Manual was split out of SOP-005. |
+| R02 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

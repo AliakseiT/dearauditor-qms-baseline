@@ -1,17 +1,13 @@
 ---
 sop_id: SOP-002
 title: Corrective and Preventive Action (CAPA)
-revision: R02
-effective_date: 2026-03-05
+revision: R03
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 8.5.2
-  - 8.5.3
 related_issue: "#1"
 ---
-
 ## 1. Purpose
 Define a risk-based CAPA process to eliminate causes of nonconformities, prevent recurrence, and prevent occurrence of potential nonconformities.
 
@@ -92,3 +88,4 @@ Applies to quality system and product lifecycle nonconformities originating from
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full CAPA lifecycle procedure implemented. |
 | R02 | 2026-03-05 | Updated record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
+| R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

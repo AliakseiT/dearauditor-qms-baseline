@@ -1,19 +1,13 @@
 ---
 sop_id: SOP-010
 title: Supplier and Purchasing Control
-revision: R01
-effective_date: 2026-03-05
+revision: R02
+effective_date: 2026-03-18
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
-iso_13485_clauses:
-  - 4.1.5
-  - 7.4.1
-  - 7.4.2
-  - 7.4.3
 related_issue: "#6"
 ---
-
 ## 1. Purpose
 Define selection, qualification, monitoring, and re-evaluation of suppliers and outsourced processes affecting product quality or QMS compliance.
 
@@ -23,7 +17,7 @@ Applies to all external providers of software components, cloud services, consul
 ## 3. Inputs
 - Supplier service description and criticality assessment
 - Qualification evidence and due diligence
-- Quality agreement and purchasing requirements
+- Quality agreement or accepted SLA/Terms of Service equivalent, plus purchasing requirements
 
 ## 4. Outputs
 - Approved Supplier List (ASL)
@@ -40,13 +34,13 @@ Applies to all external providers of software components, cloud services, consul
 ## 6. Procedure
 
 ### 6.1 Supplier Criticality Classification
-1. Classify supplier as `critical`, `major`, or `minor` based on quality/product impact.
+1. Classify supplier as `critical`, `major`, or `minor` based on impact on product quality, patient safety, data integrity, and QMS compliance.
 2. Critical suppliers require enhanced qualification and periodic review.
 
 ### 6.2 Qualification and Vetting
 1. Complete supplier vetting template at onboarding.
-2. Evaluate competence, security/privacy posture, continuity, and compliance history.
-3. Approve supplier only if minimum controls are met.
+2. Evaluate competence, security/privacy posture, continuity, compliance history, and any patient safety or data-integrity dependencies introduced by the supplied service.
+3. For cloud-based providers, require current independent technical assurance evidence such as ISO 27001 certification or SOC 2 reporting before approval.
 
 ### 6.3 Approved Supplier List Maintenance
 1. Record approved suppliers in the designated product/study record repository.
@@ -55,7 +49,7 @@ Applies to all external providers of software components, cloud services, consul
 
 ### 6.4 Purchasing Controls
 1. Purchase requirements must define expected quality/compliance deliverables.
-2. Quality agreements are required for critical suppliers.
+2. Quality agreements are required for critical suppliers unless a hyperscale vendor provides only standard SLAs and Terms of Service; in that case, documented acceptance of those terms as a functional equivalent is permitted when justified and approved by QA and Management Representative.
 3. Supplier deliverables must be reviewed against acceptance criteria.
 
 ### 6.5 Ongoing Monitoring and Re-evaluation
@@ -85,3 +79,4 @@ Applies to all external providers of software components, cloud services, consul
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Updated supplier record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
+| R02 | 2026-03-18 | Removed top-table standards clause metadata and expanded supplier criticality, cloud certification, and hyperscale SLA/Terms of Service purchasing controls. |

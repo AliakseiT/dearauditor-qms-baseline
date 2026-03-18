@@ -1,18 +1,13 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R05
-effective_date: 2026-03-08
+revision: R06
+effective_date: 2026-03-18
 status: Published
 owner_role: management_representative
 approver_role: management_representative
-iso_13485_clauses:
-  - 5.6.1
-  - 5.6.2
-  - 5.6.3
 related_issue: "#1"
 ---
-
 ## 1. Purpose
 Define how top management reviews the QMS to ensure continuing suitability, adequacy, effectiveness, and alignment to quality policy/objectives.
 
@@ -95,3 +90,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 | R03 | 2026-03-07 | Normalized attendee and presenter role language to the controlled small-team role model. |
 | R04 | 2026-03-07 | Renamed generic presenter wording from role owners to role leads to match the simplified role taxonomy. |
 | R05 | 2026-03-08 | Split the Quality Manual out of SOP-005 and linked management review to both the top-level manual and the governance procedure. |
+| R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

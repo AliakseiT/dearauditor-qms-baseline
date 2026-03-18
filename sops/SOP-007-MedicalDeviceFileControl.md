@@ -1,16 +1,13 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R05
-effective_date: 2026-03-10
+revision: R06
+effective_date: 2026-03-18
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
-iso_13485_clauses:
-  - 4.2.3
 related_issue: "#3"
 ---
-
 ## 1. Purpose
 Define structure, ownership, and control of product-specific medical device files (MDF) for ACME software products.
 
@@ -83,3 +80,4 @@ Each product MDF must include at minimum:
 | R03 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
 | R04 | 2026-03-07 | Removed overly specific signature-regulation terminology from the MDF approval evidence wording. |
 | R05 | 2026-03-10 | Updated the upstream baseline repository naming reference used for product MDF record separation guidance. |
+| R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

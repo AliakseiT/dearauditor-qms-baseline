@@ -1,16 +1,13 @@
 ---
 sop_id: SOP-003
 title: Internal Audit
-revision: R03
-effective_date: 2026-03-07
+revision: R04
+effective_date: 2026-03-18
 status: Published
 owner_role: auditor
 approver_role: management_representative
-iso_13485_clauses:
-  - 8.2.4
 related_issue: "#1"
 ---
-
 ## 1. Purpose
 Define how ACME GmbH plans and executes internal audits to verify QMS conformity, implementation effectiveness, and maintenance.
 
@@ -84,3 +81,4 @@ Applies to all QMS processes and records, including document control, design con
 | R01 | 2026-03-02 | Full internal audit planning/execution/follow-up procedure implemented. |
 | R02 | 2026-03-05 | Updated audit record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
 | R03 | 2026-03-07 | Renamed the controlled audit role to `auditor` and aligned wording to the simplified small-team role taxonomy. |
+| R04 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

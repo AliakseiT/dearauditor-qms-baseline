@@ -1,25 +1,13 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R07
-effective_date: 2026-03-08
+revision: R08
+effective_date: 2026-03-18
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
-iso_13485_clauses:
-  - 7.3
-  - 7.5.1
-  - 7.5.3
-iec_62304_clauses:
-  - 4
-  - 5
-  - 6
-  - 7
-  - 8
-  - 9
 related_issue: "#45"
 ---
-
 ## 1. Purpose
 Define a lightweight, GitHub-native software lifecycle control model aligned with IEC 62304 for software development planning, software-system classification, verification/validation linkage, parallel controlled change flow on product `main`, release-readiness gating, configuration management, release baselining, maintenance, and problem resolution.
 
@@ -153,3 +141,4 @@ Applies to regulated software products and significant product changes that requ
 | R05 | 2026-03-07 | Clarified that working branches are draft-only baselines and that controlled lifecycle changes may be initiated from PR-stated change context without a mandatory separate issue. |
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the lifecycle signature wording and used technology-neutral language. |
 | R07 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
+| R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
