@@ -1,35 +1,13 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R07
-effective_date: 2026-03-10
+revision: R08
+effective_date: 2026-03-18
 status: Published
 owner_role: usability_lead
 approver_role: qa_lead
-iso_13485_clauses:
-  - 7.3
-  - 7.5.1
-iec_62366_1_clauses:
-  - 4.1.1
-  - 4.1.2
-  - 4.1.3
-  - 4.2
-  - 4.3
-  - 5.1
-  - 5.2
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - 5.7.1
-  - 5.7.2
-  - 5.7.3
-  - 5.8
-  - 5.9
-  - 5.10
 related_issue: "#44"
 ---
-
 ## 1. Purpose
 Define a lightweight, auditable usability engineering process for ACME user-facing healthcare software products, aligned with IEC 62366-1 and integrated with risk management.
 
@@ -173,3 +151,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R05 | 2026-03-07 | Clarified that usability-record PRs may carry their own controlled change context without a mandatory linked issue. |
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the usability signature workflow wording. |
 | R07 | 2026-03-10 | Updated open-source baseline naming and publication references used in the usability procedure set. |
+| R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

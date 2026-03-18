@@ -1,17 +1,13 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R11
-effective_date: 2026-03-10
+revision: R12
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 4.2.4
-  - 4.2.5
 related_issue: "#1"
 ---
-
 ## 1. Purpose
 Define how ACME GmbH creates, reviews, approves, revises, distributes, and archives controlled QMS documents and quality records.
 
@@ -48,10 +44,9 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 
 ### 6.2 Identification and Metadata
 1. QM files must use `QM-XXX-Title.md` naming and include YAML front matter fields: `qm_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`.
-2. SOP files must use `SOP-XXX-Title.md` naming.
+2. SOP files must use `SOP-XXX-Title.md` naming and include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`.
 3. WI files must use `WI-XXX-Title.md` naming and include YAML front matter fields: `wi_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `related_sops`.
-4. SOPs must include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`, `iso_13485_clauses`.
-5. Revision format is `RNN` (for example `R03`).
+4. Revision format is `RNN` (for example `R03`).
 
 ### 6.3 Draft, Review, and Approval
 1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with either linked issue context or sufficient change context stated directly in the PR.
@@ -130,3 +125,4 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 | R09 | 2026-03-07 | Removed overly specific signature-regulation terminology from the controlled signature wording and kept the SOP language technology-neutral. |
 | R10 | 2026-03-08 | Added `QM` as a first-class controlled document class and generalized the published index and training-sync rules from SOP-only to controlled-document scope. |
 | R11 | 2026-03-10 | Updated upstream baseline naming, licensing, and open-source publication references used in document control. |
+| R12 | 2026-03-18 | Merged Section 6.2 SOP metadata requirements and removed top-table standards clause metadata from SOP front matter. |

@@ -1,19 +1,13 @@
 ---
 sop_id: SOP-015
 title: Nonconforming Product Control
-revision: R01
-effective_date: 2026-03-07
+revision: R02
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 8.3.1
-  - 8.3.2
-  - 8.3.3
-  - 8.3.4
 related_issue: "#11"
 ---
-
 ## 1. Purpose
 Define controls for identification, segregation, disposition, and correction of nonconforming software product outputs.
 
@@ -87,3 +81,4 @@ Disposition options:
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
+| R02 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

@@ -1,42 +1,13 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R04
-effective_date: 2026-03-08
+revision: R05
+effective_date: 2026-03-18
 status: Published
 owner_role: regulatory_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 7.1
-  - 7.3
-  - 8.5.1
-iso_14971_clauses:
-  - 4.1
-  - 4.2
-  - 4.3
-  - 4.4
-  - 4.5
-  - 5.1
-  - 5.2
-  - 5.3
-  - 5.4
-  - 5.5
-  - 6
-  - 7.1
-  - 7.2
-  - 7.3
-  - 7.4
-  - 7.5
-  - 7.6
-  - 8
-  - 9
-  - 10.1
-  - 10.2
-  - 10.3
-  - 10.4
 related_issue: "#35"
 ---
-
 ## 1. Purpose
 Define a pragmatic, software-first risk management process for ACME GmbH aligned with ISO 14971:2019, using one unified method for top-down hazards, bottom-up failure modes, and cybersecurity risks.
 
@@ -196,3 +167,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R02 | 2026-03-07 | Simplified risk-management role names to `engineering_lead`, `regulatory_lead`, and `auditor`. |
 | R03 | 2026-03-07 | Made `regulatory_lead` the risk-file owner, clarified QA process-governance responsibility, and added `usability_lead` for use-related risk inputs. |
 | R04 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
+| R05 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

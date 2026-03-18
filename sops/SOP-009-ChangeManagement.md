@@ -1,17 +1,13 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R06
-effective_date: 2026-03-08
+revision: R07
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 4.1.4
-  - 7.3.9
 related_issue: "#5"
 ---
-
 ## 1. Purpose
 Define controlled change evaluation, approval, implementation, and verification for QMS and product artifacts.
 
@@ -96,3 +92,4 @@ Classify each change as one or more of:
 | R04 | 2026-03-07 | Clarified that multiple software changes may proceed in parallel on product `main`, and that formal release inclusion is decided later through the controlled release-readiness gate. |
 | R05 | 2026-03-07 | Clarified that branch-only implementations remain uncontrolled draft state and that PRs may provide the controlled change context directly when no separate issue is used. |
 | R06 | 2026-03-08 | Generalized change-control follow-up from the published SOP index to the published controlled-document index. |
+| R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
