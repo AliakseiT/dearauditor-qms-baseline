@@ -66,8 +66,31 @@ jobs:
             core.setOutput('author_login', pr.user?.login || '');
             core.setOutput('pr_body_base64', Buffer.from(body, 'utf8').toString('base64'));
             core.setOutput('changed_paths_json', JSON.stringify(files.map((f) => String(f.filename || ''))));
+            const authorLogin = String(pr.user?.login || '').toLowerCase();
+            const changedPaths = files.map((f) => String(f.filename || ''));
+            const automationBotLogins = new Set([
+              'dearauditor-open-qms-bot',
+              'dearauditor-open-qms-bot[bot]',
+              'dearauditor-qms-baseline-bot',
+              'dearauditor-qms-baseline-sign',
+              'github-actions[bot]',
+            ]);
+            const generatedTrainingStatusPaths = new Set([
+              'records/training/training_status.csv',
+              'records/training/training_status.md',
+              'records/training/training_status.yml',
+            ]);
+            const isGeneratedTrainingStatusRefresh = (
+              changedPaths.length > 0 &&
+              changedPaths.every((path) => generatedTrainingStatusPaths.has(path))
+            );
+            core.setOutput(
+              'skip_signer_role_policy',
+              automationBotLogins.has(authorLogin) && isGeneratedTrainingStatusRefresh ? 'true' : 'false'
+            );
 
       - name: Validate signer-role policy
+        if: steps.structure.outputs.skip_signer_role_policy != 'true'
         run: |
           python3 scripts/resolve_signature_policy.py \
             --repo-root "$GITHUB_WORKSPACE" \
@@ -78,3 +101,8 @@ jobs:
           AUTHOR_LOGIN: ${{ steps.structure.outputs.author_login }}
           PR_BODY_BASE64: ${{ steps.structure.outputs.pr_body_base64 }}
           CHANGED_PATHS_JSON: ${{ steps.structure.outputs.changed_paths_json }}
+
+      - name: Skip signer-role policy for generated training status refresh PRs
+        if: steps.structure.outputs.skip_signer_role_policy == 'true'
+        run: |
+          echo "Skipping signer-role policy for bot-authored generated training status refresh PR."
