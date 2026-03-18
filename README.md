@@ -68,8 +68,8 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R06`
 - [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R07`
 - [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R07`
-- [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R05`
-- [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R08`
+- [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R06`
+- [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R09`
 - [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R08`
 
 #### Suppliers, Complaints, and Post-Market
@@ -78,7 +78,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-012 Feedback and Complaint Handling](sops/SOP-012-FeedbackAndComplaintHandling.md) - `R03`
 - [SOP-013 Regulatory Incident Reporting](sops/SOP-013-RegulatoryIncidentReporting.md) - `R03`
 - [SOP-014 Post-Market Surveillance](sops/SOP-014-PostMarketSurveillance.md) - `R03`
-- [SOP-015 Nonconforming Product Control](sops/SOP-015-NonconformingProductControl.md) - `R02`
+- [SOP-015 Nonconforming Product Control](sops/SOP-015-NonconformingProductControl.md) - `R03`
 
 ### Work Instructions
 
@@ -106,11 +106,11 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-18 | R03 | Published |
 | SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-18 | R03 | Published |
 | SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-18 | R03 | Published |
-| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-18 | R02 | Published |
+| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-18 | R03 | Published |
 | SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-18 | R03 | Published |
 | SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-18 | R03 | Published |
-| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-18 | R05 | Published |
-| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-18 | R08 | Published |
+| SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-18 | R06 | Published |
+| SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-18 | R09 | Published |
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-18 | R08 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-03-10 | R08 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-03-10 | R08 | Published |

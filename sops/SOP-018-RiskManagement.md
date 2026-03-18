@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R05
+revision: R06
 effective_date: 2026-03-18
 status: Published
 owner_role: regulatory_lead
@@ -145,6 +145,9 @@ Cybersecurity controls follow the same priority and are not separated from safet
 ## 11. Traceability
 | Standard Clause | Control in this SOP |
 |---|---|
+| ISO 13485 7.1 | Defines risk-based planning and integration of risk management into product realization controls. |
+| ISO 13485 7.3 | Defines design and development risk-control interfaces governed through this SOP. |
+| ISO 13485 8.5.1 | Defines feedback-driven improvement and corrective action linkage for risk controls and post-production review. |
 | ISO 14971 4.1-4.5 | Defines risk system, responsibilities, plan, and file controls. |
 | ISO 14971 5.1-5.5 | Defines intended use/misuse, hazard identification, and estimation method. |
 | ISO 14971 6 | Defines acceptability-based evaluation. |
@@ -168,3 +171,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R03 | 2026-03-07 | Made `regulatory_lead` the risk-file owner, clarified QA process-governance responsibility, and added `usability_lead` for use-related risk inputs. |
 | R04 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
 | R05 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R06 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the ISO 14971 references in Section 11. |
