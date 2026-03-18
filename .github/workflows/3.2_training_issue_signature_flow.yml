@@ -4,6 +4,8 @@ run-name: 3.2 Training Issue Signature Flow
 on:
   issues:
     types: [opened, edited, reopened]
+  issue_comment:
+    types: [created, edited]
   workflow_dispatch:
 
 permissions:
@@ -177,7 +179,9 @@ jobs:
             });
 
   reconcile_signed_training_issues:
-    if: github.event_name == 'workflow_dispatch'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null)
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for issue updates
@@ -213,6 +217,21 @@ jobs:
             }
 
             const checklistSectionRegex = /### (?:Controlled Document Checklist|SOP Delta Checklist)([\s\S]*?)(?:\n###\s|\n##\s|$)/i;
+            const attestationMarkers = [
+              '<!-- SIGNATURE_ATTESTATION_V1 -->',
+              '<!-- PART11_ATTESTATION_V1 -->',
+              '<!-- signature-native-attestation -->',
+              '<!-- part11-native-attestation -->',
+            ];
+
+            if (context.eventName === 'issue_comment') {
+              const commentBody = String(context.payload.comment?.body || '');
+              const isAttestationComment = attestationMarkers.some((marker) => commentBody.includes(marker));
+              if (!isAttestationComment) {
+                core.info('Issue comment is not a signature attestation; skipping reconciliation.');
+                return;
+              }
+            }
 
             function parseChecklistItems(body) {
               const sectionMatch = String(body || '').match(checklistSectionRegex);
@@ -246,19 +265,25 @@ jobs:
               };
             }
 
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'training-diff',
-              per_page: 100,
-            });
+            const issues = context.eventName === 'issue_comment'
+              ? [context.payload.issue]
+              : await github.paginate(github.rest.issues.listForRepo, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state: 'open',
+                  labels: 'training-diff',
+                  per_page: 100,
+                });
 
             let closedCount = 0;
             let skippedCount = 0;
 
             for (const issue of issues) {
               if (issue.pull_request) continue;
+              if (String(issue.state || '').toLowerCase() !== 'open') continue;
+
+              const labels = (issue.labels || []).map((l) => String(l.name || '').toLowerCase());
+              if (!labels.includes('training-diff')) { skippedCount += 1; continue; }
 
               const issueBody = String(issue.body || '');
               const checklistMatch = issueBody.match(checklistSectionRegex);
@@ -286,10 +311,7 @@ jobs:
               const candidateComments = comments
                 .filter((c) => {
                   const b = String(c.body || '');
-                  return b.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') ||
-                    b.includes('<!-- PART11_ATTESTATION_V1 -->') ||
-                    b.includes('<!-- signature-native-attestation -->') ||
-                    b.includes('<!-- part11-native-attestation -->');
+                  return attestationMarkers.some((marker) => b.includes(marker));
                 })
                 .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
 
