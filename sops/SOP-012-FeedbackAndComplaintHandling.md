@@ -1,17 +1,13 @@
 ---
 sop_id: SOP-012
 title: Feedback and Complaint Handling
-revision: R02
-effective_date: 2026-03-07
+revision: R03
+effective_date: 2026-03-18
 status: Published
 owner_role: regulatory_lead
 approver_role: qa_lead
-iso_13485_clauses:
-  - 8.2.1
-  - 8.2.2
 related_issue: "#8"
 ---
-
 ## 1. Purpose
 Define a consistent process to collect, assess, investigate, and respond to user feedback and complaints for ACME healthcare software products.
 
@@ -83,3 +79,4 @@ Applies to all product feedback and complaint signals from users, customers, par
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Renamed the complaint-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified the complaint-process role names to `regulatory_lead` and `engineering_lead`. |
+| R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

@@ -1,26 +1,13 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R06
-effective_date: 2026-03-07
+revision: R07
+effective_date: 2026-03-18
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
-iso_13485_clauses:
-  - 7.1
-  - 7.3.1
-  - 7.3.2
-  - 7.3.3
-  - 7.3.4
-  - 7.3.5
-  - 7.3.6
-  - 7.3.7
-  - 7.3.8
-  - 7.3.9
-  - 7.3.10
 related_issue: "#4"
 ---
-
 ## 1. Purpose
 Define design and development controls for healthcare software products from planning through release and maintenance.
 
@@ -132,3 +119,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R04 | 2026-03-07 | Clarified ownership of system requirements, regulatory design inputs, and usability inputs, and added `usability_lead` responsibilities. |
 | R05 | 2026-03-07 | Added the explicit design-input baseline gate requiring group approval of the development plan and approved input set before controlled implementation. |
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the design-input approval wording and used technology-neutral signature language. |
+| R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

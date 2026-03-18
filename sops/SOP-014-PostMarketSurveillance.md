@@ -1,18 +1,13 @@
 ---
 sop_id: SOP-014
 title: Post-Market Surveillance
-revision: R02
-effective_date: 2026-03-07
+revision: R03
+effective_date: 2026-03-18
 status: Published
 owner_role: regulatory_lead
 approver_role: qa_lead
-iso_13485_clauses:
-  - 8.2.1
-  - 8.2.6
-  - 8.4
 related_issue: "#10"
 ---
-
 ## 1. Purpose
 Define systematic post-market surveillance (PMS) to monitor product safety/performance, detect trends, and drive timely corrective/preventive actions.
 
@@ -84,3 +79,4 @@ Applies to all released products and product versions in active use.
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Renamed the PMS business owner role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified the PMS role names to `regulatory_lead` and `engineering_lead`. |
+| R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

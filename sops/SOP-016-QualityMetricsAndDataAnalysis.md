@@ -1,17 +1,13 @@
 ---
 sop_id: SOP-016
 title: Quality Metrics and Data Analysis
-revision: R02
-effective_date: 2026-03-07
+revision: R03
+effective_date: 2026-03-18
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
-iso_13485_clauses:
-  - 5.4.1
-  - 8.4
 related_issue: "#12"
 ---
-
 ## 1. Purpose
 Define quality metric selection, collection, analysis, and escalation to support objective quality management decisions and continuous improvement.
 
@@ -83,3 +79,4 @@ Applies to QMS and product quality indicators used in operational monitoring and
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Normalized metric-source responsibility language to the controlled small-team role model and aligned objectives with the engineering evidence workflow. |
 | R02 | 2026-03-07 | Renamed generic metric-source wording from role owners to role leads to match the simplified role taxonomy. |
+| R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

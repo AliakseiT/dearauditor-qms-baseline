@@ -1,20 +1,13 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R14
-effective_date: 2026-03-10
+revision: R15
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 4.1.4
-  - 4.1.6
-  - 5.5.1
-  - 5.5.2
-  - 5.5.3
 related_issue: "#1"
 ---
-
 ## 1. Purpose
 Define how ACME GmbH governs the Quality Management System (QMS): ownership, review cadence, communication, document hierarchy, tooling governance, and the interfaces between top-level QMS policy, operational SOPs, and product-level records.
 
@@ -143,3 +136,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R12 | 2026-03-07 | Removed overly specific signature-regulation terminology from the QMS workflow wording and used technology-neutral signature language. |
 | R13 | 2026-03-08 | Split the reader-facing Quality Manual into `QM-001` and limited `SOP-005` to governance, ownership, cadence, and control interfaces. |
 | R14 | 2026-03-10 | Updated DearAuditor Open QMS Baseline naming, licensing, and open-source governance references. |
+| R15 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

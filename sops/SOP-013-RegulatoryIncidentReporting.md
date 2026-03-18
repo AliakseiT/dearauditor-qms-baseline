@@ -1,16 +1,13 @@
 ---
 sop_id: SOP-013
 title: Regulatory Incident Reporting
-revision: R02
-effective_date: 2026-03-07
+revision: R03
+effective_date: 2026-03-18
 status: Published
 owner_role: regulatory_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 8.2.3
 related_issue: "#9"
 ---
-
 ## 1. Purpose
 Define how ACME identifies, evaluates, and reports adverse events/incidents to regulatory authorities within applicable jurisdictional timelines.
 
@@ -81,3 +78,4 @@ Applies to post-release product events that may require mandatory reporting in S
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Renamed the incident-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified the incident-process business role name to `regulatory_lead`. |
+| R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

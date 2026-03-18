@@ -1,17 +1,13 @@
 ---
 sop_id: SOP-017
 title: Infrastructure and Maintenance Control
-revision: R02
-effective_date: 2026-03-07
+revision: R03
+effective_date: 2026-03-18
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
-iso_13485_clauses:
-  - 6.3
-  - 6.4
 related_issue: "#25"
 ---
-
 ## 1. Purpose
 Define controls for infrastructure and maintenance activities that support reliable QMS operations and safe/effective software product lifecycle execution.
 
@@ -85,3 +81,4 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Normalized infrastructure accountability to the controlled engineering-owner role and added technical QMS maintainer responsibilities for shared automation. |
 | R02 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
+| R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |

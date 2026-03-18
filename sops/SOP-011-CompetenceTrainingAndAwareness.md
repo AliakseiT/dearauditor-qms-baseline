@@ -1,16 +1,13 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R07
-effective_date: 2026-03-10
+revision: R08
+effective_date: 2026-03-18
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
-iso_13485_clauses:
-  - 6.2
 related_issue: "#7"
 ---
-
 ## 1. Purpose
 Define how ACME GmbH establishes competence requirements, assigns training, verifies completion, and maintains awareness for quality-relevant responsibilities.
 
@@ -91,3 +88,4 @@ Training is required when:
 | R05 | 2026-03-07 | Added explicit training-role criteria for `usability_lead` and aligned the matrix to required-versus-awareness training scope. |
 | R06 | 2026-03-08 | Generalized the training matrix from SOP-only assignments to required controlled documents and added the standalone Quality Manual to role-based training. |
 | R07 | 2026-03-10 | Replaced the legacy user training log with a generated training status register and auditor-facing training status report derived from signed training issue evidence. |
+| R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
