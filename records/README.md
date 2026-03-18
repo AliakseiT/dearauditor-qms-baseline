@@ -80,7 +80,7 @@ Use the external manifest template when a controlled document is authored outsid
 - [Start an audit issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=audit_plan.yml)
 - [Start a CAPA issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=capa_plan.yml)
 - [Start a change assessment issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=change_impact_assessment.yml)
-- [Start a complaint intake issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=complaint_intake.yml)
+- [Start a feedback and complaint intake issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=complaint_intake.yml)
 - [Start a nonconformity intake issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=nonconformity_intake.yml)
 - [Start a PMS review issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=pms_review.yml)
 - [Start a design input baseline issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=design_development_plan.yml)
