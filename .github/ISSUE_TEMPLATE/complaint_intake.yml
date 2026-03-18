@@ -1,6 +1,6 @@
-name: Complaint Intake
+name: Feedback and Complaint Intake
 description: Intake a complaint or quality-relevant feedback signal for assessment.
-title: "COMPLAINT: "
+title: "FEEDBACK / COMPLAINT: "
 labels:
   - complaint
   - feedback
@@ -40,6 +40,21 @@ body:
         - Unknown
     validations:
       required: true
+  - type: checkboxes
+    id: capa_opened
+    attributes:
+      label: CAPA
+      description: Check this when the intake already has, or should create, a linked CAPA.
+      options:
+        - label: CAPA opened
+  - type: input
+    id: capa_reference
+    attributes:
+      label: CAPA Reference
+      description: Required when "CAPA opened" is checked. Enter the CAPA issue, record, or tracking ID.
+      placeholder: "#123"
+    validations:
+      required: false
   - type: textarea
     id: linked_context
     attributes:
