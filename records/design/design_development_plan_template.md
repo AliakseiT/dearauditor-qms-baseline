@@ -1,5 +1,3 @@
-# Design and Development Plan Template
-
 ---
 record_type: design_development_plan
 plan_id: "DDP-<product>-<yyyy-mm-dd>"
@@ -18,14 +16,14 @@ github_native_operating_model:
   protected_branch: "main"
   change_control_flow: "issue_or_pr_context -> branch -> pull_request -> merge -> signature_attestation -> immutable_release_evidence"
 linked_records:
-  user_needs_reference: "records/design/user_needs_template.yml"
-  system_requirements_reference: "records/design/system_requirements_spec_template.yml"
-  software_architecture_reference: "records/design/software_architecture_spec_template.yml"
-  design_traceability_reference: "records/design/design_traceability_matrix_template.yml"
-  risk_management_plan_reference: "records/risk/risk_management_plan_template.yml"
-  verification_validation_plan_reference: "records/verification_validation/vv_plan_template.yml"
-  release_plan_reference: "records/configuration/release_plan_template.yml"
-  usability_file_index_reference: "records/usability/usability_file_index_template.yml"
+  user_needs_reference: "records/design/user_needs.md"
+  system_requirements_reference: "records/design/system_requirements_spec.md"
+  software_architecture_reference: "records/design/software_architecture_spec.md"
+  design_traceability_reference: "records/design/design_traceability_matrix.md"
+  risk_management_plan_reference: "records/risk/risk_management_plan.md"
+  verification_validation_plan_reference: "records/verification_validation/vv_plan.md"
+  release_plan_reference: "records/configuration/release_plan.md"
+  usability_file_index_reference: "records/usability/usability_file_index.md"
 approval:
   meaning_of_signature: "Approved Design Inputs and Development Plan"
   signer_roles:
@@ -34,9 +32,13 @@ approval:
     - regulatory_lead
 ---
 
+# Design and Development Plan Template
+
 This template shows one workable Markdown-first variant of a design and development plan for a GitHub-native team.
 
 You may rewrite the section order, headings, tables, or prose style to fit the product, as long as the same planning decisions, gate reviews, linked records, and approval intent remain clear and traceable.
+
+Instantiated product records are expected to be Markdown files with YAML frontmatter so they render directly in GitHub while still exposing structured metadata for automation.
 
 Replace all example text below with product-specific content before approval.
 
@@ -84,12 +86,12 @@ Example:
 Example:
 
 - Intended use reference: `docs/regulatory/intended_use.md`
-- User needs reference: `records/design/user_needs.yml`
-- System requirements reference: `records/design/system_requirements_spec.yml`
+- User needs reference: `records/design/user_needs.md`
+- System requirements reference: `records/design/system_requirements_spec.md`
 - Classification decision reference: `records/mdf/classification_decision.md` when the product regulatory pathway or market classification is in scope for the baseline
-- Initial risk management plan reference: `records/risk/risk_management_plan.yml`
-- Planned V&V strategy reference: `records/verification_validation/vv_plan.yml` or equivalent approved product record
-- Usability inputs and critical-task references: `records/usability/usability_file_index.yml`
+- Initial risk management plan reference: `records/risk/risk_management_plan.md`
+- Planned V&V strategy reference: `records/verification_validation/vv_plan.md` or equivalent approved product record
+- Usability inputs and critical-task references: `records/usability/usability_file_index.md`
 - Open constraints or deferred inputs: external SSO provider not finalized; production hosting region pending supplier contract review
 
 ## 6. Gated Review Record Set
@@ -183,7 +185,7 @@ Example:
 
 Example:
 
-- Planned release-readiness decision reference: `records/configuration/release_plan.yml`
+- Planned release-readiness decision reference: `records/configuration/release_plan.md`
 - Planned final release decision reference: `records/configuration/final_release_decision.md`
 - Entry conditions for formal release-candidate V&V: candidate scope frozen, included and deferred changes named, binary or deployment reference recorded, open anomaly posture reviewed
 
@@ -191,10 +193,10 @@ Example:
 
 Example:
 
-- Risk management plan reference: `records/risk/risk_management_plan.yml`
-- Verification and validation plan reference: `records/verification_validation/vv_plan.yml`
-- Usability engineering plan or file reference: `records/usability/usability_file_index.yml`
-- Other linked plans or supporting records: `records/configuration/release_plan.yml`, `records/mdf/medical_device_file_index.yml`
+- Risk management plan reference: `records/risk/risk_management_plan.md`
+- Verification and validation plan reference: `records/verification_validation/vv_plan.md`
+- Usability engineering plan or file reference: `records/usability/usability_file_index.md`
+- Other linked plans or supporting records: `records/configuration/release_plan.md`, `records/mdf/medical_device_file_index.md`
 
 ## 9. Expected Product Dossier / MDF Deliverables and Linked Records
 
@@ -209,14 +211,14 @@ The table below lists expected deliverable areas, not a rigid one-file-per-row m
 | Intended use and claims | `intended_use.md` or equivalent controlled product statement | Define product purpose, users, use environment, and claims | SOP-008 design inputs; SOP-007 MDF structure; FDA QMSR as implemented through 21 CFR part 820 incorporating ISO 13485:2016 |
 | Classification and regulatory pathway | `classification_decision.md` or equivalent regulatory decision record | Capture jurisdictional classification and pathway rationale | SOP-007 MDF structure; product-specific regulatory dossier expectations |
 | Design and development planning | `design_development_plan.md` | Define lifecycle model, roles, gates, and operating model | ISO 13485 7.1, 7.3; IEC 62304 5; SOP-008; SOP-020 |
-| User needs | `user_needs.yml` | Define user and intended-use driven needs | ISO 13485 7.3; SOP-008 |
-| System and software requirements | `system_requirements_spec.yml` | Define testable functional, safety, security, usability, and interface requirements | ISO 13485 7.3; IEC 62304 5; SOP-008; SOP-020 |
-| Software architecture | `software_architecture_spec.yml` | Define components, interfaces, external dependencies, and architecture decisions | IEC 62304 5; SOP-008; SOP-020 |
-| Design traceability | `design_traceability_matrix.yml` | Link user needs, requirements, risks, tests, and releases | ISO 13485 7.3; IEC 62304 5, 7, 8; SOP-007; SOP-008; SOP-020 |
-| Risk management file | `risk_management_plan.yml`, `risk_register.yml`, `risk_management_review.md`, or equivalent linked records | Define and maintain product risk method, analysis, controls, and residual risk decisions | ISO 13485 7.1, 7.3; ISO 14971; SOP-018 |
-| Verification and validation | `vv_plan.yml`, `test_case_index.yml`, execution logs, `vv_report.md`, or equivalent linked records | Define and record verification, validation, and usability-validation evidence | SOP-008; SOP-020; WI-001; IEC 62304 lifecycle evidence expectations |
-| Release and configuration control | `release_plan.yml`, `release_baseline_manifest.yml`, `final_release_decision.md` | Record formal V&V entry, release baseline, exact binary or deployment, and shipment authorization | SOP-020; WI-002; IEC 62304 configuration, release, and problem-resolution interfaces |
-| Medical device file index and summary | `medical_device_file_index.yml`, `traceability_summary.md` | Tie the product dossier together and point to current controlled artifacts | ISO 13485 4.2.3; SOP-007 |
+| User needs | `user_needs.md` | Define user and intended-use driven needs | ISO 13485 7.3; SOP-008 |
+| System and software requirements | `system_requirements_spec.md` | Define testable functional, safety, security, usability, and interface requirements | ISO 13485 7.3; IEC 62304 5; SOP-008; SOP-020 |
+| Software architecture | `software_architecture_spec.md` | Define components, interfaces, external dependencies, and architecture decisions | IEC 62304 5; SOP-008; SOP-020 |
+| Design traceability | `design_traceability_matrix.md` | Link user needs, requirements, risks, tests, and releases | ISO 13485 7.3; IEC 62304 5, 7, 8; SOP-007; SOP-008; SOP-020 |
+| Risk management file | `risk_management_plan.md`, `risk_register.md`, `risk_management_review.md`, or equivalent linked records | Define and maintain product risk method, analysis, controls, and residual risk decisions | ISO 13485 7.1, 7.3; ISO 14971; SOP-018 |
+| Verification and validation | `vv_plan.md`, `test_case_index.md`, execution logs, `vv_report.md`, or equivalent linked records | Define and record verification, validation, and usability-validation evidence | SOP-008; SOP-020; WI-001; IEC 62304 lifecycle evidence expectations |
+| Release and configuration control | `release_plan.md`, `release_baseline_manifest.md`, `final_release_decision.md` | Record formal V&V entry, release baseline, exact binary or deployment, and shipment authorization | SOP-020; WI-002; IEC 62304 configuration, release, and problem-resolution interfaces |
+| Medical device file index and summary | `medical_device_file_index.md`, `traceability_summary.md` | Tie the product dossier together and point to current controlled artifacts | ISO 13485 4.2.3; SOP-007 |
 | Linked post-market and quality follow-up records | complaint, PMS, incident, CAPA, and nonconformity references when applicable | Maintain lifecycle continuity after release; these are linked records rather than part of the initial design baseline | SOP-012; SOP-013; SOP-014; SOP-015; SOP-002 |
 
 ## 10. Milestones and Entry/Exit Criteria

@@ -61,10 +61,10 @@ body:
         - design_development_plan.md
         - intended use or equivalent scope statement
         - classification decision
-        - user_needs.yml
-        - system_requirements_spec.yml
-        - risk_management_plan.yml
-        - verification_validation_plan.yml
+        - user_needs.md
+        - system_requirements_spec.md
+        - risk_management_plan.md
+        - vv_plan.md
         - usability file index or equivalent reference
     validations:
       required: true
@@ -74,10 +74,10 @@ body:
       label: Gate 2 Records Reviewed - Verification Readiness
       description: List the records that must be current before formal verification or validation execution can start.
       placeholder: |
-        - software_architecture_spec.yml
-        - design_traceability_matrix.yml
-        - verification_validation_plan.yml
-        - test_case_index.yml
+        - software_architecture_spec.md
+        - design_traceability_matrix.md
+        - vv_plan.md
+        - test_case_index.md
         - release_readiness decision or release plan
         - risk register / current risk references
         - open anomaly or change summary
@@ -90,11 +90,11 @@ body:
       description: List the records that must be reviewed before shipment or release authorization.
       placeholder: |
         - vv_report.md
-        - test_execution_log.yml and evidence index
+        - test_execution_log.md and evidence index
         - residual risk review / risk management review
-        - release_baseline_manifest.yml
+        - release_baseline_manifest.md
         - final_release_decision.md
-        - medical_device_file_index.yml
+        - medical_device_file_index.md
         - complaint / PMS / incident references, if applicable
     validations:
       required: true
