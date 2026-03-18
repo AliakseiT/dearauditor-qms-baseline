@@ -48,7 +48,7 @@ Some folders are intentionally empty until the first signed and published compan
 - [Design control](design/) - design and development plan templates, user needs, system requirements, software architecture, and traceability templates
 - [Risk management](risk/) - risk management plan, register, review, and example risk register templates/reference artifacts
 - [Usability engineering](usability/) - usability file index, use specification, hazard-related scenarios, formative/summative, and post-production usability review templates
-- [Medical device file](mdf/) - classification, file index, and traceability summary templates
+- [Medical device file](mdf/) - classification, device description, declaration of conformity, file index, and traceability summary templates
 - [Verification and validation](verification_validation/) - V&V plan, test case, execution log, and report templates for designated product/study repositories
 - [Configuration and release](configuration/) - release readiness, final release decision, and release baseline manifest templates for designated product/study repositories
 - [Validation](validation/qms-tools/) - QMS tooling validation evidence
