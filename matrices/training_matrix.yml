@@ -1,5 +1,5 @@
 ---
-version: 15
+version: 16
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -50,11 +50,11 @@ roles:
       SOP-012: R03
       SOP-013: R03
       SOP-014: R03
-      SOP-015: R02
+      SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R05
-      SOP-019: R08
+      SOP-018: R06
+      SOP-019: R09
       SOP-020: R08
 
   engineer:
@@ -82,7 +82,7 @@ roles:
       SOP-009: R07
       SOP-011: R08
       SOP-017: R03
-      SOP-018: R05
+      SOP-018: R06
       SOP-020: R08
 
   engineering_lead:
@@ -111,9 +111,9 @@ roles:
       SOP-008: R07
       SOP-009: R07
       SOP-011: R08
-      SOP-015: R02
+      SOP-015: R03
       SOP-017: R03
-      SOP-018: R05
+      SOP-018: R06
       SOP-020: R08
 
   technical_qms_maintainer:
@@ -180,11 +180,11 @@ roles:
       SOP-012: R03
       SOP-013: R03
       SOP-014: R03
-      SOP-015: R02
+      SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R05
-      SOP-019: R08
+      SOP-018: R06
+      SOP-019: R09
       SOP-020: R08
 
   usability_lead:
@@ -208,8 +208,8 @@ roles:
       SOP-011: R08
       SOP-012: R03
       SOP-014: R03
-      SOP-018: R05
-      SOP-019: R08
+      SOP-018: R06
+      SOP-019: R09
 
   auditor:
     users: []
@@ -251,11 +251,11 @@ roles:
       SOP-012: R03
       SOP-013: R03
       SOP-014: R03
-      SOP-015: R02
+      SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R05
-      SOP-019: R08
+      SOP-018: R06
+      SOP-019: R09
       SOP-020: R08
 
   management_representative:
@@ -299,9 +299,9 @@ roles:
       SOP-012: R03
       SOP-013: R03
       SOP-014: R03
-      SOP-015: R02
+      SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R05
-      SOP-019: R08
+      SOP-018: R06
+      SOP-019: R09
       SOP-020: R08

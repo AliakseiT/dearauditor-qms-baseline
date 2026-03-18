@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R08
+revision: R09
 effective_date: 2026-03-18
 status: Published
 owner_role: usability_lead
@@ -128,6 +128,8 @@ The file index is the entrypoint for audits and must reference current revisions
 ## 10. Traceability
 | Standard Clause | Control in this SOP |
 |---|---|
+| ISO 13485 7.3 | Defines usability-related design and development controls and traceable evaluation outputs. |
+| ISO 13485 7.5.1 | Defines controlled implementation of user-interface measures and information for safety. |
 | IEC 62366-1 4.1.1-4.3 | Defines process, risk-control linkage, usability file, and effort tailoring. |
 | IEC 62366-1 5.1-5.7 | Defines use specification, hazard-related scenario identification, and evaluation planning. |
 | IEC 62366-1 5.8-5.9 | Defines formative iteration and summative validation evidence. |
@@ -152,3 +154,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the usability signature workflow wording. |
 | R07 | 2026-03-10 | Updated open-source baseline naming and publication references used in the usability procedure set. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R09 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the IEC 62366-1 references in Section 10. |
