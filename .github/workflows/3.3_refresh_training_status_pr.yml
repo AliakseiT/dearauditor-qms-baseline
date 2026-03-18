@@ -136,20 +136,13 @@ jobs:
               '',
               '## Context',
               '',
-              'This manual workflow exported all `training-diff` issues plus their comments, rebuilt the training status artifacts, and prepared a PR only because the generated files changed.',
+              'This manual workflow exported all `training-diff` issues plus their comments, rebuilt the training status artifacts, and prepared a bot-authored PR only because the generated files changed.',
               '',
               '## Validation',
               '',
               '- Exported all `training-diff` issues and comments from GitHub.',
               '- Ran `python3 scripts/rebuild_training_status.py` against the current training matrix.',
               '- Updated `records/training/training_status.yml`, `records/training/training_status.md`, and `records/training/training_status.csv`.',
-              '',
-              '## Signature Requirements (Optional)',
-              '',
-              '- **Meaning of Signature:** Training status register refresh approval',
-              '- **Signer Roles:** Management Representative',
-              '- **Required Signatures:** 1',
-              '',
             ].join('\n');
 
             const existing = await github.paginate(github.rest.pulls.list, {
