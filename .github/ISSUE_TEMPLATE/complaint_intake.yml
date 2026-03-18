@@ -40,29 +40,37 @@ body:
         - Unknown
     validations:
       required: true
-  - type: checkboxes
-    id: capa_opened
+  - type: dropdown
+    id: capa_status
     attributes:
-      label: CAPA
-      description: Check this when the intake already has, or should create, a linked CAPA.
+      label: CAPA Status
+      description: Record whether this intake has already triggered a CAPA.
       options:
-        - label: CAPA opened
-  - type: input
-    id: capa_reference
-    attributes:
-      label: CAPA Reference
-      description: Required when "CAPA opened" is checked. Enter the CAPA issue, record, or tracking ID.
-      placeholder: "#123"
+        - No CAPA opened
+        - CAPA opened
+        - Under assessment
     validations:
-      required: false
+      required: true
+  - type: textarea
+    id: capa_reference_or_rationale
+    attributes:
+      label: CAPA Reference or Rationale
+      description: Enter the CAPA ID when status is "CAPA opened". Otherwise enter N/A or a short rationale or next step.
+      placeholder: |
+        CAPA-2026-001
+        or
+        N/A - triage pending
+    validations:
+      required: true
   - type: textarea
     id: linked_context
     attributes:
       label: Linked Context
-      description: Related releases, complaints, incidents, risk items, or CAPAs.
+      description: Related releases, prior complaints, incidents, and risk items.
       placeholder: |
         - release:
         - risk:
-        - capa:
+        - incident:
+        - prior complaint:
     validations:
       required: false
