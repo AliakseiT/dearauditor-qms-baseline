@@ -1,5 +1,5 @@
 name: Risk Management Plan
-description: Plan risk analysis/evaluation/control for a product or major change.
+description: Define the risk-management method, linked records, and review framework for a product or major change.
 title: "RISK PLAN: <product/change>"
 labels:
   - risk-management
@@ -17,44 +17,23 @@ body:
     id: scope
     attributes:
       label: Assessment Scope
-      description: Boundaries and assumptions for this risk activity.
+      description: Boundaries, major assumptions, and product/change context for this risk-planning revision.
+      placeholder: |
+        - product or subsystem boundary:
+        - major change or release context:
+        - out of scope:
     validations:
       required: true
 
   - type: textarea
-    id: top_down_hazards
+    id: intended_use_and_context
     attributes:
-      label: Top-Down Hazards
-      description: Primary hazards/hazardous situations identified from intended use and misuse.
+      label: Intended Use and Product Context References
+      description: Link the intended-use context and device description that anchor this risk plan.
       placeholder: |
-        - Hazard:
-          Hazardous situation:
-          Possible harm:
-    validations:
-      required: true
-
-  - type: textarea
-    id: bottom_up_failures
-    attributes:
-      label: Bottom-Up Failure Modes
-      description: Software/component/user-workflow failures and resulting hazards.
-      placeholder: |
-        - Failure mode:
-          Sequence of events:
-          Possible harm:
-    validations:
-      required: true
-
-  - type: textarea
-    id: cybersecurity_threats
-    attributes:
-      label: Cybersecurity Threat Scenarios
-      description: Threats that can create hazardous situations and harm.
-      placeholder: |
-        - Threat:
-          Attack path:
-          Hazardous situation:
-          Possible harm:
+        - intended use reference:
+        - device description reference:
+        - major use environment or deployment assumptions:
     validations:
       required: true
 
@@ -71,22 +50,124 @@ body:
       required: true
 
   - type: textarea
-    id: scoring_notes
+    id: lifecycle_scope
     attributes:
-      label: Scoring / Acceptability Notes
-      description: Note any deviation from the default S1-S5 x P1-P5 scoring and acceptability bands in the risk plan template.
+      label: Lifecycle Scope and Linked Records
+      description: State which lifecycle phases this plan covers and the main linked design, V&V, release, and post-market records.
       placeholder: |
-        Default scoring applies unless noted here.
-        Any alternative scale or threshold must be justified in the plan.
+        - lifecycle phases: design, development, verification_validation, release, production_post_production
+        - risk register reference:
+        - design traceability reference:
+        - verification and validation plan reference:
+        - release decision reference:
+    validations:
+      required: true
+
+  - type: textarea
+    id: responsible_roles
+    attributes:
+      label: Responsible Roles
+      description: Map the roles responsible for the risk file, technical analysis, usability inputs, QA governance, and overall residual-risk approval.
+      placeholder: |
+        - regulatory_lead: @user
+        - engineering_lead: @user
+        - qa_lead: @user
+        - usability_lead: @user or N/A
+        - management_representative: @user
+    validations:
+      required: true
+
+  - type: textarea
+    id: scoring_and_acceptability
+    attributes:
+      label: Shared Scoring and Acceptability Method
+      description: Confirm the common method to be used for top-down hazards, bottom-up failure modes, and cybersecurity threats before and after mitigation.
+      placeholder: |
+        - severity scale: S1-S5
+        - probability scale: P1-P5
+        - scoring formula: R = S x P
+        - acceptable: 1-4
+        - ALARP / justification required: 5-9
+        - not acceptable: 10-25
+        - any product-specific adaptation or rationale:
+    validations:
+      required: true
+
+  - type: textarea
+    id: top_down_seed_domains
+    attributes:
+      label: Top-Down Hazard Seed Domains
+      description: Name the hazard domains or hazardous situations that this plan expects the risk file to cover. Do not try to fully enumerate the register here.
+      placeholder: |
+        - incorrect or delayed output
+        - unavailable system during intended use
+        - misleading user-interface presentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: bottom_up_seed_domains
+    attributes:
+      label: Bottom-Up Failure-Mode Seed Domains
+      description: Name the failure modes or technical domains expected to feed the risk register. Keep this at planning level.
+      placeholder: |
+        - rules-engine defect
+        - configuration corruption
+        - interface contract mismatch
+        - audit-log write failure
+    validations:
+      required: true
+
+  - type: textarea
+    id: cybersecurity_seed_domains
+    attributes:
+      label: Cybersecurity Threat Seed Domains
+      description: Name the threat domains expected to be captured in the unified risk file. Keep this at planning level.
+      placeholder: |
+        - unauthorized access
+        - integrity compromise of configuration or release package
+        - denial of service affecting intended use
+        - evidence or log tampering
+    validations:
+      required: true
+
+  - type: textarea
+    id: overall_residual_risk_method
+    attributes:
+      label: Overall Residual-Risk Method
+      description: Describe how aggregate residual risk will be reviewed and approved.
+      placeholder: |
+        - aggregate review timing:
+        - approving role:
+        - conditions requiring explicit benefit-risk analysis:
+    validations:
+      required: true
+
+  - type: textarea
+    id: post_production_inputs
+    attributes:
+      label: Post-Production Inputs and Review Triggers
+      description: Name the complaint, PMS, incident, vulnerability, and operational inputs that must feed back into the risk file.
+      placeholder: |
+        - complaints
+        - incidents
+        - PMS reviews
+        - cybersecurity vulnerabilities
+        - reliability or operational monitoring
+        - quarterly and major-release review cadence
+    validations:
+      required: true
 
   - type: textarea
     id: done_criteria
     attributes:
       label: Done Criteria
-      description: What must be complete for closure.
+      description: What must be complete for closure of the risk-plan issue.
       placeholder: |
-        - Risk register updated
-        - Controls implemented and verified
-        - Residual risk reviewed and approved
+        - risk management plan approved
+        - intended use and device description references linked
+        - shared scoring and acceptability method approved
+        - seed domains captured for top-down, bottom-up, and cybersecurity views
+        - review cadence and linked records agreed
     validations:
       required: true
