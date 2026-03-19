@@ -1,5 +1,5 @@
 ---
-version: 17
+version: 18
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -8,6 +8,7 @@ users:
     full_name: Ina Tsitovich
     job_title: Quality Assurance Lead
   SorenWesThorup:
+    full_name: Søren Thorup
     job_title: Quality Assurance Lead
 
 roles:
