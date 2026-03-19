@@ -1,5 +1,5 @@
 ---
-version: 16
+version: 17
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -7,11 +7,14 @@ users:
   InaTsitovich:
     full_name: Ina Tsitovich
     job_title: Quality Assurance Lead
+  SorenWesThorup:
+    job_title: Quality Assurance Lead
 
 roles:
   qa_lead:
     users:
       - InaTsitovich
+      - SorenWesThorup
     required_documents:
       - QM-001
       - SOP-001
