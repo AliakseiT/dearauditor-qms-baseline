@@ -130,28 +130,34 @@ jobs:
                 return;
               }
 
-              let reviewerPool = requestedReviewers;
-              if (reviewerPool.length === 0) {
-                const marker = '<!-- signature-auto-reviewers -->';
-                const legacyMarker = '<!-- part11-auto-reviewers -->';
-                const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
-                const comments = await github.paginate(github.rest.issues.listComments, {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: prNumber,
-                  per_page: 100,
-                });
-                const markerComments = comments
-                  .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
-                  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                if (markerComments.length > 0) {
-                  const latestBody = markerComments[markerComments.length - 1].body || '';
-                  const lineMatch = latestBody.match(/Assigned reviewers:\s*([^\n]+)/i);
-                  reviewerPool = lineMatch
-                    ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
-                    : [];
-                }
-              }
+              const marker = '<!-- signature-auto-reviewers -->';
+              const legacyMarker = '<!-- part11-auto-reviewers -->';
+              const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                per_page: 100,
+              });
+              const markerComments = comments
+                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+              const assignedReviewers = markerComments.length > 0
+                ? (() => {
+                    const latestBody = markerComments[markerComments.length - 1].body || '';
+                    const lineMatch = latestBody.match(/Assigned reviewers:\s*([^\n]+)/i);
+                    return lineMatch
+                      ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
+                      : [];
+                  })()
+                : [];
+
+              let reviewerPool = Array.from(
+                new Set([
+                  ...assignedReviewers,
+                  ...requestedReviewers,
+                ])
+              );
               if (reviewerPool.length === 0) {
                 reviewerPool = approvedOnHead;
               }
