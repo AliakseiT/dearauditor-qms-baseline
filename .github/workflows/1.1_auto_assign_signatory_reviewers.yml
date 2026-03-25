@@ -213,7 +213,7 @@ jobs:
               return;
             }
 
-            const selected = eligible.slice(0, requiredReviewerSignatures);
+            const selected = eligible;
             const alreadyRequested = new Set(existingReviewers.map((r) => (r.login || '').toLowerCase()));
             const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
             
@@ -239,7 +239,7 @@ jobs:
               `Minimum reviewer approvals required for merge: \`${requiredReviewerSignatures}\``,
               `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
               '',
-              'Auto-merge workflow will enable merge only after all assigned reviewers approve.',
+              'Auto-merge workflow will enable merge once the required number of approvals is collected from the assigned reviewer pool.',
             ];
 
             // Check if existing assigned reviewers exactly match up the selection
