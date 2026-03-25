@@ -22,8 +22,9 @@ ROLE_DISPLAY_NAMES = {
     "management_representative": "Management Representative",
 }
 
-WORKFLOW_TOOLING_PREFIXES = (
-    ".github/workflows/",
+TECHNICAL_QMS_MAINTAINER_PREFIXES = (
+    ".github/",
+    "scripts/",
     "services/signature-worker/",
     "tools/",
 )
@@ -172,8 +173,8 @@ def _infer_role_candidates(repo_root: Path, paths: list[str]) -> tuple[list[str]
         if reason not in reasons:
             reasons.append(reason)
 
-    if any(path.startswith(WORKFLOW_TOOLING_PREFIXES) for path in paths):
-        add_candidate("technical_qms_maintainer", "workflow/tooling changes")
+    if any(path.startswith(TECHNICAL_QMS_MAINTAINER_PREFIXES) for path in paths):
+        add_candidate("technical_qms_maintainer", "repository tooling/policy changes")
 
     controlled_doc_paths = [
         path
@@ -267,7 +268,9 @@ def main() -> int:
             explicit_primary_role_id, author_role_id_set, author_job_title
         ):
             raise SystemExit(
-                f"PR author @{author} is not eligible for explicit primary signer role '{explicit_primary_role}'."
+                f"PR author @{author} is not eligible for explicit primary signer role '{explicit_primary_role}'. "
+                "The first listed '**Signer Roles:**' entry is treated as the PR author's role; "
+                "reviewer/co-signer roles must come after it."
             )
         final_roles = explicit_roles
         source = "explicit"
