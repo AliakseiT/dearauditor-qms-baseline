@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R01
-effective_date: 2026-03-10
+revision: R02
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -32,8 +32,8 @@ Applies to the ACME GmbH QMS for healthcare software products, including product
 - Operating Model: Remote-first company
 - Regulatory Role: Manufacturer
 - Product Type: Healthcare software products; some products may qualify as SaMD
-- Intended Use Policy: No single intended medical purpose is defined at company level; each product defines intended use, claims, indications, and classification in a product-specific regulatory dossier.
-- Infrastructure Policy: Product infrastructure architecture and controls are approved per product dossier; there is no single shared runtime baseline imposed across all products.
+- Intended Use Policy: Each product must define intended use, indications, claims, and regulatory classification before development and release under controlled procedures.
+- Infrastructure Policy: Each product must define and approve its infrastructure architecture and controls against applicable security, availability, and traceability requirements within the product dossier.
 
 ## 4. QMS Intent and Quality Policy
 ACME maintains this QMS to:
@@ -48,6 +48,7 @@ Quality Policy:
 > ACME GmbH commits to delivering safe and effective healthcare software through a risk-based, evidence-driven quality management system and continuous improvement.
 
 The approved policy baseline is maintained in `matrices/company_profile.yml`.
+The QMS uses a risk-based approach in which processes are defined, measured, and continuously improved.
 
 ## 5. Quality Objectives
 The quality objective framework is maintained in `matrices/company_profile.yml` and is reviewed through management review. The current company-level objectives are to:
@@ -56,6 +57,7 @@ The quality objective framework is maintained in `matrices/company_profile.yml` 
 - close critical quality actions on time
 - complete required controlled-document training on time
 - maintain management review cadence
+- ensure products perform against defined performance criteria and complaint thresholds
 
 Each objective must have an accountable role, a measurable indicator, and a target threshold.
 
@@ -87,7 +89,7 @@ High-level process interaction:
 | Regulatory Lead | Owns regulatory pathway, dossier completeness, and regulated lifecycle oversight. |
 | Usability Lead | Owns safety-related usability engineering inputs and file completeness for user-facing products. |
 | Technical QMS Maintainer | Maintains quality tooling, automation, and technical QMS infrastructure under controlled change. |
-| Auditor | Independently verifies conformance and effectiveness of selected QMS processes. |
+| Auditor | Verifies conformance and effectiveness of selected QMS processes and must remain independent of the activities being audited. |
 
 Detailed governance responsibilities are defined in `sops/SOP-005-QMSGovernance.md`.
 
@@ -107,9 +109,9 @@ Jurisdiction references currently maintained in the regulatory scope baseline in
 Document-control rules are defined in `SOP-001`, governance rules in `SOP-005`, and role-specific training expectations in `SOP-011` plus `matrices/training_matrix.yml`.
 
 The record model is:
-- company-level governance baselines and selected operational records may live in this upstream baseline repository
-- reusable templates are published here for downstream product/study repositories
-- product and study execution records are maintained in designated repositories and linked back into the medical device file and release evidence
+- company-level QMS documents and selected quality records are maintained in a controlled central repository that constitutes the authoritative QMS baseline
+- standardized templates and controlled document structures are published from this repository to support consistent implementation across products and studies
+- product- and study-specific records are maintained in designated controlled repositories and linked to the relevant medical device file and release evidence
 
 QMS tooling and validation baselines are maintained in:
 - `matrices/qms_tooling_inventory.yml`
@@ -138,3 +140,4 @@ QMS tooling and validation baselines are maintained in:
 |---|---|---|
 | R00 | 2026-03-08 | Initial release split from SOP-005 so the QMS intent, scope, policy, objectives, and process structure are available as a standalone Quality Manual. |
 | R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |
+| R02 | 2026-03-25 | Tightened company-level scope wording, added risk-based quality framing and product performance objectives, and clarified auditor independence plus repository-of-record language. |

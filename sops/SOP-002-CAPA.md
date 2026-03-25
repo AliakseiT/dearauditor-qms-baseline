@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-002
 title: Corrective and Preventive Action (CAPA)
-revision: R03
-effective_date: 2026-03-18
+revision: R04
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -20,6 +20,7 @@ Applies to quality system and product lifecycle nonconformities originating from
 - Incident investigations
 - Supplier nonconformities
 - Management review actions
+- Process metrics and recurring adverse trends
 
 ## 4. Outputs
 - Approved CAPA record with root cause, action plan, and effectiveness evidence
@@ -36,9 +37,10 @@ Applies to quality system and product lifecycle nonconformities originating from
 ## 6. Procedure
 
 ### 6.1 CAPA Initiation
-1. Create CAPA record when systemic issue or significant risk is identified.
+1. Create CAPA record when systemic issue, significant risk, or adverse trend is identified through complaints, incidents, audits, supplier issues, management review, or process metrics.
 2. Classify severity: `critical`, `major`, `minor`.
 3. Define immediate containment to protect patient/user and compliance state.
+4. Evaluate severity and frequency to determine whether CAPA is required and whether escalation is needed.
 
 ### 6.2 Investigation and Root Cause
 1. Assign investigator independent from the initiating activity when practical.
@@ -50,11 +52,12 @@ Applies to quality system and product lifecycle nonconformities originating from
 2. Define preventive actions where similar failures could occur.
 3. Assign accountable owners and due dates for each action.
 4. For software impacts, include verification evidence requirements.
+5. Assess impact on released or distributed products, including the need for field action, customer communication, or regulatory reporting.
 
 ### 6.4 Implementation and Verification
 1. Implement approved actions through controlled changes.
 2. Verify each action was completed as designed.
-3. Update impacted SOPs, risk files, and training where required.
+3. Update impacted SOPs, hazard analyses, risk controls, residual risk evaluations, and training where required.
 
 ### 6.5 Effectiveness Check
 1. Define measurable effectiveness criteria before closure.
@@ -89,3 +92,4 @@ Applies to quality system and product lifecycle nonconformities originating from
 | R01 | 2026-03-02 | Full CAPA lifecycle procedure implemented. |
 | R02 | 2026-03-05 | Updated record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R04 | 2026-03-25 | Added trend-based CAPA initiation criteria, severity/frequency evaluation, released-product impact assessment, and explicit risk-file update expectations. |
