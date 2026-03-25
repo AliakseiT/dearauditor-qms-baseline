@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R12
-effective_date: 2026-03-18
+revision: R13
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -12,7 +12,7 @@ related_issue: "#1"
 Define how ACME GmbH creates, reviews, approves, revises, distributes, and archives controlled QMS documents and quality records.
 
 ## 2. Scope
-Applies to controlled QMS documentation in this upstream baseline repository and to quality records maintained in designated GitHub product/study record repositories. Product/study execution records are not maintained in this upstream baseline repository.
+Applies to all controlled QMS documents and quality records maintained within repositories designated under this QMS as systems of record. Product/study execution records may be maintained outside this upstream baseline repository when the designated repository is identified in the applicable dossier or process record.
 
 ## 3. Inputs
 - Change request, issue, CAPA, audit finding, or management review action
@@ -30,7 +30,7 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 | QA Lead | Maintains document control process and naming/version rules. |
 | Management Representative | Approves new or revised controlled documents and critical records. |
 | Process Owner | Drafts/updates document content and verifies technical correctness. |
-| All Personnel | Use only current approved revisions. Responsible for maintaining the security of their GitHub credentials. The use of a user's GitHub account to approve a pull request under this QMS constitutes their legally binding electronic signature. |
+| All Personnel | Use only current approved revisions and maintain the security of their uniquely assigned GitHub credentials. The use of a user's GitHub account to approve a pull request under this QMS constitutes their legally binding electronic signature. |
 
 ## 6. Procedure
 
@@ -57,6 +57,7 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 6. Merges are permitted only after required status checks and reviewer approvals are successfully completed.
 7. Controlled state exists only after merge to `main` in the governing repository and, where required by process, after the associated immutable release/tag evidence is created.
 8. Signature collection and attestation evidence are captured post-merge on the merged PR and must complete before immutable record publication.
+9. User accounts used for review or approval must be uniquely assigned, access-controlled, and traceable. Authentication, authorization, and audit-trail controls must preserve the integrity and non-repudiation of electronic signatures.
 
 ### 6.4 Published Index Synchronization
 1. Any QM, SOP, or WI text change must update the Published Controlled Document Index in `README.md`.
@@ -73,7 +74,11 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 2. The definitive quality record consists of the cryptographically signed `signed_attestation.json` and corresponding immutable GitHub Release/Sigstore attestation bundle in the target record repository.
 3. A human-readable `Electronic_Signature_Certificate.pdf` is automatically generated alongside these assets to satisfy regulatory manifestation requirements (for example displaying the printed name, date/time, and meaning of the signature).
 4. Required quality records are published as immutable release assets in the designated record repository and linked back to source PR context.
-5. Obsolete revisions remain available in Git history and must not be deleted.
+5. GitHub and associated automation used for document control, electronic signatures, and record retention must be validated for intended use under `SOP-006`.
+6. Quality records must be retained for at least the documented device lifetime and not less than 10 years after the last product has been placed on the market, or 15 years for implantable devices, unless longer retention is required by applicable regulations.
+7. Where device lifetime cannot be reasonably determined, retain the quality record for at least 10 years from record creation.
+8. Product-specific retention requirements must be defined in the product dossier and implemented in the designated record repository.
+9. Obsolete revisions remain available in Git history and must not be deleted.
 
 ### 6.7 External Documents
 1. External normative references are maintained as citation metadata, not copied full text.
@@ -126,3 +131,4 @@ Applies to controlled QMS documentation in this upstream baseline repository and
 | R10 | 2026-03-08 | Added `QM` as a first-class controlled document class and generalized the published index and training-sync rules from SOP-only to controlled-document scope. |
 | R11 | 2026-03-10 | Updated upstream baseline naming, licensing, and open-source publication references used in document control. |
 | R12 | 2026-03-18 | Merged Section 6.2 SOP metadata requirements and removed top-table standards clause metadata from SOP front matter. |
+| R13 | 2026-03-25 | Clarified designated-system-of-record scope, strengthened user-account/signature controls, linked GitHub validation to SOP-006, and added explicit record-retention requirements. |

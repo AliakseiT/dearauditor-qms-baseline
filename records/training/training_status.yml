@@ -1,7 +1,7 @@
 version: 1
-generated_at_utc: '2026-03-18T21:51:52Z'
+generated_at_utc: '2026-03-25T13:45:47Z'
 source_repository: AliakseiT/dearauditor-qms-baseline
-source_event_count: 2
+source_event_count: 3
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -757,4 +757,328 @@ users:
         evidence_release_url: ''
         signer_login: inatsitovich
         signer_full_name: Ina Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+  sorenwesthorup:
+    full_name: "S\xF8ren Thorup"
+    current_roles: []
+    documents:
+      QM-001:
+        trained_revision: R01
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-001:
+        trained_revision: R12
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-002:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-003:
+        trained_revision: R04
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-005:
+        trained_revision: R15
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-006:
+        trained_revision: R02
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-007:
+        trained_revision: R06
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-008:
+        trained_revision: R07
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-009:
+        trained_revision: R07
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-010:
+        trained_revision: R02
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-011:
+        trained_revision: R08
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-012:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-013:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-014:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-015:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-016:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-017:
+        trained_revision: R03
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-018:
+        trained_revision: R06
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-019:
+        trained_revision: R09
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
+        meaning_of_signature: Completed QMS Training Review
+      SOP-020:
+        trained_revision: R08
+        trained_at_utc: '2026-03-25T09:08:22.220Z'
+        from_revision: UNTRAINED
+        roles_in_scope:
+        - qa_lead
+        source_issue: 288
+        source_issue_title: "TRAINING REQUIRED: S\xF8ren Thorup (HEAD-2975b76ac8f1)"
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4126742949
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288#issuecomment-4124913686
+        evidence_release_tag: sig-train-288-hdef87534dced-r03
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07
+        signer_login: sorenwesthorup
+        signer_full_name: "S\xF8ren Thorup"
         meaning_of_signature: Completed QMS Training Review

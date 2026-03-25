@@ -47,24 +47,24 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 ### Quality Manual
 
-- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R01`
+- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R02`
 
 ### SOP Library By Topic
 
 #### Governance and Core QMS
 
-- [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R12`
-- [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R03`
-- [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R04`
+- [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R13`
+- [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R04`
+- [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R05`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R06`
-- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R15`
+- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R16`
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R08`
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R03`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R03`
 
 #### Development, Risk, and Release
 
-- [SOP-006 Software Validation (QMS Tools)](sops/SOP-006-SoftwareValidation.md) - `R02`
+- [SOP-006 Software Validation (QMS Tools)](sops/SOP-006-SoftwareValidation.md) - `R03`
 - [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R06`
 - [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R07`
 - [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R07`
@@ -91,13 +91,13 @@ Use the grouped links below for navigation. The raw machine-readable published c
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->
 | Document ID | Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-03-10 | R01 | Published |
-| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-18 | R12 | Published |
-| SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-18 | R03 | Published |
-| SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-18 | R04 | Published |
+| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-03-25 | R02 | Published |
+| SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-25 | R13 | Published |
+| SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-25 | R04 | Published |
+| SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-25 | R05 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-18 | R06 | Published |
-| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-03-18 | R15 | Published |
-| SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-18 | R02 | Published |
+| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-03-25 | R16 | Published |
+| SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-25 | R03 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-18 | R06 | Published |
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-18 | R07 | Published |
 | SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-18 | R07 | Published |

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R15
-effective_date: 2026-03-18
+revision: R16
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -30,17 +30,19 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
+| Top Management | Appoints the Management Representative within the defined governance model and retains ultimate responsibility for QMS effectiveness. |
 | Management Representative | Approves governance changes, confirms QMS adequacy/effectiveness, and acts for top management in the small-team model. |
 | QA Lead | Maintains governance cadence, process ownership baseline, and cross-document traceability completeness. |
 | Engineering Lead / Regulatory Lead / Usability Lead / Technical QMS Maintainer | Maintain assigned procedures and evidence within their governed process area. |
-| Auditor | Independently verifies conformance of governed processes through audits. |
+| Auditor | Independently verifies conformance and effectiveness of governed processes through audits. |
 
 ## 6. Procedure
 
 ### 6.1 Governance Cadence
-1. Hold a QMS governance review at least monthly.
+1. Hold a QMS governance review at least quarterly.
 2. Review at minimum: KPI trends, open CAPAs, audit findings, late training, supplier status, post-market signals, and regulatory changes.
-3. Use formal management review under `SOP-004` to confirm annual or periodic QMS suitability, adequacy, and effectiveness at top-management level.
+3. Governance review outputs and decisions must be recorded and maintained as controlled quality records.
+4. Formal management review under `SOP-004` uses governance-review outputs as an input for top-management confirmation of QMS suitability, adequacy, and effectiveness.
 
 ### 6.2 Responsibility and Communication Control
 1. Maintain the responsibility matrix for quality-affecting functions and role assignments in `matrices/training_matrix.yml` and related governance records.
@@ -59,7 +61,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 
 ### 6.5 QMS Tooling Governance
 1. QMS digital tooling inventory is maintained in `matrices/qms_tooling_inventory.yml`.
-2. Current approved QMS tooling is GitHub (repositories, pull requests, issues, workflows) plus the approved signing and evidence components defined in the tooling inventory.
+2. GitHub is the approved primary platform for QMS processes, including repositories, pull requests, issues, and workflows. Supporting signing and evidence components are defined and controlled in the QMS tooling inventory.
 3. Tooling changes require risk-based validation or revalidation evidence per `SOP-006`.
 
 ### 6.6 Supplier and Infrastructure Governance
@@ -84,7 +86,8 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 1. ACME adopts `EVS-EN ISO 14971:2019+A11:2021` as the risk-management baseline standard for medical device software risk processes.
 2. ACME adopts `EVS-EN 62366-1:2015+A1:2020` as the baseline standard for safety-related usability engineering.
 3. ACME adopts `IEC 62304:2006+A1:2015` as the baseline standard for software lifecycle, maintenance, configuration management, and problem resolution.
-4. Governance review verifies that changes to these standards or their supporting processes are reflected in the affected SOPs, WIs, and matrices.
+4. Governance review verifies whether newly applicable standards, guidance, or changes to adopted standards affect the QMS baseline.
+5. Changes to these standards or their supporting processes must be reflected in the affected SOPs, WIs, and matrices.
 
 ### 6.10 GitHub Workflow Alignment Rule
 1. Controlled QMS changes follow a GitHub-native lifecycle: change context is established in a separate issue or directly in the pull request, then work proceeds through branch -> pull request -> required checks/approvals -> merge -> signature attestation -> immutable release evidence.
@@ -137,3 +140,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R13 | 2026-03-08 | Split the reader-facing Quality Manual into `QM-001` and limited `SOP-005` to governance, ownership, cadence, and control interfaces. |
 | R14 | 2026-03-10 | Updated DearAuditor Open QMS Baseline naming, licensing, and open-source governance references. |
 | R15 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R16 | 2026-03-25 | Reduced governance-review cadence to quarterly, added explicit top-management accountability and recordkeeping, refined tooling-governance wording, and required review of newly applicable standards. |
