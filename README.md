@@ -59,8 +59,8 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R06`
 - [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R16`
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R09`
-- [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R03`
-- [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R03`
+- [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R04`
+- [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R04`
 
 #### Development, Risk, and Release
 
@@ -78,7 +78,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-012 Feedback and Complaint Handling](sops/SOP-012-FeedbackAndComplaintHandling.md) - `R04`
 - [SOP-013 Regulatory Incident Reporting](sops/SOP-013-RegulatoryIncidentReporting.md) - `R04`
 - [SOP-014 Post-Market Surveillance](sops/SOP-014-PostMarketSurveillance.md) - `R04`
-- [SOP-015 Nonconforming Product Control](sops/SOP-015-NonconformingProductControl.md) - `R03`
+- [SOP-015 Nonconforming Product Control](sops/SOP-015-NonconformingProductControl.md) - `R04`
 
 ### Work Instructions
 
@@ -106,9 +106,9 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-25 | R04 | Published |
 | SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-03-25 | R04 | Published |
 | SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-03-25 | R04 | Published |
-| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-18 | R03 | Published |
-| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-18 | R03 | Published |
-| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-18 | R03 | Published |
+| SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-03-25 | R04 | Published |
+| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-03-25 | R04 | Published |
+| SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-25 | R04 | Published |
 | SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-25 | R07 | Published |
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-25 | R10 | Published |
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-25 | R09 | Published |

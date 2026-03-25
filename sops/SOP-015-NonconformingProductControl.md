@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-015
 title: Nonconforming Product Control
-revision: R03
-effective_date: 2026-03-18
+revision: R04
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -44,13 +44,13 @@ Applies to quality issues affecting software releases, verification/validation a
 ### 6.2 Segregation and Containment
 1. Mark affected build/artifact as non-releasable.
 2. Prevent accidental distribution via release controls.
-3. For deployed issues, define containment/communication plan.
+3. Assess whether the nonconformity affects released or distributed products and determine the need for field action, customer communication, or regulatory reporting.
 
 ### 6.3 Disposition
 Disposition options:
 1. `Rework/Fix` and re-verify.
 2. `Use as-is with justification` (requires management representative approval).
-3. `Scrap/withdraw` (version retired).
+3. `Withdraw/retire` the affected version from use or distribution.
 
 ### 6.4 Verification After Disposition
 1. Re-run affected verification/validation activities.
@@ -59,7 +59,7 @@ Disposition options:
 
 ### 6.5 Closure and Improvement
 1. Close nonconformity only with complete evidence.
-2. Escalate recurring/systemic issues to CAPA.
+2. Escalate recurring, systemic, or high-risk nonconformities (including those impacting safety or security) to CAPA.
 
 ## 7. Required Records
 - Nonconformity record and classification
@@ -87,3 +87,4 @@ Disposition options:
 | R01 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
 | R02 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R03 | 2026-03-18 | Clarified quality-issue triage boundaries between development defects, formal nonconformities, and complaint-triggered intake while reserving formal nonconformity as the explicit post-milestone decision point. |
+| R04 | 2026-03-25 | Added explicit released-product impact assessment, clarified withdrawal/retirement disposition wording, and tightened CAPA escalation criteria for high-risk nonconformities. |

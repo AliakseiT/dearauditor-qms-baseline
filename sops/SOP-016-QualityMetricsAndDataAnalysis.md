@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-016
 title: Quality Metrics and Data Analysis
-revision: R03
-effective_date: 2026-03-18
+revision: R04
+effective_date: 2026-03-25
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
 related_issue: "#12"
 ---
 ## 1. Purpose
-Define quality metric selection, collection, analysis, and escalation to support objective quality management decisions and continuous improvement.
+Define quality metric selection, collection, analysis, and escalation to support objective quality management decisions, including evaluation of product conformity, product safety, and QMS effectiveness, and to drive continuous improvement.
 
 ## 2. Scope
 Applies to QMS and product quality indicators used in operational monitoring and management review.
@@ -44,12 +44,12 @@ Applies to QMS and product quality indicators used in operational monitoring and
 3. Correct or annotate data quality issues before publication.
 
 ### 6.3 Analysis
-1. Evaluate current value against target and prior trend.
-2. Classify status as `on-target`, `warning`, or `out-of-control`.
+1. Evaluate current values and trends over time against defined thresholds.
+2. Classify status as `on-target`, `warning`, or `out-of-target`.
 3. Perform root-cause-oriented analysis for sustained negative trends.
 
 ### 6.4 Escalation and Actions
-1. Open action/CAPA where thresholds are breached.
+1. Initiate actions or CAPA where thresholds are breached or adverse trends are identified.
 2. Track action completion and effectiveness.
 3. Present significant deviations in management review.
 
@@ -80,3 +80,4 @@ Applies to QMS and product quality indicators used in operational monitoring and
 | R01 | 2026-03-07 | Normalized metric-source responsibility language to the controlled small-team role model and aligned objectives with the engineering evidence workflow. |
 | R02 | 2026-03-07 | Renamed generic metric-source wording from role owners to role leads to match the simplified role taxonomy. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R04 | 2026-03-25 | Expanded the metrics purpose, aligned analysis wording to threshold-and-trend evaluation, and clarified action/CAPA triggers for adverse trends. |
