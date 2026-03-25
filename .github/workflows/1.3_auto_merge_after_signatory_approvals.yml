@@ -134,14 +134,16 @@ jobs:
               return;
             }
 
-            const requiredReviewers = reviewerPool.slice(0, requiredReviewerApprovals);
-            const pending = requiredReviewers.filter((login) => !approvedOnHeadSet.has(login.toLowerCase()));
-            if (pending.length > 0) {
-              const stale = requiredReviewers.filter((login) => approvedReviewers.includes(login.toLowerCase()) && !approvedOnHeadSet.has(login.toLowerCase()));
+            const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
+            if (approvedFromPool.length < requiredReviewerApprovals) {
+              const pending = reviewerPool.filter((login) => !approvedOnHeadSet.has(login.toLowerCase()));
+              const stale = reviewerPool.filter((login) => approvedReviewers.includes(login.toLowerCase()) && !approvedOnHeadSet.has(login.toLowerCase()));
               if (stale.length > 0) {
                 core.info(`Found stale approvals on older commits from: ${stale.map((x) => '@' + x).join(', ')}`);
               }
-              core.info(`Waiting for approvals from: ${pending.map((x) => '@' + x).join(', ')}`);
+              core.info(
+                `Waiting for ${requiredReviewerApprovals - approvedFromPool.length} more approval(s) from reviewer pool: ${pending.map((x) => '@' + x).join(', ')}`
+              );
               return;
             }
 
