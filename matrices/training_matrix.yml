@@ -46,9 +46,9 @@ roles:
       SOP-003: R05
       SOP-005: R16
       SOP-006: R03
-      SOP-007: R06
-      SOP-008: R07
-      SOP-009: R07
+      SOP-007: R07
+      SOP-008: R08
+      SOP-009: R08
       SOP-010: R03
       SOP-011: R09
       SOP-012: R04
@@ -82,8 +82,8 @@ roles:
     required_revisions:
       QM-001: R02
       SOP-001: R13
-      SOP-008: R07
-      SOP-009: R07
+      SOP-008: R08
+      SOP-009: R08
       SOP-011: R09
       SOP-017: R03
       SOP-018: R07
@@ -111,9 +111,9 @@ roles:
       QM-001: R02
       SOP-001: R13
       SOP-002: R04
-      SOP-007: R06
-      SOP-008: R07
-      SOP-009: R07
+      SOP-007: R07
+      SOP-008: R08
+      SOP-009: R08
       SOP-011: R09
       SOP-015: R03
       SOP-017: R03
@@ -139,7 +139,7 @@ roles:
       QM-001: R02
       SOP-001: R13
       SOP-006: R03
-      SOP-009: R07
+      SOP-009: R08
       SOP-011: R09
       SOP-017: R03
 
@@ -176,9 +176,9 @@ roles:
       SOP-004: R06
       SOP-005: R16
       SOP-006: R03
-      SOP-007: R06
-      SOP-008: R07
-      SOP-009: R07
+      SOP-007: R07
+      SOP-008: R08
+      SOP-009: R08
       SOP-010: R03
       SOP-011: R09
       SOP-012: R04
@@ -208,7 +208,7 @@ roles:
     required_revisions:
       QM-001: R02
       SOP-001: R13
-      SOP-008: R07
+      SOP-008: R08
       SOP-011: R09
       SOP-012: R04
       SOP-014: R04
@@ -247,9 +247,9 @@ roles:
       SOP-004: R06
       SOP-005: R16
       SOP-006: R03
-      SOP-007: R06
-      SOP-008: R07
-      SOP-009: R07
+      SOP-007: R07
+      SOP-008: R08
+      SOP-009: R08
       SOP-010: R03
       SOP-011: R09
       SOP-012: R04
@@ -295,9 +295,9 @@ roles:
       SOP-004: R06
       SOP-005: R16
       SOP-006: R03
-      SOP-007: R06
-      SOP-008: R07
-      SOP-009: R07
+      SOP-007: R07
+      SOP-008: R08
+      SOP-009: R08
       SOP-010: R03
       SOP-011: R09
       SOP-012: R04
