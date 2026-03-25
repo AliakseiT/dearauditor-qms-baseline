@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   issues: write
+  pull-requests: write
 
 concurrency:
   group: training-issue-signature-${{ github.event.issue.number || github.run_id }}
@@ -181,7 +182,16 @@ jobs:
   reconcile_signed_training_issues:
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null)
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request == null &&
+        (
+          contains(github.event.comment.body, '<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+          contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+          contains(github.event.comment.body, '<!-- signature-native-attestation -->') ||
+          contains(github.event.comment.body, '<!-- part11-native-attestation -->')
+        )
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for issue updates
@@ -396,12 +406,14 @@ jobs:
                   '- `signed_attestation.json`',
                   '- `training_completion_manifest.json`',
                 ].join('\n'),
-                draft: false,
+                draft: true,
                 prerelease: false,
               });
 
-              await github.request('POST {upload_url}', {
-                upload_url: release.data.upload_url,
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
                 name: 'signed_attestation.json',
                 data: Buffer.from(bundleJson, 'utf8'),
                 headers: {
@@ -430,14 +442,24 @@ jobs:
               };
               const completionJson = `${JSON.stringify(completionContext, null, 2)}\n`;
 
-              await github.request('POST {upload_url}', {
-                upload_url: release.data.upload_url,
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
                 name: 'training_completion_manifest.json',
                 data: Buffer.from(completionJson, 'utf8'),
                 headers: {
                   'content-type': 'application/json',
                   'content-length': Buffer.byteLength(completionJson),
                 },
+              });
+
+              const publishedRelease = await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
+                draft: false,
+                prerelease: false,
               });
 
               await github.rest.issues.update({
@@ -453,7 +475,7 @@ jobs:
                 JSON.stringify(completionContext, null, 2),
                 '-->',
                 '✅ Training checklist signed. Issue closed automatically.',
-                `Immutable signature release: ${String(release.data.html_url || '')}`,
+                `Immutable signature release: ${String(publishedRelease.data.html_url || '')}`,
                 `Release tag: \`${tagName}\``,
               ];
               await github.rest.issues.createComment({
@@ -527,14 +549,87 @@ jobs:
             --report-csv records/training/training_status.csv \
             --repository "$GITHUB_REPOSITORY"
 
-      - name: Commit rebuilt training status artifacts
+      - name: Detect rebuilt training status changes
+        id: diff
         run: |
           if git diff --quiet -- records/training/training_status.yml records/training/training_status.md records/training/training_status.csv; then
-            echo "No training status artifact changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push training status refresh branch
+        if: steps.diff.outputs.changed == 'true'
+        id: branch
+        run: |
+          BRANCH_NAME="automation/refresh-training-status"
+          git switch -C "$BRANCH_NAME"
           git config user.name "qms-bot"
           git config user.email "qms-bot@users.noreply.github.com"
           git add records/training/training_status.yml records/training/training_status.md records/training/training_status.csv
-          git commit -m "Rebuild training status register"
-          git push
+          git commit -m "Refresh training status register"
+          git push --force-with-lease origin "$BRANCH_NAME"
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update training status refresh PR
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/github-script@v8
+        env:
+          BRANCH_NAME: ${{ steps.branch.outputs.branch_name }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const branchName = String(process.env.BRANCH_NAME || '').trim();
+            const title = 'Refresh training status register';
+            const body = [
+              '## Summary',
+              '',
+              'Refresh the generated training status register and auditor-facing report from the current signed training issue history.',
+              '',
+              '## Context',
+              '',
+              'This automated run exported all `training-diff` issues plus their comments, rebuilt the training status artifacts, and prepared a bot-authored PR only because the generated files changed.',
+              '',
+              '## Validation',
+              '',
+              '- Exported all `training-diff` issues and comments from GitHub.',
+              '- Ran `python3 scripts/rebuild_training_status.py` against the current training matrix.',
+              '- Updated `records/training/training_status.yml`, `records/training/training_status.md`, and `records/training/training_status.csv`.',
+            ].join('\n');
+
+            const existing = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${branchName}`,
+              base: String(context.payload.repository?.default_branch || 'main'),
+              per_page: 100,
+            });
+
+            if (existing.length > 0) {
+              const pr = existing[0];
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                title,
+                body,
+              });
+              core.notice(`Updated existing PR #${pr.number}: ${pr.html_url}`);
+              return;
+            }
+
+            const created = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              head: branchName,
+              base: String(context.payload.repository?.default_branch || 'main'),
+              body,
+            });
+            core.notice(`Created PR #${created.data.number}: ${created.data.html_url}`);
+
+      - name: Report up-to-date training status artifacts
+        if: steps.diff.outputs.changed != 'true'
+        run: |
+          echo "Training status artifacts are already current; no PR created."
