@@ -406,7 +406,7 @@ jobs:
                   '- `signed_attestation.json`',
                   '- `training_completion_manifest.json`',
                 ].join('\n'),
-                draft: false,
+                draft: true,
                 prerelease: false,
               });
 
@@ -454,6 +454,14 @@ jobs:
                 },
               });
 
+              const publishedRelease = await github.rest.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.data.id,
+                draft: false,
+                prerelease: false,
+              });
+
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -467,7 +475,7 @@ jobs:
                 JSON.stringify(completionContext, null, 2),
                 '-->',
                 '✅ Training checklist signed. Issue closed automatically.',
-                `Immutable signature release: ${String(release.data.html_url || '')}`,
+                `Immutable signature release: ${String(publishedRelease.data.html_url || '')}`,
                 `Release tag: \`${tagName}\``,
               ];
               await github.rest.issues.createComment({
