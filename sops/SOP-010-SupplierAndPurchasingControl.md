@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-010
 title: Supplier and Purchasing Control
-revision: R02
-effective_date: 2026-03-18
+revision: R03
+effective_date: 2026-03-25
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -36,11 +36,13 @@ Applies to all external providers of software components, cloud services, consul
 ### 6.1 Supplier Criticality Classification
 1. Classify supplier as `critical`, `major`, or `minor` based on impact on product quality, patient safety, data integrity, and QMS compliance.
 2. Critical suppliers require enhanced qualification and periodic review.
+3. Supplier-provided products or services shall be evaluated for their impact on the product risk management file(s), including hazard introduction and risk control dependencies.
 
 ### 6.2 Qualification and Vetting
 1. Complete supplier vetting template at onboarding.
 2. Evaluate competence, security/privacy posture, continuity, compliance history, and any patient safety or data-integrity dependencies introduced by the supplied service.
-3. For cloud-based providers, require current independent technical assurance evidence such as ISO 27001 certification or SOC 2 reporting before approval.
+3. Outsourced processes affecting product conformity shall be controlled by ACME GmbH, including defined responsibilities, oversight, and verification of outputs.
+4. For cloud-based providers, independent technical assurance evidence (e.g. ISO 27001 certification, SOC 2 reporting, or equivalent) shall be obtained where available. Where such certification is not available, alternative evidence of adequate security, reliability, and data protection controls shall be evaluated and justified based on supplier criticality.
 
 ### 6.3 Approved Supplier List Maintenance
 1. Record approved suppliers in the designated product/study record repository.
@@ -56,6 +58,7 @@ Applies to all external providers of software components, cloud services, consul
 1. Monitor supplier performance (service quality, incidents, SLA breaches, audit outcomes).
 2. Re-evaluate critical suppliers at least annually.
 3. Remove/suspend suppliers from ASL if controls are no longer adequate.
+4. Re-evaluation shall also be triggered by significant changes, incidents, nonconformities, or performance issues.
 
 ## 7. Required Records
 - Supplier vetting forms in the designated product/study record repository
@@ -80,3 +83,4 @@ Applies to all external providers of software components, cloud services, consul
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Updated supplier record-location control to designated product/study repositories instead of `qms-lite` local record paths. |
 | R02 | 2026-03-18 | Removed top-table standards clause metadata and expanded supplier criticality, cloud certification, and hyperscale SLA/Terms of Service purchasing controls. |
+| R03 | 2026-03-25 | Added supplier risk-file impact, outsourced-process oversight, proportionate cloud assurance evidence, and event-triggered re-evaluation controls. |

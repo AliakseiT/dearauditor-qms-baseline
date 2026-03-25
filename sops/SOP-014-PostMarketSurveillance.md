@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-014
 title: Post-Market Surveillance
-revision: R03
-effective_date: 2026-03-18
+revision: R04
+effective_date: 2026-03-25
 status: Published
 owner_role: regulatory_lead
 approver_role: qa_lead
@@ -35,7 +35,7 @@ Applies to all released products and product versions in active use.
 ## 6. Procedure
 
 ### 6.1 PMS Planning
-1. Maintain product-level PMS plan defining data sources, review frequency, and signal thresholds.
+1. Maintain product-level PMS plan defining data sources, collection methods, analysis methods, responsibilities, review frequency, and signal detection thresholds.
 2. Align PMS metrics with product risk controls and intended use.
 
 ### 6.2 Data Collection and Consolidation
@@ -43,14 +43,15 @@ Applies to all released products and product versions in active use.
 2. Validate data completeness and remove duplicates/noise with documented rationale.
 
 ### 6.3 Signal Detection and Analysis
-1. Perform trend analysis at least monthly for active products.
+1. Perform trend analysis periodically for active products.
 2. Assess signal significance by severity, frequency, and detectability.
 3. Determine if action is required (risk update, CAPA, incident reporting, design change).
 
 ### 6.4 Reporting and Escalation
 1. Issue PMS summary with conclusions and required actions.
-2. Escalate critical trends immediately to management and incident workflow.
-3. Include PMS outputs in management review package.
+2. A PMS report shall be maintained for each product and updated at defined intervals.
+3. Escalate critical trends immediately to management and incident workflow.
+4. Include PMS outputs in management review package.
 
 ### 6.5 Effectiveness Tracking
 1. Track outcomes of PMS-driven actions.
@@ -80,3 +81,4 @@ Applies to all released products and product versions in active use.
 | R01 | 2026-03-07 | Renamed the PMS business owner role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified the PMS role names to `regulatory_lead` and `engineering_lead`. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R04 | 2026-03-25 | Expanded PMS-plan minimum content, generalized active-product trend frequency wording, and required maintained per-product PMS reports. |

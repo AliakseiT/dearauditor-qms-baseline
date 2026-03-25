@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R08
-effective_date: 2026-03-18
+revision: R09
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -36,10 +36,11 @@ Applies to all personnel and contractors performing tasks that can affect produc
 
 ### 6.1 Competence Definition
 1. Define role-specific required controlled documents in `matrices/training_matrix.yml`.
-2. Avoid broad over-assignment; include only the controlled documents needed for role responsibilities.
-3. Any user who changes code, prepares builds, or executes controlled verification/validation activities must hold the `engineer` role at minimum.
-4. Any user accountable for lifecycle planning, release readiness, or technical approval decisions must also hold the `engineering_lead` role.
-5. Any user accountable for usability-engineering records, formative/summative evaluation planning, or user-profile/use-environment definition must also hold the `usability_lead` role.
+2. Competence shall be evaluated based on appropriate education, training, skills, and experience, and shall not be assumed solely based on training completion.
+3. Avoid broad over-assignment; include only the controlled documents needed for role responsibilities.
+4. Any user who changes code, prepares builds, or executes controlled verification/validation activities must hold the `engineer` role at minimum.
+5. Any user accountable for lifecycle planning, release readiness, or technical approval decisions must also hold the `engineering_lead` role.
+6. Any user accountable for usability-engineering records, formative/summative evaluation planning, or user-profile/use-environment definition must also hold the `usability_lead` role.
 
 ### 6.2 Triggering Training
 Training is required when:
@@ -56,10 +57,11 @@ Training is required when:
 ### 6.4 Completion and Evidence
 1. Training completion is logged in the designated product/study record repository.
 2. For formal records, immutable package is published to the designated product/study record repository.
-3. Overdue training is escalated to QA Lead and management representative.
+3. Personnel shall complete required training before performing activities that affect product quality or compliance.
+4. Overdue training is escalated to QA Lead and management representative.
 
 ### 6.5 Effectiveness Verification
-1. Sample completed training artifacts each quarter for quality of evidence.
+1. Where applicable, training effectiveness shall be verified through assessment, supervision, or review of work outputs.
 2. Use audit/CAPA feedback to improve training assignments and content.
 
 ## 7. Required Records
@@ -89,3 +91,4 @@ Training is required when:
 | R06 | 2026-03-08 | Generalized the training matrix from SOP-only assignments to required controlled documents and added the standalone Quality Manual to role-based training. |
 | R07 | 2026-03-10 | Replaced the legacy user training log with a generated training status register and auditor-facing training status report derived from signed training issue evidence. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R09 | 2026-03-25 | Added competence-basis criteria, pre-task training completion expectation, and effectiveness-verification wording based on assessment or supervision. |
