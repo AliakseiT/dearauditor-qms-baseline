@@ -334,9 +334,9 @@ jobs:
             });
         env:
           PR_NUMBER: ${{ steps.parse.outputs.pr_number }}
-          MEANING: ${{ steps.parse.outputs.meaning_of_signature }}
+          MEANING: ${{ steps.roles.outputs.meaning_of_signature }}
           ROLES: ${{ steps.roles.outputs.signatory_roles }}
-          REQUIRED: ${{ steps.parse.outputs.required_signatures }}
+          REQUIRED: ${{ steps.roles.outputs.required_signatures }}
           TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}
           COAPPROVAL_REASONS: ${{ steps.parse.outputs.coapproval_reasons }}
