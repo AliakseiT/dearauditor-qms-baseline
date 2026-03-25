@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R06
-effective_date: 2026-03-18
+revision: R07
+effective_date: 2026-03-25
 status: Published
 owner_role: regulatory_lead
 approver_role: management_representative
 related_issue: "#35"
 ---
 ## 1. Purpose
-Define a pragmatic, software-first risk management process for ACME GmbH aligned with ISO 14971:2019, using one unified method for top-down hazards, bottom-up failure modes, and cybersecurity risks.
+Define a risk-based, software-oriented risk management process aligned with ISO 14971:2019, using a unified method for top-down hazards, bottom-up failure modes, and cybersecurity risks.
 
 ## 2. Scope
 Applies to all ACME healthcare software products across lifecycle phases (planning, development, release, and post-production).
@@ -107,7 +107,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 3. If not acceptable, perform risk control activities.
 
 ### 8.4 Risk Control (Clause 7)
-1. Select controls using priority order.
+1. Select controls using priority order and consider state-of-the-art solutions.
 2. Implement controls through controlled requirements/design/code/process changes.
 3. Verify implementation and verify effectiveness.
 4. Evaluate residual risk.
@@ -117,7 +117,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 
 ### 8.5 Overall Residual Risk (Clause 8)
 1. Evaluate aggregate residual risk across all risk items.
-2. Decision is approved by management representative with QA lead recommendation.
+2. The decision on overall residual risk acceptability shall be documented and approved by the management representative and is a prerequisite for product release.
 3. Significant residual risks are disclosed in product documentation where required.
 
 ### 8.6 Risk Management Review (Clause 9)
@@ -172,3 +172,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R04 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
 | R05 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R06 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the ISO 14971 references in Section 11. |
+| R07 | 2026-03-25 | Refined the purpose wording, required state-of-the-art consideration in risk-control selection, and strengthened the overall residual-risk approval gate for release. |
