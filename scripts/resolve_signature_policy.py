@@ -267,7 +267,9 @@ def main() -> int:
             explicit_primary_role_id, author_role_id_set, author_job_title
         ):
             raise SystemExit(
-                f"PR author @{author} is not eligible for explicit primary signer role '{explicit_primary_role}'."
+                f"PR author @{author} is not eligible for explicit primary signer role '{explicit_primary_role}'. "
+                "The first listed '**Signer Roles:**' entry is treated as the PR author's role; "
+                "reviewer/co-signer roles must come after it."
             )
         final_roles = explicit_roles
         source = "explicit"
