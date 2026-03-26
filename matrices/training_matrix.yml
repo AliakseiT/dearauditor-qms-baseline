@@ -57,9 +57,9 @@ roles:
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R06
-      SOP-019: R09
-      SOP-020: R08
+      SOP-018: R07
+      SOP-019: R10
+      SOP-020: R09
 
   engineer:
     users:
@@ -86,8 +86,8 @@ roles:
       SOP-009: R07
       SOP-011: R09
       SOP-017: R03
-      SOP-018: R06
-      SOP-020: R08
+      SOP-018: R07
+      SOP-020: R09
 
   engineering_lead:
     users:
@@ -117,8 +117,8 @@ roles:
       SOP-011: R09
       SOP-015: R03
       SOP-017: R03
-      SOP-018: R06
-      SOP-020: R08
+      SOP-018: R07
+      SOP-020: R09
 
   technical_qms_maintainer:
     users:
@@ -187,9 +187,9 @@ roles:
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R06
-      SOP-019: R09
-      SOP-020: R08
+      SOP-018: R07
+      SOP-019: R10
+      SOP-020: R09
 
   usability_lead:
     users:
@@ -212,8 +212,8 @@ roles:
       SOP-011: R09
       SOP-012: R04
       SOP-014: R04
-      SOP-018: R06
-      SOP-019: R09
+      SOP-018: R07
+      SOP-019: R10
 
   auditor:
     users: []
@@ -258,9 +258,9 @@ roles:
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R06
-      SOP-019: R09
-      SOP-020: R08
+      SOP-018: R07
+      SOP-019: R10
+      SOP-020: R09
 
   management_representative:
     users:
@@ -306,6 +306,6 @@ roles:
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
-      SOP-018: R06
-      SOP-019: R09
-      SOP-020: R08
+      SOP-018: R07
+      SOP-019: R10
+      SOP-020: R09
