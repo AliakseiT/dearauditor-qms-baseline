@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-013
 title: Regulatory Incident Reporting
-revision: R03
-effective_date: 2026-03-18
+revision: R04
+effective_date: 2026-03-25
 status: Published
 owner_role: regulatory_lead
 approver_role: management_representative
@@ -12,7 +12,7 @@ related_issue: "#9"
 Define how ACME identifies, evaluates, and reports adverse events/incidents to regulatory authorities within applicable jurisdictional timelines.
 
 ## 2. Scope
-Applies to post-release product events that may require mandatory reporting in Switzerland, EU, or US markets.
+Applies to each product that qualifies as medical device software under applicable regulatory requirements. Regulatory applicability, including jurisdictions and frameworks (e.g. EU MDR, UK MDR/UKCA, Swiss MedDO, US FDA regulations, and MDSAP-participating countries such as Canada and Australia), is defined and maintained in the regulatory scope baseline. A reportable incident includes any event that has led, or could have led, to serious deterioration of health, serious injury, or death, or represents a significant malfunction that could recur.
 
 ## 3. Inputs
 - Complaint and feedback cases
@@ -46,7 +46,7 @@ Applies to post-release product events that may require mandatory reporting in S
 ### 6.3 Submission Preparation
 1. Compile required facts: event narrative, device/software identifiers, risk assessment, corrective actions, and known occurrences.
 2. Ensure consistency with complaint/CAPA/PMS records.
-3. Submit to relevant authority within required timeline.
+3. Submission timelines shall be determined and met in accordance with applicable regulatory requirements.
 
 ### 6.4 Follow-Up and Field Actions
 1. Track follow-up requests from authorities.
@@ -79,3 +79,4 @@ Applies to post-release product events that may require mandatory reporting in S
 | R01 | 2026-03-07 | Renamed the incident-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified the incident-process business role name to `regulatory_lead`. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R04 | 2026-03-25 | Expanded regulatory-scope applicability wording, defined reportable incidents, and clarified that submission timelines follow applicable regulations. |

@@ -1,5 +1,5 @@
 ---
-version: 19
+version: 20
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -49,11 +49,11 @@ roles:
       SOP-007: R06
       SOP-008: R07
       SOP-009: R07
-      SOP-010: R02
-      SOP-011: R08
-      SOP-012: R03
-      SOP-013: R03
-      SOP-014: R03
+      SOP-010: R03
+      SOP-011: R09
+      SOP-012: R04
+      SOP-013: R04
+      SOP-014: R04
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
@@ -84,7 +84,7 @@ roles:
       SOP-001: R13
       SOP-008: R07
       SOP-009: R07
-      SOP-011: R08
+      SOP-011: R09
       SOP-017: R03
       SOP-018: R06
       SOP-020: R08
@@ -114,7 +114,7 @@ roles:
       SOP-007: R06
       SOP-008: R07
       SOP-009: R07
-      SOP-011: R08
+      SOP-011: R09
       SOP-015: R03
       SOP-017: R03
       SOP-018: R06
@@ -140,7 +140,7 @@ roles:
       SOP-001: R13
       SOP-006: R03
       SOP-009: R07
-      SOP-011: R08
+      SOP-011: R09
       SOP-017: R03
 
   regulatory_lead:
@@ -179,11 +179,11 @@ roles:
       SOP-007: R06
       SOP-008: R07
       SOP-009: R07
-      SOP-010: R02
-      SOP-011: R08
-      SOP-012: R03
-      SOP-013: R03
-      SOP-014: R03
+      SOP-010: R03
+      SOP-011: R09
+      SOP-012: R04
+      SOP-013: R04
+      SOP-014: R04
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
@@ -209,9 +209,9 @@ roles:
       QM-001: R02
       SOP-001: R13
       SOP-008: R07
-      SOP-011: R08
-      SOP-012: R03
-      SOP-014: R03
+      SOP-011: R09
+      SOP-012: R04
+      SOP-014: R04
       SOP-018: R06
       SOP-019: R09
 
@@ -250,11 +250,11 @@ roles:
       SOP-007: R06
       SOP-008: R07
       SOP-009: R07
-      SOP-010: R02
-      SOP-011: R08
-      SOP-012: R03
-      SOP-013: R03
-      SOP-014: R03
+      SOP-010: R03
+      SOP-011: R09
+      SOP-012: R04
+      SOP-013: R04
+      SOP-014: R04
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
@@ -298,11 +298,11 @@ roles:
       SOP-007: R06
       SOP-008: R07
       SOP-009: R07
-      SOP-010: R02
-      SOP-011: R08
-      SOP-012: R03
-      SOP-013: R03
-      SOP-014: R03
+      SOP-010: R03
+      SOP-011: R09
+      SOP-012: R04
+      SOP-013: R04
+      SOP-014: R04
       SOP-015: R03
       SOP-016: R03
       SOP-017: R03
