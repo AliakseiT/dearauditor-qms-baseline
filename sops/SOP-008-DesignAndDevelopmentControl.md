@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R07
-effective_date: 2026-03-18
+revision: R08
+effective_date: 2026-03-25
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -41,6 +41,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 3. Define required deliverables and entry/exit criteria per phase.
 4. For regulated software products, include software safety classification, configuration baselines, and release decision criteria per SOP-020.
 5. Do not treat implementation planning as approved until the design-input baseline gate is completed.
+6. Integrate risk management activities throughout the design and development lifecycle in accordance with SOP-018.
 
 ### 6.2 Design Inputs
 1. Capture user needs, safety/performance requirements, and regulatory constraints.
@@ -80,15 +81,18 @@ Applies to new products, major features, and significant lifecycle changes affec
 3. Maintain bidirectional traceability requirements -> risk controls -> tests -> results.
 4. Execute V&V planning, approval, evidence review, and post-merge PIN signature flow using WI-001.
 
-### 6.7 Transfer and Release
+### 6.7 Design Transfer and Release
 1. Confirm release readiness checklist completion.
 2. Ensure required regulatory and QMS deliverables are approved.
-3. Release only controlled versions with immutable record linkage.
-4. Configuration baseline and release publication must follow SOP-020 and WI-002.
+3. Design transfer shall ensure that approved design outputs are correctly translated into deployment, operational environments, support processes, and release procedures.
+4. Release only controlled versions with immutable record linkage.
+5. Configuration baseline and release publication must follow SOP-020 and WI-002.
 
 ### 6.8 Design Changes
 1. Manage post-baseline changes under SOP-009.
 2. Re-run impacted verification/validation and update traceability.
+3. Design and development records shall be maintained as part of the Medical Device File in accordance with SOP-007.
+4. Integrate risk-management updates throughout design changes in accordance with SOP-018.
 
 ## 7. Required Records
 - Design/development plan and approved design-input baseline
@@ -120,3 +124,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R05 | 2026-03-07 | Added the explicit design-input baseline gate requiring group approval of the development plan and approved input set before controlled implementation. |
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the design-input approval wording and used technology-neutral signature language. |
 | R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R08 | 2026-03-25 | Added explicit lifecycle risk-management integration, expanded design transfer expectations, and linked design records to the MDF. |

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R07
-effective_date: 2026-03-18
+revision: R08
+effective_date: 2026-03-25
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -45,6 +45,8 @@ Classify each change as one or more of:
 2. Determine affected SOPs, training, tests, risks, and regulatory submissions.
 3. Define rollback/containment approach for high-risk changes.
 4. For software changes, determine whether configuration baseline, release manifest, or software safety classification updates are required.
+5. Assess impact on released products, including the need for field action, customer communication, or regulatory reporting.
+6. Where applicable, evaluate impact on the risk management file, including hazard analysis, cybersecurity risks, risk controls, and residual risk acceptability.
 
 ### 6.3 Approval
 1. Minor changes: QA Lead approval.
@@ -53,11 +55,12 @@ Classify each change as one or more of:
 
 ### 6.4 Implementation and Verification
 1. Implement via PR with evidence and either a linked issue reference or sufficient change context stated directly in the PR.
-2. Execute required tests/reviews and attach objective evidence.
+2. Execute required verification and, where applicable, validation activities and attach objective evidence.
 3. Update the published controlled-document index and training matrix where applicable.
 4. Branch implementations may be used for collaboration and interim verification, but branch-only state is draft/uncontrolled until merged to the controlled `main` baseline.
 5. Multiple approved software changes may progress in parallel on the product `main` branch; merge alone does not imply inclusion in the next release.
 6. Software release-affecting changes must update the release-readiness and release-baseline records defined in SOP-020 and WI-002.
+7. Software changes shall be controlled within defined configuration baselines and release processes in accordance with SOP-020.
 
 ### 6.5 Closure
 1. Confirm all impacted artifacts are updated and approved.
@@ -93,3 +96,4 @@ Classify each change as one or more of:
 | R05 | 2026-03-07 | Clarified that branch-only implementations remain uncontrolled draft state and that PRs may provide the controlled change context directly when no separate issue is used. |
 | R06 | 2026-03-08 | Generalized change-control follow-up from the published SOP index to the published controlled-document index. |
 | R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R08 | 2026-03-25 | Added released-product and risk-file impact assessment expectations and strengthened V&V plus release-baseline implementation controls. |
