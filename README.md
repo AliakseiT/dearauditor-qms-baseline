@@ -65,9 +65,9 @@ Use the grouped links below for navigation. The raw machine-readable published c
 #### Development, Risk, and Release
 
 - [SOP-006 Software Validation (QMS Tools)](sops/SOP-006-SoftwareValidation.md) - `R03`
-- [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R06`
-- [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R07`
-- [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R07`
+- [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R07`
+- [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R08`
+- [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R08`
 - [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R07`
 - [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R10`
 - [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R09`
@@ -98,9 +98,9 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-18 | R06 | Published |
 | SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-03-25 | R16 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-25 | R03 | Published |
-| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-18 | R06 | Published |
-| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-18 | R07 | Published |
-| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-18 | R07 | Published |
+| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-25 | R07 | Published |
+| SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-25 | R08 | Published |
+| SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-25 | R08 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-25 | R03 | Published |
 | SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-03-25 | R09 | Published |
 | SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-03-25 | R04 | Published |

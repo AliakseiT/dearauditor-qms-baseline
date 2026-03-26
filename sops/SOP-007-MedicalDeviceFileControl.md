@@ -1,18 +1,18 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R06
-effective_date: 2026-03-18
+revision: R07
+effective_date: 2026-03-25
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
 related_issue: "#3"
 ---
 ## 1. Purpose
-Define structure, ownership, and control of product-specific medical device files (MDF) for ACME software products.
+Define structure, ownership, and control of product-specific medical device files (MDF) as the technical documentation set required for ACME software products under applicable medical device regulations, including EU MDR Annex II/III and equivalent design-history-file expectations.
 
 ## 2. Scope
-Applies to each product that may be regulated as medical device software in Switzerland, EU, or US markets. Product MDF records are maintained in designated product/study repositories, not in `dearauditor-qms-baseline`.
+Applies to each product that qualifies as medical device software under applicable regulatory requirements. Regulatory applicability, including jurisdictions and frameworks such as EU MDR, UK MDR/UKCA, Swiss MedDO, US FDA regulations, and MDSAP-participating markets, is defined and maintained in the regulatory scope baseline. Product MDF records are maintained in designated product or study repositories, not in `dearauditor-qms-baseline`.
 
 ## 3. Inputs
 - Product intended use and claims
@@ -33,6 +33,8 @@ Applies to each product that may be regulated as medical device software in Swit
 ## 6. Procedure
 
 ### 6.1 MDF Structure
+The MDF shall reflect the configuration of each released product version and remain traceable to the corresponding approved release baseline.
+
 Each product MDF must include at minimum:
 1. Intended use, claims, users, and contraindications
 2. Qualification/classification rationale by jurisdiction
@@ -41,6 +43,10 @@ Each product MDF must include at minimum:
 5. Verification/validation summary and traceability
 6. Release history and post-market references
 7. Repository path/structure that identifies where controlled MDF records are maintained
+8. Clinical or performance evaluation references where applicable
+9. Labeling, instructions for use, and user-facing information where applicable
+10. Usability engineering file references where applicable
+11. Cybersecurity and data protection considerations where applicable
 
 ### 6.2 Product-Specific Governance Rules
 1. Company QMS is generic; product-specific intended use/classification is never inferred from company-level SOPs.
@@ -51,6 +57,7 @@ Each product MDF must include at minimum:
 2. Regulatory-impacting changes require documented pathway reassessment.
 3. MDF index must be updated before release in the designated record repository.
 4. GitHub issue/PR workflow and post-merge signature attestation are used as the approval evidence model for released MDF records.
+5. Product release shall not proceed unless the MDF is complete and current, including documented requirements traceability, risk-management evidence with residual risk acceptability, and verification/validation evidence demonstrating conformity to intended use and applicable regulatory requirements.
 
 ### 6.4 Periodic Review
 1. Review MDF completeness at least quarterly and before major release.
@@ -81,3 +88,4 @@ Each product MDF must include at minimum:
 | R04 | 2026-03-07 | Removed overly specific signature-regulation terminology from the MDF approval evidence wording. |
 | R05 | 2026-03-10 | Updated the upstream baseline repository naming reference used for product MDF record separation guidance. |
 | R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R07 | 2026-03-25 | Expanded MDF scope and minimum content to cover technical-documentation expectations, release-baseline traceability, and release-readiness evidence. |
