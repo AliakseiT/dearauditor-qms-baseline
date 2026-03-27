@@ -30,6 +30,7 @@ TECHNICAL_QMS_MAINTAINER_PREFIXES = (
 )
 
 CONTROLLED_DOCUMENT_SIGNATURE_MEANING = "Approved Controlled Document Revision"
+DEFAULT_SIGNATURE_MEANING = "Approved Quality Record"
 CONTROLLED_DOCUMENT_SIGNER_ROLES = [
     "Management Representative",
     "Quality Assurance Lead",
@@ -345,7 +346,7 @@ def main() -> int:
                 "reviewer/co-signer roles must come after it."
             )
         final_roles = explicit_roles
-        meaning_of_signature = explicit_meaning
+        meaning_of_signature = explicit_meaning or DEFAULT_SIGNATURE_MEANING
         source = "explicit"
         summary = "Using explicit signer roles from the PR body."
     else:
@@ -355,7 +356,7 @@ def main() -> int:
             )
         if len(eligible_inferred_roles) == 1:
             final_roles = [_display_name_for_role(eligible_inferred_roles[0])]
-            meaning_of_signature = explicit_meaning
+            meaning_of_signature = explicit_meaning or DEFAULT_SIGNATURE_MEANING
             source = "inferred"
             summary = (
                 f"Inferred signer role '{final_roles[0]}' from {', '.join(inference_reasons) or 'PR content'} "
