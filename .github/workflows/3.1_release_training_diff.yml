@@ -409,6 +409,7 @@ jobs:
             }
 
           requirements_by_user = defaultdict(dict)
+          awareness_by_user = defaultdict(dict)
           roles_by_user = defaultdict(set)
 
           for role_name, role_def in roles.items():
@@ -422,6 +423,11 @@ jobs:
               )
               if str(s).strip()
             ]
+            awareness_documents = [
+              str(s).strip()
+              for s in (role_def.get("awareness_documents", []) or [])
+              if str(s).strip()
+            ]
             required_revisions = {
               extract_doc_id(k): str(v).strip().upper()
               for k, v in (role_def.get("required_revisions", {}) or {}).items()
@@ -430,6 +436,7 @@ jobs:
             for user in users:
               roles_by_user[user].add(role_name)
               user_reqs = requirements_by_user[user]
+              user_awareness = awareness_by_user[user]
               for required in required_documents:
                 doc_id = extract_doc_id(required)
                 if not doc_id:
@@ -454,6 +461,30 @@ jobs:
                   if newer_revision(target_revision, str(current.get("to_revision", ""))):
                     current["to_revision"] = target_revision
 
+              for awareness in awareness_documents:
+                doc_id = extract_doc_id(awareness)
+                if not doc_id or doc_id in user_reqs:
+                  continue
+
+                published_info = published.get(doc_id, {}) or {}
+                target_revision = required_revisions.get(doc_id) or str(published_info.get("revision", "")).strip().upper()
+                if not target_revision:
+                  continue
+
+                current = user_awareness.get(doc_id)
+                if not current:
+                  user_awareness[doc_id] = {
+                    "doc_id": doc_id,
+                    "doc_title": str(published_info.get("title", "")).strip(),
+                    "doc_file": str(published_info.get("file", "")).strip(),
+                    "to_revision": target_revision,
+                    "roles": {role_name},
+                  }
+                else:
+                  current["roles"].add(role_name)
+                  if newer_revision(target_revision, str(current.get("to_revision", ""))):
+                    current["to_revision"] = target_revision
+
           if training_user:
             if training_user not in users_cfg and training_user not in requirements_by_user and training_user not in trained_by_user:
               raise SystemExit(
@@ -467,9 +498,11 @@ jobs:
           entries = []
           for user in selected_users:
             user_requirements = requirements_by_user.get(user, {})
+            user_awareness = awareness_by_user.get(user, {})
             user_training = trained_by_user.get(user, {}) or {}
             has_any_training_entry = bool(user_training)
             gaps = []
+            awareness_gaps = []
 
             for doc_id in sorted(user_requirements.keys()):
               req = user_requirements[doc_id]
@@ -515,6 +548,26 @@ jobs:
               if gap:
                 gaps.append(gap)
 
+            for doc_id in sorted(user_awareness.keys()):
+              if any(g["doc_id"] == doc_id for g in gaps):
+                continue
+              req = user_awareness[doc_id]
+              to_revision = str(req.get("to_revision", "")).strip().upper()
+              if not to_revision:
+                continue
+
+              from_revision = str(user_training.get(doc_id, "UNTRAINED")).strip().upper() or "UNTRAINED"
+              gap = build_doc_gap(
+                doc_id=doc_id,
+                doc_title=str(req.get("doc_title", "")).strip(),
+                doc_file=str(req.get("doc_file", "")).strip(),
+                from_revision=from_revision,
+                to_revision=to_revision,
+                roles=req.get("roles", set()),
+              )
+              if gap:
+                awareness_gaps.append(gap)
+
             if not gaps:
               continue
 
@@ -536,6 +589,7 @@ jobs:
               f"- Training user: `{full_name}` (`@{user}`)",
               f"- Roles in scope: `{role_list}`",
               f"- Controlled document deltas in scope: `{len(gaps)}`",
+              f"- Optional awareness document deltas in scope: `{len(awareness_gaps)}`",
               f"- Mode: `{'manual' if manual_mode else ('onboarding' if onboarding_mode else 'incremental')}`",
               "",
             ]
@@ -586,14 +640,53 @@ jobs:
                   ]
                 )
 
+            if awareness_gaps:
+              lines.extend(
+                [
+                  "",
+                  "### Optional Awareness Documents",
+                  "These documents are assigned as awareness-only for one or more roles in scope. Review is recommended, but these items do not block signature request or issue closure.",
+                  "",
+                ]
+              )
+              for gap in awareness_gaps:
+                doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
+                roles_text = ", ".join(gap["roles"]) if gap["roles"] else "awareness-only"
+                diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
+                current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
+
+                lines.extend(
+                  [
+                    f"- `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
+                    f"  - Roles with awareness assignment: `{roles_text}`",
+                    f"  - File: `{gap['doc_file'] or 'n/a'}`",
+                    f"  - Links: {diff_link} | {current_link}",
+                  ]
+                )
+
+                if gap["diff_preview"]:
+                  lines.extend(
+                    [
+                      "",
+                      f"  <details><summary>{gap['doc_id']} diff preview</summary>",
+                      "",
+                      "  ```diff",
+                      *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
+                      "  ```",
+                      "  </details>",
+                      "",
+                    ]
+                  )
+
             lines.extend(
               [
                 "",
                 "### Required Completion Workflow",
                 "1. Review each document delta link in this issue and check every checkbox in `Controlled Document Checklist`.",
-                "2. When all checkboxes are completed, automation posts a signature request comment for this issue.",
-                "3. Open the generated signature link, authenticate, and complete signature.",
-                "4. The issue closes automatically after valid signature attestation is posted.",
+                "2. Optional awareness documents, when listed, are informational and do not need to be checked before signature request.",
+                "3. When all checkboxes are completed, automation posts a signature request comment for this issue.",
+                "4. Open the generated signature link, authenticate, and complete signature.",
+                "5. The issue closes automatically after valid signature attestation is posted.",
               ]
             )
 
