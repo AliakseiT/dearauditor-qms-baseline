@@ -4,7 +4,7 @@ required_fields:
   user_needs_id: "UNS-<product>-<yyyy-mm-dd>"
   product_id: ""
   intended_use_reference: "docs/regulatory/intended_use.md"
-  maintained_by_role: "regulatory_lead"
+  maintained_by_role: "qa_lead"
   user_profiles:
     - profile_id: "UP-001"
       label: ""
@@ -19,4 +19,3 @@ required_fields:
       safety_relevance: "low|medium|high"
       linked_use_scenarios: []
       linked_requirements: []
-

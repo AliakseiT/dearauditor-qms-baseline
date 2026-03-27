@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R08
-effective_date: 2026-03-25
+revision: R09
+effective_date: 2026-03-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -27,9 +27,9 @@ Applies to procedural, tooling, product, infrastructure, supplier, and regulator
 | Role | Responsibilities |
 |---|---|
 | Change Owner | Prepares change rationale, scope, and implementation plan. |
-| QA Lead | Reviews compliance and traceability impacts. |
+| QA Lead | Reviews compliance and traceability impacts and executes product-regulatory changes within the integrated quality/regulatory domain. |
 | Management Representative | Approves significant QMS/regulatory-impacting changes. |
-| Engineering Lead / Regulatory Lead / Technical QMS Maintainer | Execute and verify change within their assigned domain. |
+| Engineering Lead / Technical QMS Maintainer | Execute and verify change within their assigned domain. |
 
 ## 6. Procedure
 
@@ -97,3 +97,4 @@ Classify each change as one or more of:
 | R06 | 2026-03-08 | Generalized change-control follow-up from the published SOP index to the published controlled-document index. |
 | R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R08 | 2026-03-25 | Added released-product and risk-file impact assessment expectations and strengthened V&V plus release-baseline implementation controls. |
+| R09 | 2026-03-27 | Consolidated the standalone regulatory-lead execution role into the QA-lead change domain and removed the redundant separate role reference. |

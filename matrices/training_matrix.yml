@@ -1,5 +1,5 @@
 ---
-version: 20
+version: 21
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -14,6 +14,7 @@ users:
 roles:
   qa_lead:
     users:
+      - AliakseiT
       - InaTsitovich
       - SorenWesThorup
     required_documents:
@@ -40,26 +41,26 @@ roles:
     awareness_documents:
       - SOP-004
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
       SOP-002: R04
       SOP-003: R05
-      SOP-005: R16
+      SOP-005: R17
       SOP-006: R03
       SOP-007: R07
-      SOP-008: R08
-      SOP-009: R08
+      SOP-008: R09
+      SOP-009: R09
       SOP-010: R03
       SOP-011: R09
-      SOP-012: R04
-      SOP-013: R04
-      SOP-014: R04
+      SOP-012: R05
+      SOP-013: R05
+      SOP-014: R05
       SOP-015: R04
       SOP-016: R04
       SOP-017: R04
-      SOP-018: R07
-      SOP-019: R10
-      SOP-020: R09
+      SOP-018: R08
+      SOP-019: R11
+      SOP-020: R10
 
   engineer:
     users:
@@ -80,14 +81,14 @@ roles:
       - SOP-015
       - SOP-019
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
-      SOP-008: R08
-      SOP-009: R08
+      SOP-008: R09
+      SOP-009: R09
       SOP-011: R09
       SOP-017: R04
-      SOP-018: R07
-      SOP-020: R09
+      SOP-018: R08
+      SOP-020: R10
 
   engineering_lead:
     users:
@@ -108,17 +109,17 @@ roles:
       - SOP-006
       - SOP-019
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
       SOP-002: R04
       SOP-007: R07
-      SOP-008: R08
-      SOP-009: R08
+      SOP-008: R09
+      SOP-009: R09
       SOP-011: R09
       SOP-015: R04
       SOP-017: R04
-      SOP-018: R07
-      SOP-020: R09
+      SOP-018: R08
+      SOP-020: R10
 
   technical_qms_maintainer:
     users:
@@ -136,60 +137,12 @@ roles:
       - SOP-018
       - SOP-020
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
       SOP-006: R03
-      SOP-009: R08
+      SOP-009: R09
       SOP-011: R09
       SOP-017: R04
-
-  regulatory_lead:
-    users:
-      - AliakseiT
-    required_documents:
-      - QM-001
-      - SOP-001
-      - SOP-002
-      - SOP-003
-      - SOP-004
-      - SOP-005
-      - SOP-006
-      - SOP-007
-      - SOP-008
-      - SOP-009
-      - SOP-010
-      - SOP-011
-      - SOP-012
-      - SOP-013
-      - SOP-014
-      - SOP-015
-      - SOP-016
-      - SOP-017
-      - SOP-018
-      - SOP-019
-      - SOP-020
-    required_revisions:
-      QM-001: R02
-      SOP-001: R13
-      SOP-002: R04
-      SOP-003: R05
-      SOP-004: R06
-      SOP-005: R16
-      SOP-006: R03
-      SOP-007: R07
-      SOP-008: R08
-      SOP-009: R08
-      SOP-010: R03
-      SOP-011: R09
-      SOP-012: R04
-      SOP-013: R04
-      SOP-014: R04
-      SOP-015: R04
-      SOP-016: R04
-      SOP-017: R04
-      SOP-018: R07
-      SOP-019: R10
-      SOP-020: R09
 
   usability_lead:
     users:
@@ -206,14 +159,14 @@ roles:
     awareness_documents:
       - SOP-020
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
-      SOP-008: R08
+      SOP-008: R09
       SOP-011: R09
-      SOP-012: R04
-      SOP-014: R04
-      SOP-018: R07
-      SOP-019: R10
+      SOP-012: R05
+      SOP-014: R05
+      SOP-018: R08
+      SOP-019: R11
 
   auditor:
     users: []
@@ -240,27 +193,27 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
       SOP-002: R04
       SOP-003: R05
       SOP-004: R06
-      SOP-005: R16
+      SOP-005: R17
       SOP-006: R03
       SOP-007: R07
-      SOP-008: R08
-      SOP-009: R08
+      SOP-008: R09
+      SOP-009: R09
       SOP-010: R03
       SOP-011: R09
-      SOP-012: R04
-      SOP-013: R04
-      SOP-014: R04
+      SOP-012: R05
+      SOP-013: R05
+      SOP-014: R05
       SOP-015: R04
       SOP-016: R04
       SOP-017: R04
-      SOP-018: R07
-      SOP-019: R10
-      SOP-020: R09
+      SOP-018: R08
+      SOP-019: R11
+      SOP-020: R10
 
   management_representative:
     users:
@@ -288,24 +241,24 @@ roles:
       - SOP-019
       - SOP-020
     required_revisions:
-      QM-001: R02
+      QM-001: R03
       SOP-001: R13
       SOP-002: R04
       SOP-003: R05
       SOP-004: R06
-      SOP-005: R16
+      SOP-005: R17
       SOP-006: R03
       SOP-007: R07
-      SOP-008: R08
-      SOP-009: R08
+      SOP-008: R09
+      SOP-009: R09
       SOP-010: R03
       SOP-011: R09
-      SOP-012: R04
-      SOP-013: R04
-      SOP-014: R04
+      SOP-012: R05
+      SOP-013: R05
+      SOP-014: R05
       SOP-015: R04
       SOP-016: R04
       SOP-017: R04
-      SOP-018: R07
-      SOP-019: R10
-      SOP-020: R09
+      SOP-018: R08
+      SOP-019: R11
+      SOP-020: R10

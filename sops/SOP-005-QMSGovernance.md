@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R16
-effective_date: 2026-03-25
+revision: R17
+effective_date: 2026-03-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -32,8 +32,8 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 |---|---|
 | Top Management | Appoints the Management Representative within the defined governance model and retains ultimate responsibility for QMS effectiveness. |
 | Management Representative | Approves governance changes, confirms QMS adequacy/effectiveness, and acts for top management in the small-team model. |
-| QA Lead | Maintains governance cadence, process ownership baseline, and cross-document traceability completeness. |
-| Engineering Lead / Regulatory Lead / Usability Lead / Technical QMS Maintainer | Maintain assigned procedures and evidence within their governed process area. |
+| QA Lead | Maintains governance cadence, the integrated quality/regulatory ownership baseline, and cross-document traceability completeness. |
+| Engineering Lead / Usability Lead / Technical QMS Maintainer | Maintain assigned procedures and evidence within their governed process area. |
 | Auditor | Independently verifies conformance and effectiveness of governed processes through audits. |
 
 ## 6. Procedure
@@ -141,3 +141,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R14 | 2026-03-10 | Updated DearAuditor Open QMS Baseline naming, licensing, and open-source governance references. |
 | R15 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R16 | 2026-03-25 | Reduced governance-review cadence to quarterly, added explicit top-management accountability and recordkeeping, refined tooling-governance wording, and required review of newly applicable standards. |
+| R17 | 2026-03-27 | Consolidated the standalone regulatory-lead governance role into the QA-lead ownership baseline and removed the redundant separate role reference. |

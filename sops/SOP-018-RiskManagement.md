@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R07
-effective_date: 2026-03-25
+revision: R08
+effective_date: 2026-03-27
 status: Published
-owner_role: regulatory_lead
+owner_role: qa_lead
 approver_role: management_representative
 related_issue: "#35"
 ---
@@ -42,8 +42,7 @@ This SOP covers:
 ## 6. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Regulatory Lead | Leads the risk management file, intended-use/misuse context, and cross-functional risk reviews. |
-| QA Lead | Owns risk process integrity, record completeness, and governance cadence. |
+| QA Lead | Leads the risk management file, intended-use/misuse context, cross-functional risk reviews, risk process integrity, record completeness, and governance cadence. |
 | Engineering Lead | Identifies failure modes/threat scenarios and implements controls. |
 | Usability Lead | Identifies use-related hazards, critical tasks, and usability-derived risk inputs for user-facing products. |
 | Management Representative | Approves risk acceptability framework and overall residual risk decisions. |
@@ -93,7 +92,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 1. Create product risk management plan before detailed analysis.
 2. Define acceptability criteria, methods, responsibilities, and review cadence.
 3. Define method for overall residual risk evaluation.
-4. Regulatory Lead is accountable for maintaining the current risk management file; QA Lead verifies process and evidence completeness.
+4. QA Lead is accountable for maintaining the current risk management file and verifying process and evidence completeness.
 
 ### 8.2 Risk Analysis (Clause 5)
 1. Identify intended use and foreseeable misuse.
@@ -173,3 +172,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R05 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R06 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the ISO 14971 references in Section 11. |
 | R07 | 2026-03-25 | Refined the purpose wording, required state-of-the-art consideration in risk-control selection, and strengthened the overall residual-risk approval gate for release. |
+| R08 | 2026-03-27 | Consolidated the standalone regulatory-lead risk-file owner role into the QA-lead baseline and aligned the planning accountability wording plus ownership metadata. |

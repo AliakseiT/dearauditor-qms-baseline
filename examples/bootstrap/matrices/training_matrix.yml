@@ -1,5 +1,5 @@
 ---
-version: 3
+version: 4
 users:
   REPLACE_WITH_PRIMARY_GH_USERNAME:
     full_name: REPLACE_WITH_PRIMARY_FULL_NAME
@@ -84,32 +84,6 @@ roles:
       - SOP-002
       - SOP-007
       - SOP-018
-      - SOP-020
-
-  regulatory_lead:
-    users:
-      - REPLACE_WITH_PRIMARY_GH_USERNAME
-    required_documents:
-      - QM-001
-      - SOP-001
-      - SOP-002
-      - SOP-003
-      - SOP-004
-      - SOP-005
-      - SOP-006
-      - SOP-007
-      - SOP-008
-      - SOP-009
-      - SOP-010
-      - SOP-011
-      - SOP-012
-      - SOP-013
-      - SOP-014
-      - SOP-015
-      - SOP-016
-      - SOP-017
-      - SOP-018
-      - SOP-019
       - SOP-020
 
   usability_lead:

@@ -9,7 +9,7 @@ approval:
   meaning_of_signature: "Approved Device Description"
   signer_roles:
     - engineering_lead
-    - regulatory_lead
+    - qa_lead
 ---
 
 # Device Description Template

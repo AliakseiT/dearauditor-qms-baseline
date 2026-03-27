@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-012
 title: Feedback and Complaint Handling
-revision: R04
-effective_date: 2026-03-25
+revision: R05
+effective_date: 2026-03-27
 status: Published
-owner_role: regulatory_lead
+owner_role: qa_lead
 approver_role: qa_lead
 related_issue: "#8"
 ---
@@ -27,8 +27,7 @@ Applies to all product feedback and complaint signals from users, customers, par
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Regulatory Lead | Owns intake, triage, and case communication. |
-| QA Lead | Reviews complaint quality/risk classification and trend signals. |
+| QA Lead | Owns intake, triage, case communication, complaint quality/risk classification, and trend-signal review. |
 | Engineering Lead | Investigates technical causes and corrective actions. |
 
 ## 6. Procedure
@@ -83,3 +82,4 @@ Applies to all product feedback and complaint signals from users, customers, par
 | R02 | 2026-03-07 | Simplified the complaint-process role names to `regulatory_lead` and `engineering_lead`. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Added complaint definition, clarified incident-criteria input, required complaint investigation decisions, and linked complaint findings back to risk management. |
+| R05 | 2026-03-27 | Consolidated the standalone regulatory-lead complaint-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |

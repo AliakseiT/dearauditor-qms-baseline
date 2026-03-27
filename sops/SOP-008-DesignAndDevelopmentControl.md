@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R08
-effective_date: 2026-03-25
+revision: R09
+effective_date: 2026-03-27
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -29,8 +29,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 |---|---|
 | Engineering Lead | Owns system/software requirements, technical design planning, architecture, and release-readiness accountability. |
 | Engineer | Implements design outputs and executes assigned verification activities under approved plans. |
-| QA Lead | Ensures process conformance and evidence adequacy. |
-| Regulatory Lead | Owns intended use, claims, user needs, and regulatory constraints that become design inputs. |
+| QA Lead | Ensures process conformance and evidence adequacy, and owns intended use, claims, user needs, and regulatory constraints that become design inputs. |
 | Usability Lead | Owns usability-engineering inputs, user profiles, critical tasks, and user-interface evaluation planning for user-facing products. |
 
 ## 6. Procedure
@@ -45,7 +44,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 
 ### 6.2 Design Inputs
 1. Capture user needs, safety/performance requirements, and regulatory constraints.
-2. Engineering Lead owns system and software requirements; Regulatory Lead owns intended-use, claims, and regulatory input definitions; Usability Lead owns user-profile and critical-task inputs for user-facing products.
+2. Engineering Lead owns system and software requirements; QA Lead owns intended-use, claims, and regulatory input definitions; Usability Lead owns user-profile and critical-task inputs for user-facing products.
 3. Verify input completeness, consistency, and testability.
 4. Resolve conflicting requirements before implementation.
 
@@ -60,8 +59,8 @@ Applies to new products, major features, and significant lifecycle changes affec
 2. The design-input baseline must state key assumptions, open constraints, and any explicitly deferred inputs.
 3. The PR body must state:
    - `**Meaning of Signature:** Approved Design Inputs and Development Plan`
-   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
-   - `**Required Signatures:** 3`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
+   - `**Required Signatures:** 2`
 4. Merge only after required approvals on the current head commit and post-merge signature attestation collection.
 5. Changes to approved design inputs require a new PR revision before they are used as the basis for controlled implementation or release evidence.
 
@@ -125,3 +124,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the design-input approval wording and used technology-neutral signature language. |
 | R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R08 | 2026-03-25 | Added explicit lifecycle risk-management integration, expanded design transfer expectations, and linked design records to the MDF. |
+| R09 | 2026-03-27 | Consolidated the standalone regulatory-lead responsibilities into the QA-lead role and reduced the design-input baseline signer set accordingly. |
