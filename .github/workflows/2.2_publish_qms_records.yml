@@ -120,14 +120,48 @@ jobs:
             const deadline = Date.now() + timeoutSeconds * 1000;
 
             const prBody = pr.body || '';
+            const commentsBeforeWait = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100
+            });
+            function extractRequestContext(commentBody) {
+              const match = commentBody.match(/<!-- SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+              if (!match || !match[1]) return null;
+              try {
+                return JSON.parse(match[1].trim());
+              } catch {
+                return null;
+              }
+            }
+            const requestCommentsBeforeWait = commentsBeforeWait
+              .filter((c) => {
+                const body = c.body || '';
+                return body.includes('<!-- signature-native-signature-request -->') || body.includes('<!-- part11-native-signature-request -->');
+              })
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            const latestRequestContext = requestCommentsBeforeWait.length > 0
+              ? extractRequestContext(requestCommentsBeforeWait[requestCommentsBeforeWait.length - 1].body || '')
+              : null;
+
             const meaningMatch = prBody.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
-            let requiredMeaning = meaningMatch ? meaningMatch[1].trim() : '';
+            let requiredMeaning = String(latestRequestContext?.meaning || '').trim() || (meaningMatch ? meaningMatch[1].trim() : '');
             if (!requiredMeaning || requiredMeaning.startsWith('[')) {
               requiredMeaning = 'Approved Quality Record';
             }
 
             const rolesMatch = prBody.match(/\*\*Signer Roles:\*\*\s*([^\n]+)/i);
-            let requiredRolesCsv = rolesMatch ? rolesMatch[1].trim() : '';
+            let requiredRolesCsv = '';
+            if (Array.isArray(latestRequestContext?.signers) && latestRequestContext.signers.length > 0) {
+              requiredRolesCsv = latestRequestContext.signers
+                .map((slot) => String(slot.role || '').trim())
+                .filter(Boolean)
+                .join('; ');
+            }
+            if (!requiredRolesCsv) {
+              requiredRolesCsv = rolesMatch ? rolesMatch[1].trim() : '';
+            }
             if (!requiredRolesCsv || requiredRolesCsv.startsWith('[')) {
               requiredRolesCsv = 'Quality Assurance Lead';
             }
@@ -155,7 +189,9 @@ jobs:
             }
 
             const sigMatch = prBody.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
-            let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+            let requiredSignatures = latestRequestContext?.required_signatures
+              ? Number.parseInt(String(latestRequestContext.required_signatures).trim(), 10)
+              : (sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1);
             if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
               requiredSignatures = 1;
             }

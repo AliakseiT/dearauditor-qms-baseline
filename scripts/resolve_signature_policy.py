@@ -29,6 +29,13 @@ TECHNICAL_QMS_MAINTAINER_PREFIXES = (
     "tools/",
 )
 
+CONTROLLED_DOCUMENT_SIGNATURE_MEANING = "Approved Controlled Document Revision"
+CONTROLLED_DOCUMENT_SIGNER_ROLES = [
+    "Management Representative",
+    "Quality Assurance Lead",
+]
+CONTROLLED_DOCUMENT_REQUIRED_SIGNATURES = 2
+
 CONTROLLED_DOC_PREFIXES = ("qm/", "sops/", "wis/")
 
 EXECUTION_RECORD_PREFIX = "records/"
@@ -50,18 +57,31 @@ def _role_id_for_label(label: str) -> str | None:
     return None
 
 
-def _parse_roles(body: str) -> list[str]:
-    match = re.search(r"\*\*Signer Roles:\*\*\s*([^\n]+)", body, flags=re.IGNORECASE)
-    raw = match.group(1).strip() if match else ""
+def _extract_signature_field(body: str, label: str) -> str | None:
+    pattern = rf"\*\*{re.escape(label)}:\*\*\s*([^\n]+)"
+    match = re.search(pattern, body, flags=re.IGNORECASE)
+    if not match:
+        return None
+    raw = match.group(1).strip()
     if not raw or raw.startswith("["):
+        return None
+    return raw
+
+
+def _parse_meaning(body: str) -> str:
+    return _extract_signature_field(body, "Meaning of Signature") or ""
+
+
+def _parse_roles(body: str) -> list[str]:
+    raw = _extract_signature_field(body, "Signer Roles") or ""
+    if not raw:
         return []
     return [part.strip() for part in re.split(r"[;,]", raw) if part.strip()]
 
 
 def _parse_required_signatures(body: str) -> int:
-    match = re.search(r"\*\*Required Signatures:\*\*\s*([^\n]+)", body, flags=re.IGNORECASE)
-    raw = match.group(1).strip() if match else ""
-    if not raw or raw.startswith("["):
+    raw = _extract_signature_field(body, "Required Signatures") or ""
+    if not raw:
         return 1
     try:
         value = int(raw)
@@ -163,6 +183,21 @@ def _qualifies_for_role(role_id: str, author_role_ids: set[str], author_job_titl
     )
 
 
+def _matches_role_sequence(actual_roles: list[str], expected_roles: list[str]) -> bool:
+    return [_normalize_label(role) for role in actual_roles] == [_normalize_label(role) for role in expected_roles]
+
+
+def _infer_content_signature_policy(paths: list[str]) -> dict[str, Any] | None:
+    if any(path.startswith(("qm/", "sops/")) and path.lower().endswith(".md") for path in paths):
+        return {
+            "meaning": CONTROLLED_DOCUMENT_SIGNATURE_MEANING,
+            "roles": list(CONTROLLED_DOCUMENT_SIGNER_ROLES),
+            "required_signatures": CONTROLLED_DOCUMENT_REQUIRED_SIGNATURES,
+            "reason": "controlled QM/SOP document changes",
+        }
+    return None
+
+
 def _infer_role_candidates(repo_root: Path, paths: list[str]) -> tuple[list[str], list[str]]:
     candidates: list[str] = []
     reasons: list[str] = []
@@ -249,6 +284,7 @@ def main() -> int:
     changed_paths = [str(path) for path in paths]
 
     explicit_roles = _parse_roles(body)
+    explicit_meaning = _parse_meaning(body)
     required_signatures = _parse_required_signatures(body)
     inferred_role_candidates, inference_reasons = _infer_role_candidates(repo_root, changed_paths)
     eligible_inferred_roles = [
@@ -256,8 +292,44 @@ def main() -> int:
         for role_id in inferred_role_candidates
         if _qualifies_for_role(role_id, author_role_id_set, author_job_title)
     ]
+    content_policy = _infer_content_signature_policy(changed_paths)
 
-    if explicit_roles:
+    if content_policy:
+        expected_meaning = str(content_policy["meaning"])
+        expected_roles = list(content_policy["roles"])
+        expected_required_signatures = int(content_policy["required_signatures"])
+        expected_primary_role_id = _role_id_for_label(expected_roles[0])
+        if expected_primary_role_id and not _qualifies_for_role(
+            expected_primary_role_id, author_role_id_set, author_job_title
+        ):
+            raise SystemExit(
+                f"PRs touching QM/SOP controlled documents require the author to be eligible for "
+                f"primary signer role '{expected_roles[0]}'. Author @{author} is not."
+            )
+        if explicit_meaning != expected_meaning:
+            raise SystemExit(
+                "PRs touching QM/SOP controlled documents must declare "
+                f"'**Meaning of Signature:** {expected_meaning}'."
+            )
+        if not _matches_role_sequence(explicit_roles, expected_roles):
+            raise SystemExit(
+                "PRs touching QM/SOP controlled documents must declare "
+                f"'**Signer Roles:** {'; '.join(expected_roles)}'."
+            )
+        if required_signatures != expected_required_signatures:
+            raise SystemExit(
+                "PRs touching QM/SOP controlled documents must declare "
+                f"'**Required Signatures:** {expected_required_signatures}'."
+            )
+        final_roles = expected_roles
+        required_signatures = expected_required_signatures
+        meaning_of_signature = expected_meaning
+        source = "content_policy"
+        summary = (
+            f"Applied the fixed signature policy for {content_policy['reason']}: "
+            f"{'; '.join(expected_roles)} with {expected_required_signatures} required signatures."
+        )
+    elif explicit_roles:
         if len(explicit_roles) != required_signatures:
             raise SystemExit(
                 f"Explicit signer roles count ({len(explicit_roles)}) must match required signatures ({required_signatures})."
@@ -273,6 +345,7 @@ def main() -> int:
                 "reviewer/co-signer roles must come after it."
             )
         final_roles = explicit_roles
+        meaning_of_signature = explicit_meaning
         source = "explicit"
         summary = "Using explicit signer roles from the PR body."
     else:
@@ -282,6 +355,7 @@ def main() -> int:
             )
         if len(eligible_inferred_roles) == 1:
             final_roles = [_display_name_for_role(eligible_inferred_roles[0])]
+            meaning_of_signature = explicit_meaning
             source = "inferred"
             summary = (
                 f"Inferred signer role '{final_roles[0]}' from {', '.join(inference_reasons) or 'PR content'} "
@@ -305,6 +379,9 @@ def main() -> int:
     outputs = {
         "signatory_roles": "; ".join(final_roles),
         "signatory_roles_json": json.dumps(final_roles),
+        "meaning_of_signature": meaning_of_signature,
+        "required_signatures": str(required_signatures),
+        "required_reviewer_signatures": str(max(0, required_signatures - 1)),
         "role_resolution_source": source,
         "role_resolution_summary": summary,
         "author_role_ids": ",".join(author_role_ids),
