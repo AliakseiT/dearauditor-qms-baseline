@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R09
-effective_date: 2026-03-18
+revision: R10
+effective_date: 2026-03-25
 status: Published
 owner_role: usability_lead
 approver_role: qa_lead
 related_issue: "#44"
 ---
 ## 1. Purpose
-Define a lightweight, auditable usability engineering process for ACME user-facing healthcare software products, aligned with IEC 62366-1 and integrated with risk management.
+Define a risk-based usability engineering process for ACME user-facing healthcare software products, aligned with IEC 62366-1 and integrated with risk management.
 
 ## 2. Scope
 Applies to user interface design and evaluation activities that affect safety, including:
@@ -19,11 +19,11 @@ Applies to user interface design and evaluation activities that affect safety, i
 - user interface of unknown provenance (UOUP)
 
 ## 3. Process Strategy
-1. Use Git/GitHub as the usability engineering system of record in the designated product or study repository.
-2. Keep records concise and structured in YAML/Markdown.
-3. Store only evidence needed to justify safety-related usability decisions.
+1. Maintain usability engineering records in a controlled system that supports traceability, review, and retention requirements.
+2. Keep records concise, structured, and focused on safety-related usability decisions.
+3. Maintain objective evidence sufficient to justify usability-related risk control and residual risk decisions.
 4. Link usability findings directly to ISO 14971 risk items and product changes.
-5. This upstream baseline maintains governance SOPs and traceability baselines; operational usability records are maintained outside the upstream repository.
+5. This upstream baseline defines governance and traceability expectations; operational usability records are maintained in designated product or study repositories.
 
 ## 4. Required Inputs
 - Product intended use and user profiles
@@ -78,8 +78,9 @@ The file index is the entrypoint for audits and must reference current revisions
 
 ### 8.4 Identify UI Characteristics and Potential Use Errors (5.2)
 1. Identify UI characteristics related to safety.
-2. Identify potential use errors by task and workflow step.
-3. Link each potential use error to affected risk items.
+2. Use error is defined as a user action or lack of action that leads to a different result than intended by the manufacturer or expected by the user and may contribute to harm.
+3. Identify potential use errors by task and workflow step.
+4. Link each potential use error to affected risk items.
 
 ### 8.5 Identify Hazards/Hazardous Situations and Scenarios (5.3, 5.4)
 1. Identify known or foreseeable hazards/hazardous situations related to use.
@@ -101,9 +102,10 @@ The file index is the entrypoint for audits and must reference current revisions
 ### 8.9 Perform Summative Evaluation (5.9)
 1. Execute representative validation against selected hazard-related use scenarios.
 2. Document conclusion on whether usability-related residual risks are acceptable.
-3. If not acceptable, return to design/risk control updates.
+3. Product release shall not proceed unless usability-related residual risks are evaluated and determined acceptable.
+4. If not acceptable, return to design/risk control updates.
 
-### 8.10 UOUP Handling (5.10)
+### 8.10 User Interface of Unknown Provenance (UOUP) Handling (5.10)
 1. For UI elements of unknown provenance, perform a focused UOUP evaluation record.
 2. Review post-production evidence and apply additional controls where needed.
 
@@ -112,18 +114,11 @@ The file index is the entrypoint for audits and must reference current revisions
 2. Update use-related hazards/scenarios and risk controls when assumptions change.
 3. Keep usability file current at each major release.
 
-### 8.12 GitHub Workflow Alignment
-1. Track usability-engineering activities through issues in the designated product/study repository.
-2. Implement usability record updates through pull requests that include either linked issue context or sufficient change context in the PR, plus the required signature meaning/roles.
-3. Require non-author review approval on current PR head commit before merge.
-4. Collect signature attestations post-merge and publish immutable release assets (including manifest and signature evidence) for released usability records.
-
 ## 9. Required Records
 - Product usability file index and referenced records in the designated product/study repository
 - Formative and summative evaluation evidence
 - UOUP evaluation record (if applicable)
 - Links to related risk and change records
-- Immutable release manifest and signature attestation evidence for released usability records
 
 ## 10. Traceability
 | Standard Clause | Control in this SOP |
@@ -155,3 +150,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R07 | 2026-03-10 | Updated open-source baseline naming and publication references used in the usability procedure set. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R09 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the IEC 62366-1 references in Section 10. |
+| R10 | 2026-03-25 | Reframed the process as risk-based, clarified use-error and residual-risk wording, expanded the UOUP heading, and removed workflow-specific controls covered elsewhere in the QMS. |

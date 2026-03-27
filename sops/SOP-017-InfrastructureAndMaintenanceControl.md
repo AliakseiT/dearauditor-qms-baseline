@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-017
 title: Infrastructure and Maintenance Control
-revision: R03
-effective_date: 2026-03-18
+revision: R04
+effective_date: 2026-03-25
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#25"
 ---
 ## 1. Purpose
-Define controls for infrastructure and maintenance activities that support reliable QMS operations and safe/effective software product lifecycle execution.
+Define controls for infrastructure and maintenance to ensure reliable QMS operations, support safe and effective software lifecycle activities, and maintain infrastructure fit for its intended use.
 
 ## 2. Scope
 Applies to infrastructure supporting development, testing, release, and QMS record systems. Product runtime infrastructure controls remain defined per product dossier.
@@ -43,16 +43,18 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 1. Maintain routine maintenance calendar (updates, backups, certificate/key rotations, access reviews).
 2. Prioritize maintenance by risk/criticality.
 3. Define fallback/rollback approach for critical maintenance actions.
+4. Ensure integrity, availability, and protection of quality records and infrastructure data.
 
 ### 6.3 Access and Environment Controls
 1. Enforce role-based access and least privilege.
 2. Review privileged access at least quarterly.
 3. Record environment changes and approvals through change control.
+4. Ensure appropriate authentication controls (e.g. strong authentication) for access to critical systems.
 
 ### 6.4 Monitoring and Incident Handling
 1. Monitor service health, backup status, and critical workflow failures.
 2. Escalate incidents with quality impact to CAPA and management review where needed.
-3. Verify restoration capability through periodic recovery tests.
+3. Maintain and periodically test business continuity and disaster recovery capabilities appropriate to infrastructure criticality.
 
 ### 6.5 Supplier/Service Dependency Governance
 1. Ensure infrastructure suppliers are approved under SOP-010.
@@ -82,3 +84,4 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 | R01 | 2026-03-07 | Normalized infrastructure accountability to the controlled engineering-owner role and added technical QMS maintainer responsibilities for shared automation. |
 | R02 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R04 | 2026-03-25 | Expanded infrastructure purpose wording and added data-protection, strong-authentication, and business-continuity expectations. |

@@ -1,18 +1,18 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R08
-effective_date: 2026-03-18
+revision: R09
+effective_date: 2026-03-25
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#45"
 ---
 ## 1. Purpose
-Define a lightweight, GitHub-native software lifecycle control model aligned with IEC 62304 for software development planning, software-system classification, verification/validation linkage, parallel controlled change flow on product `main`, release-readiness gating, configuration management, release baselining, maintenance, and problem resolution.
+Define a risk-based software lifecycle control model aligned with IEC 62304 for software development planning, system classification, verification and validation linkage, controlled change management, release-readiness gating, configuration management, release baselining, maintenance, and problem resolution.
 
 ## 2. Scope
-Applies to regulated software products and significant product changes that require controlled software lifecycle records.
+Applies to regulated software products and significant product changes that require controlled software lifecycle records, including software made available through deployment or distribution.
 
 ## 3. Inputs
 - Product intended use and claims
@@ -75,13 +75,14 @@ Applies to regulated software products and significant product changes that requ
    - which merged change records are included
    - which merged change records are deferred
    - the binary or deployment package that enters formal V&V
-5. Each release-capable baseline must identify configuration items at minimum:
+5. Approved release baselines shall be immutable and uniquely identifiable.
+6. Each release-capable baseline must identify configuration items at minimum:
    - source revision/commit
    - relevant requirements/risk/test record revisions
    - approved build or deployment package reference
    - release manifest and rollback note
-5. Formal release test execution must record the exact environment and binary configuration at the start of each test run.
-6. Baseline updates after approval require a new PR revision; issue edits alone are not sufficient.
+7. Formal release test execution must record the exact environment and binary configuration at the start of each test run.
+8. Baseline updates after approval require a new PR revision; issue edits alone are not sufficient.
 
 ### 6.6 Release Decision and Publication
 1. Release decisions require:
@@ -142,3 +143,4 @@ Applies to regulated software products and significant product changes that requ
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the lifecycle signature wording and used technology-neutral language. |
 | R07 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R09 | 2026-03-25 | Reframed the lifecycle purpose around risk-based control, expanded scope to deployed or distributed software, and required immutable uniquely identifiable approved release baselines. |
