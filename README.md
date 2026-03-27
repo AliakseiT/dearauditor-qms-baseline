@@ -47,7 +47,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 ### Quality Manual
 
-- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R02`
+- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R03`
 
 ### SOP Library By Topic
 
