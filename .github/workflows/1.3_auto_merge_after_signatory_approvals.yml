@@ -152,6 +152,26 @@ jobs:
               core.setFailed(`PR #${pr.number} requires reviewer approval for merge, but the assigned reviewer pool is empty in the automation comment.`);
               return;
             }
+            if (requiredReviewerApprovals === 0) {
+              if (fresh.auto_merge) {
+                try {
+                  await github.graphql(
+                    `mutation($pullRequestId: ID!) {
+                      disablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId}) {
+                        pullRequest { number }
+                      }
+                    }`,
+                    { pullRequestId: fresh.node_id }
+                  );
+                  core.info(`Disabled auto-merge for PR #${pr.number}; reviewer approval is not required, so manual merge is expected.`);
+                } catch (error) {
+                  core.warning(`Could not disable auto-merge for PR #${pr.number}: ${error.message}`);
+                }
+              } else {
+                core.info(`PR #${pr.number} does not require reviewer approval; auto-merge remains disabled and manual merge is expected.`);
+              }
+              return;
+            }
 
             const reviews = await github.paginate(github.rest.pulls.listReviews, {
               owner: context.repo.owner,
