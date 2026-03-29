@@ -165,13 +165,43 @@ jobs:
             })).data;
 
             const existingReviewers = prData.requested_reviewers || [];
+            const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
+            const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
+            const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
+            const parseAssignedReviewers = (body) => {
+              const assignedLine = String(body || '').split('\n').find((line) => line.startsWith('Assigned reviewers:'));
+              return assignedLine
+                ? assignedLine
+                    .replace('Assigned reviewers:', '')
+                    .split(',')
+                    .map((u) => u.replace(/@/g, '').trim().toLowerCase())
+                    .filter(Boolean)
+                : [];
+            };
+            const buildCommentBody = (assignedReviewers) => {
+              const lines = [
+                marker,
+                '🤖 Auto-assigned signature reviewers from role matrix',
+                '',
+                `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,
+                'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
+                `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
+                `Reviewer approval required for merge: \`${requiredReviewerSignatures > 0 ? 'yes' : 'no'}\``,
+                `Required reviewer approvals for merge: \`${requiredReviewerSignatures}\``,
+                `Assigned reviewers: ${assignedReviewers.length > 0 ? assignedReviewers.map((u) => `@${u}`).join(', ') : 'none intentionally required'}`,
+                '',
+                requiredReviewerSignatures > 0
+                  ? 'Auto-merge workflow will enable merge once the required number of approvals is collected from the assigned reviewer pool.'
+                  : 'Manual merge by a single expert is required; auto-merge remains disabled when no reviewer approval is required.',
+              ];
+              return lines.join('\n');
+            };
             
             // IF NO REVIEWERS REQUIRED -> REMOVE EXISTING (ONLY IF ASSIGNED BY BOT)
             if (requiredReviewerSignatures === 0) {
               if (existingReviewers.length > 0 && existing) {
-                const assignedLine = (existing.body || '').split('\n').find(line => line.startsWith('Assigned reviewers:'));
-                if (assignedLine) {
-                  const botAssigned = assignedLine.replace('Assigned reviewers:', '').split(',').map(u => u.replace(/@/g, '').trim().toLowerCase()).filter(Boolean);
+                const botAssigned = parseAssignedReviewers(existing.body || '');
+                if (botAssigned.length > 0) {
                   const toRemove = existingReviewers.filter(r => botAssigned.includes((r.login || '').toLowerCase())).map(r => r.login);
                   
                   if (toRemove.length > 0) {
@@ -190,6 +220,26 @@ jobs:
                 }
               } else {
                 core.info('No reviewers required, and none assigned by bot to remove.');
+              }
+              const desiredBody = buildCommentBody([]);
+              if (existing) {
+                if ((existing.body || '') === desiredBody) {
+                  core.info('Auto-reviewer comment already reflects no-review policy.');
+                } else {
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: existing.id,
+                    body: desiredBody,
+                  });
+                }
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: desiredBody,
+                });
               }
               return;
             }
@@ -226,26 +276,9 @@ jobs:
               });
             }
 
-            const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
-            const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
-            const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
-            const lines = [
-              marker,
-              '🤖 Auto-assigned signature reviewers from role matrix',
-              '',
-              `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,
-              'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
-              `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
-              `Minimum reviewer approvals required for merge: \`${requiredReviewerSignatures}\``,
-              `Assigned reviewers: ${selected.length > 0 ? selected.map((u) => `@${u}`).join(', ') : 'none required'}`,
-              '',
-              'Auto-merge workflow will enable merge once the required number of approvals is collected from the assigned reviewer pool.',
-            ];
-
-            // Check if existing assigned reviewers exactly match up the selection
-            const sameReviewerSet = selected.length === alreadyRequested.size && selected.every((u) => alreadyRequested.has(u.toLowerCase()));
-            if (sameReviewerSet) {
-              core.info('Assigned reviewer set is unchanged; skip auto-reviewer comment update.');
+            const desiredBody = buildCommentBody(selected);
+            if (existing && (existing.body || '') === desiredBody) {
+              core.info('Assigned reviewer policy comment is unchanged; skip auto-reviewer comment update.');
               return;
             }
 
@@ -254,13 +287,13 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: existing.id,
-                body: lines.join('\n'),
+                body: desiredBody,
               });
             } else {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pr.number,
-                body: lines.join('\n'),
+                body: desiredBody,
               });
             }
