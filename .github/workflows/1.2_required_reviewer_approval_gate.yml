@@ -191,6 +191,13 @@ jobs:
                   return reviewerPool.length === 0 || reviewerPoolSet.has(login.toLowerCase());
                 })
                 .map(([login]) => '@' + login);
+              const hasAnyNonAuthorReviewActivity = Array.from(latestByUser.keys()).some((login) => login !== author);
+              if (context.eventName === 'pull_request' && !hasAnyNonAuthorReviewActivity) {
+                core.info(
+                  `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s), but no non-author reviews have been submitted yet. Waiting for reviewer activity.`
+                );
+                return;
+              }
               core.setFailed(
                 [
                   `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) on current head ${headSha}.`,
