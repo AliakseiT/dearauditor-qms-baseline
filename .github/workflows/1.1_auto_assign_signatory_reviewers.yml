@@ -192,7 +192,7 @@ jobs:
                 '',
                 requiredReviewerSignatures > 0
                   ? 'Auto-merge workflow will enable merge once the required number of approvals is collected from the assigned reviewer pool.'
-                  : 'Manual merge by the author is required; auto-merge remains disabled when no reviewer approval is required.',
+                  : 'Manual merge by a single expert is required; auto-merge remains disabled when no reviewer approval is required.',
               ];
               return lines.join('\n');
             };

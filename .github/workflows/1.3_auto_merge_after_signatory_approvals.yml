@@ -163,12 +163,12 @@ jobs:
                     }`,
                     { pullRequestId: fresh.node_id }
                   );
-                  core.info(`Disabled auto-merge for PR #${pr.number}; reviewer approval is not required, so manual merge is expected.`);
+                  core.info(`Disabled auto-merge for PR #${pr.number}; reviewer approval is not required, so manual merge by a single expert is expected.`);
                 } catch (error) {
                   core.warning(`Could not disable auto-merge for PR #${pr.number}: ${error.message}`);
                 }
               } else {
-                core.info(`PR #${pr.number} does not require reviewer approval; auto-merge remains disabled and manual merge is expected.`);
+                core.info(`PR #${pr.number} does not require reviewer approval; auto-merge remains disabled and manual merge by a single expert is expected.`);
               }
               return;
             }
