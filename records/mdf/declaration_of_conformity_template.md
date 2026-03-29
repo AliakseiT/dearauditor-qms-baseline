@@ -8,7 +8,7 @@ linked_mdf_index_reference: "records/mdf/medical_device_file_index.md"
 approval:
   meaning_of_signature: "Signed Declaration of Conformity"
   signer_roles:
-    - regulatory_lead
+    - qa_lead
     - management_representative
 ---
 

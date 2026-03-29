@@ -1,8 +1,8 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R08
-effective_date: 2026-03-10
+revision: R09
+effective_date: 2026-03-27
 status: Published
 owner_role: engineering_lead
 related_sops:
@@ -34,8 +34,8 @@ Applies to product releases, significant maintenance drops, and other controlled
    - the binary, image, or deployment package that enters formal V&V
 4. The PR body must state:
    - `**Meaning of Signature:** Approved Release Readiness and Formal V&V Entry`
-   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
-   - `**Required Signatures:** 3`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
+   - `**Required Signatures:** 2`
 5. Merge only after required approvals and mandatory checks complete.
 6. Pre-gate execution may continue as dry run only; formal release evidence starts after the post-merge signature attestation on this release-readiness PR.
 
@@ -61,11 +61,11 @@ Applies to product releases, significant maintenance drops, and other controlled
    - unresolved anomaly posture and rationale
    - exact binary, image, or deployment package accepted for shipment
    - whether management escalation was required
-3. The normal signer set is QA Lead, Engineering Lead, and Regulatory Lead. Add Management Representative when escalation or exceptional release conditions require it.
+3. The normal signer set is QA Lead and Engineering Lead. Add Management Representative when escalation or exceptional release conditions require it.
 4. The PR body must state:
    - `**Meaning of Signature:** Approved Final Release Decision`
-   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead; Regulatory Lead`
-   - `**Required Signatures:** 3`
+   - `**Signer Roles:** Quality Assurance Lead; Engineering Lead`
+   - `**Required Signatures:** 2`
 5. Merge only after required approvals and mandatory checks complete.
 6. The post-merge PIN-based signature attestation on that merged PR is the formal release authorization.
 
@@ -106,3 +106,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 | R06 | 2026-03-07 | Clarified that release/hotfix changes may be initiated directly from PR-stated change context and that branch-only planning remains uncontrolled until merged approval. |
 | R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the release signature wording and used technology-neutral language. |
 | R08 | 2026-03-10 | Updated upstream template-baseline naming references for product release-baseline records. |
+| R09 | 2026-03-27 | Consolidated the standalone regulatory-lead release signer role into the QA-lead baseline and reduced the default release signer sets accordingly. |

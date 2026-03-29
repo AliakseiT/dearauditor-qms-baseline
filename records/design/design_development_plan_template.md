@@ -8,7 +8,6 @@ lifecycle_model: "incremental|iterative|waterfall_with_iterations"
 software_safety_classification: "A|B|C|not_applicable_with_rationale"
 accountable_roles:
   engineering_lead: ""
-  regulatory_lead: ""
   usability_lead: ""
   qa_lead: ""
 github_native_operating_model:
@@ -29,7 +28,6 @@ approval:
   signer_roles:
     - qa_lead
     - engineering_lead
-    - regulatory_lead
 ---
 
 # Design and Development Plan Template
@@ -66,8 +64,7 @@ Example:
 Example:
 
 - Engineering lead: owns technical planning, architecture, release readiness, and technical traceability
-- Regulatory lead: owns intended use, claims, classification rationale, and dossier coherence
-- QA lead: verifies process conformance, gate completeness, and approval evidence
+- QA lead: owns intended use, claims, classification rationale, dossier coherence, process conformance, gate completeness, and approval evidence
 - Usability lead: owns user-profile, critical-task, and formative/summative input for user-facing features
 - Additional contributors or specialist reviewers: security reviewer for authentication and access control; clinical advisor for validation context
 

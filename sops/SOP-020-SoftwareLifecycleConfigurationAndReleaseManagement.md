@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R09
-effective_date: 2026-03-25
+revision: R10
+effective_date: 2026-03-27
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -34,9 +34,8 @@ Applies to regulated software products and significant product changes that requ
 |---|---|
 | Engineering Lead | Owns software lifecycle planning, configuration identification, and release readiness. |
 | Engineer | Prepares implementation, build, and test artifacts and executes approved lifecycle activities. |
-| QA Lead | Verifies procedure conformance, traceability, and record completeness. |
+| QA Lead | Verifies procedure conformance, traceability, record completeness, release scope, anomaly disposition, and maintenance follow-up actions. |
 | Management Representative | Approves major residual risk or release decisions requiring management review. |
-| Regulatory Lead | Maintains release scope, anomaly disposition, and maintenance follow-up actions. |
 
 ## 6. Procedure
 
@@ -92,7 +91,7 @@ Applies to regulated software products and significant product changes that requ
    - completed required verification/validation activities
    - approved residual risk status
 2. Final release authorization must be made through a distinct group approval after the V&V report, residual-risk decision, anomaly posture, and exact binary/deployment reference are current.
-3. The normal final release decision group is QA Lead, Engineering Lead, and Regulatory Lead; Management Representative participates when escalation, exceptional residual risk, or management review is required.
+3. The normal final release decision group is QA Lead and Engineering Lead; Management Representative participates when escalation, exceptional residual risk, or management review is required.
 4. If the release binary changes after formal V&V entry, assess the change through change/risk/release records, record the new binary deployment, and determine whether partial or full re-execution is required before release.
 5. Release evidence is published as immutable GitHub release assets using the QMS tag and record publication model.
 6. Product MDF and related dossiers must link to the released baseline and associated evidence package.
@@ -144,3 +143,4 @@ Applies to regulated software products and significant product changes that requ
 | R07 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R09 | 2026-03-25 | Reframed the lifecycle purpose around risk-based control, expanded scope to deployed or distributed software, and required immutable uniquely identifiable approved release baselines. |
+| R10 | 2026-03-27 | Consolidated the standalone regulatory-lead release-oversight role into the QA-lead baseline and reduced the normal final release decision group accordingly. |

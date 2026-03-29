@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R02
-effective_date: 2026-03-25
+revision: R03
+effective_date: 2026-03-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -84,9 +84,8 @@ High-level process interaction:
 | Role | System-Level Responsibility |
 |---|---|
 | Management Representative | Acts for top management within the small-team model, approves the quality policy/objective baseline, and confirms QMS adequacy and effectiveness. |
-| QA Lead | Maintains the controlled QMS baseline, verifies process interaction completeness, and drives quality-system improvements. |
+| QA Lead | Maintains the controlled QMS baseline, owns regulatory pathway and dossier completeness expectations, verifies process interaction completeness, and drives quality-system improvements. |
 | Engineering Lead | Owns lifecycle planning, technical release readiness, and engineering process implementation. |
-| Regulatory Lead | Owns regulatory pathway, dossier completeness, and regulated lifecycle oversight. |
 | Usability Lead | Owns safety-related usability engineering inputs and file completeness for user-facing products. |
 | Technical QMS Maintainer | Maintains quality tooling, automation, and technical QMS infrastructure under controlled change. |
 | Auditor | Verifies conformance and effectiveness of selected QMS processes and must remain independent of the activities being audited. |
@@ -141,3 +140,4 @@ QMS tooling and validation baselines are maintained in:
 | R00 | 2026-03-08 | Initial release split from SOP-005 so the QMS intent, scope, policy, objectives, and process structure are available as a standalone Quality Manual. |
 | R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |
 | R02 | 2026-03-25 | Tightened company-level scope wording, added risk-based quality framing and product performance objectives, and clarified auditor independence plus repository-of-record language. |
+| R03 | 2026-03-27 | Consolidated the standalone regulatory-lead baseline role into the QA-lead governance model and aligned the system-level role overview accordingly. |

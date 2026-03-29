@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-013
 title: Regulatory Incident Reporting
-revision: R04
-effective_date: 2026-03-25
+revision: R05
+effective_date: 2026-03-27
 status: Published
-owner_role: regulatory_lead
+owner_role: qa_lead
 approver_role: management_representative
 related_issue: "#9"
 ---
@@ -27,9 +27,8 @@ Applies to each product that qualifies as medical device software under applicab
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Regulatory Lead | Detects and triages potential incidents. |
 | Management Representative | Approves reportability decisions and submissions. |
-| QA Lead | Ensures process compliance and record completeness. |
+| QA Lead | Detects and triages potential incidents and ensures process compliance and record completeness. |
 | Engineering/Medical Experts | Provide technical and clinical impact assessments. |
 
 ## 6. Procedure
@@ -80,3 +79,4 @@ Applies to each product that qualifies as medical device software under applicab
 | R02 | 2026-03-07 | Simplified the incident-process business role name to `regulatory_lead`. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Expanded regulatory-scope applicability wording, defined reportable incidents, and clarified that submission timelines follow applicable regulations. |
+| R05 | 2026-03-27 | Consolidated the standalone regulatory-lead incident-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |

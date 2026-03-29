@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1)
-revision: R10
-effective_date: 2026-03-25
+revision: R11
+effective_date: 2026-03-27
 status: Published
 owner_role: usability_lead
 approver_role: qa_lead
@@ -40,9 +40,8 @@ Applies to user interface design and evaluation activities that affect safety, i
 | Role | Responsibilities |
 |---|---|
 | Usability Lead | Owns use context, user profiles, critical tasks, formative/summative evaluation planning, and the usability file. |
-| Regulatory Lead | Confirms intended-use, labeling, and regulatory assumptions used in usability evaluations. |
 | Engineering Lead | Implements UI risk controls and design updates. |
-| QA Lead | Verifies process compliance and usability file completeness. |
+| QA Lead | Verifies process compliance, confirms intended-use, labeling, and regulatory assumptions used in usability evaluations, and ensures usability file completeness. |
 | Management Representative | Approves major residual use-risk decisions. |
 
 ## 7. Lightweight Usability File Structure
@@ -151,3 +150,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R09 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the IEC 62366-1 references in Section 10. |
 | R10 | 2026-03-25 | Reframed the process as risk-based, clarified use-error and residual-risk wording, expanded the UOUP heading, and removed workflow-specific controls covered elsewhere in the QMS. |
+| R11 | 2026-03-27 | Consolidated the standalone regulatory-lead usability-review role into the QA-lead baseline and aligned the role table accordingly. |

@@ -23,4 +23,3 @@ required_fields:
     signer_roles:
       - qa_lead
       - engineering_lead
-      - regulatory_lead

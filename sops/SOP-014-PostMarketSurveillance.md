@@ -1,10 +1,10 @@
 ---
 sop_id: SOP-014
 title: Post-Market Surveillance
-revision: R04
-effective_date: 2026-03-25
+revision: R05
+effective_date: 2026-03-27
 status: Published
-owner_role: regulatory_lead
+owner_role: qa_lead
 approver_role: qa_lead
 related_issue: "#10"
 ---
@@ -28,8 +28,7 @@ Applies to all released products and product versions in active use.
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| Regulatory Lead | Owns PMS plan execution and trend analysis. |
-| QA Lead | Reviews PMS outputs and escalation decisions. |
+| QA Lead | Owns PMS plan execution, trend analysis, and PMS output/escalation review. |
 | Engineering Lead | Implements product actions from PMS findings. |
 
 ## 6. Procedure
@@ -82,3 +81,4 @@ Applies to all released products and product versions in active use.
 | R02 | 2026-03-07 | Simplified the PMS role names to `regulatory_lead` and `engineering_lead`. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Expanded PMS-plan minimum content, generalized active-product trend frequency wording, and required maintained per-product PMS reports. |
+| R05 | 2026-03-27 | Consolidated the standalone regulatory-lead PMS-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |

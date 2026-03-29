@@ -12,7 +12,6 @@ lifecycle_scope:
   - release
   - production_post_production
 responsible_roles:
-  regulatory_lead: ""
   qa_lead: ""
   engineering_lead: ""
   usability_lead: ""
@@ -29,7 +28,7 @@ risk_acceptability:
 approval:
   meaning_of_signature: "Approved Risk Management Plan"
   signer_roles:
-    - regulatory_lead
+    - qa_lead
     - management_representative
 ---
 
@@ -70,9 +69,8 @@ Example:
 
 Example:
 
-- Regulatory lead: owns intended-use context, foreseeable misuse framing, acceptability logic, and risk-file coherence
+- QA lead: owns intended-use context, foreseeable misuse framing, acceptability logic, and risk-file coherence, and verifies risk-process integrity
 - Engineering lead: owns failure-mode analysis, technical control implementation, and traceability to design/test evidence
-- QA lead: verifies process integrity, review cadence, and evidence completeness
 - Usability lead: owns use-related hazards, critical-task risk inputs, and user-interface misuse analysis for user-facing products
 - Management representative: approves the acceptability framework and overall residual-risk decisions
 
