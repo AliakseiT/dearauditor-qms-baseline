@@ -247,11 +247,12 @@ jobs:
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
-            const buildLink = (signer) => {
+            const buildLink = (slot) => {
               const params = new URLSearchParams({
                 repo: `${context.repo.owner}/${context.repo.repo}`,
                 pr: String(pr.number),
-                signer: signer.toLowerCase(),
+                signer: slot.signer.toLowerCase(),
+                role: slot.role,
               });
               return `${signingBaseUrl}/sign?${params.toString()}`;
             };
@@ -262,7 +263,7 @@ jobs:
             }));
 
             const runLinks = signerSlots.length > 0
-              ? signerSlots.map((slot) => `- @${slot.signer} (${slot.role}): [Open signature ceremony](${buildLink(slot.signer)})`)
+              ? signerSlots.map((slot) => `- @${slot.signer} (${slot.role}): [Open signature ceremony](${buildLink(slot)})`)
               : ['- No eligible approved assigned reviewers found.'];
 
             const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
