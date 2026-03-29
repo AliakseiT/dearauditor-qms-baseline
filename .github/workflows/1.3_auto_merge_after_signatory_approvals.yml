@@ -2,10 +2,10 @@ name: 1.3 Auto Merge After Assigned Approvals
 run-name: 1.3 Auto-Merge Gate
 
 on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize, converted_to_draft, ready_for_review]
   pull_request_review:
     types: [submitted, edited, dismissed]
-  pull_request:
-    types: [converted_to_draft, ready_for_review]
 
 permissions:
   contents: write
@@ -83,23 +83,95 @@ jobs:
               return;
             }
             const headSha = (fresh.head?.sha || '').toLowerCase();
-
-            const requested = (fresh.requested_reviewers || []).map((r) => r.login).filter(Boolean);
-            const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+            const author = String(fresh.user?.login || '').toLowerCase();
+            const requested = (fresh.requested_reviewers || []).map((r) => String(r.login || '').toLowerCase()).filter(Boolean);
+            const marker = '<!-- signature-auto-reviewers -->';
+            const legacyMarker = '<!-- part11-auto-reviewers -->';
+            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: pr.number,
+              issue_number: pr.number,
               per_page: 100,
             });
-            const paths = changedFiles.map((f) => String(f.filename || ''));
-            const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
-            const coapprovalReasons = [];
-            if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
-            if (hasPath('records/')) coapprovalReasons.push('records (/records)');
-            if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
-            if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
-            const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
-            const requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
+            const markerComments = comments
+              .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            const latestMarkerBody = markerComments.length > 0 ? String(markerComments[markerComments.length - 1].body || '') : '';
+            const parseAssignedReviewers = (body) => {
+              const lineMatch = String(body || '').match(/Assigned reviewers:\s*([^\n]+)/i);
+              return lineMatch
+                ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
+                : [];
+            };
+            const parseBooleanLine = (body, label) => {
+              const match = String(body || '').match(new RegExp(`${label}:\\s*\`?(yes|no)\`?`, 'i'));
+              return match ? match[1].toLowerCase() === 'yes' : null;
+            };
+            const parseIntegerLine = (body, label) => {
+              const match = String(body || '').match(new RegExp(`${label}:\\s*\`?(\\d+)\`?`, 'i'));
+              return match ? Number.parseInt(match[1], 10) : null;
+            };
+
+            let requiredReviewerApprovals = null;
+            let reviewerPool = [];
+            let policySource = '';
+            let coapprovalReasons = [];
+            if (latestMarkerBody) {
+              const explicitApprovalRequired = parseBooleanLine(latestMarkerBody, 'Reviewer approval required for merge');
+              const explicitRequiredApprovals = parseIntegerLine(latestMarkerBody, 'Required reviewer approvals for merge');
+              if (explicitApprovalRequired !== null || explicitRequiredApprovals !== null) {
+                requiredReviewerApprovals = explicitApprovalRequired === false
+                  ? 0
+                  : explicitRequiredApprovals ?? Math.max(1, baseRequiredReviewerApprovals);
+                reviewerPool = Array.from(new Set([
+                  ...parseAssignedReviewers(latestMarkerBody),
+                  ...requested,
+                ]));
+                policySource = 'assignment comment';
+              }
+            }
+            if (requiredReviewerApprovals === null) {
+              const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 100,
+              });
+              const paths = changedFiles.map((f) => String(f.filename || ''));
+              const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+              if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
+              if (hasPath('records/')) coapprovalReasons.push('records (/records)');
+              if (hasPath('records/management-reviews/')) coapprovalReasons.push('management review records (/records/management-reviews)');
+              if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
+              const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
+              requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
+              policySource = 'path fallback';
+            }
+            if (requiredReviewerApprovals > 0 && reviewerPool.length === 0 && policySource === 'assignment comment') {
+              core.setFailed(`PR #${pr.number} requires reviewer approval for merge, but the assigned reviewer pool is empty in the automation comment.`);
+              return;
+            }
+            if (requiredReviewerApprovals === 0) {
+              if (fresh.auto_merge) {
+                try {
+                  await github.graphql(
+                    `mutation($pullRequestId: ID!) {
+                      disablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId}) {
+                        pullRequest { number }
+                      }
+                    }`,
+                    { pullRequestId: fresh.node_id }
+                  );
+                  core.info(`Disabled auto-merge for PR #${pr.number}; reviewer approval is not required, so manual merge by a single expert is expected.`);
+                } catch (error) {
+                  core.warning(`Could not disable auto-merge for PR #${pr.number}: ${error.message}`);
+                }
+              } else {
+                core.info(`PR #${pr.number} does not require reviewer approval; auto-merge remains disabled and manual merge by a single expert is expected.`);
+              }
+              return;
+            }
 
             const reviews = await github.paginate(github.rest.pulls.listReviews, {
               owner: context.repo.owner,
@@ -119,60 +191,32 @@ jobs:
             }
 
             const approvedReviewers = Array.from(latestReviewByUser.entries())
-              .filter(([, review]) => review.state === 'APPROVED')
+              .filter(([login, review]) => login !== author && review.state === 'APPROVED')
               .map(([login]) => login);
             const approvedOnHead = Array.from(latestReviewByUser.entries())
-              .filter(([, review]) => review.state === 'APPROVED' && review.commitId === headSha)
+              .filter(([login, review]) => login !== author && review.state === 'APPROVED' && review.commitId === headSha)
               .map(([login]) => login);
             const approvedOnHeadSet = new Set(approvedOnHead);
-
-            const marker = '<!-- signature-auto-reviewers -->';
-            const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              per_page: 100,
-            });
-            const markerComments = comments
-              .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            const assignedReviewers = markerComments.length > 0
-              ? (() => {
-                  const latestBody = markerComments[markerComments.length - 1].body || '';
-                  const lineMatch = latestBody.match(/Assigned reviewers:\s*([^\n]+)/i);
-                  return lineMatch
-                    ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
-                    : [];
-                })()
-              : [];
-
-            let reviewerPool = Array.from(
-              new Set([
-                ...assignedReviewers,
-                ...requested.map((x) => String(x || '').toLowerCase()).filter(Boolean),
-              ])
-            );
-            if (reviewerPool.length === 0) {
-              reviewerPool = approvedOnHead;
-            }
-            if (reviewerPool.length < requiredReviewerApprovals) {
+            if (requiredReviewerApprovals > 0 && reviewerPool.length > 0 && reviewerPool.length < requiredReviewerApprovals) {
               core.info(
                 `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.${coapprovalReasons.length > 0 ? ` Co-approval scope matched: ${coapprovalReasons.join('; ')}` : ''}`
               );
               return;
             }
 
-            const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
-            if (approvedFromPool.length < requiredReviewerApprovals) {
+            const approvedFromPool = reviewerPool.length > 0
+              ? reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()))
+              : approvedOnHead;
+            if (requiredReviewerApprovals > 0 && approvedFromPool.length < requiredReviewerApprovals) {
               const pending = reviewerPool.filter((login) => !approvedOnHeadSet.has(login.toLowerCase()));
-              const stale = reviewerPool.filter((login) => approvedReviewers.includes(login.toLowerCase()) && !approvedOnHeadSet.has(login.toLowerCase()));
+              const stale = (reviewerPool.length > 0 ? reviewerPool : approvedReviewers).filter((login) => approvedReviewers.includes(login.toLowerCase()) && !approvedOnHeadSet.has(login.toLowerCase()));
               if (stale.length > 0) {
                 core.info(`Found stale approvals on older commits from: ${stale.map((x) => '@' + x).join(', ')}`);
               }
               core.info(
-                `Waiting for ${requiredReviewerApprovals - approvedFromPool.length} more approval(s) from reviewer pool: ${pending.map((x) => '@' + x).join(', ')}`
+                reviewerPool.length > 0
+                  ? `Waiting for ${requiredReviewerApprovals - approvedFromPool.length} more approval(s) from reviewer pool: ${pending.map((x) => '@' + x).join(', ')}`
+                  : `Waiting for ${requiredReviewerApprovals - approvedFromPool.length} more non-author approval(s) on the current head.`
               );
               return;
             }
