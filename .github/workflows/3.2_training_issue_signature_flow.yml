@@ -126,6 +126,7 @@ jobs:
               repo: repoFull,
               pr: String(issue.number),
               signer: trainee,
+              role,
             }).toString()}`;
             const requestContext = {
               version: 1,

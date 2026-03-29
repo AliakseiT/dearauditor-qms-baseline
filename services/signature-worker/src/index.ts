@@ -204,7 +204,7 @@ async function handleSignPage(request: Request, env: Env): Promise<Response> {
     throw new Error("Legacy signing link expired. A new signature request is required.");
   }
   const locator = parseRequestLocatorFromParams(url.searchParams);
-  context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
+  context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, locator.role, env);
 
   return html(
     renderSignPage(context, provider, env.PUBLIC_BASE_URL, resolveWorkerVersion(env)),
@@ -226,7 +226,7 @@ async function handleAuthStart(request: Request, env: Env): Promise<Response> {
     throw new Error("Legacy signing link expired. A new signature request is required.");
   }
   const locator = requestLocatorFromFormData(form);
-  context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, env);
+  context = await resolveCurrentContextForSigner(locator.repo, locator.pr, locator.signer, locator.role, env);
 
   const state: OAuthState = {
     type: "oauth",
@@ -895,18 +895,35 @@ function parseHiddenRequestContext(body: string): {
   }
 }
 
-async function resolveCurrentContextForSigner(repo: string, pr: string, signer: string, env: Env): Promise<SignatureContext> {
+async function resolveCurrentContextForSigner(
+  repo: string,
+  pr: string,
+  signer: string,
+  requestedRole: string,
+  env: Env
+): Promise<SignatureContext> {
   const normalizedRepo = await resolveCanonicalRepo(repo.trim(), env);
   const normalizedPr = pr.trim();
   const normalizedSigner = signer.trim().toLowerCase();
+  const normalizedRequestedRole = requestedRole.trim();
   if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(normalizedRepo)) throw new Error("Invalid repository.");
   if (!/^\d+$/.test(normalizedPr)) throw new Error("Invalid PR number.");
   if (!/^[A-Za-z0-9-]+$/.test(normalizedSigner)) throw new Error("Invalid signer login.");
 
   const repoToken = await resolveRepoAccessToken(normalizedRepo, env);
   const requestMeta = await resolveLatestRequestComment(normalizedRepo, Number.parseInt(normalizedPr, 10), repoToken, env);
-  const signerRequest = requestMeta.signerRequests.find((entry) => entry.signer === normalizedSigner);
-  const role = String(signerRequest?.role || (requestMeta.roles.length === 1 ? requestMeta.roles[0] : "")).trim();
+  const signerRequestsForSigner = requestMeta.signerRequests.filter((entry) => entry.signer === normalizedSigner);
+  const signerRequest = normalizedRequestedRole
+    ? signerRequestsForSigner.find((entry) => entry.role.toLowerCase() === normalizedRequestedRole.toLowerCase())
+    : signerRequestsForSigner[0];
+  if (normalizedRequestedRole && signerRequestsForSigner.length > 0 && !signerRequest) {
+    throw new Error(`Role '${normalizedRequestedRole}' is not assigned to @${normalizedSigner} in the latest request comment.`);
+  }
+  const role = String(
+    signerRequest?.role ||
+    normalizedRequestedRole ||
+    (requestMeta.roles.length === 1 ? requestMeta.roles[0] : "")
+  ).trim();
   if (!role) {
     throw new Error(`Unable to resolve signer role for @${normalizedSigner} from the latest request comment.`);
   }
@@ -1569,19 +1586,21 @@ function resolveWorkerVersion(env: Env): string {
   return raw || "dev-unversioned";
 }
 
-function parseRequestLocatorFromParams(params: URLSearchParams): { repo: string; pr: string; signer: string } {
+function parseRequestLocatorFromParams(params: URLSearchParams): { repo: string; pr: string; signer: string; role: string } {
   return {
     repo: String(params.get("repo") || "").trim(),
     pr: String(params.get("pr") || "").trim(),
     signer: String(params.get("signer") || "").trim().toLowerCase(),
+    role: String(params.get("role") || "").trim(),
   };
 }
 
-function requestLocatorFromFormData(form: FormData): { repo: string; pr: string; signer: string } {
+function requestLocatorFromFormData(form: FormData): { repo: string; pr: string; signer: string; role: string } {
   return {
     repo: String(form.get("repo") || "").trim(),
     pr: String(form.get("pr") || "").trim(),
     signer: String(form.get("signer") || "").trim().toLowerCase(),
+    role: String(form.get("role") || "").trim(),
   };
 }
 
