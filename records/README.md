@@ -7,6 +7,7 @@ DearAuditor Open QMS Baseline uses a mixed model:
 - company-level operational records may be maintained in this repository
 - reusable templates live here and are copied or adapted into designated product/study repositories
 - product-specific execution records such as design history, V&V evidence, MDF artifacts, release baselines, and post-market files belong in the designated product/study repository, not in this upstream repository
+- exception: when publishing this upstream repository itself as a `QMS-*` baseline, the bootstrap release-readiness, verification, baseline-manifest, and final-release records for that upstream publication may live here because they govern the upstream baseline repository rather than a product or study repository
 
 For downstream adopters, the practical rule is:
 
@@ -37,6 +38,7 @@ Some folders are intentionally empty until the first signed and published compan
 
 - [Training status report](training/training_status.md) - auditor-facing current training completion state
 - [Training status register](training/training_status.yml) - machine-readable current training state derived from signed evidence
+- [Upstream baseline publication records](configuration/release_plan.md) - release plan, baseline manifest, final release decision, and supporting bootstrap verification records for this repository's own `QMS-*` releases
 - [Management reviews](management-reviews/) - signed management review records
 - [Audits](audits/) - internal and external audit records
 - [CAPA](capas/) - corrective and preventive action records
