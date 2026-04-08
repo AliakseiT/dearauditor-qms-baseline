@@ -117,10 +117,16 @@ def parse_readme_doc_index(text):
         cols = [col.strip() for col in row.strip("|").split("|")]
         if len(cols) < 6:
             continue
-        doc_id, _title, path, date, revision, _status = cols[:6]
+        doc_id, title, path, date, revision, status = cols[:6]
         if not re.fullmatch(r"(?:QM|SOP|WI)-\d+", doc_id):
             continue
-        entries[doc_id] = {"path": path, "date": date, "revision": revision}
+        entries[doc_id] = {
+            "title": title,
+            "path": path,
+            "date": date,
+            "revision": revision,
+            "status": status,
+        }
     return entries
 
 
@@ -148,8 +154,10 @@ def is_execution_record(path):
 class DocInfo:
     path: str
     doc_id: str
+    title: str
     revision: str
     date: str
+    status: str
     head_text: str
     base_text: str
 
@@ -164,6 +172,7 @@ class QMSContext:
     readme_text: str
     readme_nav: dict
     readme_doc_index: dict
+    all_doc_infos: list[DocInfo]
     changed_doc_infos: list[DocInfo]
     changed_qms: list[DocInfo]
     changed_sops: list[DocInfo]
@@ -221,6 +230,45 @@ def parse_training_matrix(text):
     return {"roles": roles}
 
 
+def is_controlled_doc_path(path):
+    return (
+        (path.startswith("qm/") or path.startswith("sops/") or path.startswith("wis/"))
+        and path.endswith(".md")
+    )
+
+
+def id_key_for_controlled_doc_path(path):
+    if path.startswith("qm/"):
+        return "qm_id"
+    if path.startswith("sops/"):
+        return "sop_id"
+    return "wi_id"
+
+
+def controlled_doc_paths():
+    paths = []
+    for directory in ["qm", "sops", "wis"]:
+        root = Path(directory)
+        if root.exists():
+            paths.extend(str(path) for path in sorted(root.glob("*.md")))
+    return paths
+
+
+def load_doc_info(path, base_sha=None):
+    head_text = Path(path).read_text(encoding="utf-8")
+    base_text = file_at_revision(base_sha, path) if base_sha else ""
+    return DocInfo(
+        path=path,
+        doc_id=parse_front_matter_value(head_text, id_key_for_controlled_doc_path(path)),
+        title=parse_front_matter_value(head_text, "title"),
+        revision=parse_front_matter_value(head_text, "revision"),
+        date=parse_front_matter_value(head_text, "effective_date"),
+        status=parse_front_matter_value(head_text, "status"),
+        head_text=head_text,
+        base_text=base_text,
+    )
+
+
 def build_context(base_sha, head_sha):
     changed = changed_files(base_sha, head_sha)
     changed_set = set(changed)
@@ -242,33 +290,14 @@ def build_context(base_sha, head_sha):
             doc_id = match.group(1).upper()
             doc_to_roles.setdefault(doc_id, set()).add(role_name)
 
+    all_doc_infos = [load_doc_info(path) for path in controlled_doc_paths()]
     changed_doc_infos = []
     for path in changed:
-        if not (
-            (path.startswith("qm/") or path.startswith("sops/") or path.startswith("wis/"))
-            and path.endswith(".md")
-        ):
+        if not is_controlled_doc_path(path):
             continue
         if not Path(path).exists():
             continue
-        head_text = Path(path).read_text(encoding="utf-8")
-        base_text = file_at_revision(base_sha, path)
-        if path.startswith("qm/"):
-            id_key = "qm_id"
-        elif path.startswith("sops/"):
-            id_key = "sop_id"
-        else:
-            id_key = "wi_id"
-        changed_doc_infos.append(
-            DocInfo(
-                path=path,
-                doc_id=parse_front_matter_value(head_text, id_key),
-                revision=parse_front_matter_value(head_text, "revision"),
-                date=parse_front_matter_value(head_text, "effective_date"),
-                head_text=head_text,
-                base_text=base_text,
-            )
-        )
+        changed_doc_infos.append(load_doc_info(path, base_sha=base_sha))
 
     changed_qms = [doc for doc in changed_doc_infos if doc.path.startswith("qm/")]
     changed_sops = [doc for doc in changed_doc_infos if doc.path.startswith("sops/")]
@@ -283,6 +312,7 @@ def build_context(base_sha, head_sha):
         readme_text=readme_text,
         readme_nav=readme_nav,
         readme_doc_index=readme_doc_index,
+        all_doc_infos=all_doc_infos,
         changed_doc_infos=changed_doc_infos,
         changed_qms=changed_qms,
         changed_sops=changed_sops,
@@ -310,12 +340,7 @@ class QMSContentGuardTests(unittest.TestCase):
     def test_changed_documents_have_valid_metadata(self):
         failures = []
         for doc in self.ctx.changed_doc_infos:
-            if doc.path.startswith("qm/"):
-                id_key = "qm_id"
-            elif doc.path.startswith("sops/"):
-                id_key = "sop_id"
-            else:
-                id_key = "wi_id"
+            id_key = id_key_for_controlled_doc_path(doc.path)
             if not re.fullmatch(r"(?:QM|SOP|WI)-\d+", doc.doc_id or ""):
                 failures.append(f"{doc.path}: missing or invalid {id_key} in front matter.")
             if not re.fullmatch(r"R\d{2}", doc.revision or ""):
@@ -342,7 +367,66 @@ class QMSContentGuardTests(unittest.TestCase):
                 if (doc.revision, doc.date) not in revision_rows:
                     failures.append(
                         f"{doc.path}: revision history is missing row for {doc.revision} / {doc.date}."
-                    )
+                )
+        self.assert_no_failures(failures)
+
+    def test_released_controlled_documents_have_published_metadata_and_indexes(self):
+        failures = []
+        docs = self.ctx.all_doc_infos
+        if not docs:
+            failures.append("No controlled QM/SOP/WI documents were found for release validation.")
+
+        seen_doc_ids = {}
+        actual_paths = {doc.path for doc in docs}
+        for doc in docs:
+            id_key = id_key_for_controlled_doc_path(doc.path)
+            doc_id = (doc.doc_id or "").upper()
+            if not re.fullmatch(r"(?:QM|SOP|WI)-\d+", doc_id):
+                failures.append(f"{doc.path}: missing or invalid {id_key} in front matter.")
+                continue
+            if doc_id in seen_doc_ids:
+                failures.append(f"{doc.path}: duplicate document id {doc_id}; already used by {seen_doc_ids[doc_id]}.")
+            seen_doc_ids[doc_id] = doc.path
+
+            if not doc.title:
+                failures.append(f"{doc.path}: missing title in front matter.")
+            if not re.fullmatch(r"R\d{2}", doc.revision or ""):
+                failures.append(f"{doc.path}: missing or invalid revision in front matter.")
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", doc.date or ""):
+                failures.append(f"{doc.path}: missing or invalid effective_date in front matter.")
+            if doc.status != "Published":
+                failures.append(f"{doc.path}: status must be Published before release.")
+            if doc.revision and doc.date:
+                revision_rows = parse_markdown_revision_row_pairs(doc.head_text)
+                if (doc.revision, doc.date) not in revision_rows:
+                    failures.append(f"{doc.path}: revision history is missing row for {doc.revision} / {doc.date}.")
+
+            nav_entry = self.ctx.readme_nav.get(doc_id)
+            if not nav_entry:
+                failures.append(f"README.md visible navigation is missing entry for {doc_id}.")
+            else:
+                if nav_entry["path"] != doc.path:
+                    failures.append(f"README.md visible navigation path mismatch for {doc_id}: {nav_entry['path']} != {doc.path}.")
+                if nav_entry["revision"] != doc.revision:
+                    failures.append(f"README.md visible navigation revision mismatch for {doc_id}: {nav_entry['revision']} != {doc.revision}.")
+
+            index_entry = self.ctx.readme_doc_index.get(doc_id)
+            if not index_entry:
+                failures.append(f"README.md published controlled document index is missing entry for {doc_id}.")
+            else:
+                if index_entry["path"] != doc.path:
+                    failures.append(f"README.md published controlled document index path mismatch for {doc_id}: {index_entry['path']} != {doc.path}.")
+                if index_entry["revision"] != doc.revision:
+                    failures.append(f"README.md published controlled document index revision mismatch for {doc_id}: {index_entry['revision']} != {doc.revision}.")
+                if index_entry["date"] != doc.date:
+                    failures.append(f"README.md published controlled document index effective date mismatch for {doc_id}: {index_entry['date']} != {doc.date}.")
+                if index_entry["status"] != "Published":
+                    failures.append(f"README.md published controlled document index status mismatch for {doc_id}: {index_entry['status']} != Published.")
+
+        for doc_id, entry in self.ctx.readme_doc_index.items():
+            if entry["path"] not in actual_paths:
+                failures.append(f"README.md published controlled document index lists {doc_id} at missing path {entry['path']}.")
+
         self.assert_no_failures(failures)
 
     def test_readme_visible_navigation_matches_changed_documents(self):

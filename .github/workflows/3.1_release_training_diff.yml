@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Optional training release tag (QMS-YYYY-MM-DD-RNN or refs/tags/QMS-YYYY-MM-DD-RNN). Blank => latest QMS tag, then HEAD."
+        description: "Optional training release tag (QMS-YYYY-MM-DD-RNNN or refs/tags/QMS-YYYY-MM-DD-RNNN). Blank => latest QMS tag, then HEAD."
         required: false
       training_user:
         description: "Optional GitHub username to limit issue creation to one user"
@@ -18,7 +18,7 @@ on:
         required: false
 
 env:
-  TRAINING_RELEASE_TAG_REGEX: '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{2}$'
+  TRAINING_RELEASE_TAG_REGEX: '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{3}$'
 
 permissions:
   contents: read
@@ -39,7 +39,7 @@ jobs:
             const defaultBranch = String(context.payload?.repository?.default_branch || 'main').trim() || 'main';
             const serverUrl = String(process.env.GITHUB_SERVER_URL || context.serverUrl || 'https://github.com').replace(/\/+$/g, '');
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
-            const regexSource = process.env.TRAINING_RELEASE_TAG_REGEX || '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{2}$';
+            const regexSource = process.env.TRAINING_RELEASE_TAG_REGEX || '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{3}$';
             const regex = new RegExp(regexSource);
 
             function normalizeTag(value) {
@@ -47,7 +47,7 @@ jobs:
             }
 
             function parseTag(tag) {
-              const match = /^QMS-(\d{4})-(\d{2})-(\d{2})-R(\d{2})$/.exec(tag);
+              const match = /^QMS-(\d{4})-(\d{2})-(\d{2})-R(\d{3})$/.exec(tag);
               if (!match) return null;
               return {
                 tag,

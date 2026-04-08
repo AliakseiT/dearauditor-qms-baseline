@@ -4,7 +4,7 @@ This repository publishes the open-source baseline behind [qms.dearauditor.ch](h
 
 If you are here to use or read the QMS, start with the end-user links below. If you need repository/adoption background, use the [landing page](https://qms.dearauditor.ch/), the [open-source adoption model](docs/open-source/README.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the release landing page for that published QMS baseline.
+If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the release landing page for that published QMS baseline.
 
 ## Start Here
 
@@ -30,7 +30,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNN` tag, this README is the r
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
 - Operating model: `Remote-first`
 - Current baseline shown in this README: `1` published Quality Manual, `20` published SOPs, and `2` published WIs
-- Formal QMS releases use `QMS-YYYY-MM-DD-RNN`
+- Formal QMS releases use `QMS-YYYY-MM-DD-RNNN`
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
 
 ## Training and Role Navigation
