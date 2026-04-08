@@ -122,12 +122,16 @@ def _accepted_repositories(repo_full_name: str) -> set[str]:
     return accepted
 
 
+def _normalize_login(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
 def _find_latest_valid_attestation(
     issue: dict[str, Any], accepted_repositories: set[str], expected_signer: str
 ) -> tuple[dict[str, Any], str] | tuple[None, None]:
     comments = list(issue.get("comments", []) or [])
     comments.sort(key=lambda item: str(item.get("created_at") or ""))
-    expected_signer = expected_signer.strip().lower()
+    expected_signer = _normalize_login(expected_signer)
 
     for comment in reversed(comments):
         body = str(comment.get("body") or "")
@@ -148,7 +152,7 @@ def _find_latest_valid_attestation(
             continue
         if int(payload.get("pr_number") or 0) != int(issue.get("number") or 0):
             continue
-        signer = str(payload.get("user_id") or payload.get("actor_login") or "").strip().lower()
+        signer = _normalize_login(payload.get("user_id") or payload.get("actor_login"))
         if expected_signer and signer != expected_signer:
             continue
         return payload, str(comment.get("html_url") or "")
@@ -177,14 +181,14 @@ def _event_from_completion_context(
         "issue_number": int(context_payload.get("source_issue") or issue.get("number") or 0),
         "issue_title": str(context_payload.get("source_issue_title") or issue.get("title") or "").strip(),
         "issue_url": str(context_payload.get("source_issue_url") or issue.get("html_url") or "").strip(),
-        "trainee_login": str(context_payload.get("trainee_login") or "").strip(),
+        "trainee_login": _normalize_login(context_payload.get("trainee_login")),
         "trainee_full_name": str(context_payload.get("trainee_full_name") or "").strip(),
         "roles_in_scope": [str(role).strip() for role in (context_payload.get("roles_in_scope") or []) if str(role).strip()],
         "completed_at_utc": str(context_payload.get("completed_at_utc") or "").strip(),
         "attestation_comment_url": str(context_payload.get("source_attestation_comment_url") or "").strip(),
         "evidence_release_tag": str(context_payload.get("evidence_release_tag") or "").strip(),
         "evidence_release_url": str(context_payload.get("evidence_release_url") or "").strip(),
-        "signer_login": str(context_payload.get("signer_login") or "").strip(),
+        "signer_login": _normalize_login(context_payload.get("signer_login")),
         "signer_full_name": str(context_payload.get("signer_full_name") or "").strip(),
         "meaning_of_signature": str(context_payload.get("meaning_of_signature") or "Completed QMS Training Review").strip(),
         "documents": [
@@ -203,8 +207,8 @@ def _event_from_completion_context(
 def _event_from_legacy_issue(issue: dict[str, Any], accepted_repositories: set[str]) -> dict[str, Any] | None:
     body = str(issue.get("body") or "")
     full_name, marker_user = _extract_training_user(body)
-    assignee_login = str((((issue.get("assignees") or []) or [{}])[0] or {}).get("login") or "").strip()
-    trainee_login = assignee_login or marker_user
+    assignee_login = _normalize_login((((issue.get("assignees") or []) or [{}])[0] or {}).get("login"))
+    trainee_login = assignee_login or _normalize_login(marker_user)
     if not trainee_login:
         return None
 
@@ -232,7 +236,7 @@ def _event_from_legacy_issue(issue: dict[str, Any], accepted_repositories: set[s
         "attestation_comment_url": attestation_comment_url,
         "evidence_release_tag": release_tag_match.group(1).strip() if release_tag_match else "",
         "evidence_release_url": release_url_match.group(1).strip() if release_url_match else "",
-        "signer_login": str(attestation.get("user_id") or attestation.get("actor_login") or "").strip(),
+        "signer_login": _normalize_login(attestation.get("user_id") or attestation.get("actor_login")),
         "signer_full_name": str(attestation.get("signer_full_name") or "").strip(),
         "meaning_of_signature": str(attestation.get("meaning_of_signature") or "Completed QMS Training Review").strip(),
         "documents": documents,
@@ -266,7 +270,7 @@ def _matrix_user_roles(matrix: dict[str, Any]) -> dict[str, list[str]]:
     user_roles: dict[str, list[str]] = {}
     for role_name, role_def in roles.items():
         for login in role_def.get("users", []) or []:
-            login_text = str(login).strip()
+            login_text = _normalize_login(login)
             if not login_text:
                 continue
             user_roles.setdefault(login_text, [])
@@ -279,7 +283,7 @@ def _matrix_required_revisions(matrix: dict[str, Any]) -> dict[str, dict[str, di
     roles = matrix.get("roles", {}) or {}
     requirements: dict[str, dict[str, dict[str, Any]]] = {}
     for role_name, role_def in roles.items():
-        users = [str(user).strip() for user in (role_def.get("users", []) or []) if str(user).strip()]
+        users = [_normalize_login(user) for user in (role_def.get("users", []) or []) if _normalize_login(user)]
         required_revisions = {
             str(doc_id).strip().upper(): str(revision).strip().upper()
             for doc_id, revision in (role_def.get("required_revisions", {}) or {}).items()
@@ -305,7 +309,11 @@ def _matrix_required_revisions(matrix: dict[str, Any]) -> dict[str, dict[str, di
 def _build_status_document(
     matrix: dict[str, Any], events: list[dict[str, Any]], repository: str
 ) -> dict[str, Any]:
-    users_cfg = matrix.get("users", {}) or {}
+    users_cfg = {
+        _normalize_login(login): profile
+        for login, profile in (matrix.get("users", {}) or {}).items()
+        if _normalize_login(login)
+    }
     user_roles = _matrix_user_roles(matrix)
 
     result: dict[str, Any] = {
@@ -317,7 +325,7 @@ def _build_status_document(
     }
 
     for event in events:
-        trainee_login = str(event.get("trainee_login") or "").strip()
+        trainee_login = _normalize_login(event.get("trainee_login"))
         if not trainee_login:
             continue
         user_profile = users_cfg.get(trainee_login, {}) or {}
@@ -361,7 +369,7 @@ def _build_status_document(
                 "attestation_comment_url": str(event.get("attestation_comment_url") or "").strip(),
                 "evidence_release_tag": str(event.get("evidence_release_tag") or "").strip(),
                 "evidence_release_url": str(event.get("evidence_release_url") or "").strip(),
-                "signer_login": str(event.get("signer_login") or "").strip(),
+                "signer_login": _normalize_login(event.get("signer_login")),
                 "signer_full_name": str(event.get("signer_full_name") or "").strip(),
                 "meaning_of_signature": str(event.get("meaning_of_signature") or "Completed QMS Training Review").strip(),
             }
@@ -376,7 +384,11 @@ def _build_status_document(
 def _render_markdown_report(
     matrix: dict[str, Any], status: dict[str, Any], output_path: Path
 ) -> list[dict[str, str]]:
-    users_cfg = matrix.get("users", {}) or {}
+    users_cfg = {
+        _normalize_login(login): profile
+        for login, profile in (matrix.get("users", {}) or {}).items()
+        if _normalize_login(login)
+    }
     user_roles = _matrix_user_roles(matrix)
     required_by_user = _matrix_required_revisions(matrix)
     status_users = status.get("users", {}) or {}

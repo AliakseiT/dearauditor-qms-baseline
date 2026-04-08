@@ -2,6 +2,7 @@ name: 3.3 Refresh Training Status PR
 run-name: 3.3 Refresh Training Status PR
 
 on:
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -136,7 +137,7 @@ jobs:
               '',
               '## Context',
               '',
-              'This manual workflow exported all `training-diff` issues plus their comments, rebuilt the training status artifacts, and prepared a bot-authored PR only because the generated files changed.',
+              'This run exported all `training-diff` issues plus their comments, rebuilt the training status artifacts, and prepared a bot-authored PR only because the generated files changed.',
               '',
               '## Validation',
               '',
