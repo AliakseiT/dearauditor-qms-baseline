@@ -71,6 +71,8 @@ def _extract_signature_field(body: str, label: str) -> str | None:
     if not match:
         return None
     raw = match.group(1).strip()
+    raw = raw.replace("\\r\\n", "\n").replace("\\n", "\n")
+    raw = raw.splitlines()[0].strip()
     if not raw or raw.startswith("["):
         return None
     return raw
