@@ -40,6 +40,13 @@ CONTROLLED_DOCUMENT_REQUIRED_SIGNATURES = 2
 CONTROLLED_DOC_PREFIXES = ("qm/", "sops/", "wis/")
 
 EXECUTION_RECORD_PREFIX = "records/"
+AUTOMATION_BOT_LOGINS = {
+    "dearauditor-open-qms-bot",
+    "dearauditor-open-qms-bot[bot]",
+    "dearauditor-qms-baseline-bot",
+    "dearauditor-qms-baseline-sign",
+    "github-actions[bot]",
+}
 
 
 def _normalize_label(value: str) -> str:
@@ -259,6 +266,7 @@ def main() -> int:
 
     author = args.author.strip()
     author_key = author.lower()
+    is_automation_author = author_key in AUTOMATION_BOT_LOGINS
     author_profile = next(
         (profile for login, profile in users.items() if str(login).strip().lower() == author_key),
         {},
@@ -337,7 +345,7 @@ def main() -> int:
             )
         explicit_primary_role = explicit_roles[0]
         explicit_primary_role_id = _role_id_for_label(explicit_primary_role)
-        if explicit_primary_role_id and not _qualifies_for_role(
+        if explicit_primary_role_id and not is_automation_author and not _qualifies_for_role(
             explicit_primary_role_id, author_role_id_set, author_job_title
         ):
             raise SystemExit(
@@ -349,10 +357,17 @@ def main() -> int:
         meaning_of_signature = explicit_meaning or DEFAULT_SIGNATURE_MEANING
         source = "explicit"
         summary = "Using explicit signer roles from the PR body."
+        if is_automation_author:
+            summary += " Automation-bot author detected; all explicit signer roles will be assigned to approved reviewers."
     else:
         if required_signatures != 1:
             raise SystemExit(
                 "PRs requiring multiple signatures must declare explicit '**Signer Roles:**' in the PR body."
+            )
+        if is_automation_author:
+            raise SystemExit(
+                f"Automation-authored PR @{author} must declare explicit '**Meaning of Signature:**', "
+                "'**Signer Roles:**', and '**Required Signatures:**' in the PR body."
             )
         if len(eligible_inferred_roles) == 1:
             final_roles = [_display_name_for_role(eligible_inferred_roles[0])]
@@ -382,11 +397,12 @@ def main() -> int:
         "signatory_roles_json": json.dumps(final_roles),
         "meaning_of_signature": meaning_of_signature,
         "required_signatures": str(required_signatures),
-        "required_reviewer_signatures": str(max(0, required_signatures - 1)),
+        "required_reviewer_signatures": str(required_signatures if is_automation_author else max(0, required_signatures - 1)),
         "role_resolution_source": source,
         "role_resolution_summary": summary,
         "author_role_ids": ",".join(author_role_ids),
         "author_job_title": author_job_title,
+        "author_is_automation_bot": "true" if is_automation_author else "false",
         "inferred_role_candidates": ",".join(inferred_role_candidates),
         "inference_reasons": "; ".join(inference_reasons),
     }
