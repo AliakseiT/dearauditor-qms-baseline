@@ -57,13 +57,6 @@ jobs:
               meaning = 'Approved Quality Record';
             }
 
-            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
-            let required = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
-            if (!Number.isInteger(required) || required < 1) {
-              required = 1;
-            }
-            const baseRequiredReviewerSignatures = Math.max(0, required - 1);
-
             const targetCommit = pr.merge_commit_sha || pr.head?.sha;
             const repoFull = `${context.repo.owner}/${context.repo.repo}`;
             const targetHash = crypto.createHash('sha256').update(`${repoFull}:${targetCommit}`).digest('hex');
@@ -72,6 +65,14 @@ jobs:
               core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer list.`);
               return;
             }
+            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
+            const isAutomationAuthor = automationBotLogins.has(authorLogin);
+            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            let required = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+            if (!Number.isInteger(required) || required < 1) {
+              required = 1;
+            }
+            const baseRequiredReviewerSignatures = isAutomationAuthor ? required : Math.max(0, required - 1);
             const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -94,7 +95,9 @@ jobs:
             if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
             const policyMinimumReviewerSignatures = coapprovalReasons.length > 0 ? 1 : 0;
             const requiredReviewerSignatures = Math.max(baseRequiredReviewerSignatures, policyMinimumReviewerSignatures);
-            const requiredSignaturesForRequest = Math.max(required, requiredReviewerSignatures + 1);
+            const requiredSignaturesForRequest = isAutomationAuthor
+              ? Math.max(required, requiredReviewerSignatures)
+              : Math.max(required, requiredReviewerSignatures + 1);
             const requestedReviewers = (pr.requested_reviewers || [])
               .map((r) => (r.login || '').toLowerCase())
               .filter(Boolean);
@@ -127,7 +130,6 @@ jobs:
 
             const marker = '<!-- signature-auto-reviewers -->';
             const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -158,7 +160,7 @@ jobs:
             }
             if (reviewerPool.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.${coapprovalReasons.length > 0 ? ` Co-approval scope matched: ${coapprovalReasons.join('; ')}` : ''}`
+                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s)${isAutomationAuthor ? '' : ' (author auto-signs 1)'}, but only ${reviewerPool.length} reviewer candidate(s) were resolved.${coapprovalReasons.length > 0 ? ` Co-approval scope matched: ${coapprovalReasons.join('; ')}` : ''}`
               );
               return;
             }
@@ -166,12 +168,12 @@ jobs:
             const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
             if (approvedFromPool.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedFromPool.length} reviewer candidate(s) approved.`
+                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s)${isAutomationAuthor ? '' : ' (author auto-signs 1)'}, but only ${approvedFromPool.length} reviewer candidate(s) approved.`
               );
               return;
             }
             const reviewerSigners = approvedFromPool.slice(0, requiredReviewerSignatures);
-            const finalSigners = [authorLogin, ...reviewerSigners];
+            const finalSigners = isAutomationAuthor ? reviewerSigners : [authorLogin, ...reviewerSigners];
 
             core.setOutput('pr_number', String(prNumber));
             core.setOutput('meaning_of_signature', meaning);
@@ -180,6 +182,7 @@ jobs:
             core.setOutput('target_hash', targetHash);
             core.setOutput('target_commit', targetCommit);
             core.setOutput('author_login', authorLogin);
+            core.setOutput('author_is_automation_bot', String(isAutomationAuthor));
             core.setOutput('approved_signers_csv', finalSigners.join(','));
             core.setOutput('coapproval_reasons', coapprovalReasons.join('; '));
             core.setOutput('pr_body_base64', bodyBase64(body));
