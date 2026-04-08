@@ -1,0 +1,38 @@
+name: 1.6 Release Evidence Gate
+run-name: 1.6 Release Evidence Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    paths:
+      - records/releases/**/release_notes.md
+      - matrices/quality_manual_traceability.yml
+      - scripts/report_release_evidence_gate.py
+      - .github/workflows/1.6_release_evidence_gate.yml
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  release_evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run release evidence report
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/report_release_evidence_gate.py \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --head "${{ github.event.pull_request.head.sha }}" \
+            --repo "${{ github.repository }}"

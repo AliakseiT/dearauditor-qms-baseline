@@ -71,6 +71,7 @@ flowchart LR
     w13["1.3 auto merge after signatory approvals<br/>1.3_auto_merge_after_signatory_approvals.yml"]
     w14["1.4 qms content gate<br/>1.4_qms_content_gate.yml<br/>Includes risk-record schema validation"]
     w15["1.5 PR description gate<br/>1.5_pr_description_gate.yml"]
+    w16["1.6 release evidence gate<br/>1.6_release_evidence_gate.yml<br/>Report mode for release notes"]
   end
 
   subgraph signature_pub["2 Signature and Publication Gates"]
@@ -97,6 +98,7 @@ flowchart LR
   pr_open --> w11
   pr_open --> w14
   pr_open --> w15
+  pr_open --> w16
   pr_review --> w12
   pr_review --> w13
   pr_closed --> w21
@@ -135,6 +137,7 @@ flowchart LR
 | `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables auto-merge after assigned reviewer approvals are present; repository-level branch protection or rulesets are still required to hard-block manual merges. | Active |
 | `1.4_qms_content_gate.yml` | `pull_request` | Validates revision-history, README navigation/index, training-matrix synchronization, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
 | `1.5_pr_description_gate.yml` | `pull_request` | Validates that the PR body contains structural headers for `Summary`, `Why` (or `Context`), and `Validation` (or `Testing`). | Active |
+| `1.6_release_evidence_gate.yml` | `pull_request` on release notes | Reports controlled-document signature coverage and traceability coverage for QMS release-note PRs; report mode does not block merges while historical evidence coverage is being baselined. | Report mode |
 
 ### 7.2 Signature and Publication Gates
 | Workflow | Primary trigger | Purpose | Status |
