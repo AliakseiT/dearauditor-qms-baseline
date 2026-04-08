@@ -8,6 +8,12 @@ on:
       - records/**/*.yml
       - records/**/*.yaml
       - records/**/*.json
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Merged pull request number to publish records for"
+        required: true
+        type: number
 
 permissions:
   contents: write
@@ -16,7 +22,7 @@ permissions:
 
 jobs:
   publish_records:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
       TARGET_RECORD_REPO: ${{ vars.QMS_RECORD_RELEASE_REPO || github.repository }}
@@ -29,12 +35,40 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Resolve source PR
+        id: pr
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const prNumber = context.eventName === 'workflow_dispatch'
+              ? Number(core.getInput('pr_number', { required: true }))
+              : Number(context.payload.pull_request?.number || 0);
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('A valid merged pull request number is required.');
+              return;
+            }
+
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            })).data;
+
+            if (!pr.merged_at) {
+              core.setFailed(`PR #${prNumber} is not merged.`);
+              return;
+            }
+
+            core.setOutput('pr_number', String(prNumber));
+            core.setOutput('base_sha', String(pr.base?.sha || ''));
+            core.setOutput('merge_sha', String(pr.merge_commit_sha || ''));
+
       - name: Detect modified records
         id: records
         shell: bash
         run: |
-          BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          MERGE_SHA="${{ github.event.pull_request.merge_commit_sha }}"
+          BASE_SHA="${{ steps.pr.outputs.base_sha }}"
+          MERGE_SHA="${{ steps.pr.outputs.merge_sha }}"
           if [ -z "$MERGE_SHA" ]; then
             MERGE_SHA="${{ github.sha }}"
           fi
@@ -104,14 +138,23 @@ jobs:
         env:
           TIMEOUT_SECONDS: ${{ env.PART11_TIMEOUT_SECONDS }}
           POLL_SECONDS: ${{ env.PART11_POLL_SECONDS }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         with:
           script: |
             const crypto = require('crypto');
             const fs = require('fs');
             const timeoutSeconds = Number(process.env.TIMEOUT_SECONDS || "5400");
             const pollSeconds = Number(process.env.POLL_SECONDS || "20");
-            const pr = context.payload.pull_request;
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = Number(process.env.PR_NUMBER || "0");
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('PR number output was not resolved for Part 11 signer matching.');
+              return;
+            }
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            })).data;
             const mergeSha = pr.merge_commit_sha || context.sha;
             const expectedTargetHash = crypto
               .createHash('sha256')
@@ -399,7 +442,7 @@ jobs:
         if: steps.records.outputs.has_records == 'true'
         env:
           SOURCE_REPO: ${{ github.repository }}
-          SOURCE_PR: ${{ github.event.pull_request.number }}
+          SOURCE_PR: ${{ steps.pr.outputs.pr_number }}
           SOURCE_MERGE_SHA: ${{ steps.records.outputs.merge_sha }}
           PART11_TARGET_HASH: ${{ steps.part11.outputs.target_hash }}
           PART11_ATTESTATIONS_JSON: ${{ steps.part11.outputs.attestations_json }}
