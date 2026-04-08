@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import Any
 
 
-QMS_TAG_RE = re.compile(r"^QMS-\d{4}-\d{2}-\d{2}-R\d{2}$")
-QMS_PREVIEW_TAG_RE = re.compile(r"^QMSPREVIEW-\d{4}-\d{2}-\d{2}-R\d{2}$")
+QMS_TAG_RE = re.compile(r"^QMS-\d{4}-\d{2}-\d{2}-R\d{3}$")
+QMS_PREVIEW_TAG_RE = re.compile(r"^QMSPREVIEW-\d{4}-\d{2}-\d{2}-R\d{3}$")
 PR_SIGNATURE_TAG_RE = re.compile(r"^sig-pr\d+-h[a-f0-9]{1,12}-r\d+$")
 TRAINING_SIGNATURE_TAG_RE = re.compile(r"^sig-train-\d+-h[a-f0-9]{1,12}-r\d+$")
 CERTIFICATE_ASSET_RE = re.compile(r"^Electronic_Signature_Certificate_PR\d+\.pdf$")
@@ -141,7 +141,17 @@ def validate_qms_release_assets(export_dir: Path, release: dict[str, Any], asset
     payload = load_json(manifest_path)
     missing_fields = validate_required_fields(
         payload,
-        ["schema_version", "release_tag", "source_repository", "source_sha", "published_at_utc"],
+        [
+            "schema_version",
+            "release_tag",
+            "source_repository",
+            "source_sha",
+            "published_at_utc",
+            "quality_manuals",
+            "sops",
+            "wis",
+            "baseline_references",
+        ],
     )
     if missing_fields:
         findings.append(
@@ -164,13 +174,36 @@ def validate_qms_release_assets(export_dir: Path, release: dict[str, Any], asset
     if snapshot_path.exists():
         try:
             with tarfile.open(snapshot_path, "r:gz") as archive:
-                member_count = len(archive.getmembers())
+                members = archive.getmembers()
+                member_count = len(members)
+                member_names = {member.name.rstrip("/") for member in members}
         except Exception as exc:  # noqa: BLE001
             findings.append(
                 {
                     "status": "fail",
                     "name": f"release:{tag_name}",
                     "detail": f"qms_release_snapshot.tgz is unreadable: {exc}",
+                }
+            )
+            return findings
+        required_snapshot_members = {
+            "README.md",
+            "docs",
+            "qm",
+            "sops",
+            "wis",
+            "records",
+            "scripts",
+            "tools",
+            "services/signature-worker",
+        }
+        missing_snapshot_members = sorted(required_snapshot_members - member_names)
+        if missing_snapshot_members:
+            findings.append(
+                {
+                    "status": "fail",
+                    "name": f"release:{tag_name}",
+                    "detail": f"qms_release_snapshot.tgz missing baseline member(s): {', '.join(missing_snapshot_members)}",
                 }
             )
             return findings

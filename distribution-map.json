@@ -2,8 +2,8 @@
   "schema_version": 1,
   "tracked_baseline_file": "adoption/upstream-baseline.json",
   "tag_namespaces": {
-    "adoptable": "^QMS-\\d{4}-\\d{2}-\\d{2}-R\\d{2}$",
-    "preview": "^QMSPREVIEW-\\d{4}-\\d{2}-\\d{2}-R\\d{2}$",
+    "adoptable": "^QMS-\\d{4}-\\d{2}-\\d{2}-R\\d{3}$",
+    "preview": "^QMSPREVIEW-\\d{4}-\\d{2}-\\d{2}-R\\d{3}$",
     "immutable_evidence_prefixes": [
       "sig-",
       "audit-",
@@ -72,6 +72,10 @@
     {
       "kind": "path",
       "value": "records/README.md"
+    },
+    {
+      "kind": "path",
+      "value": "records/releases"
     },
     {
       "kind": "glob",

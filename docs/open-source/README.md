@@ -5,9 +5,9 @@ DearAuditor Open QMS Baseline can be published as a public upstream baseline wit
 ## Operating Model
 
 - this repository remains the public upstream source for reusable SOPs, WIs, templates, validators, automations, and example seed files
-- each adopting company creates a private repository from a selected upstream baseline ref, normally a `QMS-YYYY-MM-DD-RNN` tag
+- each adopting company creates a private repository from a selected upstream baseline ref, normally a `QMS-YYYY-MM-DD-RNNN` tag
 - product or study execution records stay in separate designated private repositories as already described in [`../architecture/README.md`](../architecture/README.md)
-- bootstrap release-readiness, verification, baseline-manifest, and final-release records for this repository's own `QMS-*` publication may live in this upstream repo because they govern the upstream baseline release itself rather than an adopter product or study release
+- release notes for this repository's own `QMS-*` publication may live in this upstream repo because they govern the upstream baseline release itself rather than an adopter implementation release
 
 The downstream repo is not expected to ingest every upstream tag. It records one adopted upstream ref at a time in `adoption/upstream-baseline.json` and only moves when the company approves an upgrade PR.
 
@@ -21,7 +21,7 @@ The machine-readable source of truth is [`../../distribution-map.json`](../../di
 
 Current intent:
 
-- upstream-owned: `.github/`, `qm/`, `sops/`, `wis/`, `scripts/`, `services/signature-worker/`, record templates, open-source docs, licensing, and the distribution scripts
+- upstream-owned: `.github/`, `qm/`, `sops/`, `wis/`, `scripts/`, `services/signature-worker/`, record templates, upstream release notes under `records/releases/`, open-source docs, licensing, and the distribution scripts
 - company-owned: `matrices/`, live operational records, signer assignments, training logs, supplier state, and downstream adoption metadata
 
 While the upstream project is still being actively developed, it continues to dogfood the workflow model using named company/person data in the live upstream `matrices/` and selected `records/` paths. That state is retained on purpose so the automations can be exercised end to end. Downstream adopters should not copy it directly; they should start from the generic seed files in [`../../examples/bootstrap`](../../examples/bootstrap/README.md).
@@ -56,7 +56,7 @@ The current automations treat `QMS-*` as the formal upstream baseline channel.
 - `QMSPREVIEW-*`: reserved for immutable upstream preview baselines when needed; these are not automatically treated as downstream-adoptable
 - `sig-*`, `record-*`, `trn-*`, and similar prefixes: immutable evidence/publication tags and explicitly out of scope for downstream sync tooling
 
-For formal `QMS-YYYY-MM-DD-RNN` tags, the date component is the publication date recorded for the
+For formal `QMS-YYYY-MM-DD-RNNN` tags, the date component is the publication date recorded for the
 approved upstream baseline release.
 
 This keeps high-volume immutable record/signature tags available for evidence retention without making them part of the downstream upgrade surface.

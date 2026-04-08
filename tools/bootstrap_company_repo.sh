@@ -31,7 +31,7 @@ company-owned seed files, and optionally creates/pushes a GitHub repository.
 
 Options:
   --target-dir <path>              Directory to create
-  --upstream-ref <git-ref>         Recommended: QMS-YYYY-MM-DD-RNN tag
+  --upstream-ref <git-ref>         Recommended: QMS-YYYY-MM-DD-RNNN tag
   --upstream-repository <owner/repo>
                                    Logical upstream repository label written to adoption metadata
   --upstream-url <git-url>         Upstream git remote URL added as remote "upstream"
