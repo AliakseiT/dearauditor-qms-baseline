@@ -142,7 +142,7 @@ flowchart LR
 | `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts or refreshes signer-specific links for the signature ceremony. | Active |
 | `2.6_pr_signature_label_reconciliation.yml` | `issue_comment`, `workflow_dispatch` | Reconciles `signature/outstanding` / `signature/complete` on merged PRs based on the latest signature request comment and collected attestations. It also removes legacy plural label variants from PRs. | Active |
 | `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, groups risk/usability bundles where required, and publishes immutable releases. | Active |
-| `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |
+| `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state, publishes the formal QMS release bundle, and closes the linked release-plan issue after successful publication. | Active |
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
 | `2.5_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
 | `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published `QMS-*` release package, uploads the release attestation assets, and closes the release-plan issue after completion. | Active |

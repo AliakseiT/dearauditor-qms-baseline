@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   publish_qms_release:
@@ -204,3 +205,49 @@ jobs:
             qms_release_manifest.json
             qms_release_snapshot.tgz
           body_path: qms_release_notes.md
+
+      - name: Close release planning issue
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('qms_release_manifest.json', 'utf8'));
+            const issueNumber = Number.parseInt(String(manifest.release_planning_issue || '').trim(), 10);
+            const releaseTag = String(manifest.release_tag || process.env.RELEASE_TAG || '').trim();
+            if (!Number.isInteger(issueNumber) || issueNumber < 1) {
+              core.info('No release_planning_issue found in qms_release_manifest.json; skipping issue close.');
+              return;
+            }
+
+            const issue = (await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            })).data;
+
+            const commentBody = [
+              '<!-- qms-release-published -->',
+              'QMS release published successfully.',
+              '',
+              `- Release tag: \`${releaseTag}\``,
+              `- Release URL: ${context.payload.release?.html_url || `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/releases/tag/${releaseTag}`}`,
+              '- Published assets:',
+              '  - `qms_release_manifest.json`',
+              '  - `qms_release_snapshot.tgz`',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: commentBody,
+            });
+
+            if (String(issue.state || '').toLowerCase() === 'open') {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                state: 'closed',
+              });
+            }
