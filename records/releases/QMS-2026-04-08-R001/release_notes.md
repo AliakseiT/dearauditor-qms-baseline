@@ -87,9 +87,3 @@ This release does not create adopter-specific training records.
 - Adopter-specific training completion records
 - Production runtime validation of the signature worker
 - Downstream operational-use or deployment decisions
-
-## Approval
-
-- Meaning of Signature: Approved Baseline Release
-- Signer Roles: Quality Assurance Lead; Engineering Lead
-- Required Signatures: 2
