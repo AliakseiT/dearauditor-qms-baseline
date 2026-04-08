@@ -20,7 +20,7 @@ DearAuditor Open QMS Baseline is a GitHub-native QMS operating model built from:
 - GitHub Releases for immutable record and QMS release packaging
 - a Cloudflare-hosted signature worker for the primary post-merge signature ceremony
 
-The canonical controlled reading surface remains GitHub at the approved commit or tag. QMS releases are formalized by tags matching `QMS-YYYY-MM-DD-RNN`.
+The canonical controlled reading surface remains GitHub at the approved commit or tag. QMS releases are formalized by tags matching `QMS-YYYY-MM-DD-RNNN`.
 
 For open-source distribution, this repository acts as the public upstream baseline. Adopting companies are expected to bootstrap a private repository from a selected upstream baseline ref and then pull later upstream changes through explicit upgrade PRs. The sync boundary is defined in [`distribution-map.json`](../../distribution-map.json), and the operational entry points are documented in [`../open-source/README.md`](../open-source/README.md).
 
@@ -60,7 +60,7 @@ flowchart LR
     pr_open["pull_request<br/>(open/update)"]
     pr_review["pull_request_review"]
     pr_closed["pull_request<br/>(closed)"]
-    qms_tag["push tag<br/>(QMS-YYYY-MM-DD-RNN)"]
+    qms_tag["push tag<br/>(QMS-YYYY-MM-DD-RNNN)"]
     issue_events["issues / issue_comment"]
     manual["workflow_dispatch"]
   end
@@ -175,6 +175,9 @@ High-volume immutable publication tags and downstream-adoptable baseline tags mu
 - `QMS-*` is the formal upstream baseline namespace and the only namespace intended for downstream adoption by default.
 - `QMSPREVIEW-*` is reserved for immutable candidate baselines when a stable preview is needed.
 - record/signature tags such as `sig-*`, `record-*`, and `trn-*` are evidence-retention tags and are intentionally ignored by downstream upgrade tooling.
+
+For formal `QMS-YYYY-MM-DD-RNNN` tags, the date component is the publication date recorded for the
+approved baseline release.
 
 This separation allows the repository to keep thousands of immutable publication tags without turning them into downstream upgrade inputs.
 

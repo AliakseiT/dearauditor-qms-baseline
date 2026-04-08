@@ -19,7 +19,7 @@ Fetches a selected upstream baseline, updates only syncable paths from distribut
 records the adopted upstream ref, and optionally pushes/opens a PR.
 
 Options:
-  --upstream-ref <git-ref>         Recommended: QMS-YYYY-MM-DD-RNN tag
+  --upstream-ref <git-ref>         Recommended: QMS-YYYY-MM-DD-RNNN tag
   --upstream-remote <name>         Remote name (default: upstream)
   --branch <name>                  Branch to create (default: upgrade/<ref>)
   --push                           Push branch to origin

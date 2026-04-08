@@ -16,8 +16,8 @@ from pathlib import Path
 from typing import Any
 
 
-QMS_TAG_RE = re.compile(r"^QMS-\d{4}-\d{2}-\d{2}-R\d{2}$")
-QMS_PREVIEW_TAG_RE = re.compile(r"^QMSPREVIEW-\d{4}-\d{2}-\d{2}-R\d{2}$")
+QMS_TAG_RE = re.compile(r"^QMS-\d{4}-\d{2}-\d{2}-R\d{3}$")
+QMS_PREVIEW_TAG_RE = re.compile(r"^QMSPREVIEW-\d{4}-\d{2}-\d{2}-R\d{3}$")
 EVIDENCE_TAG_PREFIXES = (
     "sig-",
     "audit-",
