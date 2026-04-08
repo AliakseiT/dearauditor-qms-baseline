@@ -24,15 +24,14 @@ decision_date: 2026-04-08
 ## Inputs Reviewed
 
 - Approved V&V Report Reference: `records/verification_validation/upstream_baseline_bootstrap_vv_report.md`
-- Product Residual Risk Decision Reference: not applicable because this
-  record approves publication of the upstream baseline repository rather than shipment of a medical
-  device product
+- Risk Decision Reference: not applicable; this record approves publication of the upstream baseline
+  repository, not a downstream implementation release or operational deployment
 - Anomaly / Deviation Summary Reference: no known blocking anomalies identified for the release scope
 - Release Planning Issue Reference: GitHub issue `#314`
-- Bootstrap Baseline-Release PR Reference: GitHub PR `#315`
+- Release Change Request Reference: GitHub PR `#315`
 - Exact Baseline Accepted for Release:
   - repository `AliakseiT/dearauditor-qms-baseline`
-  - approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`
+  - approved release commit on `main`; exact SHA captured in `qms_release_manifest.json`
   - GitHub Release assets generated from tag `QMS-2026-04-08-R01`
 - Execution Configuration References:
   - `.github/workflows/2.3_publish_qms_release.yml`
@@ -52,24 +51,23 @@ The accepted validation scope is appropriate because this is a QMS baseline publ
 The review confirms the released document set is published, revisioned, indexed, and packaged under
 an immutable tag.
 
-Runtime validation of the signature worker and product software validation are not required for this
-release decision. They remain required before using the worker as an operational production service
-or before releasing any downstream medical-device software product.
+Runtime validation of the signature worker and validation of any downstream adopted QMS are not
+required for this release decision. They remain required before using the worker as an operational
+production service or before relying on a downstream implementation.
 
 ## Bootstrap Justification
 
 - This decision approves publication of the upstream baseline repository itself as the first
   downstream-adoptable `QMS-*` reference.
-- It does not approve a medical-device product shipment, deployment, intended use, or adopter
-  operational release.
-- Product/study repositories that adopt this baseline remain responsible for their own design,
-  risk, V&V, MDF, and final release decisions.
+- It does not approve shipment, deployment, intended use, or adopter operational release.
+- Organizations that adopt this baseline remain responsible for their own implementation records,
+  training, operational tool validation, and release decisions.
 
 ## Group Release Decision
 
 - [x] Verification results are sufficient for upstream baseline publication.
 - [x] The publication scope is limited to the upstream baseline repository and does not require a
-  product residual-risk release decision.
+  risk release decision.
 - [x] No unresolved anomalies are known that would compromise the integrity of the published
   baseline package.
 - [x] The exact repository baseline and release assets accepted for publication match the reviewed
@@ -82,9 +80,8 @@ or before releasing any downstream medical-device software product.
 - Management review reference (if required): not applicable
 - Release restrictions / conditions:
   - publication authorizes only the upstream baseline repository release
-  - downstream adopters remain responsible for company-owned records and product-specific release
-    decisions in designated repositories
-  - no product claims, shipment authorization, or deployment approval are created by this record
+  - downstream adopters remain responsible for company-owned records and operational-use decisions
+  - no shipment authorization or deployment approval is created by this record
 
 ## Signatures
 

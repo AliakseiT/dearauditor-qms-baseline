@@ -7,7 +7,7 @@ owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
 release_tag: QMS-2026-04-08-R01
-release_cutoff_revision: approved merge commit of PR #315
+release_cutoff_revision: approved release commit on main
 ---
 
 # Release Baseline Manifest
@@ -22,7 +22,7 @@ release_cutoff_revision: approved merge commit of PR #315
 ## Included Change Records
 
 - GitHub issue `#314`
-- Approved repository baseline on `main` after PR `#315` is merged
+- Approved repository baseline on `main` at the release commit
 
 ## Included Controlled Documents
 
@@ -57,16 +57,16 @@ GitHub-based approval and signature process, and the upstream/downstream adoptio
 
 | Repository | Target Revision | Purpose |
 |---|---|---|
-| `AliakseiT/dearauditor-qms-baseline` | approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json` | Formal upstream QMS baseline content and release automation |
+| `AliakseiT/dearauditor-qms-baseline` | approved release commit on `main`; exact SHA captured in `qms_release_manifest.json` | Formal upstream QMS baseline content and release automation |
 
 ## Supporting Release-Control Evidence
 
 - Release planning issue: GitHub issue `#314`
-- Bootstrap baseline-release PR: GitHub PR `#315`
+- Release change request: GitHub PR `#315`
 - Verification and validation reference: `records/verification_validation/upstream_baseline_bootstrap_vv_report.md`
 - Final release decision reference: `records/configuration/final_release_decision.md`
-- Product risk reference: not applicable for this upstream baseline publication
-- MDF reference: not applicable for this upstream baseline publication
+- Risk acceptance reference: not applicable; no operational deployment is released here
+- Downstream implementation records: not applicable for this upstream baseline publication
 
 ## Build or Package Reference
 

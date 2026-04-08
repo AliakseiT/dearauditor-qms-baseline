@@ -6,7 +6,7 @@ status: approved
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
-target_revision: approved merge commit of PR #315
+target_revision: approved release commit on main
 ---
 
 # Upstream Baseline Bootstrap Verification and Validation Report
@@ -21,7 +21,7 @@ target_revision: approved merge commit of PR #315
   - `README.md`
   - `docs/architecture/README.md`
   - `docs/open-source/README.md`
-- Target Revision: approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`
+- Target Revision: approved release commit on `main`; exact SHA captured in `qms_release_manifest.json`
 - Report Date: `2026-04-08`
 
 ## Scope
@@ -38,7 +38,7 @@ target_revision: approved merge commit of PR #315
 - Covered Requirements:
   - formal QMS tag namespace and format for downstream-adoptable upstream baselines
   - immutable QMS release asset publication workflow
-  - explicit separation between upstream baseline publication and downstream product/study release
+  - explicit separation between upstream baseline publication and downstream adoption
   - presence of controlled release records for the first upstream `QMS-*` publication
 - Covered Risk Controls:
   - immutable release packaging on `QMS-*` tags
@@ -53,7 +53,7 @@ target_revision: approved merge commit of PR #315
   - `scripts/validate_qms_content.py`
 - Configuration Capture References:
   - repository `AliakseiT/dearauditor-qms-baseline`
-  - target revision: approved merge commit of PR `#315`
+  - target revision: approved release commit on `main`
   - GitHub issue `#314`
 
 ## Validation Scope Justification
@@ -68,9 +68,9 @@ The validation scope is limited to:
 - release packaging and publication workflow review
 - signature and training workflow review as supporting baseline controls
 
-Runtime testing of the signature worker and product software validation are out of scope for this
-release. The worker is included as baseline support code, not as a deployed medical-device product
-or approved production runtime.
+Runtime testing of the signature worker and validation of any downstream adopted QMS are out of
+scope for this release. The worker is included as baseline support code, not as an approved
+production runtime.
 
 ## Training Validation
 
@@ -109,9 +109,8 @@ adoption boundary.
 ## Deviations and Open Issues
 
 - No deviation was identified that blocks publication of the initial upstream `QMS-*` baseline.
-- Product/study V&V, MDF evidence, and product residual-risk decisions remain intentionally out of
-  scope because this publication covers the upstream QMS baseline repository rather than a product
-  release.
+- Downstream adopter validation records and production worker validation are not required for this
+  upstream baseline publication.
 
 ## Release Recommendation
 
@@ -122,8 +121,8 @@ adoption boundary.
 ## Bootstrap Justification
 
 This report verifies the upstream repository as a controlled QMS baseline publication unit.
-It does not claim verification or validation of any downstream product, intended use, binary, or
-deployment environment.
+It does not claim verification or validation of any downstream implementation or deployment
+environment.
 
 ## Signatures
 

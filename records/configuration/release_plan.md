@@ -7,7 +7,7 @@ owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
 target_version_or_tag: QMS-2026-04-08-R01
-release_cutoff_revision: approved merge commit of PR #315
+release_cutoff_revision: approved release commit on main
 ---
 
 # Release Plan
@@ -18,12 +18,12 @@ This record defines the first formal upstream baseline publication for DearAudit
 The release unit is the repository content at the approved cutoff commit together with the immutable
 GitHub Release assets generated from tag `QMS-2026-04-08-R01`.
 
-This is not a SaMD shipment release. It does not authorize any downstream product deployment,
-distribution, or product-specific release decision.
+This is not a SaMD shipment release. It does not authorize downstream operational use,
+deployment, or adoption decisions.
 
 ## Controlled Documents Entering Release
 
-The release publishes the current baseline document set. This PR does not change the content of
+The release publishes the current baseline document set. This release does not change the content of
 those documents; it places the approved document set under the first immutable `QMS-*` baseline tag.
 
 | Document family | Included documents | Expected release effect |
@@ -48,7 +48,7 @@ baseline. The expected code scope is:
 - validation and release helper scripts in `scripts/` and `tools/`
 - the signature worker under `services/signature-worker/`
 
-This release does not validate a medical-device software product or a deployed runtime environment.
+This release does not validate a deployed runtime environment or downstream implementation.
 Code validation for this baseline release is limited to release packaging, document-control checks,
 and review of the workflows that support controlled publication.
 
@@ -59,28 +59,28 @@ Training is governed by `matrices/training_matrix.yml`.
 For this first baseline release, the training focus is:
 - the full published baseline scope: `QM-001`, `SOP-001` through `SOP-020`, `WI-001`, and `WI-002`
 - how controlled documents, PR approvals, signatures, release tags, and training records are used
-- the boundary between this upstream baseline release and downstream product or company adoption
+- the boundary between this upstream baseline release and downstream adoption
 
-The release itself does not create product-specific training. Downstream adopters must assign their
+The release itself does not create adopter-specific training. Downstream adopters must assign their
 own personnel and training records after adoption.
 
 ## Included Change Records
 
 - GitHub issue `#314`
-- Entire approved repository baseline on `main` after PR `#315` is merged
+- Approved repository baseline on `main` at the release commit
 - Existing merged PR approval evidence already retained in immutable `sig-pr*` releases for the
   constituent changes included in the cutoff revision
 
 ## Deferred Change Records
 
-- Any commit merged after the approved PR `#315` merge commit
+- Any commit merged after the approved release commit
 - Any downstream adopter-owned records created after bootstrapping from this upstream baseline
 
 ## Formal Publication Unit Entering Review
 
 - Repository: `AliakseiT/dearauditor-qms-baseline`
 - Cutoff branch: `main`
-- Publication unit: approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`
+- Publication unit: approved release commit on `main`; exact SHA captured in `qms_release_manifest.json`
 - Expected immutable release assets:
   - `qms_release_manifest.json`
   - `qms_release_snapshot.tgz`
@@ -89,7 +89,7 @@ own personnel and training records after adoption.
 ## Supporting Release-Control Evidence
 
 - Release planning issue: GitHub issue `#314`
-- Bootstrap baseline-release PR: GitHub PR `#315`
+- Release change request: GitHub PR `#315`
 - Bootstrap V&V report: `records/verification_validation/upstream_baseline_bootstrap_vv_report.md`
 - Release baseline manifest: `records/configuration/release_baseline_manifest.md`
 - Final release decision: `records/configuration/final_release_decision.md`
@@ -97,7 +97,7 @@ own personnel and training records after adoption.
 - QMS release assets:
   - `qms_release_manifest.json`
   - `qms_release_snapshot.tgz`
-- Product residual-risk decision: not applicable for this upstream baseline publication scope
+- Risk decision: not applicable; no operational deployment is released here
 - Anomaly summary: no known open anomaly blocks were identified for the initial baseline publication
 
 ## Rollback or Containment Note
