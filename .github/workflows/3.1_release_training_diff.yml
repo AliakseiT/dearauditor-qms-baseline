@@ -195,6 +195,7 @@ jobs:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           TRAINING_USER: ${{ steps.gate.outputs.training_user }}
           ADDITIONAL_DOCUMENTS: ${{ steps.gate.outputs.additional_documents }}
+          RUNNER_TEMP: ${{ runner.temp }}
         run: |
           python -m pip install --quiet pyyaml
           python <<'PY'
@@ -700,20 +701,22 @@ jobs:
             )
 
           output = os.environ["GITHUB_OUTPUT"]
+          payload_path = str(Path(os.environ["RUNNER_TEMP"]) / "training_diff_entries.json")
+          Path(payload_path).write_text(json.dumps(entries), encoding="utf-8")
           with open(output, "a", encoding="utf-8") as fh:
-            fh.write("entries_json<<EOF\n")
-            fh.write(json.dumps(entries))
-            fh.write("\nEOF\n")
+            fh.write(f"entries_path={payload_path}\n")
           PY
 
       - name: Open consolidated training diff issues
         if: steps.gate.outputs.run_training == 'true'
         uses: actions/github-script@v8
         env:
-          ENTRIES_JSON: ${{ steps.payload.outputs.entries_json }}
+          ENTRIES_PATH: ${{ steps.payload.outputs.entries_path }}
         with:
           script: |
-            const entries = JSON.parse(process.env.ENTRIES_JSON || '[]');
+            const fs = require('fs');
+            const entriesPath = String(process.env.ENTRIES_PATH || '').trim();
+            const entries = entriesPath ? JSON.parse(fs.readFileSync(entriesPath, 'utf8')) : [];
             if (entries.length === 0) {
               core.info('No training deltas found; no issues created.');
               return;
