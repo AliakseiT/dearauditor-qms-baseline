@@ -113,7 +113,7 @@ jobs:
                 }
               }
 
-              const hashMatch = String(body || '').match(/Target hash \(merge state\):\s*`([a-f0-9]{64})`/i);
+              const hashMatch = String(body || '').match(/Target hash \([^)]+\):\s*`([a-f0-9]{64})`/i);
               const meaningMatch = String(body || '').match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i);
               const requiredMatch = String(body || '').match(/Required signatures:\s*\*\*([0-9]+)\*\*/i);
               const rolesMatch = String(body || '').match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i);
@@ -160,7 +160,7 @@ jobs:
                 return {
                   signerLogin: String(payload.user_id || '').trim().toLowerCase(),
                   signerRole: String(payload.signer_role || '').trim(),
-                  targetHash: String(payload.commit_hash || '').trim().toLowerCase(),
+                  targetHash: String(payload.target_hash || payload.commit_hash || '').trim().toLowerCase(),
                   meaning: String(payload.meaning_of_signature || '').trim(),
                 };
               }

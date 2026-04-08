@@ -320,8 +320,8 @@ jobs:
                 const isNative = body.includes('<!-- signature-native-attestation -->') || body.includes('<!-- part11-native-attestation -->');
                 const normalized = isNative
                   ? {
-                      prNumber: String(a.pr_number || ''),
-                      targetHash: String(a.target_hash || ''),
+                      prNumber: String(a.record_number || a.pr_number || ''),
+                      targetHash: String(a.target_hash || a.commit_hash || ''),
                       meaning: String(a.meaning_of_signature || ''),
                       signerRole: String(a.signer_role || ''),
                       signerLogin: String(a.actor_login || ''),
@@ -332,8 +332,8 @@ jobs:
                       attestationSha256: String(a.attestation_sha256 || ''),
                     }
                   : {
-                      prNumber: String(a.pr_number || ''),
-                      targetHash: String(a.commit_hash || ''),
+                      prNumber: String(a.record_number || a.pr_number || ''),
+                      targetHash: String(a.target_hash || a.commit_hash || ''),
                       meaning: String(a.meaning_of_signature || ''),
                       signerRole: String(a.signer_role || ''),
                       signerLogin: String(a.user_id || ''),
