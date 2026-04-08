@@ -24,10 +24,12 @@ decision_date: 2026-04-08
 ## Inputs Reviewed
 
 - Approved V&V Report Reference: `records/verification_validation/upstream_baseline_bootstrap_vv_report.md`
-- Residual Risk Decision Reference: not applicable for product residual-risk release because this
+- Product Residual Risk Decision Reference: not applicable because this
   record approves publication of the upstream baseline repository rather than shipment of a medical
   device product
 - Anomaly / Deviation Summary Reference: no known blocking anomalies identified for the release scope
+- Release Planning Issue Reference: GitHub issue `#314`
+- Bootstrap Baseline-Release PR Reference: GitHub PR `#315`
 - Exact Baseline Accepted for Release:
   - repository `AliakseiT/dearauditor-qms-baseline`
   - approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`

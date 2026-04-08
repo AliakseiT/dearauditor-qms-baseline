@@ -30,15 +30,13 @@ release_cutoff_revision: approved merge commit of PR #315
 |---|---|---|
 | `AliakseiT/dearauditor-qms-baseline` | approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json` | Formal upstream QMS baseline content and release automation |
 
-## Linked Records
+## Supporting Release-Control Evidence
 
-- Requirements or traceability reference:
-  - `README.md`
-  - `docs/architecture/README.md`
-  - `docs/open-source/README.md`
-- Risk reference: not applicable for product-release risk; publication-scope limits are controlled by `records/configuration/final_release_decision.md`
+- Release planning issue: GitHub issue `#314`
+- Bootstrap baseline-release PR: GitHub PR `#315`
 - Verification and validation reference: `records/verification_validation/upstream_baseline_bootstrap_vv_report.md`
 - Final release decision reference: `records/configuration/final_release_decision.md`
+- Product risk reference: not applicable for this upstream baseline publication
 - MDF reference: not applicable for this upstream baseline publication
 
 ## Build or Package Reference

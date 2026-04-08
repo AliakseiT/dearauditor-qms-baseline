@@ -43,13 +43,17 @@ distribution, or product-specific release decision.
   - `qms_release_snapshot.tgz`
 - External binary or deployment package: not applicable
 
-## Linked Records
+## Supporting Release-Control Evidence
 
-- Open-source adoption model: `docs/open-source/README.md`
-- Architecture and workflow model: `docs/architecture/README.md`
+- Release planning issue: GitHub issue `#314`
+- Bootstrap baseline-release PR: GitHub PR `#315`
 - Bootstrap V&V report: `records/verification_validation/upstream_baseline_bootstrap_vv_report.md`
 - Release baseline manifest: `records/configuration/release_baseline_manifest.md`
 - Final release decision: `records/configuration/final_release_decision.md`
+- QMS release tag: `QMS-2026-04-08-R01`
+- QMS release assets:
+  - `qms_release_manifest.json`
+  - `qms_release_snapshot.tgz`
 - Product residual-risk decision: not applicable for this upstream baseline publication scope
 - Anomaly summary: no known open anomaly blocks were identified for the initial baseline publication
 
