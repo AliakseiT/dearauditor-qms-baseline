@@ -57,8 +57,7 @@ distribution, or product-specific release decision.
 
 - If release readiness concerns are identified before publication, do not create tag
   `QMS-2026-04-08-R01`.
-- If the release is not published on 2026-04-08, update this release plan and the related PR records
-  before approval and tagging so the QMS tag date remains the actual publication date.
+- Before tagging, confirm the selected QMS tag date matches the approved baseline publication date.
 - If a problem is identified after publication, preserve the released tag and GitHub Release as
   immutable evidence, open corrective changes through the normal PR flow, and publish a superseding
   `QMS-*` baseline rather than mutating the released baseline.
