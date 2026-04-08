@@ -174,10 +174,10 @@ flowchart LR
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |
 
-PR signature-status labels are part of the operating model:
+Signature-status labels are part of the operating model for merged PRs and signed issues:
 
 - `signature/outstanding` means the merged PR has an active signature request and is still awaiting the required attestations.
-- `signature/complete` means the latest active signature request has enough valid attestations for that PR/hash/meaning combination.
+- `signature/complete` means the latest active signature request has enough valid attestations for that PR or issue / hash / meaning combination.
 
 ## 9. Tag Namespaces
 
