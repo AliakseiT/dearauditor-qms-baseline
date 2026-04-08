@@ -157,8 +157,8 @@ flowchart LR
 | Workflow | Primary trigger | Purpose | Status |
 |---|---|---|---|
 | `3.1_release_training_diff.yml` | `push` on QMS release tag, `workflow_dispatch` | Compares required controlled-document revisions to the current training status register and opens one consolidated training issue per user. | Active |
-| `3.2_training_issue_signature_flow.yml` | `issues`, `issue_comment`, `workflow_dispatch` | Manages signature collection and closure flow for consolidated training issues, including attestation-comment reconciliation and automatic closure. | Active |
-| `3.3_refresh_training_status_pr.yml` | `workflow_dispatch` | Exports training issue evidence, rebuilds the generated training status artifacts, opens or updates a PR when those generated files change, and maintains a visible failure notice for manual retry. | Active |
+| `3.2_training_issue_signature_flow.yml` | `issues`, `issue_comment`, `workflow_dispatch` | Manages signature collection and closure flow for consolidated training issues, including attestation-comment reconciliation and automatic closure. After successful reconciliation it calls `3.3` to refresh the generated training status register. | Active |
+| `3.3_refresh_training_status_pr.yml` | `workflow_dispatch`, `workflow_call` | Exports training issue evidence, rebuilds the generated training status artifacts, opens or updates a PR when those generated files change, and maintains a visible failure notice for manual retry. This is the single workflow that owns the refresh PR. | Active |
 
 ### 7.4 Platform and Maintenance Operations
 | Workflow | Primary trigger | Purpose | Status |
