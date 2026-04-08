@@ -69,17 +69,10 @@ release and by the approval signatures on PR `#315` for the release decision.
 
 ## Training Scope
 
-Training is governed by `matrices/training_matrix.yml`.
-
-For this release, the training focus is:
-
-- the full document set: `QM-001`, `SOP-001` through `SOP-020`, `WI-001`, and `WI-002`
-- document-control responsibilities
-- GitHub approval and signature evidence
-- release-tag use
-- the upstream/downstream adoption boundary
-
-This release does not create adopter-specific training records.
+Training for this upstream baseline release remains governed by
+`matrices/training_matrix.yml`, with required assignments based on role-specific document
+responsibilities and published revisions. Downstream adopters must assign and record their own
+training after adoption.
 
 ## Not Applicable
 
