@@ -88,6 +88,7 @@ flowchart LR
   subgraph training["3 Training Lifecycle"]
     w31["3.1 release training diff<br/>3.1_release_training_diff.yml"]
     w32["3.2 training issue signature flow<br/>3.2_training_issue_signature_flow.yml"]
+    w33["3.3 refresh training status PR<br/>3.3_refresh_training_status_pr.yml"]
   end
 
   subgraph platform["4 Platform and Maintenance"]
@@ -115,6 +116,7 @@ flowchart LR
   manual --> w25
   manual --> w31
   manual --> w32
+  manual --> w33
   manual --> w41
   manual --> w42
 
@@ -125,6 +127,7 @@ flowchart LR
   signer_ui --> w27
   signer_ui -. fallback unavailable .-> w25
   w31 --> w32
+  w32 --> w33
 ```
 
 ## 7. Automation Catalog
@@ -144,11 +147,11 @@ flowchart LR
 |---|---|---|---|
 | `2.1_pr_signature_request_gate.yml` | `pull_request` (closed, merged) | Parses PR signature requirements and posts or refreshes signer-specific links for the signature ceremony. | Active |
 | `2.6_pr_signature_label_reconciliation.yml` | `issue_comment`, `workflow_dispatch` | Reconciles `signature/outstanding` / `signature/complete` on merged PRs based on the latest signature request comment and collected attestations. It also removes legacy plural label variants from PRs. | Active |
-| `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, groups risk/usability bundles where required, and publishes immutable releases. | Active |
+| `2.2_publish_qms_records.yml` | `pull_request` (closed, merged) | Waits for signatures, packages changed execution record artifacts under `records/`, groups risk/usability bundles where required, and publishes immutable releases. Files under `records/releases/` are excluded because they belong to the QMS baseline release flow, not the execution-record publication flow. | Active |
 | `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state, publishes the formal QMS release bundle, and closes the linked release-plan issue after successful publication. | Active |
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
 | `2.5_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
-| `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published `QMS-*` release package, uploads the release attestation assets, and closes the release-plan issue after completion. | Active |
+| `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published `QMS-*` release package, uploads the release attestation assets, and closes the release-plan issue after completion. Non-`QMS-*` GitHub Release events are ignored. | Active |
 
 ### 7.3 Training Lifecycle
 | Workflow | Primary trigger | Purpose | Status |
@@ -171,10 +174,10 @@ flowchart LR
 | GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |
 
-PR signature-status labels are part of the operating model:
+Signature-status labels are part of the operating model for merged PRs and signed issues:
 
 - `signature/outstanding` means the merged PR has an active signature request and is still awaiting the required attestations.
-- `signature/complete` means the latest active signature request has enough valid attestations for that PR/hash/meaning combination.
+- `signature/complete` means the latest active signature request has enough valid attestations for that PR or issue / hash / meaning combination.
 
 ## 9. Tag Namespaces
 

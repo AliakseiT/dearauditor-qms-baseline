@@ -26,7 +26,12 @@ concurrency:
 
 jobs:
   request_release_signature:
-    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'release' &&
+        startsWith(github.event.release.tag_name, 'QMS-')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for release and issue operations
@@ -244,6 +249,22 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            const ACTIVE_LABELS = {
+              outstanding: {
+                name: 'signature/outstanding',
+                color: 'FBCA04',
+                description: 'Issue or merged PR is awaiting required electronic signatures.',
+              },
+              complete: {
+                name: 'signature/complete',
+                color: '0E8A16',
+                description: 'Issue or merged PR has collected the required electronic signatures.',
+              },
+            };
+            const LEGACY_LABELS = [
+              'signatures/outstanding',
+              'signatures/complete',
+            ];
             const issueNumber = Number.parseInt(String(process.env.RELEASE_ISSUE || '').trim(), 10);
             if (!Number.isInteger(issueNumber) || issueNumber < 1) {
               core.setFailed('A valid release planning issue number is required.');
@@ -284,6 +305,70 @@ jobs:
             const links = signers.map((slot) =>
               `- @${String(slot.signer || '').toLowerCase()} (${String(slot.role || '').trim()}): [Open signature ceremony](${buildLink(slot)})`
             );
+
+            async function ensureLabel(name, color, description) {
+              try {
+                const existing = await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                });
+                if (
+                  String(existing.data.color || '').toUpperCase() !== String(color || '').toUpperCase() ||
+                  String(existing.data.description || '') !== String(description || '')
+                ) {
+                  await github.rest.issues.updateLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name,
+                    new_name: name,
+                    color,
+                    description,
+                  });
+                }
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                  color,
+                  description,
+                });
+              }
+            }
+
+            async function applyState(labelToAdd, labelsToRemove) {
+              await ensureLabel(
+                ACTIVE_LABELS.outstanding.name,
+                ACTIVE_LABELS.outstanding.color,
+                ACTIVE_LABELS.outstanding.description
+              );
+              await ensureLabel(
+                ACTIVE_LABELS.complete.name,
+                ACTIVE_LABELS.complete.color,
+                ACTIVE_LABELS.complete.description
+              );
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: [labelToAdd],
+              });
+              for (const labelName of labelsToRemove) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issueNumber,
+                    name: labelName,
+                  });
+                } catch (error) {
+                  if (error.status !== 404) throw error;
+                }
+              }
+            }
+
             const body = [
               '<!-- qms-release-signature-request -->',
               '<!-- signature-native-signature-request -->',
@@ -315,6 +400,15 @@ jobs:
               issue_number: issueNumber,
               per_page: 100,
             });
+            const alreadyCompleted = comments.some((comment) => String(comment.body || '').includes('<!-- qms-release-signature-complete -->'));
+            if (alreadyCompleted) {
+              await applyState(ACTIVE_LABELS.complete.name, [
+                ACTIVE_LABELS.outstanding.name,
+                ...LEGACY_LABELS,
+              ]);
+              core.info(`Issue #${issueNumber} already has a completed release signature record; labels reconciled.`);
+              return;
+            }
             const existing = comments
               .filter((comment) => String(comment.body || '').includes('<!-- qms-release-signature-request -->'))
               .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0))
@@ -327,6 +421,10 @@ jobs:
                 comment_id: existing.id,
                 body,
               });
+              await applyState(ACTIVE_LABELS.outstanding.name, [
+                ACTIVE_LABELS.complete.name,
+                ...LEGACY_LABELS,
+              ]);
               core.info(`Updated QMS release signature request on issue #${issueNumber}.`);
               return;
             }
@@ -337,6 +435,10 @@ jobs:
               issue_number: issueNumber,
               body,
             });
+            await applyState(ACTIVE_LABELS.outstanding.name, [
+              ACTIVE_LABELS.complete.name,
+              ...LEGACY_LABELS,
+            ]);
 
   reconcile_signed_release_issue:
     if: >-
@@ -539,6 +641,14 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            const ACTIVE_LABELS = {
+              outstanding: 'signature/outstanding',
+              complete: 'signature/complete',
+            };
+            const LEGACY_LABELS = [
+              'signatures/outstanding',
+              'signatures/complete',
+            ];
             const issueNumber = Number.parseInt(String(process.env.ISSUE_NUMBER || '').trim(), 10);
             if (!Number.isInteger(issueNumber) || issueNumber < 1) {
               core.setFailed('A valid issue number is required.');
@@ -560,6 +670,24 @@ jobs:
               issue_number: issueNumber,
               body,
             });
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: [ACTIVE_LABELS.complete],
+            });
+            for (const labelName of [ACTIVE_LABELS.outstanding, ...LEGACY_LABELS]) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: labelName,
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+            }
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,

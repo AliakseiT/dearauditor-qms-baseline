@@ -42,6 +42,22 @@ jobs:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const crypto = require('crypto');
+            const ACTIVE_LABELS = {
+              outstanding: {
+                name: 'signature/outstanding',
+                color: 'FBCA04',
+                description: 'Issue or merged PR is awaiting required electronic signatures.',
+              },
+              complete: {
+                name: 'signature/complete',
+                color: '0E8A16',
+                description: 'Issue or merged PR has collected the required electronic signatures.',
+              },
+            };
+            const LEGACY_LABELS = [
+              'signatures/outstanding',
+              'signatures/complete',
+            ];
             const issue = context.payload.issue;
             const labels = (issue.labels || []).map((l) => (l.name || '').toLowerCase());
             if (!labels.includes('training-diff')) {
@@ -84,7 +100,73 @@ jobs:
                 b.includes('<!-- signature-native-attestation -->') ||
                 b.includes('<!-- part11-native-attestation -->');
             });
+            async function ensureLabel(name, color, description) {
+              try {
+                const existing = await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                });
+                if (
+                  String(existing.data.color || '').toUpperCase() !== String(color || '').toUpperCase() ||
+                  String(existing.data.description || '') !== String(description || '')
+                ) {
+                  await github.rest.issues.updateLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name,
+                    new_name: name,
+                    color,
+                    description,
+                  });
+                }
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name,
+                  color,
+                  description,
+                });
+              }
+            }
+
+            async function applyState(labelToAdd, labelsToRemove) {
+              await ensureLabel(
+                ACTIVE_LABELS.outstanding.name,
+                ACTIVE_LABELS.outstanding.color,
+                ACTIVE_LABELS.outstanding.description
+              );
+              await ensureLabel(
+                ACTIVE_LABELS.complete.name,
+                ACTIVE_LABELS.complete.color,
+                ACTIVE_LABELS.complete.description
+              );
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: [labelToAdd],
+              });
+              for (const labelName of labelsToRemove) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    name: labelName,
+                  });
+                } catch (error) {
+                  if (error.status !== 404) throw error;
+                }
+              }
+            }
             if (hasAttestation) {
+              await applyState(ACTIVE_LABELS.complete.name, [
+                ACTIVE_LABELS.outstanding.name,
+                ...LEGACY_LABELS,
+              ]);
               core.info(`Issue #${issue.number} already has a signature attestation; skipping request post.`);
               return;
             }
@@ -171,6 +253,10 @@ jobs:
                 comment_id: latestRequest.id,
                 body: requestBody,
               });
+              await applyState(ACTIVE_LABELS.outstanding.name, [
+                ACTIVE_LABELS.complete.name,
+                ...LEGACY_LABELS,
+              ]);
               core.info(`Updated training signature request for issue #${issue.number}.`);
               return;
             }
@@ -181,6 +267,10 @@ jobs:
               issue_number: issue.number,
               body: requestBody,
             });
+            await applyState(ACTIVE_LABELS.outstanding.name, [
+              ACTIVE_LABELS.complete.name,
+              ...LEGACY_LABELS,
+            ]);
 
   reconcile_signed_training_issues:
     if: >-
@@ -223,6 +313,14 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            const ACTIVE_LABELS = {
+              outstanding: 'signature/outstanding',
+              complete: 'signature/complete',
+            };
+            const LEGACY_LABELS = [
+              'signatures/outstanding',
+              'signatures/complete',
+            ];
             function parseJsonBlock(text) {
               const m = String(text || '').match(/```json\s*([\s\S]*?)```/i);
               if (!m || !m[1]) return null;
@@ -471,6 +569,24 @@ jobs:
                 issue_number: issue.number,
                 state: 'closed',
               });
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: [ACTIVE_LABELS.complete],
+              });
+              for (const labelName of [ACTIVE_LABELS.outstanding, ...LEGACY_LABELS]) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    name: labelName,
+                  });
+                } catch (error) {
+                  if (error.status !== 404) throw error;
+                }
+              }
 
               const lines = [
                 '<!-- training-signature-complete -->',
