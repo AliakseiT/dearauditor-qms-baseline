@@ -1,13 +1,13 @@
 ---
-record_id: RLP-DEARAUDITOR-QMS-BASELINE-2026-03-31
+record_id: RLP-DEARAUDITOR-QMS-BASELINE-2026-04-08
 product_id: DEARAUDITOR-QMS-BASELINE
 record_type: release_plan
 status: approved
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
-target_version_or_tag: QMS-2026-03-31-R01
-release_cutoff_revision: ece2ad4a97474f12714316f0dcbf54a51f29d119
+target_version_or_tag: QMS-2026-04-08-R01
+release_cutoff_revision: approved merge commit of PR #315
 ---
 
 # Release Plan
@@ -16,7 +16,7 @@ release_cutoff_revision: ece2ad4a97474f12714316f0dcbf54a51f29d119
 
 This record defines the first formal upstream baseline publication for DearAuditor Open QMS Baseline.
 The release unit is the repository content at the approved cutoff commit together with the immutable
-GitHub Release assets generated from tag `QMS-2026-03-31-R01`.
+GitHub Release assets generated from tag `QMS-2026-04-08-R01`.
 
 This is not a SaMD shipment release. It does not authorize any downstream product deployment,
 distribution, or product-specific release decision.
@@ -24,20 +24,20 @@ distribution, or product-specific release decision.
 ## Included Change Records
 
 - GitHub issue `#314`
-- Entire approved repository baseline on `main` at commit `ece2ad4a97474f12714316f0dcbf54a51f29d119`
+- Entire approved repository baseline on `main` after PR `#315` is merged
 - Existing merged PR approval evidence already retained in immutable `sig-pr*` releases for the
   constituent changes included in the cutoff revision
 
 ## Deferred Change Records
 
-- Any commit merged after `ece2ad4a97474f12714316f0dcbf54a51f29d119`
+- Any commit merged after the approved PR `#315` merge commit
 - Any downstream adopter-owned records created after bootstrapping from this upstream baseline
 
 ## Formal Publication Unit Entering Review
 
 - Repository: `AliakseiT/dearauditor-qms-baseline`
 - Cutoff branch: `main`
-- Publication unit: Git commit `ece2ad4a97474f12714316f0dcbf54a51f29d119`
+- Publication unit: approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`
 - Expected immutable release assets:
   - `qms_release_manifest.json`
   - `qms_release_snapshot.tgz`
@@ -56,13 +56,15 @@ distribution, or product-specific release decision.
 ## Rollback or Containment Note
 
 - If release readiness concerns are identified before publication, do not create tag
-  `QMS-2026-03-31-R01`.
+  `QMS-2026-04-08-R01`.
+- If the release is not published on 2026-04-08, update this release plan and the related PR records
+  before approval and tagging so the QMS tag date remains the actual publication date.
 - If a problem is identified after publication, preserve the released tag and GitHub Release as
   immutable evidence, open corrective changes through the normal PR flow, and publish a superseding
   `QMS-*` baseline rather than mutating the released baseline.
 
 ## Approval Basis
 
-- Meaning of Signature: Approved Bootstrap Upstream Baseline Release Readiness
+- Meaning of Signature: Approved Baseline Release
 - Signer Roles: Quality Assurance Lead; Engineering Lead
 - Required Signatures: 2

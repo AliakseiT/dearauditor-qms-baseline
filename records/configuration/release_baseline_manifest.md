@@ -1,34 +1,34 @@
 ---
-record_id: RBM-DEARAUDITOR-QMS-BASELINE-2026-03-31
+record_id: RBM-DEARAUDITOR-QMS-BASELINE-2026-04-08
 product_id: DEARAUDITOR-QMS-BASELINE
 record_type: release_baseline_manifest
 status: approved
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
-release_tag: QMS-2026-03-31-R01
-release_cutoff_revision: ece2ad4a97474f12714316f0dcbf54a51f29d119
+release_tag: QMS-2026-04-08-R01
+release_cutoff_revision: approved merge commit of PR #315
 ---
 
 # Release Baseline Manifest
 
 ## Release Identity
 
-- Baseline ID: `RBM-DEARAUDITOR-QMS-BASELINE-2026-03-31`
+- Baseline ID: `RBM-DEARAUDITOR-QMS-BASELINE-2026-04-08`
 - Product ID: `DEARAUDITOR-QMS-BASELINE`
-- Release Tag: `QMS-2026-03-31-R01`
+- Release Tag: `QMS-2026-04-08-R01`
 - Release Readiness Reference: `records/configuration/release_plan.md`
 
 ## Included Change Records
 
 - GitHub issue `#314`
-- Approved repository baseline on `main` at commit `ece2ad4a97474f12714316f0dcbf54a51f29d119`
+- Approved repository baseline on `main` after PR `#315` is merged
 
 ## Source Repositories
 
 | Repository | Target Revision | Purpose |
 |---|---|---|
-| `AliakseiT/dearauditor-qms-baseline` | `ece2ad4a97474f12714316f0dcbf54a51f29d119` | Formal upstream QMS baseline content and release automation |
+| `AliakseiT/dearauditor-qms-baseline` | approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json` | Formal upstream QMS baseline content and release automation |
 
 ## Linked Records
 

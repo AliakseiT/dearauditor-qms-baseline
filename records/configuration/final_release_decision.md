@@ -1,25 +1,25 @@
 ---
-record_id: FRD-DEARAUDITOR-QMS-BASELINE-2026-04-01
+record_id: FRD-DEARAUDITOR-QMS-BASELINE-2026-04-08
 product_id: DEARAUDITOR-QMS-BASELINE
 record_type: final_release_decision
 status: approved
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
-release_tag: QMS-2026-03-31-R01
-decision_date: 2026-04-01
+release_tag: QMS-2026-04-08-R01
+decision_date: 2026-04-08
 ---
 
 # Final Release Decision
 
 ## Metadata
 
-- Decision ID: `FRD-DEARAUDITOR-QMS-BASELINE-2026-04-01`
+- Decision ID: `FRD-DEARAUDITOR-QMS-BASELINE-2026-04-08`
 - Product ID: `DEARAUDITOR-QMS-BASELINE`
-- Release Tag / Version: `QMS-2026-03-31-R01`
+- Release Tag / Version: `QMS-2026-04-08-R01`
 - Release Baseline Manifest Reference: `records/configuration/release_baseline_manifest.md`
 - Release Readiness Reference: `records/configuration/release_plan.md`
-- Decision Date: `2026-04-01`
+- Decision Date: `2026-04-08`
 
 ## Inputs Reviewed
 
@@ -30,8 +30,8 @@ decision_date: 2026-04-01
 - Anomaly / Deviation Summary Reference: no known blocking anomalies identified for the release scope
 - Exact Baseline Accepted for Release:
   - repository `AliakseiT/dearauditor-qms-baseline`
-  - commit `ece2ad4a97474f12714316f0dcbf54a51f29d119`
-  - GitHub Release assets generated from tag `QMS-2026-03-31-R01`
+  - approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`
+  - GitHub Release assets generated from tag `QMS-2026-04-08-R01`
 - Execution Configuration References:
   - `.github/workflows/2.3_publish_qms_release.yml`
   - `.github/workflows/3.1_release_training_diff.yml`
@@ -68,6 +68,6 @@ decision_date: 2026-04-01
 
 ## Signatures
 
-- Meaning of Signature: Approved Final Release Decision for Bootstrap Upstream Baseline Publication
+- Meaning of Signature: Approved Baseline Release
 - Signer Roles: Quality Assurance Lead; Engineering Lead
 - Required Signatures: 2

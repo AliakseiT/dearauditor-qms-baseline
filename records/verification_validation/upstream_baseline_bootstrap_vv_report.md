@@ -1,19 +1,19 @@
 ---
-record_id: VVR-DEARAUDITOR-QMS-BASELINE-2026-04-01
+record_id: VVR-DEARAUDITOR-QMS-BASELINE-2026-04-08
 product_id: DEARAUDITOR-QMS-BASELINE
 record_type: verification_validation_report
 status: approved
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#314"
-target_revision: ece2ad4a97474f12714316f0dcbf54a51f29d119
+target_revision: approved merge commit of PR #315
 ---
 
 # Upstream Baseline Bootstrap Verification and Validation Report
 
 ## Metadata
 
-- Report ID: `VVR-DEARAUDITOR-QMS-BASELINE-2026-04-01`
+- Report ID: `VVR-DEARAUDITOR-QMS-BASELINE-2026-04-08`
 - Product ID: `DEARAUDITOR-QMS-BASELINE`
 - Plan Reference: `records/configuration/release_plan.md`
 - Release Scope Decision Reference: `records/configuration/release_plan.md`
@@ -21,8 +21,8 @@ target_revision: ece2ad4a97474f12714316f0dcbf54a51f29d119
   - `README.md`
   - `docs/architecture/README.md`
   - `docs/open-source/README.md`
-- Target Revision: `ece2ad4a97474f12714316f0dcbf54a51f29d119`
-- Report Date: `2026-04-01`
+- Target Revision: approved merge commit of PR `#315`; exact SHA captured in `qms_release_manifest.json`
+- Report Date: `2026-04-08`
 
 ## Scope
 
@@ -45,7 +45,7 @@ target_revision: ece2ad4a97474f12714316f0dcbf54a51f29d119
   - `scripts/validate_qms_content.py`
 - Configuration Capture References:
   - repository `AliakseiT/dearauditor-qms-baseline`
-  - target revision `ece2ad4a97474f12714316f0dcbf54a51f29d119`
+  - target revision: approved merge commit of PR `#315`
   - GitHub issue `#314`
 
 ## Summary of Results
@@ -92,6 +92,6 @@ deployment environment.
 
 ## Signatures
 
-- Meaning of Signature: Approved V&V Evidence and Report for Bootstrap Upstream Baseline Publication
+- Meaning of Signature: Approved Baseline Release
 - Signer Roles: Quality Assurance Lead; Engineering Lead
 - Required Signatures: 2

@@ -176,6 +176,10 @@ High-volume immutable publication tags and downstream-adoptable baseline tags mu
 - `QMSPREVIEW-*` is reserved for immutable candidate baselines when a stable preview is needed.
 - record/signature tags such as `sig-*`, `record-*`, and `trn-*` are evidence-retention tags and are intentionally ignored by downstream upgrade tooling.
 
+For formal `QMS-YYYY-MM-DD-RNN` tags, the date component is the actual publication date, not the
+first planned release date. If publication slips, update the release issue and PR records before
+approval and tagging.
+
 This separation allows the repository to keep thousands of immutable publication tags without turning them into downstream upgrade inputs.
 
 ## 10. Platform Caveat

@@ -56,6 +56,10 @@ The current automations treat `QMS-*` as the formal upstream baseline channel.
 - `QMSPREVIEW-*`: reserved for immutable upstream preview baselines when needed; these are not automatically treated as downstream-adoptable
 - `sig-*`, `record-*`, `trn-*`, and similar prefixes: immutable evidence/publication tags and explicitly out of scope for downstream sync tooling
 
+For formal `QMS-YYYY-MM-DD-RNN` tags, the date component is the actual publication date, not the
+first planned release date. If an upstream baseline release slips, update the release issue and PR
+records before approval and tagging.
+
 This keeps high-volume immutable record/signature tags available for evidence retention without making them part of the downstream upgrade surface.
 
 ## Contact
