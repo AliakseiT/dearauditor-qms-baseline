@@ -188,6 +188,13 @@ jobs:
               };
             }
 
+            const authorLogin = (pr.user?.login || '').toLowerCase();
+            if (!authorLogin) {
+              core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer matching.`);
+              return;
+            }
+            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
+            const isAutomationAuthor = automationBotLogins.has(authorLogin);
             const sigMatch = prBody.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
             let requiredSignatures = latestRequestContext?.required_signatures
               ? Number.parseInt(String(latestRequestContext.required_signatures).trim(), 10)
@@ -195,12 +202,7 @@ jobs:
             if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
               requiredSignatures = 1;
             }
-            const requiredReviewerSignatures = Math.max(0, requiredSignatures - 1);
-            const authorLogin = (pr.user?.login || '').toLowerCase();
-            if (!authorLogin) {
-              core.setFailed(`PR #${prNumber} author could not be resolved for Part 11 signer matching.`);
-              return;
-            }
+            const requiredReviewerSignatures = isAutomationAuthor ? requiredSignatures : Math.max(0, requiredSignatures - 1);
 
             const fresh = (await github.rest.pulls.get({
               owner: context.repo.owner,
@@ -240,7 +242,6 @@ jobs:
 
             const marker = '<!-- signature-auto-reviewers -->';
             const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -271,7 +272,7 @@ jobs:
             }
             if (reviewerPool.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
+                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s)${isAutomationAuthor ? '' : ' (author auto-signs 1)'}, but only ${reviewerPool.length} reviewer candidate(s) were resolved.`
               );
               return;
             }
@@ -279,11 +280,15 @@ jobs:
             const approvedFromPool = reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()));
             if (approvedFromPool.length < requiredReviewerSignatures) {
               core.setFailed(
-                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s) (author auto-signs 1), but only ${approvedFromPool.length} reviewer candidate(s) approved.`
+                `PR #${prNumber} requires ${requiredReviewerSignatures} reviewer signature(s)${isAutomationAuthor ? '' : ' (author auto-signs 1)'}, but only ${approvedFromPool.length} reviewer candidate(s) approved.`
               );
               return;
             }
-            const allowedSignerSet = new Set([authorLogin, ...approvedFromPool.slice(0, requiredReviewerSignatures)]);
+            const allowedSignerSet = new Set(
+              isAutomationAuthor
+                ? approvedFromPool.slice(0, requiredReviewerSignatures)
+                : [authorLogin, ...approvedFromPool.slice(0, requiredReviewerSignatures)]
+            );
 
             function extractAttestationPayload(commentBody) {
               const codeMatch = commentBody.match(/```json\s*([\s\S]*?)```/i);
@@ -369,7 +374,8 @@ jobs:
 
               const attestations = Array.from(bySigner.values());
               const hasAuthorSignature = bySigner.has(authorLogin);
-              if (attestations.length >= requiredSignatures && hasAuthorSignature) {
+              const hasRequiredSignerSet = isAutomationAuthor ? true : hasAuthorSignature;
+              if (attestations.length >= requiredSignatures && hasRequiredSignerSet) {
                 core.info(`Captured ${attestations.length} Git-native signature(s) for hash ${expectedTargetHash}.`);
                 core.setOutput('target_hash', expectedTargetHash);
                 core.setOutput('attestations_json', JSON.stringify(attestations));
@@ -380,7 +386,7 @@ jobs:
             }
 
             core.setFailed(
-              `Timed out after ${timeoutSeconds}s waiting for ${requiredSignatures} Git-native Part 11 signature(s) including author @${authorLogin} on PR #${prNumber}.`
+              `Timed out after ${timeoutSeconds}s waiting for ${requiredSignatures} Git-native Part 11 signature(s)${isAutomationAuthor ? '' : ` including author @${authorLogin}`} on PR #${prNumber}.`
             );
 
       - name: Setup Python
