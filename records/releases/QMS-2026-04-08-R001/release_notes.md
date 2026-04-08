@@ -1,0 +1,82 @@
+---
+record_id: RLN-QMS-2026-04-08-R001
+record_type: qms_baseline_release_notes
+product_id: DEARAUDITOR-QMS-BASELINE
+release_tag: QMS-2026-04-08-R001
+status: approved
+owner_role: engineering_lead
+approver_role: qa_lead
+related_issue: "#314"
+---
+
+# Release Notes: QMS-2026-04-08-R001
+
+## Purpose
+
+This record supports the formal release of the DearAuditor Open QMS Baseline repository as
+`QMS-2026-04-08-R001`.
+
+This release publishes the repository for downstream adoption. It does not approve downstream
+operational use, deployment, or adopter release decisions.
+
+## Release Unit
+
+- Approved release commit on `main`; exact SHA captured in `qms_release_manifest.json`
+- GitHub tag: `QMS-2026-04-08-R001`
+- GitHub Release assets:
+  - `qms_release_manifest.json`
+  - `qms_release_snapshot.tgz`
+- Release planning issue: GitHub issue `#314`
+- Release change request: GitHub PR `#315`
+
+## Controlled Documents Entering Release
+
+The release includes the current approved document set:
+
+| Document family | Included documents | Release effect |
+|---|---|---|
+| Quality Manual | `QM-001` | Included in the tagged release |
+| SOPs | `SOP-001` through `SOP-020` | Included in the tagged release |
+| Work Instructions | `WI-001`, `WI-002` | Included in the tagged release |
+
+The release does not rewrite these documents. It places the approved document set under the first
+immutable `QMS-*` baseline tag.
+
+## Code and Automation Entering Release
+
+The release includes the support code and automation present in the approved release commit:
+
+- GitHub Actions for PR gates, signatures, QMS release publishing, training issues, and
+  signature-worker deployment
+- validation and release helper scripts in `scripts/` and `tools/`
+- signature worker source under `services/signature-worker/`
+
+Code validation for this release is limited to baseline control and release packaging. Production
+runtime validation of the signature worker is not part of this first upstream baseline release.
+
+## Validation and Approval Check
+
+- `python3 -m py_compile scripts/validate_qms_content.py`
+- `python3 scripts/validate_qms_content.py --base origin/main --head HEAD`
+- `git diff --check`
+
+The QMS content gate checks the full QM/SOP/WI set entering the release. It verifies that each
+released document has a revision, an effective date, `status: Published`, a matching README index
+entry, and a matching revision-history row.
+
+Approval is confirmed through the signed PR history for the document revisions entering this
+release and by the approval signatures on PR `#315` for the release decision.
+
+## Training Scope
+
+Training for this upstream baseline release remains governed by
+`matrices/training_matrix.yml`, with required assignments based on role-specific document
+responsibilities and published revisions. Downstream adopters must assign and record their own
+training after adoption.
+
+## Not Applicable
+
+- Downstream adopter validation records
+- Adopter-specific training completion records
+- Production runtime validation of the signature worker
+- Downstream operational-use or deployment decisions
