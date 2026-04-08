@@ -1,62 +1,62 @@
 person,login,roles,document,required_revision,trained_revision,status,completed_on,evidence_release_tag,evidence_release_url,source_issue,source_issue_url
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",QM-001,R01,UNTRAINED,Missing,,,,,
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-001,R12,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-008,R07,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-009,R07,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-011,R08,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-017,R03,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-018,R06,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-020,R08,UNTRAINED,Missing,,,,,
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-002,R03,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-007,R06,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-015,R03,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-006,R02,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-003,R04,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-004,R06,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-005,R15,R05,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-010,R02,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-012,R03,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-013,R03,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-014,R03,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-016,R03,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Aliaksei Tsitovich,AliakseiT,"engineer, engineering_lead, management_representative, regulatory_lead, technical_qms_maintainer, usability_lead",SOP-019,R09,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",QM-001,R01,R01,Current,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-001,R12,R11,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-002,R03,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-003,R04,R03,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-005,R15,R14,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-006,R02,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-007,R06,R05,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-008,R07,R06,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-009,R07,R06,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-010,R02,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-011,R08,R07,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-012,R03,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-013,R03,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-014,R03,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-015,R03,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-016,R03,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-017,R03,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-018,R06,R04,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-019,R09,R07,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Ina Tsitovich,InaTsitovich,"engineer, qa_lead",SOP-020,R08,R07,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
-Søren Thorup,SorenWesThorup,qa_lead,QM-001,R01,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-001,R12,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-002,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-003,R04,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-005,R15,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-006,R02,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-007,R06,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-008,R07,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-009,R07,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-010,R02,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-011,R08,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-012,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-013,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-014,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-015,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-016,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-017,R03,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-018,R06,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-019,R09,UNTRAINED,Missing,,,,,
-Søren Thorup,SorenWesThorup,qa_lead,SOP-020,R08,UNTRAINED,Missing,,,,,
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",QM-001,R03,UNTRAINED,Missing,,,,,
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-001,R13,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-002,R04,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-003,R05,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-005,R17,R05,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-006,R03,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-007,R07,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-008,R09,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-009,R09,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-010,R03,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-011,R09,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-012,R05,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-013,R05,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-014,R05,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-015,R04,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-016,R04,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-017,R04,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-018,R08,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-019,R11,R00,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-020,R10,UNTRAINED,Missing,,,,,
+Aliaksei Tsitovich,aliakseit,"engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead",SOP-004,R06,R01,Outdated,2026-03-05T02:17:31.036Z,,,143,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/143
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",QM-001,R03,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-001,R13,R11,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-002,R04,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-003,R05,R03,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-005,R17,R14,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-006,R03,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-007,R07,R05,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-008,R09,R06,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-009,R09,R06,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-010,R03,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-011,R09,R07,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-012,R05,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-013,R05,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-014,R05,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-015,R04,R01,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-016,R04,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-017,R04,R02,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-018,R08,R04,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-019,R11,R07,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Ina Tsitovich,inatsitovich,"engineer, qa_lead",SOP-020,R10,R07,Outdated,2026-03-18T16:07:46.946Z,,,273,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273
+Søren Thorup,sorenwesthorup,qa_lead,QM-001,R03,R01,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-001,R13,R12,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-002,R04,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-003,R05,R04,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-005,R17,R15,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-006,R03,R02,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-007,R07,R06,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-008,R09,R07,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-009,R09,R07,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-010,R03,R02,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-011,R09,R08,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-012,R05,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-013,R05,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-014,R05,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-015,R04,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-016,R04,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-017,R04,R03,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-018,R08,R06,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-019,R11,R09,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
+Søren Thorup,sorenwesthorup,qa_lead,SOP-020,R10,R08,Outdated,2026-03-25T09:08:22.220Z,sig-train-288-hdef87534dced-r03,https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07,288,https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288
