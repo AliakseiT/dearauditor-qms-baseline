@@ -13,6 +13,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 | Understand what this QMS is for | [Landing page](https://qms.dearauditor.ch/) |
 | Read the top-level QMS explanation | [QM-001 Quality Manual](qm/QM-001-QualityManual.md) |
 | Jump straight to the current published document set | [Published library](#published-library) |
+| Open the formal QMS release for this baseline | [QMS-2026-04-08-R001](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-04-08-R001) |
 | Find a specific SOP by topic | [SOP library by topic](#sop-library-by-topic) |
 | Open the work instructions | [Work instructions](#work-instructions) |
 | See my training work as a logged-in GitHub user | [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) |
@@ -30,6 +31,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
 - Operating model: `Remote-first`
 - Current baseline shown in this README: `1` published Quality Manual, `20` published SOPs, and `2` published WIs
+- Formal QMS release for this baseline: [`QMS-2026-04-08-R001`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-04-08-R001)
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNNN`
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
 
