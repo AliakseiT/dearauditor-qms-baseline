@@ -1,15 +1,15 @@
 version: 1
-generated_at_utc: '2026-03-25T13:45:47Z'
+generated_at_utc: '2026-04-08T21:24:24Z'
 source_repository: AliakseiT/dearauditor-qms-baseline
 source_event_count: 3
 users:
-  AliakseiT:
+  aliakseit:
     full_name: Aliaksei Tsitovich
     current_roles:
     - engineer
     - engineering_lead
     - management_representative
-    - regulatory_lead
+    - qa_lead
     - technical_qms_maintainer
     - usability_lead
     documents:
@@ -412,7 +412,7 @@ users:
         signer_login: aliakseit
         signer_full_name: Aliaksei Tsitovich
         meaning_of_signature: Completed QMS Training Review
-  InaTsitovich:
+  inatsitovich:
     full_name: Ina Tsitovich
     current_roles:
     - engineer
@@ -760,7 +760,8 @@ users:
         meaning_of_signature: Completed QMS Training Review
   sorenwesthorup:
     full_name: "S\xF8ren Thorup"
-    current_roles: []
+    current_roles:
+    - qa_lead
     documents:
       QM-001:
         trained_revision: R01
