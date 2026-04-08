@@ -26,7 +26,12 @@ concurrency:
 
 jobs:
   request_release_signature:
-    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'release' &&
+        startsWith(github.event.release.tag_name, 'QMS-')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub App token for release and issue operations

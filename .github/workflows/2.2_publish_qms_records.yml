@@ -446,6 +446,8 @@ jobs:
             path_obj = Path(path)
             if not path.startswith("records/"):
               return False
+            if path.startswith("records/releases/"):
+              return False
             if path_obj.suffix.lower() not in {".md", ".yml", ".yaml", ".json"}:
               return False
             if path_obj.name.lower() == "readme.md":
