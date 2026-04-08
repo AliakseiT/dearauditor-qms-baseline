@@ -21,6 +21,49 @@ GitHub Release assets generated from tag `QMS-2026-04-08-R01`.
 This is not a SaMD shipment release. It does not authorize any downstream product deployment,
 distribution, or product-specific release decision.
 
+## Controlled Documents Entering Release
+
+The release publishes the current baseline document set. This PR does not change the content of
+those documents; it places the approved document set under the first immutable `QMS-*` baseline tag.
+
+| Document family | Included documents | Expected release effect |
+|---|---|---|
+| Quality Manual | `QM-001` | Published as part of the first tagged baseline |
+| SOPs | `SOP-001` through `SOP-020` | Published as part of the first tagged baseline |
+| Work Instructions | `WI-001`, `WI-002` | Published as part of the first tagged baseline |
+
+Before release, each included QM, SOP, and WI must have:
+- a published revision in its document metadata
+- an effective date in its document metadata
+- `status: Published`
+- matching revision evidence in `README.md`
+- a matching revision-history row in the document
+
+## Code and Automation Entering Release
+
+The release includes repository automation and support code needed to maintain and publish the
+baseline. The expected code scope is:
+- GitHub Actions for PR approval gates, signature evidence, QMS release publishing, training
+  issues, and signature-worker deployment
+- validation and release helper scripts in `scripts/` and `tools/`
+- the signature worker under `services/signature-worker/`
+
+This release does not validate a medical-device software product or a deployed runtime environment.
+Code validation for this baseline release is limited to release packaging, document-control checks,
+and review of the workflows that support controlled publication.
+
+## Training Expectations
+
+Training is governed by `matrices/training_matrix.yml`.
+
+For this first baseline release, the training focus is:
+- the full published baseline scope: `QM-001`, `SOP-001` through `SOP-020`, `WI-001`, and `WI-002`
+- how controlled documents, PR approvals, signatures, release tags, and training records are used
+- the boundary between this upstream baseline release and downstream product or company adoption
+
+The release itself does not create product-specific training. Downstream adopters must assign their
+own personnel and training records after adoption.
+
 ## Included Change Records
 
 - GitHub issue `#314`

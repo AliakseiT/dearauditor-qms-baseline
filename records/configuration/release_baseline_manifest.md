@@ -24,6 +24,35 @@ release_cutoff_revision: approved merge commit of PR #315
 - GitHub issue `#314`
 - Approved repository baseline on `main` after PR `#315` is merged
 
+## Included Controlled Documents
+
+| Document family | Included documents | Release status |
+|---|---|---|
+| Quality Manual | `QM-001` | Included in baseline tag |
+| SOPs | `SOP-001` through `SOP-020` | Included in baseline tag |
+| Work Instructions | `WI-001`, `WI-002` | Included in baseline tag |
+
+The complete document list, titles, revisions, dates, and publication status are controlled in
+`README.md`. The release validation confirms that each included QM, SOP, and WI is marked
+`Published`, has a revision, and is listed consistently in `README.md`.
+
+## Included Code and Automation
+
+| Area | Included content | Release status |
+|---|---|---|
+| GitHub Actions | `.github/workflows/` | Included in baseline tag |
+| Validation and release helpers | `scripts/`, `tools/` | Included in baseline tag |
+| Signature worker | `services/signature-worker/` | Included in baseline tag |
+
+These items support baseline control and publication. They are not released as medical-device
+software and are not approved here for a production runtime deployment.
+
+## Training Scope
+
+Training scope is defined by `matrices/training_matrix.yml`.
+For this baseline release, the expected training focus is the full baseline document set, the
+GitHub-based approval and signature process, and the upstream/downstream adoption boundary.
+
 ## Source Repositories
 
 | Repository | Target Revision | Purpose |

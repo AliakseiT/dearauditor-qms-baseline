@@ -27,6 +27,14 @@ target_revision: approved merge commit of PR #315
 ## Scope
 
 - Activity Type: bootstrap upstream baseline publication verification
+- Controlled Document Scope:
+  - `QM-001`
+  - `SOP-001` through `SOP-020`
+  - `WI-001`, `WI-002`
+- Code and Automation Scope:
+  - GitHub Actions under `.github/workflows/`
+  - validation and release helpers under `scripts/` and `tools/`
+  - signature worker source under `services/signature-worker/`
 - Covered Requirements:
   - formal QMS tag namespace and format for downstream-adoptable upstream baselines
   - immutable QMS release asset publication workflow
@@ -48,19 +56,44 @@ target_revision: approved merge commit of PR #315
   - target revision: approved merge commit of PR `#315`
   - GitHub issue `#314`
 
+## Validation Scope Justification
+
+This is a baseline publication release. It confirms that the approved QMS content can be identified,
+packaged, and released under an immutable tag.
+
+The validation scope is limited to:
+- document metadata, revision history, README index consistency, and published status for all QM,
+  SOP, and WI documents entering the release
+- release record presence and approval metadata
+- release packaging and publication workflow review
+- signature and training workflow review as supporting baseline controls
+
+Runtime testing of the signature worker and product software validation are out of scope for this
+release. The worker is included as baseline support code, not as a deployed medical-device product
+or approved production runtime.
+
+## Training Validation
+
+The release uses `matrices/training_matrix.yml` as the training source.
+For this first baseline release, training review focuses on the full baseline document set,
+document-control responsibilities, release-tag use, signature evidence, and the upstream/downstream
+adoption boundary.
+
 ## Summary of Results
 
-- Total Test Cases: `11`
-- Passed: `11`
+- Total Test Cases: `12`
+- Passed: `12`
 - Failed: `0`
 - Blocked: `0`
 - Not Run: `0`
 
 ## Evidence Reviewed
 
-1. `python3 scripts/validate_qms_content.py --base HEAD --head <temporary staged validation commit>`
-   Confirmed the staged bootstrap release records and documentation updates pass the repository
-   content guard suite before commit creation.
+1. `python3 scripts/validate_qms_content.py --base origin/main --head HEAD`
+   Confirmed that all QM, SOP, and WI documents entering the release are marked published, have
+   revisions and effective dates, are listed consistently in `README.md`, and include matching
+   revision-history rows. Also confirmed the release records and documentation updates pass the
+   repository content guard suite.
 2. `git diff --check`
    Confirmed the proposed release records and guidance updates apply without diff-format or trailing
    whitespace defects.
@@ -70,6 +103,8 @@ target_revision: approved merge commit of PR #315
    - `docs/architecture/README.md`
    - `.github/workflows/2.3_publish_qms_release.yml`
    - `.github/workflows/3.1_release_training_diff.yml`
+   - `.github/workflows/4.1_deploy_signature_worker.yml`
+   - `services/signature-worker/README.md`
 
 ## Deviations and Open Issues
 

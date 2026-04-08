@@ -37,6 +37,24 @@ decision_date: 2026-04-08
 - Execution Configuration References:
   - `.github/workflows/2.3_publish_qms_release.yml`
   - `.github/workflows/3.1_release_training_diff.yml`
+- Controlled Document Scope Accepted for Release:
+  - `QM-001`
+  - `SOP-001` through `SOP-020`
+  - `WI-001`, `WI-002`
+- Code and Automation Scope Accepted for Release:
+  - GitHub Actions under `.github/workflows/`
+  - validation and release helpers under `scripts/` and `tools/`
+  - signature worker source under `services/signature-worker/`
+
+## Validation Scope Decision
+
+The accepted validation scope is appropriate because this is a QMS baseline publication release.
+The review confirms the released document set is published, revisioned, indexed, and packaged under
+an immutable tag.
+
+Runtime validation of the signature worker and product software validation are not required for this
+release decision. They remain required before using the worker as an operational production service
+or before releasing any downstream medical-device software product.
 
 ## Bootstrap Justification
 
