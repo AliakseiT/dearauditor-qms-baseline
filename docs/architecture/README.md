@@ -81,6 +81,7 @@ flowchart LR
     w22["2.2 publish QMS records<br/>2.2_publish_qms_records.yml"]
     w23["2.3 publish QMS release<br/>2.3_publish_qms_release.yml"]
     w25["2.5 signature git-native fallback<br/>2.5_signature_git_native_fallback.yml"]
+    w27["2.7 QMS release signature flow<br/>2.7_qms_release_signature_flow.yml"]
   end
 
   subgraph training["3 Training Lifecycle"]
@@ -101,9 +102,11 @@ flowchart LR
   pr_closed --> w21
   pr_closed --> w22
   qms_tag --> w23
+  qms_tag --> w27
   qms_tag --> w31
   issue_events --> w24
   issue_events --> w26
+  issue_events --> w27
   issue_events --> w32
   manual --> w21
   manual --> w26
@@ -117,6 +120,7 @@ flowchart LR
   signer_ui --> w24
   signer_ui --> w26
   signer_ui --> w22
+  signer_ui --> w27
   signer_ui -. fallback unavailable .-> w25
   w31 --> w32
 ```
@@ -141,6 +145,7 @@ flowchart LR
 | `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state and publishes the formal QMS release bundle. | Active |
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
 | `2.5_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
+| `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published `QMS-*` release package, uploads the release attestation assets, and closes the release-plan issue after completion. | Active |
 
 ### 7.3 Training Lifecycle
 | Workflow | Primary trigger | Purpose | Status |

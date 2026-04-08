@@ -63,6 +63,29 @@ jobs:
                 result[current_key].append(line.lstrip()[2:].strip())
             return result
 
+          release_note_path = Path("records") / "releases" / tag / "release_notes.md"
+          release_note_meta = parse_front_matter(release_note_path) if release_note_path.exists() else {}
+          release_note_text = release_note_path.read_text(encoding="utf-8") if release_note_path.exists() else ""
+
+          def extract_reference(pattern: str) -> int | None:
+            match = re.search(pattern, release_note_text, flags=re.IGNORECASE)
+            if not match:
+              return None
+            try:
+              return int(match.group(1))
+            except (TypeError, ValueError):
+              return None
+
+          release_planning_issue = None
+          related_issue = str(release_note_meta.get("related_issue", "")).strip()
+          related_issue_match = re.fullmatch(r"#(\d+)", related_issue)
+          if related_issue_match:
+            release_planning_issue = int(related_issue_match.group(1))
+          if release_planning_issue is None:
+            release_planning_issue = extract_reference(r"Release planning issue:\s+GitHub issue\s+`#(\d+)`")
+
+          release_decision_pull_request = extract_reference(r"Release change request:\s+GitHub PR\s+`#(\d+)`")
+
           qms = []
           for path in sorted(Path("qm").glob("*.md")):
             meta = parse_front_matter(path)
@@ -105,6 +128,9 @@ jobs:
             "source_sha": os.environ.get("GITHUB_SHA", ""),
             "published_at_utc": datetime.now(timezone.utc).isoformat(),
             "canonical_reading_surface": "github_repository_at_release_tag",
+            "release_notes_path": str(release_note_path) if release_note_path.exists() else "",
+            "release_planning_issue": release_planning_issue,
+            "release_decision_pull_request": release_decision_pull_request,
             "quality_manuals": qms,
             "sops": sops,
             "wis": wis,

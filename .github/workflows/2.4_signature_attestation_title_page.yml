@@ -91,7 +91,7 @@ jobs:
                 signer_role: String(payload.signer_role || '').trim(),
                 meaning_of_signature: String(payload.meaning_of_signature || '').trim(),
                 target_commit: String(payload.target_commit || '').trim(),
-                target_hash: String(payload.commit_hash || '').trim().toLowerCase(),
+                target_hash: String(payload.target_hash || payload.commit_hash || '').trim().toLowerCase(),
                 timestamp: String(payload.timestamp || '').trim(),
                 attestation_sha256: String(payload.attestation_id || '').trim(),
               };

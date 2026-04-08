@@ -214,15 +214,52 @@ def validate_qms_release_assets(export_dir: Path, release: dict[str, Any], asset
                 "detail": f"QMS release assets validated; snapshot archive contains {member_count} entries.",
             }
         )
-        return findings
+    else:
+        findings.append(
+            {
+                "status": "warn",
+                "name": f"release:{tag_name}",
+                "detail": "QMS release metadata validated, but qms_release_snapshot.tgz was not exported for offline inspection.",
+            }
+        )
 
-    findings.append(
-        {
-            "status": "warn",
-            "name": f"release:{tag_name}",
-            "detail": "QMS release metadata validated, but qms_release_snapshot.tgz was not exported for offline inspection.",
-        }
-    )
+    attestation_path = asset_path_for_release(export_dir, tag_name, "signed_attestation.json")
+    if attestation_path.exists():
+        attestation = load_json(attestation_path)
+        attestation_missing = validate_required_fields(
+            attestation,
+            [
+                "attestation_scope",
+                "source_repository",
+                "source_release_tag",
+                "part11_target_hash",
+                "signed_attestations",
+            ],
+        )
+        if attestation_missing:
+            findings.append(
+                {
+                    "status": "fail",
+                    "name": f"release:{tag_name}:signature",
+                    "detail": f"QMS release signed_attestation.json missing field(s): {', '.join(attestation_missing)}",
+                }
+            )
+        elif str(attestation.get("source_release_tag") or "") != tag_name:
+            findings.append(
+                {
+                    "status": "fail",
+                    "name": f"release:{tag_name}:signature",
+                    "detail": f"QMS release signature source_release_tag '{attestation.get('source_release_tag')}' does not match '{tag_name}'.",
+                }
+            )
+        else:
+            findings.append(
+                {
+                    "status": "pass",
+                    "name": f"release:{tag_name}:signature",
+                    "detail": f"QMS release signature attestation validated with {len(attestation.get('signed_attestations') or [])} captured attestation(s).",
+                }
+            )
     return findings
 
 

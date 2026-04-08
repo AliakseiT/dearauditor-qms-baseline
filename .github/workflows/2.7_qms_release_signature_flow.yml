@@ -1,0 +1,568 @@
+name: 2.7 QMS Release Signature Flow
+run-name: 2.7 QMS Release Signature Flow
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "QMS release tag to request or reconcile"
+        required: true
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
+env:
+  QMS_RELEASE_TAG_REGEX: '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{3}$'
+
+concurrency:
+  group: qms-release-signature-${{ github.event.release.tag_name || github.event.inputs.release_tag || github.event.issue.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  request_release_signature:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token for release and issue operations
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Resolve QMS release target
+        id: release
+        uses: actions/github-script@v8
+        env:
+          RELEASE_TAG_INPUT: ${{ github.event.inputs.release_tag || '' }}
+          QMS_RELEASE_TAG_REGEX: ${{ env.QMS_RELEASE_TAG_REGEX }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const inputTag = String(process.env.RELEASE_TAG_INPUT || '').trim().replace(/^refs\/tags\//, '');
+            const releaseTag = context.eventName === 'release'
+              ? String(context.payload.release?.tag_name || '').trim()
+              : inputTag;
+            const regex = new RegExp(String(process.env.QMS_RELEASE_TAG_REGEX || '^QMS-[0-9]{4}-[0-9]{2}-[0-9]{2}-R[0-9]{3}$'));
+            if (!regex.test(releaseTag)) {
+              core.setFailed(`Release tag '${releaseTag}' does not match ${regex}.`);
+              return;
+            }
+
+            const release = (await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: releaseTag,
+            })).data;
+
+            const assets = Array.isArray(release.assets) ? release.assets : [];
+            const manifestAsset = assets.find((asset) => String(asset.name || '') === 'qms_release_manifest.json');
+            const snapshotAsset = assets.find((asset) => String(asset.name || '') === 'qms_release_snapshot.tgz');
+            if (!manifestAsset || !snapshotAsset) {
+              core.setFailed(`Release ${releaseTag} is missing qms_release_manifest.json or qms_release_snapshot.tgz.`);
+              return;
+            }
+
+            core.setOutput('release_tag', releaseTag);
+            core.setOutput('release_id', String(release.id));
+            core.setOutput('release_url', String(release.html_url || ''));
+            core.setOutput('manifest_asset_id', String(manifestAsset.id));
+            core.setOutput('snapshot_asset_id', String(snapshotAsset.id));
+
+      - name: Download release assets and compute release target hash
+        id: material
+        env:
+          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
+          RELEASE_TAG: ${{ steps.release.outputs.release_tag }}
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+          RELEASE_URL: ${{ steps.release.outputs.release_url }}
+          MANIFEST_ASSET_ID: ${{ steps.release.outputs.manifest_asset_id }}
+          SNAPSHOT_ASSET_ID: ${{ steps.release.outputs.snapshot_asset_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python3 <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          import re
+          import urllib.request
+          from pathlib import Path
+
+          def download_asset(asset_id: str, target: Path) -> None:
+            req = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['REPOSITORY']}/releases/assets/{asset_id}",
+              headers={
+                "Accept": "application/octet-stream",
+                "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            )
+            with urllib.request.urlopen(req) as response:  # noqa: S310
+              target.write_bytes(response.read())
+
+          def sha256(path: Path) -> str:
+            return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          def fetch_contents(path: str, ref: str) -> str:
+            req = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['REPOSITORY']}/contents/{path}?ref={ref}",
+              headers={
+                "Accept": "application/vnd.github+json",
+                "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            )
+            with urllib.request.urlopen(req) as response:  # noqa: S310
+              payload = json.loads(response.read().decode("utf-8"))
+            content = payload.get("content", "")
+            if payload.get("encoding") == "base64":
+              return base64.b64decode(content).decode("utf-8")
+            return str(content)
+
+          manifest_path = Path("qms_release_manifest.json")
+          snapshot_path = Path("qms_release_snapshot.tgz")
+          download_asset(os.environ["MANIFEST_ASSET_ID"], manifest_path)
+          download_asset(os.environ["SNAPSHOT_ASSET_ID"], snapshot_path)
+
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          release_issue = manifest.get("release_planning_issue")
+          release_pr = manifest.get("release_decision_pull_request")
+          if not isinstance(release_issue, int) or release_issue < 1 or not isinstance(release_pr, int) or release_pr < 1:
+            release_tag = str(manifest.get("release_tag") or os.environ["RELEASE_TAG"]).strip()
+            release_note_path = str(manifest.get("release_notes_path") or f"records/releases/{release_tag}/release_notes.md").strip()
+            release_note_text = fetch_contents(release_note_path, release_tag)
+            if not isinstance(release_issue, int) or release_issue < 1:
+              issue_match = re.search(r"Release planning issue:\s+GitHub issue\s+`#(\d+)`", release_note_text, flags=re.IGNORECASE)
+              if issue_match:
+                release_issue = int(issue_match.group(1))
+            if not isinstance(release_pr, int) or release_pr < 1:
+              pr_match = re.search(r"Release change request:\s+GitHub PR\s+`#(\d+)`", release_note_text, flags=re.IGNORECASE)
+              if pr_match:
+                release_pr = int(pr_match.group(1))
+          if not isinstance(release_issue, int) or release_issue < 1:
+            raise SystemExit("Release planning issue could not be resolved from the release manifest or tagged release note.")
+          if not isinstance(release_pr, int) or release_pr < 1:
+            raise SystemExit("Release decision PR could not be resolved from the release manifest or tagged release note.")
+
+          manifest_sha = sha256(manifest_path)
+          snapshot_sha = sha256(snapshot_path)
+          source_sha = str(manifest.get("source_sha", "")).strip()
+          target_material = {
+            "schema_version": 1,
+            "attestation_scope": "qms_release_package",
+            "source_repository": os.environ["REPOSITORY"],
+            "release_tag": os.environ["RELEASE_TAG"],
+            "release_id": int(os.environ["RELEASE_ID"]),
+            "release_url": os.environ["RELEASE_URL"],
+            "source_sha": source_sha,
+            "qms_release_manifest_sha256": manifest_sha,
+            "qms_release_snapshot_sha256": snapshot_sha,
+          }
+          target_hash = hashlib.sha256(
+            json.dumps(target_material, sort_keys=True, separators=(",", ":")).encode("utf-8")
+          ).hexdigest()
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+            fh.write(f"release_issue={release_issue}\n")
+            fh.write(f"release_pr={release_pr}\n")
+            fh.write(f"source_sha={source_sha}\n")
+            fh.write(f"manifest_sha256={manifest_sha}\n")
+            fh.write(f"snapshot_sha256={snapshot_sha}\n")
+            fh.write(f"target_hash={target_hash}\n")
+          PY
+
+      - name: Resolve signer slots from release decision PR
+        id: signers
+        uses: actions/github-script@v8
+        env:
+          RELEASE_PR: ${{ steps.material.outputs.release_pr }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const prNumber = Number.parseInt(String(process.env.RELEASE_PR || '').trim(), 10);
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('A valid release decision PR number is required.');
+              return;
+            }
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const requestComments = comments
+              .filter((comment) => String(comment.body || '').includes('<!-- SIGNATURE_REQUEST_CONTEXT_V1'))
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
+            const latest = requestComments[requestComments.length - 1];
+            if (!latest) {
+              core.setFailed(`PR #${prNumber} has no signature request context.`);
+              return;
+            }
+            const match = String(latest.body || '').match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+            if (!match || !match[1]) {
+              core.setFailed(`PR #${prNumber} signature request comment could not be parsed.`);
+              return;
+            }
+            const payload = JSON.parse(match[1].trim());
+            const signers = Array.isArray(payload.signers) ? payload.signers : [];
+            if (signers.length === 0) {
+              core.setFailed(`PR #${prNumber} signature request contains no signers.`);
+              return;
+            }
+            core.setOutput('required_signatures', String(payload.required_signatures || signers.length));
+            core.setOutput('signers_json', JSON.stringify(signers));
+            core.setOutput('roles_csv', signers.map((entry) => String(entry.role || '').trim()).filter(Boolean).join(', '));
+            core.setOutput('eligible_signers_csv', signers.map((entry) => '@' + String(entry.signer || '').trim().toLowerCase()).filter(Boolean).join(', '));
+
+      - name: Post release signature request on planning issue
+        uses: actions/github-script@v8
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.release_tag }}
+          RELEASE_ID: ${{ steps.release.outputs.release_id }}
+          RELEASE_URL: ${{ steps.release.outputs.release_url }}
+          RELEASE_ISSUE: ${{ steps.material.outputs.release_issue }}
+          RELEASE_PR: ${{ steps.material.outputs.release_pr }}
+          SOURCE_SHA: ${{ steps.material.outputs.source_sha }}
+          TARGET_HASH: ${{ steps.material.outputs.target_hash }}
+          MANIFEST_SHA256: ${{ steps.material.outputs.manifest_sha256 }}
+          SNAPSHOT_SHA256: ${{ steps.material.outputs.snapshot_sha256 }}
+          REQUIRED_SIGNATURES: ${{ steps.signers.outputs.required_signatures }}
+          SIGNERS_JSON: ${{ steps.signers.outputs.signers_json }}
+          ROLES_CSV: ${{ steps.signers.outputs.roles_csv }}
+          ELIGIBLE_SIGNERS_CSV: ${{ steps.signers.outputs.eligible_signers_csv }}
+          SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const issueNumber = Number.parseInt(String(process.env.RELEASE_ISSUE || '').trim(), 10);
+            if (!Number.isInteger(issueNumber) || issueNumber < 1) {
+              core.setFailed('A valid release planning issue number is required.');
+              return;
+            }
+            const signingBaseUrl = String(process.env.SIGNATURE_UI_BASE_URL || '').trim().replace(/\/+$/g, '');
+            if (!signingBaseUrl) {
+              core.setFailed('SIGNATURE_UI_BASE_URL is not configured.');
+              return;
+            }
+            const signers = JSON.parse(String(process.env.SIGNERS_JSON || '[]'));
+            const buildLink = (slot) => {
+              const params = new URLSearchParams({
+                repo: `${context.repo.owner}/${context.repo.repo}`,
+                pr: String(issueNumber),
+                signer: String(slot.signer || '').toLowerCase(),
+                role: String(slot.role || ''),
+              });
+              return `${signingBaseUrl}/sign?${params.toString()}`;
+            };
+            const requestContext = {
+              version: 1,
+              hash: String(process.env.TARGET_HASH || '').trim(),
+              hash_scope: 'qms_release_package',
+              record_type: 'issue',
+              meaning: 'Approved Published QMS Release',
+              required_signatures: String(process.env.REQUIRED_SIGNATURES || signers.length || 1),
+              signers,
+              release_tag: String(process.env.RELEASE_TAG || '').trim(),
+              release_id: Number.parseInt(String(process.env.RELEASE_ID || '0').trim(), 10),
+              release_url: String(process.env.RELEASE_URL || '').trim(),
+              release_decision_pull_request: Number.parseInt(String(process.env.RELEASE_PR || '0').trim(), 10),
+              source_target_commit: String(process.env.SOURCE_SHA || '').trim(),
+              qms_release_manifest_sha256: String(process.env.MANIFEST_SHA256 || '').trim(),
+              qms_release_snapshot_sha256: String(process.env.SNAPSHOT_SHA256 || '').trim(),
+            };
+
+            const links = signers.map((slot) =>
+              `- @${String(slot.signer || '').toLowerCase()} (${String(slot.role || '').trim()}): [Open signature ceremony](${buildLink(slot)})`
+            );
+            const body = [
+              '<!-- qms-release-signature-request -->',
+              '<!-- signature-native-signature-request -->',
+              '<!-- SIGNATURE_REQUEST_CONTEXT_V1',
+              JSON.stringify(requestContext, null, 2),
+              '-->',
+              '🛑 Signature required',
+              '',
+              'Meaning of signature: **Approved Published QMS Release**',
+              `Required signatures: **${String(process.env.REQUIRED_SIGNATURES || signers.length || 1)}**`,
+              `Designated signatory role(s): **${String(process.env.ROLES_CSV || '').trim()}**`,
+              `Eligible signers: **${String(process.env.ELIGIBLE_SIGNERS_CSV || '').trim()}**`,
+              `Target hash (published release package): \`${String(process.env.TARGET_HASH || '').trim()}\``,
+              `Release tag: \`${String(process.env.RELEASE_TAG || '').trim()}\``,
+              `Release URL: ${String(process.env.RELEASE_URL || '').trim()}`,
+              `Release decision PR: #${String(process.env.RELEASE_PR || '').trim()}`,
+              `Target commit: \`${String(process.env.SOURCE_SHA || '').trim()}\``,
+              `qms_release_manifest.json SHA-256: \`${String(process.env.MANIFEST_SHA256 || '').trim()}\``,
+              `qms_release_snapshot.tgz SHA-256: \`${String(process.env.SNAPSHOT_SHA256 || '').trim()}\``,
+              '',
+              'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
+              '',
+              ...links,
+            ].join('\n');
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+            const existing = comments
+              .filter((comment) => String(comment.body || '').includes('<!-- qms-release-signature-request -->'))
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0))
+              .pop();
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              core.info(`Updated QMS release signature request on issue #${issueNumber}.`);
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body,
+            });
+
+  reconcile_signed_release_issue:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request == null &&
+      (
+        contains(github.event.comment.body, '<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+        contains(github.event.comment.body, '<!-- PART11_ATTESTATION_V1 -->') ||
+        contains(github.event.comment.body, '<!-- signature-native-attestation -->') ||
+        contains(github.event.comment.body, '<!-- part11-native-attestation -->')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token for release and issue operations
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app_token.outputs.token }}
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install render dependencies
+        run: python -m pip install --quiet fpdf2 pyyaml
+
+      - name: Aggregate release signature evidence
+        id: aggregate
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            const issue = context.payload.issue;
+            const issueNumber = Number(issue?.number || 0);
+            if (!issueNumber) {
+              core.setFailed('Missing issue number.');
+              return;
+            }
+
+            function parseJsonBlock(text) {
+              const match = String(text || '').match(/```json\s*([\s\S]*?)```/i);
+              if (!match || !match[1]) return null;
+              try { return JSON.parse(match[1].trim()); } catch { return null; }
+            }
+
+            function parseRequestContext(body) {
+              const match = String(body || '').match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+              if (!match || !match[1]) return null;
+              try { return JSON.parse(match[1].trim()); } catch { return null; }
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+            const requestComment = comments
+              .filter((comment) => String(comment.body || '').includes('<!-- qms-release-signature-request -->'))
+              .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0))
+              .pop();
+            if (!requestComment) {
+              core.info(`Issue #${issueNumber} has no QMS release signature request; skipping.`);
+              return;
+            }
+
+            const requestContext = parseRequestContext(String(requestComment.body || ''));
+            if (!requestContext || !requestContext.release_tag) {
+              core.info(`Issue #${issueNumber} signature request has no release-tag context; skipping.`);
+              return;
+            }
+
+            const expectedHash = String(requestContext.hash || '').trim().toLowerCase();
+            const expectedMeaning = String(requestContext.meaning || 'Approved Published QMS Release').trim();
+            const expectedSigners = Array.isArray(requestContext.signers)
+              ? requestContext.signers.map((entry) => String(entry.signer || '').trim().toLowerCase()).filter(Boolean)
+              : [];
+            const requiredSignatures = Number.parseInt(String(requestContext.required_signatures || expectedSigners.length || 1), 10) || 1;
+
+            const bySigner = new Map();
+            for (const comment of comments) {
+              const body = String(comment.body || '');
+              const isAttestation = body.includes('<!-- SIGNATURE_ATTESTATION_V1 -->') ||
+                body.includes('<!-- PART11_ATTESTATION_V1 -->') ||
+                body.includes('<!-- signature-native-attestation -->') ||
+                body.includes('<!-- part11-native-attestation -->');
+              if (!isAttestation) continue;
+              const payload = parseJsonBlock(body);
+              if (!payload) continue;
+
+              const recordType = String(payload.record_type || '').trim().toLowerCase();
+              const recordNumber = Number.parseInt(String(payload.record_number || payload.pr_number || '').trim(), 10);
+              const targetHash = String(payload.target_hash || payload.commit_hash || '').trim().toLowerCase();
+              const meaning = String(payload.meaning_of_signature || '').trim();
+              const signerLogin = String(payload.user_id || payload.actor_login || '').trim().toLowerCase();
+              if (recordType && recordType !== 'issue') continue;
+              if (recordNumber !== issueNumber) continue;
+              if (targetHash !== expectedHash) continue;
+              if (meaning !== expectedMeaning) continue;
+              if (!signerLogin) continue;
+
+              bySigner.set(signerLogin, {
+                user_id: String(payload.user_id || payload.actor_login || '').trim(),
+                signer_full_name: String(payload.signer_full_name || '').trim(),
+                signer_job_title: String(payload.signer_job_title || '').trim(),
+                signer_role: String(payload.signer_role || '').trim(),
+                meaning_of_signature: meaning,
+                timestamp: String(payload.timestamp || payload.timestamp_utc || comment.created_at || '').trim(),
+                attestation_sha256: String(payload.attestation_sha256 || payload.attestation_id || '').trim(),
+              });
+            }
+
+            const signers = Array.from(bySigner.values()).sort((left, right) => {
+              const a = Date.parse(left.timestamp || 0) || 0;
+              const b = Date.parse(right.timestamp || 0) || 0;
+              return a - b;
+            });
+            const capturedLogins = new Set(signers.map((entry) => String(entry.user_id || '').trim().toLowerCase()));
+            const allExpectedSignersPresent = expectedSigners.length > 0
+              ? expectedSigners.every((login) => capturedLogins.has(login))
+              : signers.length >= requiredSignatures;
+            const allRequiredCollected = signers.length >= requiredSignatures && allExpectedSignersPresent;
+            if (!allRequiredCollected) {
+              core.info(`Issue #${issueNumber} has ${signers.length}/${requiredSignatures} release signatures collected; waiting for completion.`);
+              return;
+            }
+
+            const aggregate = {
+              schema_version: 1,
+              attestation_scope: 'qms_release_signature',
+              source_repository: `${context.repo.owner}/${context.repo.repo}`,
+              source_record_type: 'release',
+              source_issue: issueNumber,
+              source_issue_title: String(issue.title || ''),
+              source_issue_url: String(issue.html_url || ''),
+              source_release_tag: String(requestContext.release_tag || ''),
+              source_release_id: Number.parseInt(String(requestContext.release_id || '0').trim(), 10) || 0,
+              source_release_url: String(requestContext.release_url || '').trim(),
+              source_release_decision_pull_request: Number.parseInt(String(requestContext.release_decision_pull_request || '0').trim(), 10) || 0,
+              source_target_commit: String(requestContext.source_target_commit || '').trim(),
+              qms_release_manifest_sha256: String(requestContext.qms_release_manifest_sha256 || '').trim(),
+              qms_release_snapshot_sha256: String(requestContext.qms_release_snapshot_sha256 || '').trim(),
+              part11_target_hash: expectedHash,
+              target_hash_scope: String(requestContext.hash_scope || 'qms_release_package').trim(),
+              meaning_of_signature: expectedMeaning,
+              required_signatures: requiredSignatures,
+              captured_signatures: signers.length,
+              all_required_collected: true,
+              request_comment_url: String(requestComment.html_url || ''),
+              source_attestation_comment_url: String(context.payload.comment?.html_url || ''),
+              captured_at_utc: new Date().toISOString(),
+              signed_attestations: signers,
+            };
+
+            fs.writeFileSync('signed_attestation.json', `${JSON.stringify(aggregate, null, 2)}\n`, 'utf8');
+
+            core.setOutput('all_required_collected', 'true');
+            core.setOutput('release_tag', String(requestContext.release_tag || '').trim());
+            core.setOutput('release_url', String(requestContext.release_url || '').trim());
+            core.setOutput('issue_number', String(issueNumber));
+
+      - name: Generate release signature certificate
+        if: steps.aggregate.outputs.all_required_collected == 'true'
+        env:
+          CERT_PDF: Electronic_Signature_Certificate_${{ steps.aggregate.outputs.release_tag }}.pdf
+        run: |
+          python scripts/generate_part11_title_page.py \
+            --attestation signed_attestation.json \
+            --output "${CERT_PDF}" \
+            --record-id "${{ steps.aggregate.outputs.release_tag }}"
+
+      - name: Upload release signature assets
+        if: steps.aggregate.outputs.all_required_collected == 'true'
+        env:
+          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
+          RELEASE_TAG: ${{ steps.aggregate.outputs.release_tag }}
+          CERT_PDF: Electronic_Signature_Certificate_${{ steps.aggregate.outputs.release_tag }}.pdf
+        run: |
+          gh release upload "${RELEASE_TAG}" --clobber signed_attestation.json "${CERT_PDF}"
+
+      - name: Mark release issue complete and close
+        if: steps.aggregate.outputs.all_required_collected == 'true'
+        uses: actions/github-script@v8
+        env:
+          RELEASE_TAG: ${{ steps.aggregate.outputs.release_tag }}
+          RELEASE_URL: ${{ steps.aggregate.outputs.release_url }}
+          ISSUE_NUMBER: ${{ steps.aggregate.outputs.issue_number }}
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const issueNumber = Number.parseInt(String(process.env.ISSUE_NUMBER || '').trim(), 10);
+            if (!Number.isInteger(issueNumber) || issueNumber < 1) {
+              core.setFailed('A valid issue number is required.');
+              return;
+            }
+            const body = [
+              '<!-- qms-release-signature-complete -->',
+              'Release signature completed.',
+              '',
+              `- Release tag: \`${String(process.env.RELEASE_TAG || '').trim()}\``,
+              `- Release URL: ${String(process.env.RELEASE_URL || '').trim()}`,
+              '- Published signature assets:',
+              '  - `signed_attestation.json`',
+              `  - \`Electronic_Signature_Certificate_${String(process.env.RELEASE_TAG || '').trim()}.pdf\``,
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body,
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed',
+            });

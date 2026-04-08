@@ -131,6 +131,8 @@ jobs:
             const requestContext = {
               version: 1,
               hash: targetHash,
+              hash_scope: 'training_issue_content',
+              record_type: 'issue',
               meaning,
               required_signatures: requiredSignatures,
               signers: [
@@ -154,7 +156,7 @@ jobs:
               `Required signatures: **${requiredSignatures}**`,
               `Designated signatory role(s): **${role}**`,
               `Eligible signers: **@${trainee}**`,
-              `Target hash (merge state): \`${targetHash}\``,
+              `Target hash (training issue content): \`${targetHash}\``,
               '',
               'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
               '',
@@ -335,7 +337,7 @@ jobs:
 
                 const attRepo = String(parsed.repository || '').toLowerCase();
                 const expectedRepo = `${context.repo.owner}/${context.repo.repo}`.toLowerCase();
-                const attNumber = Number.parseInt(String(parsed.pr_number || ''), 10);
+                const attNumber = Number.parseInt(String(parsed.record_number || parsed.pr_number || ''), 10);
                 if (attRepo !== expectedRepo || attNumber !== issue.number) continue;
 
                 const signer = String(parsed.user_id || parsed.actor_login || '').toLowerCase();
@@ -353,7 +355,7 @@ jobs:
               const parsedUser = parseTrainingUser(issueBody);
               const rolesInScope = parseRolesInScope(issueBody);
 
-              const targetHash = String(selected.commit_hash || selected.target_hash || '').toLowerCase();
+              const targetHash = String(selected.target_hash || selected.commit_hash || '').toLowerCase();
               const hashShort = (targetHash || 'nohash').slice(0, 12);
               const baseTag = `sig-train-${issue.number}-h${hashShort}`;
 

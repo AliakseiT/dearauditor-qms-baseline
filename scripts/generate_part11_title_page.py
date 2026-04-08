@@ -284,22 +284,31 @@ def _render_signature_manifest(pdf: FPDF, signers: list[dict[str, str]]) -> None
 
 def _section_record_identification(pdf: FPDF, attestation: dict[str, Any], _record_id: str) -> None:
     source_repo = _pick_value(attestation, ("source_repository", "repository"))
-    source_pr_title = _pick_value(attestation, ("source_pr_title", "pr_title"))
-    source_pr = _pick_value(attestation, ("source_pull_request", "pr_number"))
-    source_pr_url = _pick_value(attestation, ("source_pr_url", "pull_request_url"))
+    record_type = _pick_value(attestation, ("source_record_type", "record_type")) or (
+        "issue" if _pick_value(attestation, ("source_issue", "record_number")) else "pull_request"
+    )
+    source_title = _pick_value(attestation, ("source_release_tag", "source_issue_title", "source_pr_title", "pr_title"))
+    source_number = _pick_value(attestation, ("source_issue", "source_pull_request", "record_number", "pr_number"))
+    source_url = _pick_value(attestation, ("source_release_url", "source_issue_url", "source_pr_url", "pull_request_url"))
     source_target_commit = _pick_value(attestation, ("source_target_commit", "source_merge_commit", "target_commit"))
 
-    record_title = f"{source_pr_title} (PR #{source_pr})".strip()
-    if not source_pr_title and source_pr:
-        record_title = f"PR #{source_pr}"
+    record_label = "Release Tag" if record_type == "release" else ("Issue" if record_type == "issue" else "Pull Request")
+    if record_type == "release":
+        record_title = source_title or str(source_number or "n/a")
+    elif source_title and source_number:
+        record_title = f"{source_title} ({record_label} #{source_number})".strip()
+    elif source_number:
+        record_title = f"{record_label} #{source_number}"
+    else:
+        record_title = source_title or "n/a"
 
     _section_heading(pdf, "Section 1: Record Identification")
     _kv_lines(
         pdf,
         [
             ("Source Repository", source_repo),
-            ("Record Title / PR", record_title),
-            ("Record URL", source_pr_url),
+            (f"Record Title / {record_label}", record_title),
+            ("Record URL", source_url),
             ("Target Git Commit (SHA)", source_target_commit),
         ],
     )
@@ -338,9 +347,14 @@ def _derive_output_path(attestation: dict[str, Any], output_arg: str) -> Path:
     if output_arg.strip():
         return Path(output_arg.strip())
 
-    pr = _pick_value(attestation, ("source_pull_request", "pr_number")) or "unknown"
-    pr_clean = re.sub(r"[^A-Za-z0-9_-]", "", pr) or "unknown"
-    return Path(f"Electronic_Signature_Certificate_PR{pr_clean}.pdf")
+    release_tag = _pick_value(attestation, ("source_release_tag",))
+    if release_tag:
+        safe_tag = re.sub(r"[^A-Za-z0-9_-]", "", release_tag) or "unknown"
+        return Path(f"Electronic_Signature_Certificate_{safe_tag}.pdf")
+
+    record_number = _pick_value(attestation, ("source_issue", "source_pull_request", "record_number", "pr_number")) or "unknown"
+    record_clean = re.sub(r"[^A-Za-z0-9_-]", "", record_number) or "unknown"
+    return Path(f"Electronic_Signature_Certificate_{record_clean}.pdf")
 
 
 def build_pdf(

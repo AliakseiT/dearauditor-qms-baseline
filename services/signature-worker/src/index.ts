@@ -18,7 +18,9 @@ interface Env {
 interface SignatureContext {
   repo: string;
   pr: string;
+  record_type: string;
   hash: string;
+  hash_scope: string;
   meaning: string;
   role: string;
   signer: string;
@@ -78,6 +80,8 @@ interface SignatureRequestMeta {
   commentId: number;
   commentUrl: string;
   hash: string;
+  hashScope: string;
+  recordType: string;
   meaning: string;
   roles: string[];
   eligibleSigners: string[];
@@ -312,6 +316,8 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     return html(renderSuccessPage({
       repo: state.ctx.repo,
       pr: state.ctx.pr,
+      recordType: state.ctx.record_type,
+      hashScope: state.ctx.hash_scope,
       hash: state.ctx.hash,
       meaning: state.ctx.meaning,
       role: state.ctx.role,
@@ -394,7 +400,7 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
     throw new Error("Invalid PIN session token.");
   }
   if (session.exp_state < nowEpoch()) {
-    throw new Error("PIN session expired. Restart signing from the PR link.");
+    throw new Error("PIN session expired. Restart signing from the latest record link.");
   }
 
   const pinStatusBefore = await getPinStatus(env, session.signer_id, session.signer_login);
@@ -442,8 +448,11 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
       version: "PART11-CF-WORKER-V2",
       mode: "cloudflare_worker_github_oauth_pin",
       repository: session.ctx.repo,
+      record_type: session.ctx.record_type,
+      record_number: Number.parseInt(session.ctx.pr, 10),
       pr_number: Number.parseInt(session.ctx.pr, 10),
-      commit_hash: session.ctx.hash,
+      target_hash: session.ctx.hash,
+      target_hash_scope: session.ctx.hash_scope,
       meaning_of_signature: session.ctx.meaning,
       signer_role: session.ctx.role,
       signer_full_name: session.full_name,
@@ -460,7 +469,7 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
       pin_verified: true,
       pin_expiring_soon: pinStatusAfter.expiringSoon,
       linked_to_record: {
-        type: "pull_request",
+        type: session.ctx.record_type,
         number: Number.parseInt(session.ctx.pr, 10),
         repo: session.ctx.repo,
         hash: session.ctx.hash,
@@ -497,6 +506,8 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
         ttl_seconds: PIN_TTL_SECONDS,
         warning_window_seconds: PIN_WARNING_SECONDS,
       },
+      record_type: session.ctx.record_type,
+      record_number: Number.parseInt(session.ctx.pr, 10),
       pr_number: Number.parseInt(session.ctx.pr, 10),
       repository: session.ctx.repo,
       signer: session.signer_login,
@@ -507,6 +518,8 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
   return html(renderSuccessPage({
     repo: session.ctx.repo,
     pr: session.ctx.pr,
+    recordType: session.ctx.record_type,
+    hashScope: session.ctx.hash_scope,
     hash: session.ctx.hash,
     meaning: session.ctx.meaning,
     role: session.ctx.role,
@@ -536,7 +549,7 @@ async function handlePinSetup(request: Request, env: Env): Promise<Response> {
     throw new Error("Invalid PIN session token.");
   }
   if (session.exp_state < nowEpoch()) {
-    throw new Error("PIN session expired. Restart signing from the PR link.");
+    throw new Error("PIN session expired. Restart signing from the latest record link.");
   }
   return html(renderPinSetupPage(session, sessionToken, resolveWorkerVersion(env)), 200);
 }
@@ -554,7 +567,7 @@ async function handleAttestationRepost(request: Request, env: Env): Promise<Resp
     throw new Error("Invalid attestation repost session token.");
   }
   if (session.exp_state < nowEpoch()) {
-    throw new Error("Attestation repost session expired. Restart from the PR link.");
+    throw new Error("Attestation repost session expired. Restart from the latest record link.");
   }
 
   const repoToken = await resolveRepoAccessToken(session.ctx.repo, env);
@@ -563,10 +576,10 @@ async function handleAttestationRepost(request: Request, env: Env): Promise<Resp
 
   const existing = await findExistingAttestation(session.ctx, session.signer_login, repoToken, env);
   if (!existing) {
-    throw new Error("Existing attestation not found. Restart signing from the PR link.");
+    throw new Error("Existing attestation not found. Restart signing from the latest record link.");
   }
   if (existing.attestation_id !== session.attestation_id) {
-    throw new Error("Attestation repost target changed. Restart signing from the PR link.");
+    throw new Error("Attestation repost target changed. Restart signing from the latest record link.");
   }
 
   await githubPost(
@@ -584,6 +597,8 @@ async function handleAttestationRepost(request: Request, env: Env): Promise<Resp
   return html(renderSuccessPage({
     repo: session.ctx.repo,
     pr: session.ctx.pr,
+    recordType: session.ctx.record_type,
+    hashScope: session.ctx.hash_scope,
     hash: session.ctx.hash,
     meaning: session.ctx.meaning,
     role: session.ctx.role,
@@ -775,7 +790,7 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
   const body = latest.body || "";
   const hiddenMeta = parseHiddenRequestContext(body);
 
-  const hash = hiddenMeta?.hash || extractOne(body, /Target hash \(merge state\):\s*`([a-f0-9]{64})`/i, "target hash");
+  const hash = hiddenMeta?.hash || extractOne(body, /Target hash \([^)]+\):\s*`([a-f0-9]{64})`/i, "target hash");
   const meaning =
     hiddenMeta?.meaning ||
     extractOne(body, /Meaning of signature:\s*\*\*([^*]+)\*\*/i, "meaning of signature");
@@ -798,6 +813,8 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
     commentId: Number(latest.id),
     commentUrl: String(latest.html_url || ""),
     hash,
+    hashScope: hiddenMeta?.hash_scope || "signature_scope",
+    recordType: hiddenMeta?.record_type || "pull_request",
     meaning,
     roles,
     eligibleSigners,
@@ -853,6 +870,8 @@ function parseSignerRequests(body: string, fallbackRoles: string[]): SignatureRe
 
 function parseHiddenRequestContext(body: string): {
   hash: string;
+  hash_scope: string;
+  record_type: string;
   meaning: string;
   required_signatures: string;
   signers: SignatureRequestSigner[];
@@ -865,11 +884,15 @@ function parseHiddenRequestContext(body: string): {
   try {
     const payload = JSON.parse(match[1].trim()) as {
       hash?: string;
+      hash_scope?: string;
+      record_type?: string;
       meaning?: string;
       required_signatures?: string | number;
       signers?: Array<{ signer?: string; role?: string; signature_index?: string | number }>;
     };
     const hash = String(payload.hash || "").trim().toLowerCase();
+    const hashScope = String(payload.hash_scope || "").trim().toLowerCase() || "signature_scope";
+    const recordType = String(payload.record_type || "").trim().toLowerCase() || "pull_request";
     const meaning = String(payload.meaning || "").trim();
     const requiredSignatures = String(payload.required_signatures || "1").trim();
     const signers = Array.isArray(payload.signers)
@@ -886,6 +909,8 @@ function parseHiddenRequestContext(body: string): {
     }
     return {
       hash,
+      hash_scope: hashScope,
+      record_type: recordType,
       meaning,
       required_signatures: requiredSignatures,
       signers,
@@ -931,7 +956,9 @@ async function resolveCurrentContextForSigner(
   const context: SignatureContext = {
     repo: normalizedRepo,
     pr: normalizedPr,
+    record_type: requestMeta.recordType,
     hash: requestMeta.hash,
+    hash_scope: requestMeta.hashScope,
     meaning: requestMeta.meaning,
     role,
     signer: normalizedSigner,
@@ -975,8 +1002,8 @@ async function findExistingAttestation(ctx: SignatureContext, signer: string, to
     try {
       const parsed = JSON.parse(match[1]);
       if (
-        String(parsed.pr_number) === ctx.pr &&
-        String(parsed.commit_hash || "").toLowerCase() === ctx.hash.toLowerCase() &&
+        String(parsed.record_number || parsed.pr_number || "") === ctx.pr &&
+        String(parsed.target_hash || parsed.commit_hash || "").toLowerCase() === ctx.hash.toLowerCase() &&
         String(parsed.meaning_of_signature || "") === ctx.meaning &&
         String(parsed.signer_role || "").toLowerCase() === ctx.role.toLowerCase() &&
         String(parsed.user_id || "").toLowerCase() === signer.toLowerCase()
@@ -1943,6 +1970,8 @@ function renderSignPage(
   const providerLabel = provider === "github" ? "GitHub" : provider;
   const formAction = `${stripTrailingSlash(baseUrl)}/auth/start`;
   const requestUrl = `https://github.com/${ctx.repo}/issues/${ctx.pr}`;
+  const recordTypeLabel = ctx.record_type === "issue" ? "Issue" : "Pull Request";
+  const hashScopeLabel = ctx.hash_scope ? ctx.hash_scope.replace(/_/g, " ") : "signature scope";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1992,8 +2021,8 @@ function renderSignPage(
       <div class="section">
         <div class="grid">
           <div><div class="k">Repository</div><div class="v">${escapeHtml(ctx.repo)}</div></div>
-          <div><div class="k">Request Number</div><div class="v">${escapeHtml(ctx.pr)}</div></div>
-          <div><div class="k">Target Hash</div><div class="v">${escapeHtml(ctx.hash)}</div></div>
+          <div><div class="k">${escapeHtml(recordTypeLabel)} Number</div><div class="v">${escapeHtml(ctx.pr)}</div></div>
+          <div><div class="k">Target Hash (${escapeHtml(hashScopeLabel)})</div><div class="v">${escapeHtml(ctx.hash)}</div></div>
           <div><div class="k">Meaning of Signature</div><div class="v">${escapeHtml(ctx.meaning)}</div></div>
           <div><div class="k">Signer Role</div><div class="v">${escapeHtml(ctx.role)}</div></div>
           <div><div class="k">Designated Signer</div><div class="v">@${escapeHtml(ctx.signer)}</div></div>
@@ -2009,7 +2038,7 @@ function renderSignPage(
         </form>
       </div>
       <div class="section foot">
-        Request: <a href="${escapeHtml(requestUrl)}" target="_blank" rel="noreferrer">${escapeHtml(requestUrl)}</a>
+        Record: <a href="${escapeHtml(requestUrl)}" target="_blank" rel="noreferrer">${escapeHtml(requestUrl)}</a>
         <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
       </div>
     </div>
@@ -2063,7 +2092,8 @@ function renderSignPage(
 
 function renderPinSetupPage(session: PinSessionState, sessionToken: string, workerVersion: string): string {
   const formAction = `/pin/complete`;
-  const prUrl = `https://github.com/${session.ctx.repo}/pull/${session.ctx.pr}`;
+  const recordUrl = `https://github.com/${session.ctx.repo}/issues/${session.ctx.pr}`;
+  const recordTypeLabel = session.ctx.record_type === "issue" ? "Issue" : "Pull Request";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -2094,7 +2124,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string, work
       <div class="head"><h2>Set Your QMS Signature PIN</h2></div>
       <div class="body">
         <p class="explain">${escapeHtml(PIN_EXPLANATION_TEXT)}</p>
-        <div class="k">Repository / PR</div><div class="v">${escapeHtml(session.ctx.repo)} #${escapeHtml(session.ctx.pr)}</div>
+        <div class="k">Repository / ${escapeHtml(recordTypeLabel)}</div><div class="v">${escapeHtml(session.ctx.repo)} #${escapeHtml(session.ctx.pr)}</div>
         <div class="k">Signer</div><div class="v">${escapeHtml(session.full_name)} (@${escapeHtml(session.signer_login)})</div>
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(session.ctx.role)} / ${escapeHtml(session.ctx.meaning)}</div>
 
@@ -2109,7 +2139,7 @@ function renderPinSetupPage(session: PinSessionState, sessionToken: string, work
           <button class="btn" type="submit" data-processing-text="Submitting...">Set PIN and Sign</button>
         </form>
 
-        <p><a href="${escapeHtml(prUrl)}" target="_blank" rel="noreferrer">Open PR</a></p>
+        <p><a href="${escapeHtml(recordUrl)}" target="_blank" rel="noreferrer">Open ${escapeHtml(recordTypeLabel)}</a></p>
         <div class="version">Worker version: ${escapeHtml(workerVersion)}</div>
       </div>
     </div>
@@ -2170,6 +2200,7 @@ function renderPinVerifyPage(
 ): string {
   const formAction = `/pin/complete`;
   const expiryText = expiresAtEpoch ? new Date(expiresAtEpoch * 1000).toISOString() : "n/a";
+  const recordTypeLabel = session.ctx.record_type === "issue" ? "Issue" : "Pull Request";
   const warning = expiringSoon
     ? `<p style="background:#fff4e5;border:1px solid #ffd39b;border-radius:10px;padding:10px;color:#7a4a00;">Warning: your QMS signature PIN expires in less than 7 days (expires at ${escapeHtml(expiryText)}).</p>`
     : "";
@@ -2203,7 +2234,7 @@ function renderPinVerifyPage(
       <div class="head"><h2>Confirm Signature with PIN</h2></div>
       <div class="body">
         ${warning}
-        <div class="k">Repository / PR</div><div class="v">${escapeHtml(session.ctx.repo)} #${escapeHtml(session.ctx.pr)}</div>
+        <div class="k">Repository / ${escapeHtml(recordTypeLabel)}</div><div class="v">${escapeHtml(session.ctx.repo)} #${escapeHtml(session.ctx.pr)}</div>
         <div class="k">Signer</div><div class="v">${escapeHtml(session.full_name)} (@${escapeHtml(session.signer_login)})</div>
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(session.ctx.role)} / ${escapeHtml(session.ctx.meaning)}</div>
         <div class="k">PIN Expiration (UTC)</div><div class="v">${escapeHtml(expiryText)}</div>
@@ -2301,6 +2332,8 @@ function renderPinVerifyPage(
 function renderSuccessPage(input: {
   repo: string;
   pr: string;
+  recordType: string;
+  hashScope: string;
   hash: string;
   meaning: string;
   role: string;
@@ -2314,7 +2347,9 @@ function renderSuccessPage(input: {
   repostToken?: string;
   workerVersion: string;
 }): string {
-  const prUrl = `https://github.com/${input.repo}/pull/${input.pr}`;
+  const recordUrl = `https://github.com/${input.repo}/issues/${input.pr}`;
+  const recordTypeLabel = input.recordType === "issue" ? "Issue" : "Pull Request";
+  const hashScopeLabel = input.hashScope ? input.hashScope.replace(/_/g, " ") : "signature scope";
   const pinWarning = input.pinExpiringSoon
     ? `<p style="background:#fff4e5;border:1px solid #ffd39b;border-radius:10px;padding:10px;color:#7a4a00;">Your signature PIN expires in less than 7 days. Renew it during your next signature flow.</p>`
     : "";
@@ -2358,14 +2393,14 @@ function renderSuccessPage(input: {
       <div class="body">
         ${pinWarning}
         ${statusMessage}
-        <div class="k">Repository / PR</div><div class="v">${escapeHtml(input.repo)} #${escapeHtml(input.pr)}</div>
+        <div class="k">Repository / ${escapeHtml(recordTypeLabel)}</div><div class="v">${escapeHtml(input.repo)} #${escapeHtml(input.pr)}</div>
         <div class="k">Signer</div><div class="v">${escapeHtml(input.signerFullName)} (@${escapeHtml(input.signer)})</div>
         <div class="k">Role / Meaning</div><div class="v">${escapeHtml(input.role)} / ${escapeHtml(input.meaning)}</div>
-        <div class="k">Target Hash</div><div class="v">${escapeHtml(input.hash)}</div>
+        <div class="k">Target Hash (${escapeHtml(hashScopeLabel)})</div><div class="v">${escapeHtml(input.hash)}</div>
         <div class="k">Timestamp</div><div class="v">${escapeHtml(input.timestamp)}</div>
         <div class="k">Attestation ID</div><div class="v">${escapeHtml(input.attestationId || "n/a")}</div>
         ${repostAction}
-        <p><a href="${escapeHtml(prUrl)}" rel="noreferrer">Open PR</a></p>
+        <p><a href="${escapeHtml(recordUrl)}" rel="noreferrer">Open ${escapeHtml(recordTypeLabel)}</a></p>
         <div class="version">Worker version: ${escapeHtml(input.workerVersion)}</div>
       </div>
     </div>

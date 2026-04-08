@@ -292,6 +292,8 @@ jobs:
             const requestContext = {
               version: 1,
               hash: process.env.TARGET_HASH,
+              hash_scope: 'pr_merge_state',
+              record_type: 'pull_request',
               meaning: process.env.MEANING,
               required_signatures: String(process.env.REQUIRED || '1'),
               signers: signerSlots,
@@ -307,7 +309,7 @@ jobs:
               `Required signatures: **${process.env.REQUIRED}**`,
               `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
-              `Target hash (merge state): \`${process.env.TARGET_HASH}\``,
+              `Target hash (PR merge state): \`${process.env.TARGET_HASH}\``,
               coapprovalReasons ? `Co-approval scope matched: ${coapprovalReasons}` : '',
               '',
               'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
