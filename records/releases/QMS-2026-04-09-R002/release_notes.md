@@ -20,8 +20,7 @@ This is the second published upstream baseline release. The `R002` suffix is the
 QMS baseline release number and does not reset by date.
 
 This release republishes the repository for downstream adoption after the post-R001 fixes to
-release, signature, immutable record publication, and training automation. It does not approve
-downstream operational use, deployment, or adopter release decisions.
+release, signature, immutable record publication, and training automation.
 
 ## Release Unit
 
@@ -32,38 +31,25 @@ downstream operational use, deployment, or adopter release decisions.
   - `qms_release_snapshot.tgz`
 - Release planning issue: GitHub issue `#329`
 - Release change request: this PR
-- Included merged fix PRs since `QMS-2026-04-08-R001`: `#321`, `#323`, `#324`, `#325`, `#326`,
-  `#327`, `#328`
 
-## Controlled Documents Entering Release
+## Release Scope
 
-The release includes the current approved document set:
+Included unchanged under this tag:
 
-| Document family | Included documents | Release effect |
-|---|---|---|
-| Quality Manual | `QM-001` | Included unchanged in the tagged release |
-| SOPs | `SOP-001` through `SOP-020` | Included unchanged in the tagged release |
-| Work Instructions | `WI-001`, `WI-002` | Included unchanged in the tagged release |
+- `QM-001`
+- `SOP-001` through `SOP-020`
+- `WI-001`, `WI-002`
 
-The release does not rewrite QM, SOP, or WI content. It republishes the approved document set
-under the next formal `QMS-*` baseline tag.
+Included as merged post-R001 workflow fixes:
 
-## Code and Automation Entering Release
-
-The release includes the support code and automation merged after `QMS-2026-04-08-R001`,
-including:
-
-- release-signature flow hardening so non-`QMS-*` releases do not trigger QMS release-signature
-  handling
+- QMS release-signature flow hardening
 - issue and training signature label reconciliation
 - training status login normalization and refresh-flow deduplication
-- support for bot-authored training-status signature requests
-- bot-authored QMS record publication fixes, including manual backfill support and GitHub App token
-  use for immutable record releases
-- signature request parsing hardening for malformed escaped newline text
+- bot-authored signature and immutable record publication fixes
+- signature request parsing hardening
 
-These changes affect release control, signature handling, immutable evidence publication, and
-training-status maintenance. They do not change the published QM/SOP/WI text.
+This release does not change QM, SOP, or WI text. It updates the baseline automation around
+release control, signatures, immutable evidence publication, and training status maintenance.
 
 ## Validation and Approval Check
 
@@ -71,20 +57,13 @@ training-status maintenance. They do not change the published QM/SOP/WI text.
 - `python3 scripts/validate_qms_content.py --base origin/main --head HEAD`
 - `git diff --check`
 
-The QMS content gate checks the full QM/SOP/WI set entering the release. It verifies that each
-released document has a revision, an effective date, `status: Published`, a matching README index
-entry, and a matching revision-history row.
-
-The release decision also confirms that the post-R001 workflow fixes listed above are present in
-the approved release commit.
-
-Approval is confirmed through the signed PR history for the document revisions already in the
-baseline and by the approval signatures on this release-decision PR.
+The QMS content gate confirms that the included QM/SOP/WI set remains published, revisioned, and
+indexed. The release decision confirms that the post-R001 workflow fixes are present in the
+approved release commit.
 
 ## Training Scope
 
-Training for this upstream baseline release remains governed by
-`matrices/training_matrix.yml`.
+Training remains governed by `matrices/training_matrix.yml`.
 
 For this release, the training focus is:
 
@@ -92,8 +71,6 @@ For this release, the training focus is:
 - how immutable record publication and release-signature flows are recovered and backfilled when
   needed
 - the unchanged role-based document training expectations for the approved QM/SOP/WI set
-
-Downstream adopters must assign and record their own training after adoption.
 
 ## Not Applicable
 
