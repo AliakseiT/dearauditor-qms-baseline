@@ -806,10 +806,21 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
+      - name: Create GitHub App token for record release publication
+        if: steps.records.outputs.has_records == 'true'
+        id: app_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
       - name: Publish immutable record releases
         if: steps.records.outputs.has_records == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
           TARGET_REPO: ${{ env.TARGET_RECORD_REPO }}
           TARGET_BRANCH: ${{ env.TARGET_RECORD_BRANCH }}
           TARGET_REF: ${{ steps.records.outputs.merge_sha }}
