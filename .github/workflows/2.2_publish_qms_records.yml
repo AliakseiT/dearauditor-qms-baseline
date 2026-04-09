@@ -82,6 +82,8 @@ jobs:
           def is_execution_record(path: str) -> bool:
             if not path.startswith("records/"):
               return False
+            if path.startswith("records/releases/"):
+              return False
             if not re.search(r"\.(md|ya?ml|json)$", path, flags=re.IGNORECASE):
               return False
             if re.search(r"(^|/)README\.md$", path, flags=re.IGNORECASE):
