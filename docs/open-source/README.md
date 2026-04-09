@@ -57,7 +57,8 @@ The current automations treat `QMS-*` as the formal upstream baseline channel.
 - `sig-*`, `record-*`, `trn-*`, and similar prefixes: immutable evidence/publication tags and explicitly out of scope for downstream sync tooling
 
 For formal `QMS-YYYY-MM-DD-RNNN` tags, the date component is the publication date recorded for the
-approved upstream baseline release.
+approved upstream baseline release, and `RNNN` is the global sequential upstream baseline release
+number.
 
 This keeps high-volume immutable record/signature tags available for evidence retention without making them part of the downstream upgrade surface.
 
