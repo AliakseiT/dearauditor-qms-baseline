@@ -188,7 +188,7 @@ High-volume immutable publication tags and downstream-adoptable baseline tags mu
 - record/signature tags such as `sig-*`, `record-*`, and `trn-*` are evidence-retention tags and are intentionally ignored by downstream upgrade tooling.
 
 For formal `QMS-YYYY-MM-DD-RNNN` tags, the date component is the publication date recorded for the
-approved baseline release.
+approved baseline release, and `RNNN` is the global sequential upstream baseline release number.
 
 This separation allows the repository to keep thousands of immutable publication tags without turning them into downstream upgrade inputs.
 
