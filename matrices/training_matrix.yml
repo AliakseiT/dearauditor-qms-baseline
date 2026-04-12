@@ -1,5 +1,5 @@
 ---
-version: 21
+version: 22
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -7,6 +7,9 @@ users:
   InaTsitovich:
     full_name: Ina Tsitovich
     job_title: Quality Assurance Lead
+  LemmyKilmisterish:
+    full_name: Lemmy Liikkanen
+    job_title: Engineering Lead
   SorenWesThorup:
     full_name: Søren Thorup
     job_title: Quality Assurance Lead
@@ -93,6 +96,7 @@ roles:
   engineering_lead:
     users:
       - AliakseiT
+      - LemmyKilmisterish
     required_documents:
       - QM-001
       - SOP-001
