@@ -253,6 +253,17 @@ jobs:
           def normalize_login(value: str) -> str:
             return str(value or "").strip().lstrip("@").lower()
 
+          repository = os.environ.get("REPOSITORY", "").strip()
+          default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
+          checkout_ref = os.environ.get("CHECKOUT_REF", "").strip()
+          assignment_ref = os.environ.get("ASSIGNMENT_REF", "").strip() or checkout_ref
+          release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
+          release_url = os.environ.get("RELEASE_URL", "").strip() or ""
+          release_source = os.environ.get("RELEASE_SOURCE", "").strip() or "manual-dispatch"
+          training_user = os.environ.get("TRAINING_USER", "").strip().lstrip("@")
+          additional_documents_raw = os.environ.get("ADDITIONAL_DOCUMENTS", "").strip()
+          additional_doc_ids = list(dict.fromkeys(extract_doc_ids(additional_documents_raw)))
+
           def fetch_repo_file(path: str, ref: str) -> str:
             encoded_path = urllib.parse.quote(str(path or "").strip().lstrip("/"), safe="/")
             encoded_ref = urllib.parse.quote(str(ref or "").strip(), safe="")
@@ -481,15 +492,6 @@ jobs:
           legacy_logs = yaml.safe_load(read_repo_text("records/training/user_training_log.yml", assignment_ref, allow_missing=True)) or {}
           published = parse_readme_index(Path("README.md"))
           readme_nav = parse_readme_doc_nav(Path("README.md"))
-
-          release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
-          release_url = os.environ.get("RELEASE_URL", "").strip() or ""
-          release_source = os.environ.get("RELEASE_SOURCE", "").strip() or "manual-dispatch"
-          repository = os.environ.get("REPOSITORY", "").strip()
-          default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
-          training_user = os.environ.get("TRAINING_USER", "").strip().lstrip("@")
-          additional_documents_raw = os.environ.get("ADDITIONAL_DOCUMENTS", "").strip()
-          additional_doc_ids = list(dict.fromkeys(extract_doc_ids(additional_documents_raw)))
 
           if release_source == "head":
             head_sha = git_output_allow_fail(["rev-parse", "HEAD"])
