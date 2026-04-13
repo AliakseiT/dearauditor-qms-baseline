@@ -335,6 +335,13 @@ jobs:
               lines = lines[:max_lines] + [f"... diff preview truncated to {max_lines} lines ..."]
             return "\n".join(lines)
 
+          def github_diff_anchor(file_path: str) -> str:
+            file_path = str(file_path or "").strip()
+            if not file_path:
+              return ""
+            # GitHub compare/commit pages anchor each file diff section as #diff-<sha256(path)>.
+            return hashlib.sha256(file_path.encode("utf-8")).hexdigest()
+
           def build_doc_gap(doc_id: str, doc_title: str, doc_file: str, from_revision: str, to_revision: str, roles, force_include: bool = False):
             if not force_include and from_revision == to_revision:
               return None
@@ -351,7 +358,10 @@ jobs:
                 from_sha = (history.get("rev_to_sha", {}) or {}).get(from_revision, "")
                 to_sha = (history.get("rev_to_sha", {}) or {}).get(to_revision, "") or latest_sha
                 if from_sha and to_sha and from_sha != to_sha:
+                  diff_anchor = github_diff_anchor(doc_file)
                   diff_url = f"https://github.com/{repository}/compare/{from_sha}...{to_sha}"
+                  if diff_anchor:
+                    diff_url = f"{diff_url}#diff-{diff_anchor}"
                   diff_preview = build_diff_preview(doc_file, from_sha, to_sha)
                 else:
                   diff_url = file_url
