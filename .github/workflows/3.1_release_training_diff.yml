@@ -13,6 +13,9 @@ on:
       training_user:
         description: "Optional GitHub username to limit issue creation to one user"
         required: false
+      assignment_ref:
+        description: "Optional ref for user registry, role membership, and training status. Blank => default branch for targeted training_user, otherwise the release snapshot."
+        required: false
       additional_documents:
         description: "Optional extra controlled-document ids (QM/SOP/WI; comma, space, or newline separated) to append for manual training"
         required: false
@@ -130,12 +133,14 @@ jobs:
 
             let tag = '';
             let trainingUser = '';
+            let assignmentRef = '';
             let additionalDocuments = '';
             let resolved = null;
             if (eventName === 'workflow_dispatch') {
               const inputs = context.payload.inputs || {};
               tag = normalizeTag(inputs.release_tag);
               trainingUser = String(inputs.training_user || '').trim().replace(/^@/, '');
+              assignmentRef = String(inputs.assignment_ref || '').trim().replace(/^refs\/(?:heads|tags)\//, '');
               additionalDocuments = String(inputs.additional_documents || '').trim();
               resolved = await resolveReleaseTarget(tag);
               if (!resolved) {
@@ -161,6 +166,9 @@ jobs:
               core.setFailed('workflow_dispatch input additional_documents requires training_user.');
               return;
             }
+            if (!assignmentRef) {
+              assignmentRef = trainingUser ? defaultBranch : resolved.checkoutRef;
+            }
             core.info(`Training release target accepted: ${resolved.releaseLabel} (${resolved.releaseSource}).`);
             core.setOutput('run_training', 'true');
             core.setOutput('release_tag', resolved.releaseLabel);
@@ -168,6 +176,7 @@ jobs:
             core.setOutput('release_source', resolved.releaseSource);
             core.setOutput('checkout_ref', resolved.checkoutRef);
             core.setOutput('training_user', trainingUser);
+            core.setOutput('assignment_ref', assignmentRef);
             core.setOutput('additional_documents', additionalDocuments);
 
       - name: Checkout
@@ -193,16 +202,23 @@ jobs:
           RELEASE_SOURCE: ${{ steps.gate.outputs.release_source }}
           REPOSITORY: ${{ github.repository }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          CHECKOUT_REF: ${{ steps.gate.outputs.checkout_ref }}
           TRAINING_USER: ${{ steps.gate.outputs.training_user }}
+          ASSIGNMENT_REF: ${{ steps.gate.outputs.assignment_ref }}
           ADDITIONAL_DOCUMENTS: ${{ steps.gate.outputs.additional_documents }}
           RUNNER_TEMP: ${{ runner.temp }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           python -m pip install --quiet pyyaml
           python <<'PY'
+          import base64
           import json
           import os
           import re
           import subprocess
+          import urllib.error
+          import urllib.parse
+          import urllib.request
           from collections import defaultdict
           from pathlib import Path
 
@@ -236,6 +252,54 @@ jobs:
 
           def normalize_login(value: str) -> str:
             return str(value or "").strip().lstrip("@").lower()
+
+          repository = os.environ.get("REPOSITORY", "").strip()
+          default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
+          checkout_ref = os.environ.get("CHECKOUT_REF", "").strip()
+          assignment_ref = os.environ.get("ASSIGNMENT_REF", "").strip() or checkout_ref
+          release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
+          release_url = os.environ.get("RELEASE_URL", "").strip() or ""
+          release_source = os.environ.get("RELEASE_SOURCE", "").strip() or "manual-dispatch"
+          training_user = os.environ.get("TRAINING_USER", "").strip().lstrip("@")
+          additional_documents_raw = os.environ.get("ADDITIONAL_DOCUMENTS", "").strip()
+          additional_doc_ids = list(dict.fromkeys(extract_doc_ids(additional_documents_raw)))
+
+          def fetch_repo_file(path: str, ref: str) -> str:
+            encoded_path = urllib.parse.quote(str(path or "").strip().lstrip("/"), safe="/")
+            encoded_ref = urllib.parse.quote(str(ref or "").strip(), safe="")
+            req = urllib.request.Request(
+              f"https://api.github.com/repos/{repository}/contents/{encoded_path}?ref={encoded_ref}",
+              headers={
+                "Accept": "application/vnd.github+json",
+                "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            )
+            with urllib.request.urlopen(req) as response:  # noqa: S310
+              payload = json.loads(response.read().decode("utf-8"))
+            content = payload.get("content", "")
+            if payload.get("encoding") == "base64":
+              return base64.b64decode(content).decode("utf-8")
+            return str(content)
+
+          def read_repo_text(path: str, ref: str, allow_missing: bool = False) -> str:
+            path = str(path or "").strip()
+            ref = str(ref or "").strip()
+            if not path:
+              return ""
+            if not ref or ref == checkout_ref:
+              local_path = Path(path)
+              if local_path.exists():
+                return local_path.read_text(encoding="utf-8")
+              if allow_missing:
+                return ""
+              raise FileNotFoundError(path)
+            try:
+              return fetch_repo_file(path, ref)
+            except urllib.error.HTTPError as error:
+              if allow_missing and error.code == 404:
+                return ""
+              raise
 
           def parse_readme_index(path: Path):
             text = path.read_text(encoding="utf-8")
@@ -335,6 +399,21 @@ jobs:
               lines = lines[:max_lines] + [f"... diff preview truncated to {max_lines} lines ..."]
             return "\n".join(lines)
 
+          def github_diff_anchor(file_path: str) -> str:
+            file_path = str(file_path or "").strip()
+            if not file_path:
+              return ""
+            # GitHub compare/commit pages anchor each file diff section as #diff-<sha256(path)>.
+            return hashlib.sha256(file_path.encode("utf-8")).hexdigest()
+
+          def github_diff_url(compare_url: str, file_path: str) -> str:
+            compare_url = str(compare_url or "").strip()
+            diff_anchor = github_diff_anchor(file_path)
+            if not compare_url or not diff_anchor:
+              return compare_url
+            short_path = diff_anchor[:7]
+            return f"{compare_url}?short_path={short_path}#diff-{diff_anchor}"
+
           def build_doc_gap(doc_id: str, doc_title: str, doc_file: str, from_revision: str, to_revision: str, roles, force_include: bool = False):
             if not force_include and from_revision == to_revision:
               return None
@@ -351,7 +430,10 @@ jobs:
                 from_sha = (history.get("rev_to_sha", {}) or {}).get(from_revision, "")
                 to_sha = (history.get("rev_to_sha", {}) or {}).get(to_revision, "") or latest_sha
                 if from_sha and to_sha and from_sha != to_sha:
-                  diff_url = f"https://github.com/{repository}/compare/{from_sha}...{to_sha}"
+                  diff_url = github_diff_url(
+                    f"https://github.com/{repository}/compare/{from_sha}...{to_sha}",
+                    doc_file,
+                  )
                   diff_preview = build_diff_preview(doc_file, from_sha, to_sha)
                 else:
                   diff_url = file_url
@@ -368,22 +450,48 @@ jobs:
               "diff_preview": diff_preview,
             }
 
-          matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
-          status_path = Path("records/training/training_status.yml")
-          legacy_logs_path = Path("records/training/user_training_log.yml")
-          status = yaml.safe_load(status_path.read_text(encoding="utf-8")) if status_path.exists() else {}
-          legacy_logs = yaml.safe_load(legacy_logs_path.read_text(encoding="utf-8")) if legacy_logs_path.exists() else {}
+          GITHUB_ISSUE_BODY_SOFT_LIMIT = 65000
+
+          def render_gap_lines(gap, roles_label: str, default_roles_text: str, checkbox: bool = True, include_preview: bool = True):
+            doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
+            roles_text = ", ".join(gap["roles"]) if gap["roles"] else default_roles_text
+            diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
+            current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
+            prefix = "- [ ]" if checkbox else "-"
+
+            lines = [
+              f"{prefix} `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
+              f"  - File: `{gap['doc_file'] or 'n/a'}`",
+              f"  - {roles_label}: `{roles_text}`",
+              f"  - Links: {diff_link} | {current_link}",
+            ]
+
+            if include_preview and gap["diff_preview"]:
+              lines.extend(
+                [
+                  "",
+                  f"  <details><summary>{gap['doc_id']} diff preview</summary>",
+                  "",
+                  "  ```diff",
+                  *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
+                  "  ```",
+                  "  </details>",
+                  "",
+                ]
+              )
+
+            return lines
+
+          checkout_ref = os.environ.get("CHECKOUT_REF", "").strip()
+          assignment_ref = os.environ.get("ASSIGNMENT_REF", "").strip() or checkout_ref
+          release_matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
+          assignment_matrix = release_matrix
+          if assignment_ref != checkout_ref:
+            assignment_matrix = yaml.safe_load(read_repo_text("matrices/training_matrix.yml", assignment_ref)) or {}
+          status = yaml.safe_load(read_repo_text("records/training/training_status.yml", assignment_ref, allow_missing=True)) or {}
+          legacy_logs = yaml.safe_load(read_repo_text("records/training/user_training_log.yml", assignment_ref, allow_missing=True)) or {}
           published = parse_readme_index(Path("README.md"))
           readme_nav = parse_readme_doc_nav(Path("README.md"))
-
-          release_tag = os.environ.get("RELEASE_TAG", "").strip() or "manual-dispatch"
-          release_url = os.environ.get("RELEASE_URL", "").strip() or ""
-          release_source = os.environ.get("RELEASE_SOURCE", "").strip() or "manual-dispatch"
-          repository = os.environ.get("REPOSITORY", "").strip()
-          default_branch = os.environ.get("DEFAULT_BRANCH", "").strip() or "main"
-          training_user = os.environ.get("TRAINING_USER", "").strip().lstrip("@")
-          additional_documents_raw = os.environ.get("ADDITIONAL_DOCUMENTS", "").strip()
-          additional_doc_ids = list(dict.fromkeys(extract_doc_ids(additional_documents_raw)))
 
           if release_source == "head":
             head_sha = git_output_allow_fail(["rev-parse", "HEAD"])
@@ -391,8 +499,9 @@ jobs:
               release_tag = f"HEAD-{head_sha[:12]}"
               release_url = f"https://github.com/{repository}/commit/{head_sha}"
 
-          roles = matrix.get("roles", {}) or {}
-          users_cfg_raw = matrix.get("users", {}) or {}
+          roles = release_matrix.get("roles", {}) or {}
+          assignment_roles = assignment_matrix.get("roles", {}) or {}
+          users_cfg_raw = assignment_matrix.get("users", {}) or {}
           users_cfg = {
             normalize_login(login): profile
             for login, profile in users_cfg_raw.items()
@@ -435,7 +544,8 @@ jobs:
 
           for role_name, role_def in roles.items():
             users = []
-            for raw_user in (role_def.get("users", []) or []):
+            role_membership_def = assignment_roles.get(role_name, {}) or {}
+            for raw_user in (role_membership_def.get("users", role_def.get("users", [])) or []):
               login = normalize_login(raw_user)
               if not login:
                 continue
@@ -610,11 +720,12 @@ jobs:
             scope_key = "manual-" + "-".join(additional_doc_ids) if manual_mode else "auto"
             marker = f"<!-- training-release:user={display_login};release={release_tag};scope={scope_key} -->"
 
-            lines = [
+            metadata_lines = [
               marker,
               "### Training Release Review",
               f"- Trigger release: `{release_tag}`",
               f"- Trigger release URL: {release_url or 'n/a'}",
+              f"- Assignment source ref: `{assignment_ref}`",
               f"- Training user: `{full_name}` (`@{display_login}`)",
               f"- Roles in scope: `{role_list}`",
               f"- Controlled document deltas in scope: `{len(gaps)}`",
@@ -624,7 +735,7 @@ jobs:
             ]
 
             if onboarding_mode:
-              lines.extend(
+              metadata_lines.extend(
                 [
                   "This user has no prior training status entry. Review the latest published controlled-document revisions assigned by role.",
                   "",
@@ -632,97 +743,77 @@ jobs:
               )
 
             if manual_mode:
-              lines.extend(
+              metadata_lines.extend(
                 [
                   f"Manual additions requested for this dispatch: `{', '.join(additional_doc_ids)}`",
                   "",
                 ]
               )
 
-            lines.append("### Controlled Document Checklist")
-            for gap in gaps:
-              doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
-              roles_text = ", ".join(gap["roles"]) if gap["roles"] else "manual-dispatch"
-              diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
-              current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
-
-              lines.extend(
-                [
-                  f"- [ ] `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
-                  f"  - File: `{gap['doc_file'] or 'n/a'}`",
-                  f"  - Roles requiring document: `{roles_text}`",
-                  f"  - Links: {diff_link} | {current_link}",
-                ]
-              )
-
-              if gap["diff_preview"]:
+            def render_issue_lines(include_previews: bool):
+              lines = list(metadata_lines)
+              lines.append("### Controlled Document Checklist")
+              if not include_previews:
                 lines.extend(
                   [
-                    "",
-                    f"  <details><summary>{gap['doc_id']} diff preview</summary>",
-                    "",
-                    "  ```diff",
-                    *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
-                    "  ```",
-                    "  </details>",
+                    "Diff previews were omitted because the generated issue body would exceed GitHub's size limit. Use the `Open diff` links below for the full change set.",
                     "",
                   ]
                 )
-
-            if awareness_gaps:
-              lines.extend(
-                [
-                  "",
-                  "### Optional Awareness Documents",
-                  "These documents are assigned as awareness-only for one or more roles in scope. Review is recommended, but these items do not block signature request or issue closure.",
-                  "",
-                ]
-              )
-              for gap in awareness_gaps:
-                doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
-                roles_text = ", ".join(gap["roles"]) if gap["roles"] else "awareness-only"
-                diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
-                current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
-
+              for gap in gaps:
                 lines.extend(
-                  [
-                    f"- `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
-                    f"  - Roles with awareness assignment: `{roles_text}`",
-                    f"  - File: `{gap['doc_file'] or 'n/a'}`",
-                    f"  - Links: {diff_link} | {current_link}",
-                  ]
+                  render_gap_lines(
+                    gap,
+                    roles_label="Roles requiring document",
+                    default_roles_text="manual-dispatch",
+                    checkbox=True,
+                    include_preview=include_previews,
+                  )
                 )
 
-                if gap["diff_preview"]:
+              if awareness_gaps:
+                lines.extend(
+                  [
+                    "",
+                    "### Optional Awareness Documents",
+                    "These documents are assigned as awareness-only for one or more roles in scope. Review is recommended, but these items do not block signature request or issue closure.",
+                    "",
+                  ]
+                )
+                for gap in awareness_gaps:
                   lines.extend(
-                    [
-                      "",
-                      f"  <details><summary>{gap['doc_id']} diff preview</summary>",
-                      "",
-                      "  ```diff",
-                      *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
-                      "  ```",
-                      "  </details>",
-                      "",
-                    ]
+                    render_gap_lines(
+                      gap,
+                      roles_label="Roles with awareness assignment",
+                      default_roles_text="awareness-only",
+                      checkbox=False,
+                      include_preview=include_previews,
+                    )
                   )
 
-            lines.extend(
-              [
-                "",
-                "### Required Completion Workflow",
-                "1. Review each document delta link in this issue and check every checkbox in `Controlled Document Checklist`.",
-                "2. Optional awareness documents, when listed, are informational and do not need to be checked before signature request.",
-                "3. When all checkboxes are completed, automation posts a signature request comment for this issue.",
-                "4. Open the generated signature link, authenticate, and complete signature.",
-                "5. The issue closes automatically after valid signature attestation is posted.",
-              ]
-            )
+              lines.extend(
+                [
+                  "",
+                  "### Required Completion Workflow",
+                  "1. Review each document delta link in this issue and check every checkbox in `Controlled Document Checklist`.",
+                  "2. Optional awareness documents, when listed, are informational and do not need to be checked before signature request.",
+                  "3. When all checkboxes are completed, automation posts a signature request comment for this issue.",
+                  "4. Open the generated signature link, authenticate, and complete signature.",
+                  "5. The issue closes automatically after valid signature attestation is posted.",
+                ]
+              )
+              return lines
+
+            issue_lines = render_issue_lines(include_previews=True)
+            issue_body = "\n".join(issue_lines)
+            if len(issue_body) > GITHUB_ISSUE_BODY_SOFT_LIMIT:
+              issue_lines = render_issue_lines(include_previews=False)
+              issue_body = "\n".join(issue_lines)
 
             entries.append(
               {
                 "title": title,
-                "body": "\n".join(lines),
+                "body": issue_body,
                 "labels": ["training", "training-diff"],
                 "assignees": [display_login],
               }
