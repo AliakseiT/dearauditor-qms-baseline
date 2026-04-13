@@ -342,6 +342,14 @@ jobs:
             # GitHub compare/commit pages anchor each file diff section as #diff-<sha256(path)>.
             return hashlib.sha256(file_path.encode("utf-8")).hexdigest()
 
+          def github_diff_url(compare_url: str, file_path: str) -> str:
+            compare_url = str(compare_url or "").strip()
+            diff_anchor = github_diff_anchor(file_path)
+            if not compare_url or not diff_anchor:
+              return compare_url
+            short_path = diff_anchor[:7]
+            return f"{compare_url}?short_path={short_path}#diff-{diff_anchor}"
+
           def build_doc_gap(doc_id: str, doc_title: str, doc_file: str, from_revision: str, to_revision: str, roles, force_include: bool = False):
             if not force_include and from_revision == to_revision:
               return None
@@ -358,10 +366,10 @@ jobs:
                 from_sha = (history.get("rev_to_sha", {}) or {}).get(from_revision, "")
                 to_sha = (history.get("rev_to_sha", {}) or {}).get(to_revision, "") or latest_sha
                 if from_sha and to_sha and from_sha != to_sha:
-                  diff_anchor = github_diff_anchor(doc_file)
-                  diff_url = f"https://github.com/{repository}/compare/{from_sha}...{to_sha}"
-                  if diff_anchor:
-                    diff_url = f"{diff_url}#diff-{diff_anchor}"
+                  diff_url = github_diff_url(
+                    f"https://github.com/{repository}/compare/{from_sha}...{to_sha}",
+                    doc_file,
+                  )
                   diff_preview = build_diff_preview(doc_file, from_sha, to_sha)
                 else:
                   diff_url = file_url
