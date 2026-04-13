@@ -234,6 +234,9 @@ jobs:
           def newer_revision(candidate: str, baseline: str) -> bool:
             return parse_revision(candidate) > parse_revision(baseline)
 
+          def normalize_login(value: str) -> str:
+            return str(value or "").strip().lstrip("@").lower()
+
           def parse_readme_index(path: Path):
             text = path.read_text(encoding="utf-8")
             start = "<!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->"
@@ -389,20 +392,37 @@ jobs:
               release_url = f"https://github.com/{repository}/commit/{head_sha}"
 
           roles = matrix.get("roles", {}) or {}
-          users_cfg = matrix.get("users", {}) or {}
+          users_cfg_raw = matrix.get("users", {}) or {}
+          users_cfg = {
+            normalize_login(login): profile
+            for login, profile in users_cfg_raw.items()
+            if normalize_login(login)
+          }
+          display_login_by_user = {
+            normalize_login(login): str(login).strip().lstrip("@")
+            for login in users_cfg_raw.keys()
+            if normalize_login(login)
+          }
           status_users = (status or {}).get("users", {}) or {}
           trained_by_user = {}
           for user, user_entry in status_users.items():
+            login = normalize_login(user)
+            if not login:
+              continue
             documents = (user_entry or {}).get("documents", {}) or {}
-            trained_by_user[str(user).strip()] = {
+            display_login_by_user.setdefault(login, str(user).strip().lstrip("@"))
+            trained_by_user[login] = {
               str(doc_id).strip().upper(): str((doc_entry or {}).get("trained_revision") or "").strip().upper()
               for doc_id, doc_entry in documents.items()
               if str(doc_id).strip()
             }
           for user, legacy_entry in ((legacy_logs or {}).get("users", {}) or {}).items():
-            login = str(user).strip()
+            login = normalize_login(user)
+            if not login:
+              continue
             if login in trained_by_user:
               continue
+            display_login_by_user.setdefault(login, str(user).strip().lstrip("@"))
             trained_by_user[login] = {
               str(doc_id).strip().upper(): str(revision).strip().upper()
               for doc_id, revision in (legacy_entry or {}).items()
@@ -414,7 +434,13 @@ jobs:
           roles_by_user = defaultdict(set)
 
           for role_name, role_def in roles.items():
-            users = [str(u).strip() for u in (role_def.get("users", []) or []) if str(u).strip()]
+            users = []
+            for raw_user in (role_def.get("users", []) or []):
+              login = normalize_login(raw_user)
+              if not login:
+                continue
+              users.append(login)
+              display_login_by_user.setdefault(login, str(raw_user).strip().lstrip("@"))
             required_documents = [
               str(s).strip()
               for s in (
@@ -487,6 +513,7 @@ jobs:
                     current["to_revision"] = target_revision
 
           if training_user:
+            training_user = normalize_login(training_user)
             if training_user not in users_cfg and training_user not in requirements_by_user and training_user not in trained_by_user:
               raise SystemExit(
                 f"training_user '{training_user}' is not defined in matrices/training_matrix.yml or "
@@ -575,19 +602,20 @@ jobs:
             onboarding_mode = not has_any_training_entry
             role_list = ", ".join(sorted(roles_by_user.get(user, set()))) or "none"
             profile = users_cfg.get(user, {}) or {}
+            display_login = display_login_by_user.get(user) or user
             full_name = str(profile.get("full_name", "")).strip() or user
             manual_mode = bool(additional_doc_ids)
             title_suffix = ", manual" if manual_mode else ""
             title = f"TRAINING REQUIRED: {full_name} ({release_tag}{title_suffix})"
             scope_key = "manual-" + "-".join(additional_doc_ids) if manual_mode else "auto"
-            marker = f"<!-- training-release:user={user};release={release_tag};scope={scope_key} -->"
+            marker = f"<!-- training-release:user={display_login};release={release_tag};scope={scope_key} -->"
 
             lines = [
               marker,
               "### Training Release Review",
               f"- Trigger release: `{release_tag}`",
               f"- Trigger release URL: {release_url or 'n/a'}",
-              f"- Training user: `{full_name}` (`@{user}`)",
+              f"- Training user: `{full_name}` (`@{display_login}`)",
               f"- Roles in scope: `{role_list}`",
               f"- Controlled document deltas in scope: `{len(gaps)}`",
               f"- Optional awareness document deltas in scope: `{len(awareness_gaps)}`",
@@ -696,7 +724,7 @@ jobs:
                 "title": title,
                 "body": "\n".join(lines),
                 "labels": ["training", "training-diff"],
-                "assignees": [user],
+                "assignees": [display_login],
               }
             )
 
