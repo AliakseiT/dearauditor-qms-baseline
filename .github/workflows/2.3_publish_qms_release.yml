@@ -26,6 +26,8 @@ jobs:
           python-version: '3.11'
 
       - name: Build QMS release bundle
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           python3 <<'PY'
@@ -33,6 +35,7 @@ jobs:
           import os
           import re
           import tarfile
+          import urllib.request
           from datetime import datetime, timezone
           from pathlib import Path
 
@@ -77,6 +80,42 @@ jobs:
             except (TypeError, ValueError):
               return None
 
+          def fetch_json(url: str):
+            headers = {
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+            }
+            token = os.environ.get("GITHUB_TOKEN", "").strip()
+            if token:
+              headers["Authorization"] = f"Bearer {token}"
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req) as response:  # noqa: S310
+              return json.loads(response.read().decode("utf-8"))
+
+          def resolve_commit_pull_request(repository: str, commit_sha: str) -> int | None:
+            repository = str(repository or "").strip()
+            commit_sha = str(commit_sha or "").strip()
+            if not repository or not commit_sha:
+              return None
+            pulls = fetch_json(f"https://api.github.com/repos/{repository}/commits/{commit_sha}/pulls")
+            if not isinstance(pulls, list):
+              return None
+            exact_matches = []
+            fallback_matches = []
+            for pr in pulls:
+              try:
+                number = int(pr.get("number"))
+              except (TypeError, ValueError, AttributeError):
+                continue
+              fallback_matches.append(number)
+              if str(pr.get("merge_commit_sha", "")).strip().lower() == commit_sha.lower():
+                exact_matches.append(number)
+            if len(exact_matches) == 1:
+              return exact_matches[0]
+            if len(fallback_matches) == 1:
+              return fallback_matches[0]
+            return None
+
           release_planning_issue = None
           related_issue = str(release_note_meta.get("related_issue", "")).strip()
           related_issue_match = re.fullmatch(r"#(\d+)", related_issue)
@@ -86,6 +125,11 @@ jobs:
             release_planning_issue = extract_reference(r"Release planning issue:\s+GitHub issue\s+`#(\d+)`")
 
           release_decision_pull_request = extract_reference(r"Release change request:\s+GitHub PR\s+`#(\d+)`")
+          if release_decision_pull_request is None:
+            release_decision_pull_request = resolve_commit_pull_request(
+              os.environ.get("GITHUB_REPOSITORY", ""),
+              os.environ.get("GITHUB_SHA", ""),
+            )
 
           qms = []
           for path in sorted(Path("qm").glob("*.md")):

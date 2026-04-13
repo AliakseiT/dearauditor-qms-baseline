@@ -368,6 +368,38 @@ jobs:
               "diff_preview": diff_preview,
             }
 
+          GITHUB_ISSUE_BODY_SOFT_LIMIT = 65000
+
+          def render_gap_lines(gap, roles_label: str, default_roles_text: str, checkbox: bool = True, include_preview: bool = True):
+            doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
+            roles_text = ", ".join(gap["roles"]) if gap["roles"] else default_roles_text
+            diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
+            current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
+            prefix = "- [ ]" if checkbox else "-"
+
+            lines = [
+              f"{prefix} `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
+              f"  - File: `{gap['doc_file'] or 'n/a'}`",
+              f"  - {roles_label}: `{roles_text}`",
+              f"  - Links: {diff_link} | {current_link}",
+            ]
+
+            if include_preview and gap["diff_preview"]:
+              lines.extend(
+                [
+                  "",
+                  f"  <details><summary>{gap['doc_id']} diff preview</summary>",
+                  "",
+                  "  ```diff",
+                  *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
+                  "  ```",
+                  "  </details>",
+                  "",
+                ]
+              )
+
+            return lines
+
           matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
           status_path = Path("records/training/training_status.yml")
           legacy_logs_path = Path("records/training/user_training_log.yml")
@@ -610,7 +642,7 @@ jobs:
             scope_key = "manual-" + "-".join(additional_doc_ids) if manual_mode else "auto"
             marker = f"<!-- training-release:user={display_login};release={release_tag};scope={scope_key} -->"
 
-            lines = [
+            metadata_lines = [
               marker,
               "### Training Release Review",
               f"- Trigger release: `{release_tag}`",
@@ -624,7 +656,7 @@ jobs:
             ]
 
             if onboarding_mode:
-              lines.extend(
+              metadata_lines.extend(
                 [
                   "This user has no prior training status entry. Review the latest published controlled-document revisions assigned by role.",
                   "",
@@ -632,97 +664,77 @@ jobs:
               )
 
             if manual_mode:
-              lines.extend(
+              metadata_lines.extend(
                 [
                   f"Manual additions requested for this dispatch: `{', '.join(additional_doc_ids)}`",
                   "",
                 ]
               )
 
-            lines.append("### Controlled Document Checklist")
-            for gap in gaps:
-              doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
-              roles_text = ", ".join(gap["roles"]) if gap["roles"] else "manual-dispatch"
-              diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
-              current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
-
-              lines.extend(
-                [
-                  f"- [ ] `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
-                  f"  - File: `{gap['doc_file'] or 'n/a'}`",
-                  f"  - Roles requiring document: `{roles_text}`",
-                  f"  - Links: {diff_link} | {current_link}",
-                ]
-              )
-
-              if gap["diff_preview"]:
+            def render_issue_lines(include_previews: bool):
+              lines = list(metadata_lines)
+              lines.append("### Controlled Document Checklist")
+              if not include_previews:
                 lines.extend(
                   [
-                    "",
-                    f"  <details><summary>{gap['doc_id']} diff preview</summary>",
-                    "",
-                    "  ```diff",
-                    *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
-                    "  ```",
-                    "  </details>",
+                    "Diff previews were omitted because the generated issue body would exceed GitHub's size limit. Use the `Open diff` links below for the full change set.",
                     "",
                   ]
                 )
-
-            if awareness_gaps:
-              lines.extend(
-                [
-                  "",
-                  "### Optional Awareness Documents",
-                  "These documents are assigned as awareness-only for one or more roles in scope. Review is recommended, but these items do not block signature request or issue closure.",
-                  "",
-                ]
-              )
-              for gap in awareness_gaps:
-                doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
-                roles_text = ", ".join(gap["roles"]) if gap["roles"] else "awareness-only"
-                diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
-                current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
-
+              for gap in gaps:
                 lines.extend(
-                  [
-                    f"- `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
-                    f"  - Roles with awareness assignment: `{roles_text}`",
-                    f"  - File: `{gap['doc_file'] or 'n/a'}`",
-                    f"  - Links: {diff_link} | {current_link}",
-                  ]
+                  render_gap_lines(
+                    gap,
+                    roles_label="Roles requiring document",
+                    default_roles_text="manual-dispatch",
+                    checkbox=True,
+                    include_preview=include_previews,
+                  )
                 )
 
-                if gap["diff_preview"]:
+              if awareness_gaps:
+                lines.extend(
+                  [
+                    "",
+                    "### Optional Awareness Documents",
+                    "These documents are assigned as awareness-only for one or more roles in scope. Review is recommended, but these items do not block signature request or issue closure.",
+                    "",
+                  ]
+                )
+                for gap in awareness_gaps:
                   lines.extend(
-                    [
-                      "",
-                      f"  <details><summary>{gap['doc_id']} diff preview</summary>",
-                      "",
-                      "  ```diff",
-                      *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
-                      "  ```",
-                      "  </details>",
-                      "",
-                    ]
+                    render_gap_lines(
+                      gap,
+                      roles_label="Roles with awareness assignment",
+                      default_roles_text="awareness-only",
+                      checkbox=False,
+                      include_preview=include_previews,
+                    )
                   )
 
-            lines.extend(
-              [
-                "",
-                "### Required Completion Workflow",
-                "1. Review each document delta link in this issue and check every checkbox in `Controlled Document Checklist`.",
-                "2. Optional awareness documents, when listed, are informational and do not need to be checked before signature request.",
-                "3. When all checkboxes are completed, automation posts a signature request comment for this issue.",
-                "4. Open the generated signature link, authenticate, and complete signature.",
-                "5. The issue closes automatically after valid signature attestation is posted.",
-              ]
-            )
+              lines.extend(
+                [
+                  "",
+                  "### Required Completion Workflow",
+                  "1. Review each document delta link in this issue and check every checkbox in `Controlled Document Checklist`.",
+                  "2. Optional awareness documents, when listed, are informational and do not need to be checked before signature request.",
+                  "3. When all checkboxes are completed, automation posts a signature request comment for this issue.",
+                  "4. Open the generated signature link, authenticate, and complete signature.",
+                  "5. The issue closes automatically after valid signature attestation is posted.",
+                ]
+              )
+              return lines
+
+            issue_lines = render_issue_lines(include_previews=True)
+            issue_body = "\n".join(issue_lines)
+            if len(issue_body) > GITHUB_ISSUE_BODY_SOFT_LIMIT:
+              issue_lines = render_issue_lines(include_previews=False)
+              issue_body = "\n".join(issue_lines)
 
             entries.append(
               {
                 "title": title,
-                "body": "\n".join(lines),
+                "body": issue_body,
                 "labels": ["training", "training-diff"],
                 "assignees": [display_login],
               }
