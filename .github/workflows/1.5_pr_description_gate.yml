@@ -34,7 +34,8 @@ jobs:
             
             const body = pr.body || '';
             const errors = [];
-            const bodyWithoutCodeBlocks = body.replace(/```[\s\S]*?```/g, '');
+            const bodyWithoutFencedCodeBlocks = body.replace(/```[\s\S]*?```/g, '');
+            const bodyWithoutMarkdownCode = bodyWithoutFencedCodeBlocks.replace(/`[^`\n]+`/g, '');
             
             // Check for Summary section
             if (!/^##\s+Summary\b/mi.test(body)) {
@@ -52,8 +53,8 @@ jobs:
             }
 
             // Reject escaped newline text in normal prose because it breaks review and signature parsing.
-            if (/\\n/.test(bodyWithoutCodeBlocks)) {
-              errors.push('PR body contains literal "\\n" text outside fenced code blocks. Use real line breaks in markdown and update the PR with --body-file instead of shell-escaped multiline text.');
+            if (/\\n/.test(bodyWithoutMarkdownCode)) {
+              errors.push('PR body contains literal "\\n" text outside markdown code. Use real line breaks in markdown and update the PR with --body-file instead of shell-escaped multiline text.');
             }
 
             const files = await github.paginate(github.rest.pulls.listFiles, {
