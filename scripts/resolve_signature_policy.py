@@ -66,10 +66,15 @@ def _role_id_for_label(label: str) -> str | None:
 
 
 def _extract_signature_field(body: str, label: str) -> str | None:
+    # Prefer the last occurrence so that narrative prose above the actual
+    # "## Signature Requirements" block (which may reference the literal
+    # field name — e.g., explaining that a PR must declare
+    # `**Signer Roles:**`) does not shadow the real declaration.
     pattern = rf"\*\*{re.escape(label)}:\*\*\s*([^\n]+)"
-    match = re.search(pattern, body, flags=re.IGNORECASE)
-    if not match:
+    matches = list(re.finditer(pattern, body, flags=re.IGNORECASE))
+    if not matches:
         return None
+    match = matches[-1]
     raw = match.group(1).strip()
     raw = raw.replace("\\r\\n", "\n").replace("\\n", "\n")
     raw = raw.splitlines()[0].strip()
