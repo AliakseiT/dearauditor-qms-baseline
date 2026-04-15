@@ -2,7 +2,7 @@
 record_type: design_development_plan
 plan_id: "DDP-<product>-<yyyy-mm-dd>"
 product_id: ""
-intended_use_reference: "docs/regulatory/intended_use.md"
+intended_use_reference: "records/mdf/intended_use.md"
 scope_summary: ""
 lifecycle_model: "incremental|iterative|waterfall_with_iterations"
 software_safety_classification: "A|B|C|not_applicable_with_rationale"
@@ -82,7 +82,7 @@ Example:
 
 Example:
 
-- Intended use reference: `docs/regulatory/intended_use.md`
+- Intended use reference: `records/mdf/intended_use.md`
 - User needs reference: `records/design/user_needs.md`
 - System requirements reference: `records/design/system_requirements_spec.md`
 - Classification decision reference: `records/mdf/classification_decision.md` when the product regulatory pathway or market classification is in scope for the baseline

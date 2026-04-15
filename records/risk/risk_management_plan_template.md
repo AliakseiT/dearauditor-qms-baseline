@@ -3,7 +3,7 @@ record_type: risk_management_plan
 plan_id: "RMP-<product>-<yyyy-mm-dd>"
 product_id: ""
 product_name: ""
-intended_use_reference: "docs/regulatory/intended_use.md"
+intended_use_reference: "records/mdf/intended_use.md"
 device_description_reference: "records/mdf/device_description.md"
 lifecycle_scope:
   - design
@@ -48,7 +48,7 @@ Example:
 
 - Product / subsystem in scope: `ACME-GENERIC-SAMD` clinician-facing triage support web application and supporting API
 - Trigger for this plan revision: initial regulated baseline for new product release
-- Intended use reference: `docs/regulatory/intended_use.md`
+- Intended use reference: `records/mdf/intended_use.md`
 - Device description reference: `records/mdf/device_description.md`
 - Assessment boundary: user-facing workflow, decision logic, authentication, audit trail, release/deployment configuration, and post-release monitoring inputs
 - Out of scope: non-clinical back-office analytics and finance tooling

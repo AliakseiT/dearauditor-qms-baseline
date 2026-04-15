@@ -3,7 +3,7 @@ record_type: classification_decision
 decision_id: "CLASS-<product>-<yyyy-mm-dd>"
 product_id: ""
 jurisdiction: ""
-linked_intended_use_reference: "docs/regulatory/intended_use.md"
+linked_intended_use_reference: "records/mdf/intended_use.md"
 linked_mdf_index_reference: "records/mdf/medical_device_file_index.md"
 approval:
   meaning_of_signature: "Approved Classification Decision"
