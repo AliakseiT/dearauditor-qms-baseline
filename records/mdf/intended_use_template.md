@@ -28,7 +28,7 @@ Replace the example text below with product-specific content before approval.
 
 Example:
 
-- Intended use statement: `ADALYON-GENERIC-SAMD` is intended for use as rule-based decision support for trained clinical staff in outpatient triage workflows.
+- Intended use statement: `ACME-GENERIC-SAMD` is intended for use as rule-based decision support for trained clinical staff in outpatient triage workflows.
 - Intended users: trained clinical staff operating the product in the defined workflow.
 - Use environment: approved clinical networks accessed through supported web browsers on managed devices.
 - Patient population: adult outpatients presenting to the triage workflow within the approved indication scope.
