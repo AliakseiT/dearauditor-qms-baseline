@@ -3,7 +3,7 @@ record_type: device_description
 device_description_id: "DDESC-<product>-<yyyy-mm-dd>"
 product_id: ""
 product_name: ""
-linked_intended_use_reference: "docs/regulatory/intended_use.md"
+linked_intended_use_reference: "records/mdf/intended_use.md"
 linked_mdf_index_reference: "records/mdf/medical_device_file_index.md"
 approval:
   meaning_of_signature: "Approved Device Description"
@@ -91,7 +91,7 @@ Example:
 
 Example:
 
-- Intended-use statement reference: `docs/regulatory/intended_use.md`
+- Intended-use statement reference: `records/mdf/intended_use.md`
 - Product labeling or user-facing claims reference: `docs/regulatory/labeling_overview.md`
 - Marketing-claim control note: only claims aligned with intended use and approved release scope may be used
 
