@@ -3,7 +3,7 @@ record_type: user_needs_specification
 required_fields:
   user_needs_id: "UNS-<product>-<yyyy-mm-dd>"
   product_id: ""
-  intended_use_reference: "docs/regulatory/intended_use.md"
+  intended_use_reference: "records/mdf/intended_use.md"
   maintained_by_role: "qa_lead"
   user_profiles:
     - profile_id: "UP-001"

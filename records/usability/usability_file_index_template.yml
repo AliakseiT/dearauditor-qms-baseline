@@ -4,7 +4,7 @@ required_fields:
   usability_file_id: "UF-<product>-<yyyy-mm-dd>"
   product_id: ""
   maintained_by_role: "usability_lead"
-  intended_use_reference: "docs/regulatory/intended_use.md"
+  intended_use_reference: "records/mdf/intended_use.md"
   linked_risk_management_reference: "records/risk/risk_register_template.yml"
   records:
     use_specification: "records/usability/use_specification_template.yml"

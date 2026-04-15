@@ -8,7 +8,7 @@ primary_markets:
   - EU
   - CH
   - US
-intended_use_reference: "docs/regulatory/intended_use.md"
+intended_use_reference: "records/mdf/intended_use.md"
 device_description_reference: "records/mdf/device_description.md"
 classification_reference: "records/mdf/classification_decision.md"
 traceability_summary_reference: "records/mdf/traceability_summary.md"
@@ -35,7 +35,7 @@ Example:
 
 - Product: `ACME-GENERIC-SAMD`
 - Repository: `github.com/acme/acme-generic-samd`
-- Intended-use reference: `docs/regulatory/intended_use.md`
+- Intended-use reference: `records/mdf/intended_use.md`
 - Device description reference: `records/mdf/device_description.md`
 - Classification reference: `records/mdf/classification_decision.md`
 - Primary market scope: EU MDR first release, with Switzerland and US assessment tracked in linked regulatory decisions
@@ -47,7 +47,7 @@ Record one row per deliverable family or concrete controlled record set that bel
 
 | Deliverable Area | Current Record Path | Revision / Baseline | Status | Gate / Release | Primary Owner | Notes |
 |---|---|---|---|---|---|---|
-| Intended use and claims | `docs/regulatory/intended_use.md` | `R03` | approved | Gate 1 baseline | qa_lead | Controlled intended use, users, use environment, and claims |
+| Intended use and claims | `records/mdf/intended_use.md` | `R03` | approved | Gate 1 baseline | qa_lead | Controlled intended use, users, use environment, and claims |
 | Device description | `records/mdf/device_description.md` | `R02` | approved | Gate 1 baseline | engineering_lead + qa_lead | Product overview, major subsystems, interfaces, variants, and accessories |
 | Classification and pathway | `records/mdf/classification_decision.md` | `R01` | approved | Gate 1 baseline | qa_lead | Distinct from IEC 62304 software safety classification |
 | Design and development plan | `records/design/design_development_plan.md` | `R01` | approved | Gate 1 baseline | engineering_lead | Lifecycle model, gates, and linked plans |
