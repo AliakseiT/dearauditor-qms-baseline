@@ -23,46 +23,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Build reviewer candidates from role matrix
-        id: plan
-        run: |
-          python3 -m pip install --quiet pyyaml
-          python3 <<'PY'
-          import os
-          from pathlib import Path
-          import yaml
-
-          matrix = yaml.safe_load(Path("matrices/training_matrix.yml").read_text(encoding="utf-8")) or {}
-          roles = matrix.get("roles", {}) or {}
-
-          # If co-approval triggered by paths, we default to assigning the QA Lead or Management Representative
-          # (Modify these default fallback roles if your QMS prefers different explicit roles for path triggers)
-          role_ids = ["qa_lead"] 
-          
-          ordered_candidates = []
-          seen = set()
-          for role_id in role_ids:
-            for u in roles.get(role_id, {}).get("users", []) or []:
-              login = str(u).strip().lstrip("@")
-              if not login or login.lower() == "replace_with_gh_username":
-                continue
-              key = login.lower()
-              if key in seen:
-                continue
-              seen.add(key)
-              ordered_candidates.append(login)
-
-          output = Path(os.environ["GITHUB_OUTPUT"])
-          with output.open("a", encoding="utf-8") as fh:
-            fh.write("candidates_csv=" + ",".join(ordered_candidates) + "\n")
-            fh.write(f"role_ids={','.join(role_ids)}\n")
-          PY
-
       - name: Detect co-approval policy from changed paths
         id: policy
         uses: actions/github-script@v8
-        env:
-          BASE_REQUIRED_REVIEWER_SIGNATURES: ${{ steps.plan.outputs.required_reviewer_signatures }}
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -93,17 +56,28 @@ jobs:
             core.setOutput('coapproval_required', reasons.length > 0 ? 'true' : 'false');
             core.setOutput('coapproval_reasons', reasons.join('; '));
             core.setOutput('effective_required_reviewer_signatures', String(effectiveRequired));
+            core.setOutput('changed_paths_json', JSON.stringify(paths));
+
+      - name: Build reviewer candidates from role matrix and CODEOWNERS
+        id: plan
+        run: |
+          python3 scripts/resolve_reviewer_candidates.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --paths-json "${CHANGED_PATHS_JSON}" \
+            --github-output "$GITHUB_OUTPUT"
+        env:
+          CHANGED_PATHS_JSON: ${{ steps.policy.outputs.changed_paths_json }}
 
       - name: Validate candidate availability
         env:
           REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
-          CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
+          CANDIDATES_CSV: ${{ steps.plan.outputs.reviewer_candidates_csv }}
         run: |
           required="${REQUIRED_REVIEWER_SIGNATURES:-0}"
           candidates="${CANDIDATES_CSV:-}"
           if [ "$required" -gt 0 ] && [ -z "$candidates" ]; then
             echo "Required reviewer signatures: $required"
-            echo "No reviewer candidates were resolved from role matrix."
+            echo "No reviewer candidates were resolved from CODEOWNERS or the fallback role matrix."
             exit 1
           fi
 
@@ -120,9 +94,12 @@ jobs:
       - name: Request or Remove reviewers from collaborators
         uses: actions/github-script@v8
         env:
-          CANDIDATES_CSV: ${{ steps.plan.outputs.candidates_csv }}
+          CODEOWNERS_CANDIDATES_CSV: ${{ steps.plan.outputs.codeowners_candidates_csv }}
+          ROLE_MATRIX_CANDIDATES_CSV: ${{ steps.plan.outputs.role_matrix_candidates_csv }}
+          CANDIDATE_SUMMARY: ${{ steps.plan.outputs.candidate_resolution_summary }}
+          CODEOWNERS_FILE: ${{ steps.plan.outputs.codeowners_file }}
           REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
-          ROLE_IDS: ${{ steps.plan.outputs.role_ids }}
+          ROLE_IDS: ${{ steps.plan.outputs.fallback_role_ids }}
           COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
           COAPPROVAL_REASONS: ${{ steps.policy.outputs.coapproval_reasons }}
         with:
@@ -135,7 +112,11 @@ jobs:
             }
 
             const author = (pr.user?.login || '').toLowerCase();
-            const candidates = (process.env.CANDIDATES_CSV || '')
+            const codeownersCandidates = (process.env.CODEOWNERS_CANDIDATES_CSV || '')
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean);
+            const roleMatrixCandidates = (process.env.ROLE_MATRIX_CANDIDATES_CSV || '')
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
@@ -168,6 +149,8 @@ jobs:
             const roleIds = (process.env.ROLE_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
             const coapprovalRequired = (process.env.COAPPROVAL_REQUIRED || '').toLowerCase() === 'true';
             const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
+            const candidateSummary = (process.env.CANDIDATE_SUMMARY || '').trim();
+            const codeownersFile = (process.env.CODEOWNERS_FILE || '').trim();
             const parseAssignedReviewers = (body) => {
               const assignedLine = String(body || '').split('\n').find((line) => line.startsWith('Assigned reviewers:'));
               return assignedLine
@@ -181,9 +164,11 @@ jobs:
             const buildCommentBody = (assignedReviewers) => {
               const lines = [
                 marker,
-                '🤖 Auto-assigned signature reviewers from role matrix',
+                '🤖 Auto-assigned signature reviewers from CODEOWNERS and role matrix',
                 '',
                 `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,
+                `Reviewer candidate resolution: ${candidateSummary || 'fallback role matrix only'}`,
+                `CODEOWNERS file: \`${codeownersFile || 'not found'}\``,
                 'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
                 `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
                 `Reviewer approval required for merge: \`${requiredReviewerSignatures > 0 ? 'yes' : 'no'}\``,
@@ -252,18 +237,36 @@ jobs:
             });
 
             const collaboratorSet = new Set(collaborators.map((c) => (c.login || '').toLowerCase()));
-            const eligible = candidates.filter((login) => {
+            const toEligible = (candidates) => candidates.filter((login) => {
               const key = login.toLowerCase();
               if (key === author) return false;
               return collaboratorSet.has(key);
             });
+            const codeownersEligible = toEligible(codeownersCandidates);
+            const roleMatrixEligible = toEligible(roleMatrixCandidates);
+            const selected = [];
+            const selectedSet = new Set();
+            for (const login of codeownersEligible) {
+              const key = login.toLowerCase();
+              if (selectedSet.has(key)) continue;
+              selectedSet.add(key);
+              selected.push(login);
+            }
+            for (const login of roleMatrixEligible) {
+              if (selected.length >= requiredReviewerSignatures) break;
+              const key = login.toLowerCase();
+              if (selectedSet.has(key)) continue;
+              selectedSet.add(key);
+              selected.push(login);
+            }
 
-            if (eligible.length < requiredReviewerSignatures) {
-              core.setFailed(`Co-approval policy requires ${requiredReviewerSignatures} reviewer signature(s). Only ${eligible.length} eligible collaborator(s) were found.`);
+            if (selected.length < requiredReviewerSignatures) {
+              core.setFailed(
+                `Co-approval policy requires ${requiredReviewerSignatures} reviewer signature(s). Only ${selected.length} eligible collaborator(s) were found after evaluating CODEOWNERS (${codeownersEligible.length}) and fallback role-matrix candidates (${roleMatrixEligible.length}).`
+              );
               return;
             }
 
-            const selected = eligible;
             const alreadyRequested = new Set(existingReviewers.map((r) => (r.login || '').toLowerCase()));
             const toRequest = selected.filter((u) => !alreadyRequested.has(u.toLowerCase()));
             
