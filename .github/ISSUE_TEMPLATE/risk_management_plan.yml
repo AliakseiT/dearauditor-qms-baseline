@@ -69,9 +69,8 @@ body:
       label: Responsible Roles
       description: Map the roles responsible for the risk file, technical analysis, usability inputs, QA governance, and overall residual-risk approval.
       placeholder: |
-        - regulatory_lead: @user
-        - engineering_lead: @user
         - qa_lead: @user
+        - engineering_lead: @user
         - usability_lead: @user or N/A
         - management_representative: @user
     validations:

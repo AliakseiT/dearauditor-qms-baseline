@@ -44,10 +44,9 @@ body:
     id: accountable_roles
     attributes:
       label: Accountable Roles
-      description: Map the controlled roles and named GitHub users responsible for planning, regulatory inputs, QA, and usability.
+      description: Map the controlled roles and named GitHub users responsible for technical planning, QA and regulatory oversight, and usability.
       placeholder: |
         - engineering_lead: @user
-        - regulatory_lead: @user
         - qa_lead: @user
         - usability_lead: @user or N/A
     validations:
