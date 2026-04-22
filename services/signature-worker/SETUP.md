@@ -17,6 +17,16 @@ Worker vars:
 - `ALLOWED_OAUTH_PROVIDERS=github`
 - `REPO_ALIASES_JSON={"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}` (optional; add old-slug to current-slug mappings after repo renames)
 
+Worker name:
+
+- default: `signature-worker`
+- optional override: `SIGNATURE_WORKER_NAME=<your preferred worker name>`
+- optional CLI override for bootstrap: `./services/signature-worker/scripts/bootstrap_env.sh --worker-name <your preferred worker name>`
+
+If you temporarily use a `workers.dev` URL before switching to a custom domain, the Worker name becomes part of the public URL:
+
+- `https://<worker-name>.<account-subdomain>.workers.dev`
+
 Worker secrets:
 
 - `GITHUB_OAUTH_CLIENT_ID`
@@ -57,6 +67,7 @@ The workflow permission is required because the repository uses the GitHub App t
 
 Repository variable:
 
+- `SIGNATURE_WORKER_NAME=<cloudflare worker name>` (optional; defaults to `signature-worker`)
 - `SIGNATURE_UI_BASE_URL=https://sign.qms.dearauditor.ch`
 - `PIN_KV_NAMESPACE_ID=<cloudflare kv namespace id>`
 - `PIN_KV_PREVIEW_NAMESPACE_ID=<cloudflare kv preview namespace id>`
@@ -82,7 +93,7 @@ The deploy command injects `WORKER_VERSION` automatically using the format `YYYY
 GitHub Actions:
 
 - run workflow `4.1 Deploy Signature Worker` manually (`workflow_dispatch`)
-- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and optionally `SIGNATURE_REPO_ALIASES_JSON` before deploy
+- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_WORKER_NAME`, `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and optionally `SIGNATURE_REPO_ALIASES_JSON` before deploy
 
 ## 6. One-Command Bootstrap
 

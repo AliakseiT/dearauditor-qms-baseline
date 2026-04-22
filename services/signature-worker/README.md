@@ -56,6 +56,8 @@ The committed `wrangler.toml` uses neutral placeholder values. Replace them befo
 
 `REPO_ALIASES_JSON` is optional but useful after a repository rename. The worker includes a built-in compatibility alias from `AliakseiT/qms-lite` to `AliakseiT/dearauditor-qms-baseline`, and the JSON map lets you add future rename aliases without code changes.
 
+The Worker script name defaults to `signature-worker`, but adopters can override it with `SIGNATURE_WORKER_NAME` in `.env.local`, the bootstrap script's `--worker-name` flag, or the repository variable `SIGNATURE_WORKER_NAME`. This matters if you are temporarily exposing the service on `workers.dev`, because the public URL format is `<worker-name>.<account-subdomain>.workers.dev`.
+
 ## GitHub OAuth App
 
 Use a standard GitHub OAuth App (not a GitHub App installation flow):
@@ -109,6 +111,7 @@ Use the bootstrap script to sync `.env.local` values to GitHub and Cloudflare:
 
 What it does:
 
+- Upserts repo variable `SIGNATURE_WORKER_NAME` so adopters can change the deployed Worker name without patching the baseline.
 - Upserts repo variables `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and `SIGNATURE_REPO_ALIASES_JSON` when values are present.
 - Sets repo secrets `QMS_BOT_APP_ID` and `QMS_BOT_APP_PRIVATE_KEY`, plus Cloudflare deploy secrets when values are present.
 - Sets worker secrets for OAuth, GitHub App access, and signing state.
