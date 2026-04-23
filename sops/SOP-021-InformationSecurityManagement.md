@@ -79,12 +79,12 @@ Applies to information assets used to create, approve, release, operate, support
 3. Review ISMS scope, risk treatment, and SoA at least quarterly and whenever a material repository, supplier, product, workflow, infrastructure, or regulatory change occurs.
 
 ## 7. Required Records
-- ISMS scope and asset/security-context record
-- Information security risk assessment and treatment record
-- Statement of Applicability
-- Access review records
-- Security incident and vulnerability records
-- Security exception and risk acceptance records
+- ISMS scope and asset/security-context record, using `records/isms/isms_register_template.yml` or an equivalent controlled register
+- Information security risk assessment and treatment records, using `records/isms/isms_register_template.yml` or linked product/security risk records
+- Statement of Applicability, using `records/isms/statement_of_applicability_template.yml` or an equivalent controlled SoA
+- Access review records, maintained in the ISMS register unless a separate access review record is justified
+- Security incident and vulnerability records, maintained in the ISMS register first and linked to CAPA/change/product records when required
+- Security exception and risk acceptance records, maintained in the ISMS register unless a separate exception record is justified
 - ISMS audit, management review, CAPA, and metric records
 
 ## 8. Traceability
@@ -114,8 +114,9 @@ Applies to information assets used to create, approve, release, operate, support
 - SOP-018 Risk Management (ISO 14971)
 - SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
 - WI-002 Configuration and Release Management Execution
+- `records/isms/README.md`
 
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
-| R00 | 2026-04-23 | Initial release establishing the compact GitHub-native ISMS procedure and ISO/IEC 27001 traceability baseline. |
+| R00 | 2026-04-23 | Initial release establishing the compact GitHub-native ISMS procedure, ISO/IEC 27001 traceability baseline, and minimum ISMS record template set. |

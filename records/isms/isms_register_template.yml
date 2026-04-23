@@ -1,0 +1,130 @@
+version: 1
+record_type: isms_register
+register_id: "ISMS-REG-<yyyy-mm-dd>"
+scope:
+  statement: "GitHub-native QMS, product/study repositories, signature tooling, supplier systems, and operational information assets used to create, approve, release, operate, support, or retain controlled evidence."
+  owner_role: "technical_qms_maintainer"
+  approval_reference: ""
+  review_cadence: "quarterly"
+  next_review_due: "YYYY-MM-DD"
+assets:
+  - asset_id: "ISMS-AST-001"
+    name: "DearAuditor QMS baseline repository"
+    asset_type: "github_repository"
+    owner_role: "technical_qms_maintainer"
+    information_types:
+      - "controlled_qms_documents"
+      - "quality_records"
+      - "workflow_evidence"
+    cia_rating:
+      confidentiality: "medium"
+      integrity: "high"
+      availability: "medium"
+    supplier_or_platform: "GitHub"
+    evidence_reference: "repository settings, branch protection, workflow runs, releases"
+    status: "active"
+risk_assessment:
+  scoring_model:
+    formula: "risk_score = impact_value * likelihood_value"
+    impact_scale:
+      I1: {label: low, value: 1}
+      I2: {label: moderate, value: 2}
+      I3: {label: high, value: 3}
+      I4: {label: severe, value: 4}
+    likelihood_scale:
+      L1: {label: unlikely, value: 1}
+      L2: {label: possible, value: 2}
+      L3: {label: likely, value: 3}
+      L4: {label: expected, value: 4}
+    treatment_bands:
+      acceptable: "1-4"
+      treatment_required: "5-9"
+      management_acceptance_required: "10-16"
+  risks:
+    - risk_id: "ISMS-RISK-001"
+      asset_id: "ISMS-AST-001"
+      threat_or_vulnerability: "Unauthorized repository write access"
+      potential_impact:
+        - "controlled_record_integrity_loss"
+        - "unauthorized_release_or_workflow_change"
+      existing_controls:
+        - "branch protection"
+        - "required review"
+        - "signature evidence"
+      inherent_risk:
+        impact_code: I3
+        impact_value: 3
+        likelihood_code: L2
+        likelihood_value: 2
+        score: 6
+      treatment_decision: "mitigate"
+      treatment_plan:
+        owner_role: "technical_qms_maintainer"
+        actions:
+          - "quarterly access review"
+          - "least-privilege repository role assignment"
+        due_date: "YYYY-MM-DD"
+        linked_change_or_capa: ""
+      residual_risk:
+        impact_code: I3
+        impact_value: 3
+        likelihood_code: L1
+        likelihood_value: 1
+        score: 3
+        acceptance: "accepted_by_role"
+        accepted_by_role: "management_representative"
+        acceptance_reference: ""
+      status: "open"
+access_reviews:
+  - review_id: "ISMS-AR-001"
+    review_date: "YYYY-MM-DD"
+    scope: "controlled repositories and signing components"
+    reviewer_role: "technical_qms_maintainer"
+    participants: []
+    findings:
+      - finding: "No stale users or over-privileged accounts identified."
+        action_required: false
+        action_reference: ""
+    next_review_due: "YYYY-MM-DD"
+security_events:
+  - event_id: "ISMS-EVT-001"
+    event_type: "vulnerability|incident|suspicious_activity|control_failure"
+    detected_on: "YYYY-MM-DD"
+    affected_assets: []
+    summary: ""
+    triage_decision: "no_incident|confirmed_incident|monitor|duplicate"
+    impact_assessment:
+      confidentiality: "none|potential|confirmed"
+      integrity: "none|potential|confirmed"
+      availability: "none|potential|confirmed"
+      qms_record_integrity: "none|potential|confirmed"
+      product_safety_or_regulatory: "none|potential|confirmed"
+    containment_or_correction: ""
+    linked_records:
+      change: ""
+      capa: ""
+      supplier: ""
+      product_risk: ""
+      reportability_assessment: ""
+    status: "open|closed|monitoring"
+exceptions:
+  - exception_id: "ISMS-EXC-001"
+    control_reference: "SoA control ID or ISMS risk ID"
+    requested_by: ""
+    rationale: ""
+    compensating_controls: []
+    approved_by_role: "management_representative"
+    approval_reference: ""
+    expires_on: "YYYY-MM-DD"
+    status: "active|expired|closed"
+review_and_approval:
+  last_reviewed_on: "YYYY-MM-DD"
+  reviewer_roles:
+    - "management_representative"
+    - "technical_qms_maintainer"
+  open_actions: []
+  approval:
+    meaning_of_signature: "Approved ISMS Register"
+    signer_roles:
+      - "management_representative"
+      - "technical_qms_maintainer"
