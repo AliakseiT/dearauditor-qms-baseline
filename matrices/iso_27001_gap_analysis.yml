@@ -8,6 +8,8 @@ record_templates:
   minimum_isms_templates:
     - "records/isms/isms_register_template.yml"
     - "records/isms/statement_of_applicability_template.yml"
+    - "records/isms/evidence_collection_plan_template.md"
+    - "records/isms/evidence_run_report_template.md"
   reused_qms_templates:
     - "records/change/change_request_template.md"
     - "records/suppliers/supplier_vetting_template.yml"

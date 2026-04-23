@@ -85,6 +85,7 @@ Applies to information assets used to create, approve, release, operate, support
 - Access review records, maintained in the ISMS register unless a separate access review record is justified
 - Security incident and vulnerability records, maintained in the ISMS register first and linked to CAPA/change/product records when required
 - Security exception and risk acceptance records, maintained in the ISMS register unless a separate exception record is justified
+- Evidence collection plans and evidence run reports, using `records/isms/evidence_collection_plan_template.md` and `records/isms/evidence_run_report_template.md`
 - ISMS audit, management review, CAPA, and metric records
 
 ## 8. Traceability
@@ -119,4 +120,4 @@ Applies to information assets used to create, approve, release, operate, support
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
-| R00 | 2026-04-23 | Initial release establishing the compact GitHub-native ISMS procedure, ISO/IEC 27001 traceability baseline, and minimum ISMS record template set. |
+| R00 | 2026-04-23 | Initial release establishing the compact GitHub-native ISMS procedure, ISO/IEC 27001 traceability baseline, minimum ISMS record template set, and tool-neutral evidence collection plan/report templates. |

@@ -94,6 +94,8 @@ Use the external manifest template when a controlled document is authored outsid
 - [Start a verification and validation plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=verification_validation_plan.yml)
 - [Start a release plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=release_plan.yml)
 - [Start a final release decision issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=final_release_decision.yml)
+- [Start an ISMS evidence collection plan issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=isms_evidence_collection_plan.yml)
+- [Start an ISMS evidence run report issue](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/new?template=isms_evidence_run_report.yml)
 
 ## Related Navigation
 
