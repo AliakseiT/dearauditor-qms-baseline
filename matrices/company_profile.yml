@@ -16,6 +16,7 @@ company:
     - "Apply IEC 62304 software lifecycle, maintenance, configuration, and problem-resolution controls for regulated software."
     - "Apply ISO 14971 risk management across the software lifecycle, including cybersecurity-related harms."
     - "Apply IEC 62366-1 usability engineering for safety-related user interface design and validation."
+    - "Apply ISO/IEC 27001 information security governance for QMS, product, supplier, and operational information assets."
     - "Maintain product safety and performance through controlled lifecycle processes."
     - "Provide objective evidence and full traceability for quality decisions."
 quality_policy_statement:
@@ -52,3 +53,7 @@ quality_objective_framework:
       objective: "Ensure products perform against defined performance criteria and complaint thresholds"
       metric: "percent_active_products_meeting_defined_performance_and_complaint_thresholds"
       target: "100%"
+    - id: "QO-007"
+      objective: "Maintain information security controls for QMS and product lifecycle evidence"
+      metric: "percent_required_isms_reviews_and_risk_treatments_completed_on_time"
+      target: ">=95%"

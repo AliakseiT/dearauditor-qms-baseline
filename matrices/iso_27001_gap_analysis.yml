@@ -1,0 +1,57 @@
+version: 1
+analysis_date: "2026-04-23"
+standard:
+  exact_name: "ISO/IEC 27001:2022 Information security, cybersecurity and privacy protection - Information security management systems - Requirements"
+  normative_base: "ISO/IEC 27001:2022"
+analysis_scope: "ACME GmbH GitHub-native QMS, product/study repositories, signing components, supplier systems, and operational information assets"
+summary:
+  compact_sop_set:
+    dedicated_isms_sop:
+      - "SOP-021"
+    reused_qms_sops:
+      - "SOP-001"
+      - "SOP-002"
+      - "SOP-003"
+      - "SOP-004"
+      - "SOP-005"
+      - "SOP-006"
+      - "SOP-009"
+      - "SOP-010"
+      - "SOP-011"
+      - "SOP-016"
+      - "SOP-017"
+      - "SOP-018"
+      - "SOP-020"
+  covered_clause_groups:
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "8"
+    - "9"
+    - "10"
+    - "Annex A"
+  product_specific_or_tailored:
+    - clause: "6.1 information security risk assessment and treatment"
+      rationale: "Company-level method is defined in SOP-021; product, repository, supplier, and runtime-specific risk records are maintained where the controlled asset or service is owned."
+    - clause: "6.1.3 Statement of Applicability"
+      rationale: "The SoA is required as a controlled ISMS record and maps Annex A controls to GitHub-native evidence and reused QMS procedures."
+    - clause: "Annex A controls"
+      rationale: "Controls are selected through the SoA. This baseline does not duplicate every control as a separate SOP; it assigns selected controls to one ISMS procedure plus existing QMS procedures."
+  outstanding_gaps: []
+clause_to_control_map:
+  "4": ["QM-001", "SOP-005", "SOP-021"]
+  "5": ["QM-001", "SOP-005", "SOP-021"]
+  "6": ["SOP-021", "SOP-016", "SOP-009", "SOP-018"]
+  "7": ["SOP-001", "SOP-011", "SOP-021"]
+  "8": ["SOP-021", "SOP-006", "SOP-009", "SOP-010", "SOP-017", "SOP-020", "WI-002"]
+  "9": ["SOP-003", "SOP-004", "SOP-016", "SOP-021"]
+  "10": ["SOP-002", "SOP-021"]
+annex_a_control_operation_map:
+  organizational_controls: ["SOP-021", "SOP-005", "SOP-001", "SOP-010", "SOP-011", "SOP-016"]
+  people_controls: ["SOP-011", "SOP-021"]
+  physical_controls: ["SOP-017", "SOP-021"]
+  technological_controls: ["SOP-017", "SOP-020", "SOP-006", "SOP-009", "SOP-021"]
+notes:
+  - "No copyrighted standard text is included; only clause references, high-level control families, and implementation decisions."
+  - "ISMS operation is assumed to be GitHub-native. GitHub issues, pull requests, branch protection, Actions, releases, and signed approval evidence are controlled records where applicable."
