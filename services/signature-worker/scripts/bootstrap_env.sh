@@ -38,6 +38,7 @@ Expected env keys in .env.local:
   PIN_PEPPER
 
 Optional env keys:
+  SIGNATURE_WORKER_NAME
   QMS_BOT_APP_INSTALLATION_ID
   GITHUB_API_BASE_URL
   DEFAULT_OAUTH_PROVIDER
@@ -82,6 +83,7 @@ set -a
 source "$ENV_FILE"
 set +a
 
+WORKER_NAME="${WORKER_NAME:-${SIGNATURE_WORKER_NAME:-}}"
 if [[ -z "$WORKER_NAME" ]]; then
   if [[ -f "$WRANGLER_TOML" ]]; then
     WORKER_NAME="$(awk -F'=' '/^name\s*=/{gsub(/[ \"\r\n]/,"",$2); print $2; exit}' "$WRANGLER_TOML")"
@@ -226,11 +228,15 @@ PY
 sync_wrangler_config_from_env() {
   [[ -f "$WRANGLER_TOML" ]] || return 0
 
+  local worker_name="${WORKER_NAME:-}"
   local kv_id="${PIN_KV_NAMESPACE_ID:-}"
   local preview_id="${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
   local public_base_url="${PUBLIC_BASE_URL:-}"
   local repo_aliases_json="${REPO_ALIASES_JSON:-}"
 
+  if ! is_placeholder "$worker_name"; then
+    update_wrangler_string_value "name" "$worker_name"
+  fi
   if ! is_placeholder "$kv_id"; then
     update_wrangler_string_value "id" "$kv_id"
   fi
@@ -298,6 +304,7 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   require_cmd gh
   gh auth status >/dev/null
 
+  upsert_repo_variable_if_present "$GH_REPO" "SIGNATURE_WORKER_NAME" "$WORKER_NAME"
   upsert_repo_variable_if_present "$GH_REPO" "SIGNATURE_UI_BASE_URL" "$SIGNATURE_UI_BASE_URL"
   upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_NAMESPACE_ID" "${PIN_KV_NAMESPACE_ID:-}"
   upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_PREVIEW_NAMESPACE_ID" "${PIN_KV_PREVIEW_NAMESPACE_ID:-}"

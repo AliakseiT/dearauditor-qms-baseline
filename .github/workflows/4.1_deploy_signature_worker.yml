@@ -34,6 +34,7 @@ jobs:
       - name: Materialize Wrangler config
         working-directory: services/signature-worker
         env:
+          SIGNATURE_WORKER_NAME: ${{ vars.SIGNATURE_WORKER_NAME }}
           PIN_KV_NAMESPACE_ID: ${{ vars.PIN_KV_NAMESPACE_ID }}
           PIN_KV_PREVIEW_NAMESPACE_ID: ${{ vars.PIN_KV_PREVIEW_NAMESPACE_ID }}
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
@@ -46,6 +47,7 @@ jobs:
           import re
 
           values = {
+              "name": os.environ.get("SIGNATURE_WORKER_NAME", "").strip() or "signature-worker",
               "id": os.environ.get("PIN_KV_NAMESPACE_ID", "").strip(),
               "preview_id": os.environ.get("PIN_KV_PREVIEW_NAMESPACE_ID", "").strip(),
               "PUBLIC_BASE_URL": os.environ.get("SIGNATURE_UI_BASE_URL", "").strip(),
