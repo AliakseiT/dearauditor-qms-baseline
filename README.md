@@ -49,7 +49,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 ### Quality Manual
 
-- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R03`
+- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R04`
 
 ### SOP Library By Topic
 
@@ -59,7 +59,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R04`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R05`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R06`
-- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R17`
+- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R18`
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R09`
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R04`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R04`
@@ -93,12 +93,12 @@ Use the grouped links below for navigation. The raw machine-readable published c
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->
 | Document ID | Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-03-27 | R03 | Published |
+| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-04-23 | R04 | Published |
 | SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-25 | R13 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-25 | R04 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-25 | R05 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-18 | R06 | Published |
-| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-03-27 | R17 | Published |
+| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-04-23 | R18 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-25 | R03 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-25 | R07 | Published |
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-27 | R09 | Published |
@@ -128,7 +128,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)
 - [QMS tooling inventory and validation baseline](matrices/qms_tooling_inventory.yml)
 - [Signer registry](matrices/signer_registry.json)
-- Gap analyses: [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml)
+- Gap analyses: [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml)
 
 ## Architecture and Automation
 
