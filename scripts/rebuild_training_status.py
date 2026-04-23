@@ -38,6 +38,14 @@ RELEASE_TAG_RE = re.compile(r"^Release tag:\s*`([^`]+)`\s*$", flags=re.MULTILINE
 REPOSITORY_ALIASES = {
     "aliakseit/dearauditor-qms-baseline": {"aliakseit/qms-lite"},
 }
+LEGACY_ROLE_ALIASES = {
+    # Historical training issues keep their signed source text unchanged; the
+    # generated status register reports legacy role IDs through the current role
+    # model so auditor-facing output is consistent with matrices/training_matrix.yml.
+    "clinical_ops": "qa_lead",
+    "lead_auditor": "auditor",
+    "software_engineer": "engineer",
+}
 
 
 def _parse_revision(value: str) -> int:
@@ -126,6 +134,16 @@ def _normalize_login(value: Any) -> str:
     return str(value or "").strip().lower()
 
 
+def _normalize_role(value: Any) -> str:
+    role = str(value or "").strip()
+    return LEGACY_ROLE_ALIASES.get(role, role)
+
+
+def _normalize_roles(values: Any) -> list[str]:
+    normalized = {_normalize_role(role) for role in (values or []) if str(role or "").strip()}
+    return sorted(role for role in normalized if role)
+
+
 def _find_latest_valid_attestation(
     issue: dict[str, Any], accepted_repositories: set[str], expected_signer: str
 ) -> tuple[dict[str, Any], str] | tuple[None, None]:
@@ -183,7 +201,7 @@ def _event_from_completion_context(
         "issue_url": str(context_payload.get("source_issue_url") or issue.get("html_url") or "").strip(),
         "trainee_login": _normalize_login(context_payload.get("trainee_login")),
         "trainee_full_name": str(context_payload.get("trainee_full_name") or "").strip(),
-        "roles_in_scope": [str(role).strip() for role in (context_payload.get("roles_in_scope") or []) if str(role).strip()],
+        "roles_in_scope": _normalize_roles(context_payload.get("roles_in_scope") or []),
         "completed_at_utc": str(context_payload.get("completed_at_utc") or "").strip(),
         "attestation_comment_url": str(context_payload.get("source_attestation_comment_url") or "").strip(),
         "evidence_release_tag": str(context_payload.get("evidence_release_tag") or "").strip(),
@@ -231,7 +249,7 @@ def _event_from_legacy_issue(issue: dict[str, Any], accepted_repositories: set[s
         "issue_url": str(issue.get("html_url") or "").strip(),
         "trainee_login": trainee_login,
         "trainee_full_name": full_name,
-        "roles_in_scope": _extract_roles(body),
+        "roles_in_scope": _normalize_roles(_extract_roles(body)),
         "completed_at_utc": str(attestation.get("timestamp") or "").strip(),
         "attestation_comment_url": attestation_comment_url,
         "evidence_release_tag": release_tag_match.group(1).strip() if release_tag_match else "",
@@ -359,9 +377,7 @@ def _build_status_document(
                 "trained_revision": to_revision,
                 "trained_at_utc": candidate_time,
                 "from_revision": str(document.get("from_revision") or "").strip().upper(),
-                "roles_in_scope": sorted(
-                    {str(role).strip() for role in (event.get("roles_in_scope") or []) if str(role).strip()}
-                ),
+                "roles_in_scope": _normalize_roles(event.get("roles_in_scope") or []),
                 "source_issue": int(event.get("issue_number") or 0),
                 "source_issue_title": str(event.get("issue_title") or "").strip(),
                 "source_issue_url": str(event.get("issue_url") or "").strip(),
