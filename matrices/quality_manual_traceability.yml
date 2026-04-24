@@ -1,4 +1,4 @@
-version: 3
+version: 4
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
@@ -9,6 +9,8 @@ additional_standards:
     normative_base: "ISO 14971:2019"
   - exact_name: "EVS-EN 62366-1:2015+A1:2020 Medical devices - Part 1: Application of usability engineering to medical devices"
     normative_base: "IEC 62366-1:2015+A1:2020"
+  - exact_name: "ISO/IEC 27001:2022 Information security, cybersecurity and privacy protection - Information security management systems - Requirements"
+    normative_base: "ISO/IEC 27001:2022"
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
@@ -88,6 +90,11 @@ quality_manual_sections:
     iso_clauses: ["IEC 62304 4-9"]
     controlling_documents: ["SOP-020", "SOP-008", "SOP-009"]
     status: "implemented"
+  - section_id: QM-16
+    section_name: "Information security management"
+    iso_clauses: ["ISO/IEC 27001 4-10", "ISO/IEC 27001 Annex A"]
+    controlling_documents: ["SOP-021", "SOP-005", "SOP-001", "SOP-003", "SOP-004", "SOP-010", "SOP-011", "SOP-017"]
+    status: "implemented_with_product_specific_extensions"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -121,3 +128,7 @@ supporting_definitions:
     status: "implemented"
     reference: "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md, wis/WI-001-VerificationAndValidationExecution.md, wis/WI-002-ConfigurationAndReleaseManagementExecution.md"
     note: "IEC 62304 lifecycle planning, GitHub-native V&V approval, and release-baseline control are part of the controlled QMS baseline."
+  - item: "Information security management baseline"
+    status: "implemented_with_product_specific_extensions"
+    reference: "matrices/iso_27001_gap_analysis.yml, sops/SOP-021-InformationSecurityManagement.md"
+    note: "ISO/IEC 27001 ISMS scope, risk treatment, Statement of Applicability, control operation, incident, audit, review, and improvement interfaces are implemented through one dedicated ISMS SOP plus existing QMS controls."

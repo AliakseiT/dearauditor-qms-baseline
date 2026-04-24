@@ -1,0 +1,68 @@
+name: ISMS Evidence Run Report
+description: Record completion, results, findings, and follow-up from an ISMS evidence collection run.
+title: "ISMS EVIDENCE REPORT: <scope/date>"
+labels:
+  - qms
+  - isms
+  - evidence
+body:
+  - type: textarea
+    id: run_summary
+    attributes:
+      label: Run Summary
+      description: Plan reference, systems assessed, reporting period, and overall result.
+      placeholder: |
+        - plan reference:
+        - systems assessed:
+        - reporting period:
+        - overall result:
+    validations:
+      required: true
+
+  - type: textarea
+    id: collector_log
+    attributes:
+      label: Collector Execution Log
+      description: Collector versions, runner, identity, permission scope, raw artifacts, and hashes.
+      placeholder: |
+        | Collector Profile | Collector | Version / Pin | Runner | Identity Used | Raw Artifact | SHA-256 |
+        |---|---|---|---|---|---|---|
+    validations:
+      required: true
+
+  - type: textarea
+    id: normalized_results
+    attributes:
+      label: Normalized Control Results
+      description: Results mapped to SoA control IDs and linked risks/exceptions/CAPA/change records.
+      placeholder: |
+        | SoA Control ID | Evidence Objective | Collector Profile | Collector | Result | Linked Record |
+        |---|---|---|---|---|---|
+    validations:
+      required: true
+
+  - type: textarea
+    id: findings
+    attributes:
+      label: Findings and Follow-Up
+      description: Findings, severity, owner, due date, exceptions, risk acceptance, and follow-up records.
+      placeholder: |
+        - findings:
+        - exceptions:
+        - residual risk acceptance:
+        - CAPA/change/supplier/product-risk follow-up:
+    validations:
+      required: true
+
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Data Handling and Limitations
+      description: Redactions, access restrictions, known tool limitations, and evidence gaps.
+      placeholder: |
+        - redactions:
+        - access restrictions:
+        - known limitations:
+        - evidence gaps:
+    validations:
+      required: true

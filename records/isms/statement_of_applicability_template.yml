@@ -1,0 +1,58 @@
+version: 1
+record_type: statement_of_applicability
+soa_id: "SOA-<yyyy-mm-dd>"
+standard: "ISO/IEC 27001:2022 Annex A"
+scope_reference: "records/isms/isms_register.yml"
+approval:
+  meaning_of_signature: "Approved Statement of Applicability"
+  signer_roles:
+    - "management_representative"
+    - "technical_qms_maintainer"
+summary:
+  total_controls_assessed: 0
+  applicable_controls: 0
+  not_applicable_controls: 0
+  implemented_controls: 0
+  partially_implemented_controls: 0
+  risk_accepted_controls: 0
+controls:
+  - control_id: "A.5.example"
+    control_family: "organizational"
+    control_name: "Example organizational control"
+    applicability: "applicable|not_applicable"
+    applicability_rationale: "Applies because the GitHub-native QMS stores controlled records and workflow evidence."
+    implementation_status: "implemented|partially_implemented|planned|not_implemented|risk_accepted|not_applicable"
+    implementation_owner_role: "technical_qms_maintainer"
+    implementation_summary: "Implemented through branch protection, required review, controlled release evidence, and access reviews."
+    evidence_references:
+      - "sops/SOP-001-DocControl.md"
+      - "sops/SOP-021-InformationSecurityManagement.md"
+      - "records/isms/isms_register.yml"
+    linked_risks:
+      - "ISMS-RISK-001"
+    treatment_or_exception_reference: ""
+    last_reviewed_on: "YYYY-MM-DD"
+    notes: ""
+  - control_id: "A.8.example"
+    control_family: "technological"
+    control_name: "Example technological control"
+    applicability: "applicable"
+    applicability_rationale: "Applies to repositories, workflows, signing components, secrets, and release evidence."
+    implementation_status: "partially_implemented"
+    implementation_owner_role: "technical_qms_maintainer"
+    implementation_summary: "Core repository controls are implemented; product runtime controls are completed in each product repository."
+    evidence_references:
+      - "sops/SOP-017-InfrastructureAndMaintenanceControl.md"
+      - "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"
+    linked_risks:
+      - "ISMS-RISK-002"
+    treatment_or_exception_reference: "ISMS-EXC-001 or change/CAPA reference"
+    last_reviewed_on: "YYYY-MM-DD"
+    notes: "Replace example rows with selected Annex A controls and retain only justified non-applicable controls."
+review_history:
+  - review_date: "YYYY-MM-DD"
+    reviewer_roles:
+      - "management_representative"
+      - "technical_qms_maintainer"
+    change_summary: "Initial SoA baseline."
+    approval_reference: ""
