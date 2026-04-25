@@ -1,5 +1,5 @@
-version: 1
-analysis_date: "2026-04-23"
+version: 2
+analysis_date: "2026-04-25"
 standard:
   exact_name: "IEC 82304-1:2016 Health software - Part 1: General requirements for product safety"
   normative_base: "IEC 82304-1:2016"
@@ -17,14 +17,16 @@ summary:
     - clause: "6 health software product validation"
       rationale: "Validation planning, execution, and reporting are performed in designated product repositories using controlled V&V templates and GitHub-native approval evidence."
     - clause: "7 identification and accompanying documents"
-      rationale: "Product identification, release-baseline records, labeling, instructions, and technical descriptions are product-specific dossier outputs."
+      rationale: "Product identification and release-baseline records are produced through the controlled lifecycle. Accompanying information (IFU, user-facing labeling, and technical description) is a primary controlled artifact maintained per product through SOP-007 minimum MDF content and the dedicated accompanying-information template."
+    - clause: "8 post-market activities including retirement"
+      rationale: "Post-market signal handling is performed through complaint, incident, PMS, and nonconformity controls. Product retirement and decommissioning is an explicit lifecycle control under SOP-020 covering retirement decision, user/customer impact, communication, residual-risk handling, and record retention."
   outstanding_gaps: []
 clause_to_control_map:
   "4": ["SOP-007", "SOP-008", "SOP-018", "SOP-019"]
   "5": ["SOP-020", "SOP-008", "WI-001", "WI-002"]
   "6": ["SOP-008", "SOP-020", "WI-001"]
-  "7": ["SOP-007", "SOP-020", "WI-002", "records/mdf/declaration_of_conformity_template.md"]
-  "8": ["SOP-012", "SOP-013", "SOP-014", "SOP-015", "SOP-020"]
+  "7": ["SOP-007", "SOP-020", "WI-002", "records/mdf/accompanying_information_template.md", "records/mdf/declaration_of_conformity_template.md", "records/mdf/medical_device_file_index_template.md"]
+  "8": ["SOP-012", "SOP-013", "SOP-014", "SOP-015", "SOP-020", "records/mdf/medical_device_file_index_template.md"]
 notes:
   - "No copyrighted standard text is included; only clause references and implementation decisions."
   - "IEC 82304-1 applies at product level. This upstream baseline provides the governing controls and reusable templates; product repositories hold the released health software product evidence."

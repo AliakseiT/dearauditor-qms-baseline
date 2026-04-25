@@ -67,12 +67,12 @@ Use the grouped links below for navigation. The raw machine-readable published c
 #### Development, Risk, and Release
 
 - [SOP-006 Software Validation (QMS Tools)](sops/SOP-006-SoftwareValidation.md) - `R03`
-- [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R07`
+- [SOP-007 Medical Device File Control](sops/SOP-007-MedicalDeviceFileControl.md) - `R08`
 - [SOP-008 Design and Development Control](sops/SOP-008-DesignAndDevelopmentControl.md) - `R09`
 - [SOP-009 Change Management](sops/SOP-009-ChangeManagement.md) - `R09`
 - [SOP-018 Risk Management (ISO 14971)](sops/SOP-018-RiskManagement.md) - `R08`
 - [SOP-019 Usability Engineering (IEC 62366-1)](sops/SOP-019-UsabilityEngineering.md) - `R11`
-- [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R10`
+- [SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)](sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md) - `R11`
 
 #### Suppliers, Complaints, and Post-Market
 
@@ -100,7 +100,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-18 | R06 | Published |
 | SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-04-23 | R18 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-25 | R03 | Published |
-| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-25 | R07 | Published |
+| SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-04-25 | R08 | Published |
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-27 | R09 | Published |
 | SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-03-27 | R09 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-03-25 | R03 | Published |
@@ -113,7 +113,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-03-25 | R04 | Published |
 | SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-27 | R08 | Published |
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-27 | R11 | Published |
-| SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-27 | R10 | Published |
+| SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-04-25 | R11 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-03-10 | R08 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-03-27 | R09 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->

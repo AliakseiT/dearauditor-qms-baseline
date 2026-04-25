@@ -130,5 +130,5 @@ supporting_definitions:
     note: "IEC 62304 lifecycle planning, GitHub-native V&V approval, and release-baseline control are part of the controlled QMS baseline."
   - item: "Health software product-safety baseline"
     status: "implemented_with_product_specific_extensions"
-    reference: "matrices/iec_82304_1_gap_analysis.yml, sops/SOP-005-QMSGovernance.md, sops/SOP-007-MedicalDeviceFileControl.md, sops/SOP-008-DesignAndDevelopmentControl.md, sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"
-    note: "IEC 82304-1 product-level safety, validation, identification, accompanying-information, maintenance, and post-market expectations are mapped to QMS controls and completed in designated product repositories."
+    reference: "matrices/iec_82304_1_gap_analysis.yml, sops/SOP-005-QMSGovernance.md, sops/SOP-007-MedicalDeviceFileControl.md, sops/SOP-008-DesignAndDevelopmentControl.md, sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md, records/mdf/accompanying_information_template.md, records/mdf/medical_device_file_index_template.md"
+    note: "IEC 82304-1 product-level safety, validation, identification, accompanying-information (IFU and technical description), maintenance, post-market, and product retirement/decommissioning expectations are mapped to controlled SOPs and MDF templates and completed in designated product repositories."
