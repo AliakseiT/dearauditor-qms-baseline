@@ -30,7 +30,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 - Legal entity: `ACME GmbH`
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
 - Operating model: `Remote-first`
-- Current baseline shown in this README: `1` published Quality Manual, `20` published SOPs, and `2` published WIs
+- Current baseline shown in this README: `1` published Quality Manual, `21` published SOPs, and `2` published WIs
 - Formal QMS release for this baseline: [`QMS-2026-04-09-R002`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-04-09-R002)
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNNN`, where `RNNN` is the global sequential upstream baseline release number
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
@@ -49,7 +49,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 ### Quality Manual
 
-- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R03`
+- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R04`
 
 ### SOP Library By Topic
 
@@ -59,10 +59,11 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R04`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R05`
 - [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R06`
-- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R17`
+- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R18`
 - [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R09`
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R04`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R04`
+- [SOP-022 AI Management System (ISO/IEC 42001)](sops/SOP-022-AIManagementSystem.md) - `R00`
 
 #### Development, Risk, and Release
 
@@ -93,12 +94,12 @@ Use the grouped links below for navigation. The raw machine-readable published c
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->
 | Document ID | Title | File | Effective Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-03-27 | R03 | Published |
+| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-04-25 | R04 | Published |
 | SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-03-25 | R13 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-03-25 | R04 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-03-25 | R05 | Published |
 | SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-03-18 | R06 | Published |
-| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-03-27 | R17 | Published |
+| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-04-25 | R18 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-03-25 | R03 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-03-25 | R07 | Published |
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-03-27 | R09 | Published |
@@ -114,6 +115,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-03-27 | R08 | Published |
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-27 | R11 | Published |
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-03-27 | R10 | Published |
+| SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-04-25 | R00 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-03-10 | R08 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-03-27 | R09 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->
@@ -128,7 +130,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)
 - [QMS tooling inventory and validation baseline](matrices/qms_tooling_inventory.yml)
 - [Signer registry](matrices/signer_registry.json)
-- Gap analyses: [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml)
+- Gap analyses: [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml)
 
 ## Architecture and Automation
 
