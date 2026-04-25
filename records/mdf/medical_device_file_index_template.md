@@ -60,8 +60,10 @@ Record one row per deliverable family or concrete controlled record set that bel
 | Verification and validation | `records/verification_validation/vv_plan.md`, `records/verification_validation/vv_report.md` | `R02` / `R01` | approved | Gate 2 / Gate 3 | qa_lead + engineering_lead | Formal campaign planning, execution, and release recommendation |
 | Release records | `records/configuration/release_plan.md`, `records/configuration/release_baseline_manifest.md`, `records/configuration/final_release_decision.md` | `R02` / `R01` / `R01` | approved | Gate 2 / Gate 3 | engineering_lead + qa_lead | Candidate scope, released baseline, and final authorization |
 | Declaration of conformity | `records/mdf/declaration_of_conformity.md` | `R00` | draft until placed on market | release package | qa_lead | Signed only for the placed-on-market configuration and jurisdictions in scope |
+| Accompanying information (IFU and technical description) | `records/mdf/accompanying_information.md` | `R01` | approved | release package | qa_lead + engineering_lead | Controlled IFU, user-facing labeling, and technical description delivered with the released product version |
 | Traceability summary | `records/mdf/traceability_summary.md` | `R01` | approved | Gate 3 | qa_lead | High-level dossier completeness and linkage summary |
 | Post-market and quality follow-up links | `records/feedback/`, `records/pms/`, `records/incidents/`, `records/capas/` | current | ongoing | post-release | qa_lead | Linked lifecycle records, not Gate 1 baseline artifacts |
+| Retirement / decommissioning record | `records/configuration/retirement_decision.md` | `N/A` | not applicable until product retirement | post-release | qa_lead + engineering_lead | Controlled retirement decision, user/customer impact, communication, residual-risk handling, and record retention per `SOP-020` |
 
 ## 3. Release and Change History
 

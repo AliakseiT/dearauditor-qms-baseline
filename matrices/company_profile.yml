@@ -16,6 +16,7 @@ company:
     - "Apply IEC 62304 software lifecycle, maintenance, configuration, and problem-resolution controls for regulated software."
     - "Apply ISO 14971 risk management across the software lifecycle, including cybersecurity-related harms."
     - "Apply IEC 62366-1 usability engineering for safety-related user interface design and validation."
+    - "Apply IEC 82304-1 product-safety controls for health software products operated on general computing platforms."
     - "Maintain product safety and performance through controlled lifecycle processes."
     - "Provide objective evidence and full traceability for quality decisions."
 quality_policy_statement:

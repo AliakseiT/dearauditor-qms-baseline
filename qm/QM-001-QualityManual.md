@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R03
-effective_date: 2026-03-27
+revision: R04
+effective_date: 2026-04-23
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -41,6 +41,7 @@ ACME maintains this QMS to:
 - apply IEC 62304 lifecycle and maintenance controls to regulated software
 - apply ISO 14971 risk management across the software lifecycle, including cybersecurity-related harms
 - apply IEC 62366-1 usability engineering for safety-related user interfaces
+- apply IEC 82304-1 product-safety controls for health software placed on general computing platforms
 - maintain product safety and performance through controlled lifecycle processes
 - retain objective evidence and traceability for quality decisions
 
@@ -98,6 +99,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - IEC 62304:2006+A1:2015
 - ISO 14971:2019 / EVS-EN ISO 14971:2019+A11:2021
 - IEC 62366-1:2015+A1:2020
+- IEC 82304-1:2016
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
 - Switzerland: MedDO, including software classification references
@@ -141,3 +143,4 @@ QMS tooling and validation baselines are maintained in:
 | R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |
 | R02 | 2026-03-25 | Tightened company-level scope wording, added risk-based quality framing and product performance objectives, and clarified auditor independence plus repository-of-record language. |
 | R03 | 2026-03-27 | Consolidated the standalone regulatory-lead baseline role into the QA-lead governance model and aligned the system-level role overview accordingly. |
+| R04 | 2026-04-23 | Added IEC 82304-1 health software product-safety scope to the QMS intent and standards framework. |
