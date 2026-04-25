@@ -1,0 +1,152 @@
+version: 1
+record_type: aims_register
+register_id: "AIMS-REG-<yyyy-mm-dd>"
+scope:
+  statement: "AI components inside ACME medical-device software products and AI-bearing supplier interfaces. AI tooling used to author or operate the QMS itself is out of scope unless the same tooling becomes part of a released product."
+  owner_role: "qa_lead"
+  approval_reference: ""
+  review_cadence: "quarterly"
+  next_review_due: "YYYY-MM-DD"
+ai_systems:
+  - ai_system_id: "AIMS-SYS-001"
+    name: "Example product AI component"
+    product_id: "ACME-GENERIC-SAMD"
+    intended_ai_function: "Decision-support classification example"
+    lifecycle_stage: "design|development|verification|release|production|retired"
+    classification:
+      product_safety_role: "decision_support|monitoring|administrative|other"
+      autonomy_level: "informational|advisory|automated_with_oversight|automated"
+    model_sources:
+      - source_type: "internal_model|third_party_model|hybrid"
+        identifier: "model_name_and_version"
+        provenance_reference: ""
+    data_sources:
+      - data_purpose: "training|validation|evaluation|reference"
+        origin: ""
+        licensing: ""
+        representativeness_rationale: ""
+        retention_or_deletion_control: ""
+    third_party_dependencies:
+      - supplier: ""
+        service_or_component: ""
+        evidence_reference: ""
+    owner_role: "engineering_lead"
+    evidence_reference: "product repository AI lifecycle and verification records"
+    status: "active"
+ai_risk_assessment:
+  scoring_model:
+    formula: "risk_score = impact_value * likelihood_value"
+    impact_scale:
+      I1: {label: low, value: 1}
+      I2: {label: moderate, value: 2}
+      I3: {label: high, value: 3}
+      I4: {label: severe, value: 4}
+    likelihood_scale:
+      L1: {label: unlikely, value: 1}
+      L2: {label: possible, value: 2}
+      L3: {label: likely, value: 3}
+      L4: {label: expected, value: 4}
+    treatment_bands:
+      acceptable: "1-4"
+      treatment_required: "5-9"
+      management_acceptance_required: "10-16"
+  risks:
+    - risk_id: "AIMS-RISK-001"
+      ai_system_id: "AIMS-SYS-001"
+      threat_or_failure_mode: "Out-of-distribution input causing unreliable inference"
+      potential_impact:
+        - "intended_use_misalignment"
+        - "user_overreliance"
+      existing_controls:
+        - "input validation"
+        - "human-in-the-loop oversight"
+        - "monitoring of inference confidence"
+      inherent_risk:
+        impact_code: I3
+        impact_value: 3
+        likelihood_code: L2
+        likelihood_value: 2
+        score: 6
+      treatment_decision: "mitigate"
+      treatment_plan:
+        owner_role: "engineering_lead"
+        actions:
+          - "expand evaluation dataset to cover identified edge cases"
+          - "add user-facing limitation notice in accompanying information"
+        due_date: "YYYY-MM-DD"
+        linked_change_or_capa: ""
+      residual_risk:
+        impact_code: I3
+        impact_value: 3
+        likelihood_code: L1
+        likelihood_value: 1
+        score: 3
+        acceptance: "accepted_by_role"
+        accepted_by_role: "management_representative"
+        acceptance_reference: ""
+      product_safety_link: ""
+      status: "open"
+ai_impact_assessments:
+  - assessment_id: "AIMS-IA-001"
+    ai_system_id: "AIMS-SYS-001"
+    assessment_date: "YYYY-MM-DD"
+    trigger: "introduction|intended_use_change|deployment_context_change|data_or_model_change|external_signal"
+    affected_stakeholders:
+      - "intended users"
+      - "patients or affected individuals"
+      - "operators or deployers"
+    foreseeable_benefits: ""
+    foreseeable_adverse_effects: ""
+    fairness_considerations: ""
+    accessibility_considerations: ""
+    transparency_obligations: ""
+    residual_concerns: ""
+    follow_up_actions: []
+    linked_risks: ["AIMS-RISK-001"]
+    review_and_approval:
+      reviewer_roles:
+        - "qa_lead"
+        - "management_representative"
+      approval_reference: ""
+ai_events:
+  - event_id: "AIMS-EVT-001"
+    event_type: "anomaly|drift|bias_finding|model_failure|data_failure|control_failure"
+    detected_on: "YYYY-MM-DD"
+    affected_ai_systems: []
+    summary: ""
+    triage_decision: "no_event|confirmed_event|monitor|duplicate"
+    impact_assessment:
+      intended_use: "none|potential|confirmed"
+      product_safety_or_regulatory: "none|potential|confirmed"
+      fairness_or_accessibility: "none|potential|confirmed"
+      privacy_or_information_integrity: "none|potential|confirmed"
+    containment_or_correction: ""
+    linked_records:
+      change: ""
+      capa: ""
+      supplier: ""
+      product_risk: ""
+      reportability_assessment: ""
+    status: "open|closed|monitoring"
+exceptions:
+  - exception_id: "AIMS-EXC-001"
+    control_reference: "SoA control ID or AIMS risk ID"
+    requested_by: ""
+    rationale: ""
+    compensating_controls: []
+    approved_by_role: "management_representative"
+    approval_reference: ""
+    expires_on: "YYYY-MM-DD"
+    status: "active|expired|closed"
+review_and_approval:
+  last_reviewed_on: "YYYY-MM-DD"
+  reviewer_roles:
+    - "management_representative"
+    - "qa_lead"
+    - "engineering_lead"
+  open_actions: []
+  approval:
+    meaning_of_signature: "Approved AIMS Register"
+    signer_roles:
+      - "management_representative"
+      - "qa_lead"

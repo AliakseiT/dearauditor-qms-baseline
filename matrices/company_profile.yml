@@ -18,6 +18,7 @@ company:
     - "Apply IEC 62366-1 usability engineering for safety-related user interface design and validation."
     - "Apply IEC 82304-1 product-safety controls for health software products operated on general computing platforms."
     - "Apply ISO/IEC 27001 information security governance for QMS, product, supplier, and operational information assets."
+    - "Apply ISO/IEC 42001 AI management controls for AI components inside ACME medical-device software and AI-bearing supplier interfaces, including AI lifecycle, AI risk and impact assessment, and complete Annex A control consideration. Non-product AI tooling used to author or operate the QMS remains controlled under supplier control, QMS tooling validation, document control, and change control unless it becomes part of a released product."
     - "Maintain product safety and performance through controlled lifecycle processes."
     - "Provide objective evidence and full traceability for quality decisions."
 quality_policy_statement:
@@ -57,4 +58,8 @@ quality_objective_framework:
     - id: "QO-007"
       objective: "Maintain information security controls for QMS and product lifecycle evidence"
       metric: "percent_required_isms_reviews_and_risk_treatments_completed_on_time"
+      target: ">=95%"
+    - id: "QO-008"
+      objective: "Maintain AI management controls for AI components inside released medical-device software"
+      metric: "percent_required_aims_reviews_and_impact_assessments_completed_on_time"
       target: ">=95%"

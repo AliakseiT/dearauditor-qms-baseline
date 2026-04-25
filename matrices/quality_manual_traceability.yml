@@ -1,4 +1,4 @@
-version: 5
+version: 6
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
@@ -13,6 +13,8 @@ additional_standards:
     normative_base: "IEC 82304-1:2016"
   - exact_name: "ISO/IEC 27001:2022 Information security, cybersecurity and privacy protection - Information security management systems - Requirements, including ISO/IEC 27001:2022/Amd 1:2024"
     normative_base: "ISO/IEC 27001:2022 + ISO/IEC 27001:2022/Amd 1:2024"
+  - exact_name: "ISO/IEC 42001:2023 Information technology - Artificial intelligence - Management system"
+    normative_base: "ISO/IEC 42001:2023"
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
@@ -102,6 +104,11 @@ quality_manual_sections:
     iso_clauses: ["ISO/IEC 27001 4-10", "ISO/IEC 27001 Annex A"]
     controlling_documents: ["SOP-021", "SOP-005", "SOP-001", "SOP-003", "SOP-004", "SOP-010", "SOP-011", "SOP-017"]
     status: "implemented_with_product_specific_extensions"
+  - section_id: QM-18
+    section_name: "AI management for AI components inside medical-device software"
+    iso_clauses: ["ISO/IEC 42001 4-10", "ISO/IEC 42001 Annex A"]
+    controlling_documents: ["SOP-022", "SOP-005", "SOP-008", "SOP-018", "SOP-020"]
+    status: "implemented_with_product_specific_extensions"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -143,3 +150,7 @@ supporting_definitions:
     status: "implemented_with_product_specific_extensions"
     reference: "matrices/iso_27001_gap_analysis.yml, sops/SOP-021-InformationSecurityManagement.md"
     note: "ISO/IEC 27001 ISMS scope, risk treatment, Statement of Applicability, control operation, incident, audit, review, and improvement interfaces are implemented through one dedicated ISMS SOP plus existing QMS controls."
+  - item: "AI management baseline for AI components inside medical-device software"
+    status: "implemented_with_product_specific_extensions"
+    reference: "matrices/iso_iec_42001_gap_analysis.yml, sops/SOP-022-AIManagementSystem.md"
+    note: "ISO/IEC 42001 AIMS scope, AI risk and impact assessment, Statement of Applicability, lifecycle, data, information for users, event handling, audit, review, and improvement interfaces are implemented through one dedicated AIMS SOP plus existing QMS controls. AI tooling used to author or operate the QMS itself is governed under existing supplier and tooling-validation controls."
