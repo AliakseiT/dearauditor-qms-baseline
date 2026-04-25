@@ -1,0 +1,73 @@
+version: 1
+analysis_date: "2026-04-25"
+standard:
+  exact_name: "ISO/IEC 42001:2023 Information technology - Artificial intelligence - Management system"
+  normative_base: "ISO/IEC 42001:2023"
+analysis_scope: "ACME GmbH AI components inside medical-device software products, including AI-bearing supplier interfaces and AI lifecycle controls operated through the GitHub-native QMS"
+record_templates:
+  minimum_aims_templates:
+    - "records/aims/aims_register_template.yml"
+    - "records/aims/statement_of_applicability_template.yml"
+  reused_qms_templates:
+    - "records/change/change_request_template.md"
+    - "records/suppliers/supplier_vetting_template.yml"
+    - "records/risk/risk_register_template.yml"
+    - "records/nonconformity/nonconformity_record_template.md"
+summary:
+  compact_sop_set:
+    dedicated_aims_sop:
+      - "SOP-022"
+    reused_qms_sops:
+      - "SOP-001"
+      - "SOP-002"
+      - "SOP-003"
+      - "SOP-004"
+      - "SOP-005"
+      - "SOP-006"
+      - "SOP-008"
+      - "SOP-009"
+      - "SOP-010"
+      - "SOP-011"
+      - "SOP-016"
+      - "SOP-018"
+      - "SOP-020"
+  covered_clause_groups:
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "8"
+    - "9"
+    - "10"
+    - "Annex A"
+  product_specific_or_tailored:
+    - clause: "6.1.2 AI risk assessment"
+      rationale: "Company-level method is defined in SOP-022; product-, model-, and data-specific AI risks are recorded in the product AIMS register and, when product-safety relevant, in the product risk register under SOP-018."
+    - clause: "6.1.4 AI system impact assessment"
+      rationale: "Impact assessments are required when AI is introduced or materially changes intended use, users, deployment context, training data, or model behavior. The assessment is a controlled record in the product AIMS register."
+    - clause: "6.1.3 Statement of Applicability"
+      rationale: "The SoA is required as a controlled AIMS record and maps Annex A controls to evidence and reused QMS procedures."
+    - clause: "Annex A controls"
+      rationale: "Controls are selected through the SoA. This baseline does not duplicate every control as a separate SOP; it assigns selected controls to one AIMS procedure plus existing QMS procedures."
+  outstanding_gaps: []
+clause_to_control_map:
+  "4": ["QM-001", "SOP-005", "SOP-022"]
+  "5": ["QM-001", "SOP-005", "SOP-022"]
+  "6": ["SOP-022", "SOP-016", "SOP-009", "SOP-018"]
+  "7": ["SOP-001", "SOP-011", "SOP-022"]
+  "8": ["SOP-022", "SOP-008", "SOP-009", "SOP-010", "SOP-020", "WI-001", "WI-002"]
+  "9": ["SOP-003", "SOP-004", "SOP-016", "SOP-022"]
+  "10": ["SOP-002", "SOP-022"]
+annex_a_control_operation_map:
+  policies_for_ai: ["SOP-022", "SOP-005"]
+  internal_organization: ["SOP-022", "SOP-005", "SOP-011"]
+  resources_for_ai_systems: ["SOP-022", "SOP-006", "SOP-010", "SOP-017"]
+  ai_system_lifecycle: ["SOP-022", "SOP-008", "SOP-009", "SOP-018", "SOP-020", "WI-001", "WI-002"]
+  data_for_ai_systems: ["SOP-022", "SOP-008", "SOP-020"]
+  information_for_ai_system_users: ["SOP-022", "SOP-007", "SOP-008"]
+  use_of_ai_systems: ["SOP-022", "SOP-014", "SOP-012"]
+  third_party_and_customer_relationships: ["SOP-022", "SOP-010"]
+notes:
+  - "No copyrighted standard text is included; only clause references, high-level control families, and implementation decisions."
+  - "AIMS scope is product AI only. AI tooling used to author or operate the QMS itself is governed under existing supplier control, tooling validation, and document control procedures."
+  - "AIMS operation is assumed to be GitHub-native. GitHub issues, pull requests, branch protection, Actions, releases, and signed approval evidence are controlled records where applicable."

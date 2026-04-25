@@ -32,6 +32,7 @@ Some folders are intentionally empty until the first signed and published compan
 | Start with medical device file templates | [Medical device file templates](mdf/) |
 | Start with V&V templates | [Verification and validation templates](verification_validation/) |
 | Start with release/configuration templates | [Configuration and release templates](configuration/) |
+| Start with AIMS templates | [AIMS record templates](aims/) |
 | Record a Word/PDF-origin controlled document | [External document manifest template](external/external_document_manifest_template.yml) |
 | Go back to the top-level project index | [DearAuditor Open QMS Baseline README](../README.md) |
 
@@ -54,6 +55,7 @@ Some folders are intentionally empty until the first signed and published compan
 - [Medical device file](mdf/) - classification, device description, declaration of conformity, file index, and traceability summary templates
 - [Verification and validation](verification_validation/) - V&V plan, test case, execution log, and report templates for designated product/study repositories
 - [Configuration and release](configuration/) - release readiness, final release decision, and release baseline manifest templates for designated product/study repositories
+- [AIMS](aims/) - ISO/IEC 42001 AI system inventory, AI risk, AI impact assessment, AI event, exception, and Statement of Applicability templates
 - [Validation](validation/qms-tools/) - QMS tooling validation evidence
 - [Post-market surveillance](pms/) - PMS plan and periodic report templates
 - [Feedback and complaints](feedback/complaint_case_log_template.yml) - complaint case log template
