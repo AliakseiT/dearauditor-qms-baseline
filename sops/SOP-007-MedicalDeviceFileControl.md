@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R07
-effective_date: 2026-03-25
+revision: R08
+effective_date: 2026-04-25
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -44,9 +44,10 @@ Each product MDF must include at minimum:
 6. Release history and post-market references
 7. Repository path/structure that identifies where controlled MDF records are maintained
 8. Clinical or performance evaluation references where applicable
-9. Labeling, instructions for use, and user-facing information where applicable
+9. Accompanying information, including instructions for use, user-facing labeling, and technical description, controlled per `records/mdf/accompanying_information_template.md` or an equivalent product-specific record
 10. Usability engineering file references where applicable
 11. Cybersecurity and data protection considerations where applicable
+12. Retirement, decommissioning, or disposal record reference for the released product where applicable, controlled under `SOP-020`
 
 ### 6.2 Product-Specific Governance Rules
 1. Company QMS is generic; product-specific intended use/classification is never inferred from company-level SOPs.
@@ -89,3 +90,4 @@ Each product MDF must include at minimum:
 | R05 | 2026-03-10 | Updated the upstream baseline repository naming reference used for product MDF record separation guidance. |
 | R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R07 | 2026-03-25 | Expanded MDF scope and minimum content to cover technical-documentation expectations, release-baseline traceability, and release-readiness evidence. |
+| R08 | 2026-04-25 | Made accompanying information (IFU, user-facing labeling, technical description) and product retirement/decommissioning explicit minimum MDF content with controlled template references for IEC 82304-1 clauses 7 and 8. |
