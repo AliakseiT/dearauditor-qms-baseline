@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R10
-effective_date: 2026-03-27
+revision: R11
+effective_date: 2026-04-25
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -101,6 +101,20 @@ Applies to regulated software products and significant product changes that requ
 2. Each software problem is logged with classification, impact, disposition, and linkage to affected requirements, risk items, and releases.
 3. High-severity or systemic software problems are escalated through nonconformity/CAPA and fed back into risk management and future V&V planning.
 
+### 6.8 Retirement and Decommissioning
+1. A controlled retirement decision is required when a released health software product or product version is to be withdrawn from the market, taken out of service, or otherwise removed from active distribution and support. Retirement may also be triggered through `SOP-015` for nonconformity-driven withdrawal.
+2. Each retirement decision must record at minimum:
+   - retired product or product-version identification, including released-baseline reference
+   - rationale for retirement and effective date
+   - assessment of impact on active users, customers, patients, and downstream services
+   - communication plan for affected users, customers, and applicable regulators, including withdrawal or end-of-support notice
+   - handling of residual risks and open incidents, complaints, vulnerabilities, and PMS signals at the time of retirement
+   - data retention and disposal expectations for product data, configuration, and credentials
+   - retention of released records, including release baselines, MDF, V&V, risk, and post-market evidence, per applicable retention requirements
+3. Retirement decisions are approved through the same GitHub-native lifecycle (issue or PR change context, approval, signature attestation, immutable release evidence) used for release decisions, and are linked from the product MDF index using `records/mdf/medical_device_file_index_template.md`.
+4. The product MDF status, accompanying information, and supplier/infrastructure references must be updated to reflect the retired state. Retirement may itself require coordinated PMS, complaint-handling, regulatory-reporting, and supplier-notification actions through `SOP-014`, `SOP-012`, `SOP-013`, and `SOP-010`.
+5. Retired product versions remain part of the controlled record set for the applicable retention period; they must not be reactivated as if released without a new release decision under this SOP.
+
 ## 7. Required Records
 - Software development and maintenance plan
 - Software safety classification rationale
@@ -109,6 +123,7 @@ Applies to regulated software products and significant product changes that requ
 - Configuration item list and release baseline manifest
 - Verification/validation plan, execution, configuration-capture, and report references
 - Problem-resolution and maintenance records
+- Product retirement and decommissioning decision record, linked from the product MDF index
 
 ## 8. Traceability
 | Standard Clause | Control in this SOP |
@@ -119,6 +134,7 @@ Applies to regulated software products and significant product changes that requ
 | IEC 62304 7 | Defines software risk-management interfaces to IEC 62304 activities. |
 | IEC 62304 8 | Defines configuration identification, change, and release baseline control. |
 | IEC 62304 9 | Defines problem-resolution recording and feedback. |
+| IEC 82304-1 8 | Defines product retirement and decommissioning controls, including impact assessment, communication, residual-risk handling, and record retention for released health software products. |
 
 ## 9. Related Controlled Documents
 - SOP-005 QMS Governance
@@ -144,3 +160,4 @@ Applies to regulated software products and significant product changes that requ
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R09 | 2026-03-25 | Reframed the lifecycle purpose around risk-based control, expanded scope to deployed or distributed software, and required immutable uniquely identifiable approved release baselines. |
 | R10 | 2026-03-27 | Consolidated the standalone regulatory-lead release-oversight role into the QA-lead baseline and reduced the normal final release decision group accordingly. |
+| R11 | 2026-04-25 | Added an explicit retirement and decommissioning control for released health software products covering retirement decision, user/customer impact assessment, communication, residual-risk handling, retention, and MDF linkage to close IEC 82304-1 clause 8. |
