@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R11
-effective_date: 2026-04-25
+revision: R12
+revision_date: 2026-04-27
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -147,7 +147,7 @@ Applies to regulated software products and significant product changes that requ
 - WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-06 | Initial release establishing IEC 62304 lifecycle, configuration, release, maintenance, and problem-resolution controls in the GitHub-native QMS model. |
 | R01 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and clarified the distinction between engineer execution and engineering-owner accountability. |
@@ -161,3 +161,4 @@ Applies to regulated software products and significant product changes that requ
 | R09 | 2026-03-25 | Reframed the lifecycle purpose around risk-based control, expanded scope to deployed or distributed software, and required immutable uniquely identifiable approved release baselines. |
 | R10 | 2026-03-27 | Consolidated the standalone regulatory-lead release-oversight role into the QA-lead baseline and reduced the normal final release decision group accordingly. |
 | R11 | 2026-04-25 | Added an explicit retirement and decommissioning control for released health software products covering retirement decision, user/customer impact assessment, communication, residual-risk handling, retention, and MDF linkage to close IEC 82304-1 clause 8. |
+| R12 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

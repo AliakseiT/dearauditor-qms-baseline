@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-017
 title: Infrastructure and Maintenance Control
-revision: R04
-effective_date: 2026-03-25
+revision: R05
+revision_date: 2026-04-27
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -78,10 +78,11 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 - SOP-006 Software Validation (QMS Tools)
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Normalized infrastructure accountability to the controlled engineering-owner role and added technical QMS maintainer responsibilities for shared automation. |
 | R02 | 2026-03-07 | Renamed the accountable engineering role to `engineering_lead` in the simplified role taxonomy. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Expanded infrastructure purpose wording and added data-protection, strong-authentication, and business-continuity expectations. |
+| R05 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

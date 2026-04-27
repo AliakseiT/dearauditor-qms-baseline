@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R09
-effective_date: 2026-03-25
+revision: R10
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -80,7 +80,7 @@ Training is required when:
 - SOP-005 QMS Governance
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Removed repository-specific naming and aligned training completion plus immutable publication wording to designated product/study record repositories. |
@@ -92,3 +92,4 @@ Training is required when:
 | R07 | 2026-03-10 | Replaced the legacy user training log with a generated training status register and auditor-facing training status report derived from signed training issue evidence. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R09 | 2026-03-25 | Added competence-basis criteria, pre-task training completion expectation, and effectiveness-verification wording based on assessment or supervision. |
+| R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

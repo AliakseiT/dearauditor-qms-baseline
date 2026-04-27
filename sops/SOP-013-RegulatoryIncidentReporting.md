@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-013
 title: Regulatory Incident Reporting
-revision: R05
-effective_date: 2026-03-27
+revision: R06
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -72,7 +72,7 @@ Applies to each product that qualifies as medical device software under applicab
 - SOP-002 CAPA
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Renamed the incident-process business owner role to the controlled product/regulatory owner role used in small-team deployments. |
@@ -80,3 +80,4 @@ Applies to each product that qualifies as medical device software under applicab
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Expanded regulatory-scope applicability wording, defined reportable incidents, and clarified that submission timelines follow applicable regulations. |
 | R05 | 2026-03-27 | Consolidated the standalone regulatory-lead incident-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |
+| R06 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

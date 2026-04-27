@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R06
-effective_date: 2026-04-27
+revision: R07
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -142,7 +142,7 @@ QMS tooling and validation baselines are maintained in:
 - `matrices/regulatory_market_scope.yml`
 
 ## 12. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-08 | Initial release split from SOP-005 so the QMS intent, scope, policy, objectives, and process structure are available as a standalone Quality Manual. |
 | R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |
@@ -151,3 +151,4 @@ QMS tooling and validation baselines are maintained in:
 | R04 | 2026-04-23 | Added IEC 82304-1 health software product-safety scope to the QMS intent and standards framework. |
 | R05 | 2026-04-27 | Added ISO/IEC 27001 information security governance to the QMS intent and standards framework. |
 | R06 | 2026-04-27 | Added ISO/IEC 42001 AI management controls for AI components inside ACME medical-device software to the QMS intent and standards framework. |
+| R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

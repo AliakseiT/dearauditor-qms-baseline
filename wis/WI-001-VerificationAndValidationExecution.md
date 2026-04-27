@@ -1,8 +1,8 @@
 ---
 wi_id: WI-001
 title: Verification and Validation Execution
-revision: R08
-effective_date: 2026-03-10
+revision: R09
+revision_date: 2026-04-27
 status: Published
 owner_role: engineering_lead
 related_sops:
@@ -89,7 +89,7 @@ Applies to software verification, software validation, and usability-validation 
 - V&V report with signed approval evidence
 
 ## 5. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-06 | Initial release defining GitHub-native V&V execution flow. |
 | R01 | 2026-03-06 | Clarified that product V&V execution records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |
@@ -100,3 +100,4 @@ Applies to software verification, software validation, and usability-validation 
 | R06 | 2026-03-07 | Clarified that branch-only plan and test-record drafts remain uncontrolled until the approving PR is merged. |
 | R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the V&V signature wording and used technology-neutral language. |
 | R08 | 2026-03-10 | Updated upstream template-baseline naming references for product V&V execution records. |
+| R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

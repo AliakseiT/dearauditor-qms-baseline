@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971)
-revision: R08
-effective_date: 2026-03-27
+revision: R09
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -162,7 +162,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 - SOP-014 Post-Market Surveillance
 
 ## 13. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release with unified software, use-related, and cybersecurity risk method aligned to ISO 14971. |
 | R01 | 2026-03-07 | Renamed the business-owner risk role to the controlled product/regulatory owner role used in small-team deployments. |
@@ -173,3 +173,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R06 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the ISO 14971 references in Section 11. |
 | R07 | 2026-03-25 | Refined the purpose wording, required state-of-the-art consideration in risk-control selection, and strengthened the overall residual-risk approval gate for release. |
 | R08 | 2026-03-27 | Consolidated the standalone regulatory-lead risk-file owner role into the QA-lead baseline and aligned the planning accountability wording plus ownership metadata. |
+| R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

@@ -138,7 +138,7 @@ jobs:
               "id": meta.get("qm_id", path.stem),
               "title": meta.get("title", path.stem),
               "revision": meta.get("revision", ""),
-              "effective_date": meta.get("effective_date", ""),
+              "revision_date": meta.get("revision_date", ""),
               "path": str(path),
             })
 
@@ -149,7 +149,7 @@ jobs:
               "id": meta.get("sop_id", path.stem),
               "title": meta.get("title", path.stem),
               "revision": meta.get("revision", ""),
-              "effective_date": meta.get("effective_date", ""),
+              "revision_date": meta.get("revision_date", ""),
               "path": str(path),
             })
 
@@ -162,7 +162,7 @@ jobs:
                 "id": meta.get("wi_id", path.stem),
                 "title": meta.get("title", path.stem),
                 "revision": meta.get("revision", ""),
-                "effective_date": meta.get("effective_date", ""),
+                "revision_date": meta.get("revision_date", ""),
                 "path": str(path),
               })
 

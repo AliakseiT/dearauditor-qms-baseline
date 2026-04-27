@@ -27,7 +27,7 @@ class ControlledDocument:
     path: str
     doc_id: str
     revision: str
-    effective_date: str
+    revision_date: str
     status: str
     introduction_commit: str
     approval_pr: str
@@ -80,7 +80,7 @@ def current_doc_metadata(path: str) -> dict[str, str]:
     return {
         "doc_id": parse_front_matter_value(text, doc_id_key(path)).upper(),
         "revision": parse_front_matter_value(text, "revision").upper(),
-        "effective_date": parse_front_matter_value(text, "effective_date"),
+        "revision_date": parse_front_matter_value(text, "revision_date"),
         "status": parse_front_matter_value(text, "status"),
     }
 
@@ -95,7 +95,7 @@ def current_metadata_from_text(text: str, path: str) -> dict[str, str]:
     return {
         "doc_id": parse_front_matter_value(text, doc_id_key(path)).upper(),
         "revision": parse_front_matter_value(text, "revision").upper(),
-        "effective_date": parse_front_matter_value(text, "effective_date"),
+        "revision_date": parse_front_matter_value(text, "revision_date"),
         "status": parse_front_matter_value(text, "status"),
     }
 
@@ -249,7 +249,7 @@ def build_documents(repo: str, token: str, traceability: list[str]) -> list[Cont
                 path=path,
                 doc_id=doc_id,
                 revision=metadata["revision"],
-                effective_date=metadata["effective_date"],
+                revision_date=metadata["revision_date"],
                 status=metadata["status"],
                 introduction_commit=introduction_commit,
                 approval_pr=approval_pr,

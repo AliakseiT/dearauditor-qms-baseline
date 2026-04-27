@@ -262,7 +262,7 @@ def load_doc_info(path, base_sha=None):
         doc_id=parse_front_matter_value(head_text, id_key_for_controlled_doc_path(path)),
         title=parse_front_matter_value(head_text, "title"),
         revision=parse_front_matter_value(head_text, "revision"),
-        date=parse_front_matter_value(head_text, "effective_date"),
+        date=parse_front_matter_value(head_text, "revision_date"),
         status=parse_front_matter_value(head_text, "status"),
         head_text=head_text,
         base_text=base_text,
@@ -346,7 +346,7 @@ class QMSContentGuardTests(unittest.TestCase):
             if not re.fullmatch(r"R\d{2}", doc.revision or ""):
                 failures.append(f"{doc.path}: missing or invalid revision in front matter.")
             if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", doc.date or ""):
-                failures.append(f"{doc.path}: missing or invalid effective_date in front matter.")
+                failures.append(f"{doc.path}: missing or invalid revision_date in front matter.")
         self.assert_no_failures(failures)
 
     def test_changed_documents_increment_revision(self):
@@ -393,7 +393,7 @@ class QMSContentGuardTests(unittest.TestCase):
             if not re.fullmatch(r"R\d{2}", doc.revision or ""):
                 failures.append(f"{doc.path}: missing or invalid revision in front matter.")
             if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", doc.date or ""):
-                failures.append(f"{doc.path}: missing or invalid effective_date in front matter.")
+                failures.append(f"{doc.path}: missing or invalid revision_date in front matter.")
             if doc.status != "Published":
                 failures.append(f"{doc.path}: status must be Published before release.")
             if doc.revision and doc.date:
@@ -419,7 +419,7 @@ class QMSContentGuardTests(unittest.TestCase):
                 if index_entry["revision"] != doc.revision:
                     failures.append(f"README.md published controlled document index revision mismatch for {doc_id}: {index_entry['revision']} != {doc.revision}.")
                 if index_entry["date"] != doc.date:
-                    failures.append(f"README.md published controlled document index effective date mismatch for {doc_id}: {index_entry['date']} != {doc.date}.")
+                    failures.append(f"README.md published controlled document index revision date mismatch for {doc_id}: {index_entry['date']} != {doc.date}.")
                 if index_entry["status"] != "Published":
                     failures.append(f"README.md published controlled document index status mismatch for {doc_id}: {index_entry['status']} != Published.")
 
@@ -463,7 +463,7 @@ class QMSContentGuardTests(unittest.TestCase):
                 )
             if doc.date and entry["date"] != doc.date:
                 failures.append(
-                    f"README.md published controlled document index effective date mismatch for {doc.doc_id}: {entry['date']} != {doc.date}."
+                    f"README.md published controlled document index revision date mismatch for {doc.doc_id}: {entry['date']} != {doc.date}."
                 )
         self.assert_no_failures(failures)
 

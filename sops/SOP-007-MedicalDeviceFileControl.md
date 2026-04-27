@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R08
-effective_date: 2026-04-25
+revision: R09
+revision_date: 2026-04-27
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -80,7 +80,7 @@ Each product MDF must include at minimum:
 - SOP-014 Post-Market Surveillance
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-05 | Clarified that product MDF records are maintained in designated product/study repositories and aligned release evidence model with GitHub PR plus post-merge signature attestation. |
@@ -91,3 +91,4 @@ Each product MDF must include at minimum:
 | R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R07 | 2026-03-25 | Expanded MDF scope and minimum content to cover technical-documentation expectations, release-baseline traceability, and release-readiness evidence. |
 | R08 | 2026-04-25 | Made accompanying information (IFU, user-facing labeling, technical description) and product retirement/decommissioning explicit minimum MDF content with controlled template references for IEC 82304-1 clauses 7 and 8. |
+| R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
