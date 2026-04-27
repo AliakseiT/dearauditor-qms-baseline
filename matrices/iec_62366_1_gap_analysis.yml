@@ -3,7 +3,7 @@ analysis_date: "2026-03-05"
 standard:
   exact_name: "EVS-EN 62366-1:2015+A1:2020 Medical devices - Part 1: Application of usability engineering to medical devices"
   normative_base: "IEC 62366-1:2015+A1:2020"
-analysis_scope: "ACME GmbH QMS-Lite usability engineering process for user-facing SaMD"
+analysis_scope: "ACME GmbH DearAuditor QMS baseline usability engineering process for user-facing SaMD"
 summary:
   implementation_model: "Lightweight Git-native usability engineering file in designated product/study repositories with direct risk linkage"
   outstanding_gaps: []
