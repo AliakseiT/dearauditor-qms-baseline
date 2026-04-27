@@ -46,8 +46,8 @@ jobs:
               !isRecordIndexPath(path);
             const reasons = [];
             if (hasPath('qm/') || hasPath('sops/')) reasons.push('controlled documents (/qm, /sops)');
-            if (paths.some((path) => isExecutionRecordPath(path))) reasons.push('execution records (/records, excluding templates and index pages)');
-            if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
+            if (hasPath('records/')) reasons.push('records (/records, including templates and index pages)');
+            if (paths.some((path) => path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');
 
             const policyMin = reasons.length > 0 ? 1 : 0;
@@ -169,7 +169,7 @@ jobs:
                 `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,
                 `Reviewer candidate resolution: ${candidateSummary || 'fallback role matrix only'}`,
                 `CODEOWNERS file: \`${codeownersFile || 'not found'}\``,
-                'Co-approval policy requires a non-author reviewer when PR changes include: SOP files (`/sops`), execution records under `/records` (excluding templates and index pages), or matrix/role files (`/matrices`).',
+                'Co-approval policy requires a non-author reviewer when PR changes include: controlled documents (`/qm`, `/sops`), records under `/records` (including templates and index pages), or matrix/role files (`/matrices`).',
                 `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
                 `Reviewer approval required for merge: \`${requiredReviewerSignatures > 0 ? 'yes' : 'no'}\``,
                 `Required reviewer approvals for merge: \`${requiredReviewerSignatures}\``,
@@ -246,14 +246,7 @@ jobs:
             const roleMatrixEligible = toEligible(roleMatrixCandidates);
             const selected = [];
             const selectedSet = new Set();
-            for (const login of codeownersEligible) {
-              const key = login.toLowerCase();
-              if (selectedSet.has(key)) continue;
-              selectedSet.add(key);
-              selected.push(login);
-            }
-            for (const login of roleMatrixEligible) {
-              if (selected.length >= requiredReviewerSignatures) break;
+            for (const login of [...codeownersEligible, ...roleMatrixEligible]) {
               const key = login.toLowerCase();
               if (selectedSet.has(key)) continue;
               selectedSet.add(key);
@@ -262,7 +255,7 @@ jobs:
 
             if (selected.length < requiredReviewerSignatures) {
               core.setFailed(
-                `Co-approval policy requires ${requiredReviewerSignatures} reviewer signature(s). Only ${selected.length} eligible collaborator(s) were found after evaluating CODEOWNERS (${codeownersEligible.length}) and fallback role-matrix candidates (${roleMatrixEligible.length}).`
+                `Co-approval policy requires at least ${requiredReviewerSignatures} reviewer signature(s). Only ${selected.length} eligible collaborator(s) were found after evaluating CODEOWNERS (${codeownersEligible.length}) and fallback role-matrix candidates (${roleMatrixEligible.length}).`
               );
               return;
             }
