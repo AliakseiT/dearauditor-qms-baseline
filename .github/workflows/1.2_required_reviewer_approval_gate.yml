@@ -3,7 +3,7 @@ run-name: 1.2 Reviewer Approval Gate
 
 on:
   pull_request:
-    types: [opened, edited, reopened, ready_for_review, synchronize]
+    types: [opened, edited, reopened, ready_for_review, synchronize, review_requested, review_request_removed]
   pull_request_review:
     types: [submitted, edited, dismissed]
 
@@ -122,16 +122,9 @@ jobs:
               });
               const paths = changedFiles.map((f) => String(f.filename || ''));
               const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
-              const isRecordArtifactPath = (path) => path.startsWith('records/') && /\.(md|ya?ml|json)$/i.test(path);
-              const isTemplateRecordPath = (path) => /(^|[_-])template\.(md|ya?ml|json)$/i.test(path.split('/').pop() || '');
-              const isRecordIndexPath = (path) => path.startsWith('records/') && /(^|\/)README\.md$/i.test(path);
-              const isExecutionRecordPath = (path) =>
-                isRecordArtifactPath(path) &&
-                !isTemplateRecordPath(path) &&
-                !isRecordIndexPath(path);
               if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
-              if (paths.some((path) => isExecutionRecordPath(path))) coapprovalReasons.push('execution records (/records, excluding templates and index pages)');
-              if (paths.some((path) => isExecutionRecordPath(path) && path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
+              if (hasPath('records/')) coapprovalReasons.push('records (/records, including templates and index pages)');
+              if (paths.some((path) => path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
               if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
               const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
               requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
