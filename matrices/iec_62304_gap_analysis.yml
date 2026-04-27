@@ -3,7 +3,7 @@ analysis_date: "2026-03-06"
 standard:
   exact_name: "IEC 62304:2006+A1:2015 Medical device software - Software life cycle processes"
   normative_base: "IEC 62304:2006+A1:2015"
-analysis_scope: "ACME GmbH QMS-Lite governance, templates, and GitHub-native release controls"
+analysis_scope: "ACME GmbH DearAuditor QMS baseline governance, templates, and GitHub-native release controls"
 summary:
   covered_clause_groups:
     - "4"

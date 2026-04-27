@@ -3,7 +3,7 @@ analysis_date: "2026-03-02"
 standard:
   exact_name: "EVS-EN ISO 14971:2019+A11:2021 Medical devices - Application of risk management to medical devices"
   normative_base: "ISO 14971:2019"
-analysis_scope: "ACME GmbH QMS-Lite risk management process controls"
+analysis_scope: "ACME GmbH DearAuditor QMS baseline risk management process controls"
 summary:
   implementation_model: "Single integrated risk process for hazards, failure modes, and cybersecurity risks"
   outstanding_gaps: []

@@ -3,7 +3,7 @@ analysis_date: "2026-03-08"
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
-analysis_scope: "ACME GmbH QMS-Lite repository controls and controlled-document corpus"
+analysis_scope: "ACME GmbH DearAuditor QMS baseline repository controls and controlled-document corpus"
 summary:
   covered_clause_groups:
     - "4.1-4.2"
