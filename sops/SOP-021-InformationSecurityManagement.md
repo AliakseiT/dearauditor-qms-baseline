@@ -2,7 +2,7 @@
 sop_id: SOP-021
 title: Information Security Management (ISO/IEC 27001)
 revision: R00
-effective_date: 2026-04-23
+effective_date: 2026-04-27
 status: Published
 owner_role: technical_qms_maintainer
 approver_role: management_representative
@@ -120,4 +120,4 @@ Applies to information assets used to create, approve, release, operate, support
 ## 10. Revision History
 | Revision | Effective Date | Change Summary |
 |---|---|---|
-| R00 | 2026-04-23 | Initial release establishing the compact GitHub-native ISMS procedure, ISO/IEC 27001 traceability baseline, minimum ISMS record template set, and tool-neutral evidence collection plan/report templates. |
+| R00 | 2026-04-27 | Initial release establishing the compact GitHub-native ISMS procedure, ISO/IEC 27001 traceability baseline, minimum ISMS record template set, and tool-neutral evidence collection plan/report templates. |
