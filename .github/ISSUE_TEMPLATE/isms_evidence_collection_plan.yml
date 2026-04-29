@@ -1,0 +1,76 @@
+name: ISMS Evidence Collection Plan
+description: Plan an ISO/IEC 27001 evidence collection run without mandating a specific collector.
+title: "ISMS EVIDENCE PLAN: <scope/date>"
+labels:
+  - qms
+  - isms
+  - evidence
+  - plan
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: Evidence Scope
+      description: Systems, tenants, subscriptions, repositories, reporting period, and exclusions.
+      placeholder: |
+        - systems in scope:
+        - reporting period:
+        - exclusions:
+        - linked ISMS register:
+        - linked SoA:
+    validations:
+      required: true
+
+  - type: textarea
+    id: collectors
+    attributes:
+      label: Proposed Collectors
+      description: Name the collector profiles for this run. Reusable profiles are prowler, maester, microsoft-graph, and manual-attestation. Selection here does not approve them for all future use.
+      placeholder: |
+        - collector_profile: prowler|maester|microsoft-graph|manual-attestation
+          collector:
+          target system:
+          version or pin:
+          authentication model:
+          expected output:
+    validations:
+      required: true
+
+  - type: textarea
+    id: control_mapping
+    attributes:
+      label: SoA Control Mapping
+      description: Map planned evidence objectives to SoA control IDs.
+      placeholder: |
+        | SoA Control ID | Evidence Objective | Collector Profile | Collector | Follow-Up Rule |
+        |---|---|---|---|---|
+    validations:
+      required: true
+
+  - type: textarea
+    id: safety_controls
+    attributes:
+      label: Authentication and Data Handling
+      description: Least-privilege permissions, secret handling, redaction, raw artifact retention, and no-write guarantees.
+      placeholder: |
+        - collector identity:
+        - permission scope:
+        - secret storage:
+        - redaction/access restrictions:
+        - raw artifact retention:
+    validations:
+      required: true
+
+  - type: textarea
+    id: done_criteria
+    attributes:
+      label: Done Criteria
+      description: What must be complete before the evidence run starts.
+      placeholder: |
+        - plan record prepared from records/isms/evidence_collection_plan_template.md
+        - collector versions/pins recorded
+        - authentication model approved
+        - SoA controls mapped
+        - follow-up rules defined
+    validations:
+      required: true
