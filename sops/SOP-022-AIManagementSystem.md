@@ -41,8 +41,10 @@ Applies to AI components, models, training data, inference behavior, and AI life
 
 ### 6.1 AIMS Scope and AI System Context
 1. Maintain the AIMS scope as the AI components inside released or candidate ACME medical-device software products and the supporting AI-related supplier interfaces.
-2. Record AI systems at a level sufficient to identify product, owner, model and data sources, intended AI function, AI lifecycle stage, classification, third-party dependencies, and evidence location.
-3. Product-specific AI system records and runtime monitoring evidence are maintained in the designated product repository and linked from the product dossier.
+2. Maintain the controlled AI policy baseline in `matrices/company_profile.yml` and operationalize it through this SOP and the AIMS register.
+3. Keep non-product AI tooling used to author, review, validate, or operate the QMS under supplier control, QMS tooling validation, document control, and change control unless that tooling becomes part of a released product.
+4. Record AI systems at a level sufficient to identify product, owner, model and data sources, intended AI function, AI lifecycle stage, classification, third-party dependencies, and evidence location.
+5. Product-specific AI system records and runtime monitoring evidence are maintained in the designated product repository and linked from the product dossier.
 
 ### 6.2 AI Risk Assessment and Treatment
 1. Assess AI risks when introducing or changing AI components, models, training data sources, deployment configurations, AI suppliers, or runtime monitoring.
@@ -56,8 +58,10 @@ Applies to AI components, models, training data, inference behavior, and AI life
 3. The impact assessment is a controlled record in the AIMS register and is reviewed during management review and before each release that changes AI behavior.
 
 ### 6.4 Statement of Applicability and Control Operation
-1. Maintain a Statement of Applicability that lists selected ISO/IEC 42001 Annex A controls, applicability rationale, implementation status, owner, and evidence reference.
-2. Annex A control coverage may be implemented through existing QMS procedures where the control is already governed there, including:
+1. Maintain a Statement of Applicability that accounts for the complete ISO/IEC 42001:2023 Annex A control set before approval.
+2. For each Annex A control, record applicability, applicability rationale, implementation status, implementation owner, evidence reference, linked risks, treatment or exception reference when needed, and last review date.
+3. Reconcile SoA summary counts to the control rows and do not approve the SoA while any Annex A control is unassessed.
+4. Annex A control coverage may be implemented through existing QMS procedures where the control is already governed there, including:
    - document and record integrity through `SOP-001`
    - competence and awareness through `SOP-011`
    - supplier and third-party AI provider controls through `SOP-010`
@@ -66,7 +70,7 @@ Applies to AI components, models, training data, inference behavior, and AI life
    - audit, management review, CAPA, and metrics through `SOP-003`, `SOP-004`, `SOP-002`, and `SOP-016`
    - design control and verification through `SOP-008`
    - product risk management through `SOP-018`
-3. Controls that are not fully implemented through existing QMS procedures must have explicit implementation evidence or a risk-approved treatment plan.
+5. Controls that are not fully implemented through existing QMS procedures must have explicit implementation evidence or a risk-approved treatment plan.
 
 ### 6.5 AI Lifecycle, Data, and Information Controls
 1. AI components follow the controlled software lifecycle in `SOP-020`, with AI-specific outputs: model and data provenance, training and evaluation evidence, acceptance criteria, and pre-release performance baseline.
@@ -93,8 +97,8 @@ Applies to AI components, models, training data, inference behavior, and AI life
 ## 8. Traceability
 | ISO/IEC 42001 Clause | Control in this SOP | Linked Artifact |
 |---|---|---|
-| 4 | Defines AIMS scope and AI system context interfaces. | AIMS scope record, AI system inventory |
-| 5 | Defines AI policy, AI roles, and management approval of scope, risk acceptance, and SoA. | Role matrix, governance review, management review |
+| 4 | Defines product-AI AIMS scope, AI system context interfaces, and non-product QMS AI tooling boundary. | AIMS scope record, AI system inventory |
+| 5 | Defines AI policy baseline, AI roles, and management approval of scope, risk acceptance, and SoA. | Company profile, role matrix, governance review, management review |
 | 6 | Defines AI risk assessment, AI system impact assessment, treatment, and AI objectives. | AI risk records, AI impact assessment records, SoA |
 | 7 | Defines AI competence, awareness, communication, and controlled documented information through existing QMS controls. | `SOP-001`, `SOP-011` |
 | 8 | Defines AI lifecycle, data, information for users, and operational change interfaces. | `SOP-008`, `SOP-009`, `SOP-020`, `WI-001`, `WI-002` |

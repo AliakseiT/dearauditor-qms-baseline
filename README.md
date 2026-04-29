@@ -117,7 +117,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-03-27 | R11 | Published |
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-04-25 | R11 | Published |
 | SOP-021 | Information Security Management (ISO/IEC 27001) | sops/SOP-021-InformationSecurityManagement.md | 2026-04-27 | R00 | Published |
-| SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-04-27 | R00 | Published |
+| SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-04-25 | R00 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-03-10 | R08 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-03-27 | R09 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->

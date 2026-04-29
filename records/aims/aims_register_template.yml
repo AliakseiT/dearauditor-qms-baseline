@@ -7,6 +7,16 @@ scope:
   approval_reference: ""
   review_cadence: "quarterly"
   next_review_due: "YYYY-MM-DD"
+ai_policy_baseline:
+  policy_reference: "matrices/company_profile.yml quality_policy_statement and qms_intent"
+  boundary_statement: "Product AI is governed by the AIMS. Non-product AI tooling used to author, review, validate, or operate the QMS remains controlled under supplier control, QMS tooling validation, document control, and change control unless that tooling becomes part of a released product."
+  operational_controls_reference:
+    - "sops/SOP-022-AIManagementSystem.md"
+    - "sops/SOP-010-SupplierAndPurchasingControl.md"
+    - "sops/SOP-006-SoftwareValidation.md"
+    - "sops/SOP-001-DocControl.md"
+    - "sops/SOP-009-ChangeManagement.md"
+  last_reviewed_on: "YYYY-MM-DD"
 ai_systems:
   - ai_system_id: "AIMS-SYS-001"
     name: "Example product AI component"
