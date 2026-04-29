@@ -7,6 +7,20 @@ scope:
   approval_reference: ""
   review_cadence: "quarterly"
   next_review_due: "YYYY-MM-DD"
+isms_context:
+  internal_external_issues:
+    - issue: "GitHub-native controlled QMS operation"
+      effect_on_isms: "Controlled records, approvals, release evidence, and automation must preserve confidentiality, integrity, availability, and auditability."
+  interested_parties:
+    - party: "customers/regulators/suppliers"
+      information_security_requirement: "Defined in contracts, regulatory expectations, supplier controls, or adopted standards."
+      evidence_reference: ""
+  climate_change_relevance:
+    determination: "relevant|not_relevant|not_yet_determined"
+    rationale: "Determine whether climate change is relevant to ISMS outcomes, availability expectations, supplier dependencies, infrastructure resilience, or interested-party requirements."
+    related_interested_party_requirements: []
+    actions_or_controls_required: []
+    last_reviewed_on: "YYYY-MM-DD"
 assets:
   - asset_id: "ISMS-AST-001"
     name: "DearAuditor QMS baseline repository"

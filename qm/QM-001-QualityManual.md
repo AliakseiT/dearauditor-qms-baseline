@@ -101,7 +101,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - ISO 14971:2019 / EVS-EN ISO 14971:2019+A11:2021
 - IEC 62366-1:2015+A1:2020
 - IEC 82304-1:2016
-- ISO/IEC 27001:2022
+- ISO/IEC 27001:2022, including ISO/IEC 27001:2022/Amd 1:2024
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
 - Switzerland: MedDO, including software classification references

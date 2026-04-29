@@ -87,7 +87,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 2. ACME adopts `EVS-EN 62366-1:2015+A1:2020` as the baseline standard for safety-related usability engineering.
 3. ACME adopts `IEC 62304:2006+A1:2015` as the baseline standard for software lifecycle, maintenance, configuration management, and problem resolution.
 4. ACME adopts `IEC 82304-1:2016` as the baseline standard for health software product safety, including product-level intended use, validation, identification, accompanying information, maintenance, and post-market interfaces.
-5. ACME adopts `ISO/IEC 27001:2022` as the baseline standard for information security management across QMS repositories, product information, suppliers, operations, and supporting systems.
+5. ACME adopts `ISO/IEC 27001:2022`, including `ISO/IEC 27001:2022/Amd 1:2024`, as the baseline standard for information security management across QMS repositories, product information, suppliers, operations, and supporting systems.
 6. Governance review verifies whether newly applicable standards, guidance, or changes to adopted standards affect the QMS baseline.
 7. Changes to these standards or their supporting processes must be reflected in the affected SOPs, WIs, and matrices.
 

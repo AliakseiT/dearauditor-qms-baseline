@@ -1,15 +1,15 @@
 # ISMS Record Templates
 
-This folder contains the minimum reusable records for a GitHub-native ISMS implemented under `SOP-021`.
+This folder contains the core reusable records for a GitHub-native ISMS implemented under `SOP-021`.
 
 Use these templates with the existing QMS workflow: open an issue or PR with the change context, edit the controlled record, obtain review and signature where required, merge to the controlled branch, and retain immutable release evidence when the record is published.
 
-## Minimum Record Set
+## Core Record Set
 
 | Need | Template | Notes |
 |---|---|---|
 | Define ISMS scope, assets, security risks, access reviews, incidents, vulnerabilities, exceptions, and review cadence | `isms_register_template.yml` | Use one register for small teams. Split later only when the record becomes too large to review safely. |
-| Map ISO/IEC 27001 Annex A control applicability to implementation evidence | `statement_of_applicability_template.yml` | Keep this as a separate controlled record because it is a primary audit artifact. |
+| Map ISO/IEC 27001 Annex A control applicability to implementation evidence | `statement_of_applicability_template.yml` | Keep this as a separate controlled record because it is a primary audit artifact. The SoA must account for every Annex A control before approval. |
 | Plan a tool-assisted or manual evidence collection run | `evidence_collection_plan_template.md` | Markdown with YAML front matter is used because the plan needs machine-readable metadata and auditor-readable detail. |
 | Summarize normalized collector output, findings, raw artifact hashes, and follow-up | `evidence_run_report_template.md` | Raw scanner output is supporting evidence; this report is the controlled record. |
 
@@ -46,7 +46,7 @@ Do not create duplicate ISMS records when an existing QMS record already control
 
 1. Create or update the ISMS register with the in-scope GitHub repositories, signing components, suppliers, secrets, product repositories, and runtime systems.
 2. Add information security risks and treatment decisions for material assets or changes.
-3. Update the Statement of Applicability when a control becomes applicable, not applicable, implemented, partially implemented, or risk accepted.
+3. Update the Statement of Applicability when a control becomes applicable, not applicable, implemented, partially implemented, or risk accepted; reconcile the summary so every Annex A control is accounted for before approval.
 4. Record quarterly access reviews in the ISMS register, linking review issues or PRs.
 5. Plan evidence collection using `evidence_collection_plan_template.md`, including selected collectors, authentication, control mappings, and follow-up rules.
 6. Run collectors or manual checks, keep raw artifacts with hashes, and summarize the normalized results in `evidence_run_report_template.md`.

@@ -8,13 +8,37 @@ approval:
   signer_roles:
     - "management_representative"
     - "technical_qms_maintainer"
+completion_rules:
+  required_control_set: "All ISO/IEC 27001:2022 Annex A controls"
+  total_controls_expected: 93
+  approval_condition: "Approval is permitted only after every Annex A control has one assessed row with applicability, rationale, implementation status, evidence or treatment reference, owner, and last review date."
+  allowed_applicability_values:
+    - "applicable"
+    - "not_applicable"
+  allowed_implementation_status_values:
+    - "implemented"
+    - "partially_implemented"
+    - "planned"
+    - "not_implemented"
+    - "risk_accepted"
+    - "not_applicable"
+  completion_checks:
+    all_annex_a_controls_accounted_for: false
+    applicable_controls_have_evidence_or_treatment: false
+    not_applicable_controls_have_justification: false
+    risk_accepted_or_exception_controls_have_approval_reference: false
+    summary_counts_reconciled_to_control_rows: false
 summary:
+  annex_a_control_set_complete: false
+  total_controls_expected: 93
   total_controls_assessed: 0
+  unassessed_controls: 93
   applicable_controls: 0
   not_applicable_controls: 0
   implemented_controls: 0
   partially_implemented_controls: 0
   risk_accepted_controls: 0
+  controls_requiring_treatment_or_exception: 0
 controls:
   - control_id: "A.5.example"
     control_family: "organizational"
@@ -32,7 +56,7 @@ controls:
       - "ISMS-RISK-001"
     treatment_or_exception_reference: ""
     last_reviewed_on: "YYYY-MM-DD"
-    notes: ""
+    notes: "Replace example rows with one assessed row for each Annex A control before approval."
   - control_id: "A.8.example"
     control_family: "technological"
     control_name: "Example technological control"
@@ -48,7 +72,7 @@ controls:
       - "ISMS-RISK-002"
     treatment_or_exception_reference: "ISMS-EXC-001 or change/CAPA reference"
     last_reviewed_on: "YYYY-MM-DD"
-    notes: "Replace example rows with selected Annex A controls and retain only justified non-applicable controls."
+    notes: "Replace example rows with the complete Annex A control set and retain only justified non-applicable controls."
 review_history:
   - review_date: "YYYY-MM-DD"
     reviewer_roles:
