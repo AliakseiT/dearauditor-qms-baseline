@@ -92,7 +92,7 @@ Example:
 Example:
 
 - Intended-use statement reference: `records/mdf/intended_use.md`
-- Product labeling or user-facing claims reference: `docs/regulatory/labeling_overview.md`
+- Product labeling or user-facing claims reference: `records/mdf/labeling_overview.md`
 - Marketing-claim control note: only claims aligned with intended use and approved release scope may be used
 
 ## 8. Approval Record
