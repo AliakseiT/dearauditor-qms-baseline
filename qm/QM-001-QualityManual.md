@@ -1,7 +1,7 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R05
+revision: R06
 effective_date: 2026-04-27
 status: Published
 owner_role: qa_lead
@@ -43,6 +43,7 @@ ACME maintains this QMS to:
 - apply IEC 62366-1 usability engineering for safety-related user interfaces
 - apply IEC 82304-1 product-safety controls for health software placed on general computing platforms
 - apply ISO/IEC 27001 information security governance for QMS, product, supplier, and operational information assets
+- apply ISO/IEC 42001 AI management controls for AI components inside ACME medical-device software and AI-bearing supplier interfaces
 - maintain product safety and performance through controlled lifecycle processes
 - retain objective evidence and traceability for quality decisions
 
@@ -60,6 +61,7 @@ The quality objective framework is maintained in `matrices/company_profile.yml` 
 - complete required controlled-document training on time
 - maintain management review cadence
 - ensure products perform against defined performance criteria and complaint thresholds
+- maintain information security and AI management controls for applicable QMS and product lifecycle scope
 
 Each objective must have an accountable role, a measurable indicator, and a target threshold.
 
@@ -102,6 +104,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - IEC 62366-1:2015+A1:2020
 - IEC 82304-1:2016
 - ISO/IEC 27001:2022, including ISO/IEC 27001:2022/Amd 1:2024
+- ISO/IEC 42001:2023
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
 - Switzerland: MedDO, including software classification references
@@ -147,3 +150,4 @@ QMS tooling and validation baselines are maintained in:
 | R03 | 2026-03-27 | Consolidated the standalone regulatory-lead baseline role into the QA-lead governance model and aligned the system-level role overview accordingly. |
 | R04 | 2026-04-23 | Added IEC 82304-1 health software product-safety scope to the QMS intent and standards framework. |
 | R05 | 2026-04-27 | Added ISO/IEC 27001 information security governance to the QMS intent and standards framework. |
+| R06 | 2026-04-27 | Added ISO/IEC 42001 AI management controls for AI components inside ACME medical-device software to the QMS intent and standards framework. |

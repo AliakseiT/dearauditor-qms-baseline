@@ -1,7 +1,7 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R19
+revision: R20
 effective_date: 2026-04-27
 status: Published
 owner_role: qa_lead
@@ -88,8 +88,9 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 3. ACME adopts `IEC 62304:2006+A1:2015` as the baseline standard for software lifecycle, maintenance, configuration management, and problem resolution.
 4. ACME adopts `IEC 82304-1:2016` as the baseline standard for health software product safety, including product-level intended use, validation, identification, accompanying information, maintenance, and post-market interfaces.
 5. ACME adopts `ISO/IEC 27001:2022`, including `ISO/IEC 27001:2022/Amd 1:2024`, as the baseline standard for information security management across QMS repositories, product information, suppliers, operations, and supporting systems.
-6. Governance review verifies whether newly applicable standards, guidance, or changes to adopted standards affect the QMS baseline.
-7. Changes to these standards or their supporting processes must be reflected in the affected SOPs, WIs, and matrices.
+6. ACME adopts `ISO/IEC 42001:2023` as the baseline standard for AI management for AI components inside ACME medical-device software, including AI policy, AI lifecycle, AI risk and impact assessment, and complete Annex A control consideration through a Statement of Applicability.
+7. Governance review verifies whether newly applicable standards, guidance, or changes to adopted standards affect the QMS baseline.
+8. Changes to these standards or their supporting processes must be reflected in the affected SOPs, WIs, and matrices.
 
 ### 6.10 GitHub Workflow Alignment Rule
 1. Controlled QMS changes follow a GitHub-native lifecycle: change context is established in a separate issue or directly in the pull request, then work proceeds through branch -> pull request -> required checks/approvals -> merge -> signature attestation -> immutable release evidence.
@@ -120,6 +121,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 - SOP-011 Competence, Training, and Awareness
 - SOP-017 Infrastructure and Maintenance Control
 - SOP-021 Information Security Management (ISO/IEC 27001)
+- SOP-022 AI Management System (ISO/IEC 42001)
 - SOP-018 Risk Management (ISO 14971)
 - SOP-019 Usability Engineering (IEC 62366-1)
 - SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
@@ -147,3 +149,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R17 | 2026-03-27 | Consolidated the standalone regulatory-lead governance role into the QA-lead ownership baseline and removed the redundant separate role reference. |
 | R18 | 2026-04-23 | Added IEC 82304-1 as the adopted health software product-safety baseline standard and connected it to product-level lifecycle controls. |
 | R19 | 2026-04-27 | Added ISO/IEC 27001 adoption and linked the dedicated ISMS procedure into the governance baseline. |
+| R20 | 2026-04-27 | Added ISO/IEC 42001 adoption for AI components inside ACME medical-device software and linked the dedicated AIMS procedure into the governance baseline. |

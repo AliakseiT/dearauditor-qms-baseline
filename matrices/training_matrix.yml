@@ -1,5 +1,5 @@
 ---
-version: 25
+version: 26
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -42,14 +42,15 @@ roles:
       - SOP-019
       - SOP-020
       - SOP-021
+      - SOP-022
     awareness_documents:
       - SOP-004
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-002: R04
       SOP-003: R05
-      SOP-005: R19
+      SOP-005: R20
       SOP-006: R03
       SOP-007: R08
       SOP-008: R09
@@ -66,6 +67,7 @@ roles:
       SOP-019: R11
       SOP-020: R11
       SOP-021: R00
+      SOP-022: R00
 
   engineer:
     users:
@@ -87,7 +89,7 @@ roles:
       - SOP-019
       - SOP-021
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-008: R09
       SOP-009: R09
@@ -113,11 +115,12 @@ roles:
       - SOP-018
       - SOP-020
       - SOP-021
+      - SOP-022
     awareness_documents:
       - SOP-006
       - SOP-019
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-002: R04
       SOP-007: R08
@@ -129,6 +132,7 @@ roles:
       SOP-018: R08
       SOP-020: R11
       SOP-021: R00
+      SOP-022: R00
 
   technical_qms_maintainer:
     users:
@@ -147,7 +151,7 @@ roles:
       - SOP-018
       - SOP-020
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-006: R03
       SOP-009: R09
@@ -171,7 +175,7 @@ roles:
       - SOP-020
       - SOP-021
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-008: R09
       SOP-011: R09
@@ -206,12 +210,12 @@ roles:
       - SOP-020
       - SOP-021
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-002: R04
       SOP-003: R05
       SOP-004: R06
-      SOP-005: R19
+      SOP-005: R20
       SOP-006: R03
       SOP-007: R08
       SOP-008: R09
@@ -228,6 +232,7 @@ roles:
       SOP-019: R11
       SOP-020: R11
       SOP-021: R00
+      SOP-022: R00
 
   management_representative:
     users:
@@ -255,13 +260,14 @@ roles:
       - SOP-019
       - SOP-020
       - SOP-021
+      - SOP-022
     required_revisions:
-      QM-001: R05
+      QM-001: R06
       SOP-001: R13
       SOP-002: R04
       SOP-003: R05
       SOP-004: R06
-      SOP-005: R19
+      SOP-005: R20
       SOP-006: R03
       SOP-007: R08
       SOP-008: R09
@@ -278,3 +284,4 @@ roles:
       SOP-019: R11
       SOP-020: R11
       SOP-021: R00
+      SOP-022: R00
