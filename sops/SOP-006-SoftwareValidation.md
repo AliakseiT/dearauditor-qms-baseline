@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-006
 title: Software Validation (QMS Tools)
-revision: R03
-effective_date: 2026-03-25
+revision: R04
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -77,9 +77,10 @@ Revalidation is required when:
 - SOP-005 QMS Governance
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-08 | Updated governance cross-reference after the Quality Manual was split out of SOP-005. |
 | R02 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R03 | 2026-03-25 | Generalized the purpose statement, added product-quality criticality language, required requirement-to-test traceability, and defined validated-state maintenance expectations. |
+| R04 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

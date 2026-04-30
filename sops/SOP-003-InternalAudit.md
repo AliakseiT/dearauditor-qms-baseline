@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-003
 title: Internal Audit
-revision: R05
-effective_date: 2026-03-25
+revision: R06
+revision_date: 2026-04-27
 status: Published
 owner_role: auditor
 approver_role: management_representative
@@ -77,7 +77,7 @@ Applies to all QMS processes and records, including document control, design con
 - SOP-016 Quality Metrics and Data Analysis
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full internal audit planning/execution/follow-up procedure implemented. |
@@ -85,3 +85,4 @@ Applies to all QMS processes and records, including document control, design con
 | R03 | 2026-03-07 | Renamed the controlled audit role to `auditor` and aligned wording to the simplified small-team role taxonomy. |
 | R04 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R05 | 2026-03-25 | Added explicit auditor competence expectations, required audit-plan methods/retention, and effectiveness assessment language. |
+| R06 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

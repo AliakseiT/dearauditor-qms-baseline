@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R20
-effective_date: 2026-04-27
+revision: R21
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -127,7 +127,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 - SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-01 | Initial release (skeleton content). |
 | R01 | 2026-03-01 | Expanded to full operating procedure with ACME GmbH context and governance controls. |
@@ -150,3 +150,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R18 | 2026-04-23 | Added IEC 82304-1 as the adopted health software product-safety baseline standard and connected it to product-level lifecycle controls. |
 | R19 | 2026-04-27 | Added ISO/IEC 27001 adoption and linked the dedicated ISMS procedure into the governance baseline. |
 | R20 | 2026-04-27 | Added ISO/IEC 42001 adoption for AI components inside ACME medical-device software and linked the dedicated AIMS procedure into the governance baseline. |
+| R21 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

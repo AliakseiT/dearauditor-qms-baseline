@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-001
 title: Document and Record Control
-revision: R13
-effective_date: 2026-03-25
+revision: R14
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -43,10 +43,10 @@ Applies to all controlled QMS documents and quality records maintained within re
 6. `Execution Record`: objective evidence maintained in approved target record repositories.
 
 ### 6.2 Identification and Metadata
-1. QM files must use `QM-XXX-Title.md` naming and include YAML front matter fields: `qm_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`.
-2. SOP files must use `SOP-XXX-Title.md` naming and include YAML front matter fields: `sop_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `approver_role`.
-3. WI files must use `WI-XXX-Title.md` naming and include YAML front matter fields: `wi_id`, `title`, `revision`, `effective_date`, `status`, `owner_role`, `related_sops`.
-4. Revision format is `RNN` (for example `R03`).
+1. QM files must use `QM-XXX-Title.md` naming and include YAML front matter fields: `qm_id`, `title`, `revision`, `revision_date`, `status`, `owner_role`, `approver_role`.
+2. SOP files must use `SOP-XXX-Title.md` naming and include YAML front matter fields: `sop_id`, `title`, `revision`, `revision_date`, `status`, `owner_role`, `approver_role`.
+3. WI files must use `WI-XXX-Title.md` naming and include YAML front matter fields: `wi_id`, `title`, `revision`, `revision_date`, `status`, `owner_role`, `related_sops`.
+4. Revision format is `RNN` (for example `R03`). The `revision_date` field is the date the revision text was approved on `main`; a controlled document becomes effective only when its revision is included in a published `QMS-YYYY-MM-DD-RNNN` release tag.
 
 ### 6.3 Draft, Review, and Approval
 1. All controlled document and record changes are prepared on a branch in the target repository and submitted via PR with either linked issue context or sufficient change context stated directly in the PR.
@@ -61,7 +61,7 @@ Applies to all controlled QMS documents and quality records maintained within re
 
 ### 6.4 Published Index Synchronization
 1. Any QM, SOP, or WI text change must update the Published Controlled Document Index in `README.md`.
-2. Index entries must include document ID, title, file, effective date, revision, and status.
+2. Index entries must include document ID, title, file, revision date, revision, and status.
 3. `1.4_qms_content_gate.yml` blocks PRs where controlled-document updates are not reflected in index changes.
 
 ### 6.5 Training and Role Impact Synchronization
@@ -116,7 +116,7 @@ Applies to all controlled QMS documents and quality records maintained within re
 - `README.md` Published Controlled Document Index
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full procedure content implemented for ACME GmbH. |
@@ -132,3 +132,4 @@ Applies to all controlled QMS documents and quality records maintained within re
 | R11 | 2026-03-10 | Updated upstream baseline naming, licensing, and open-source publication references used in document control. |
 | R12 | 2026-03-18 | Merged Section 6.2 SOP metadata requirements and removed top-table standards clause metadata from SOP front matter. |
 | R13 | 2026-03-25 | Clarified designated-system-of-record scope, strengthened user-account/signature controls, linked GitHub validation to SOP-006, and added explicit record-retention requirements. |
+| R14 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

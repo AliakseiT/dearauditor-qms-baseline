@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R09
-effective_date: 2026-03-27
+revision: R10
+revision_date: 2026-04-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -86,7 +86,7 @@ Classify each change as one or more of:
 - WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-06 | Added software baseline and release-manifest impact controls for regulated software changes. |
@@ -98,3 +98,4 @@ Classify each change as one or more of:
 | R07 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R08 | 2026-03-25 | Added released-product and risk-file impact assessment expectations and strengthened V&V plus release-baseline implementation controls. |
 | R09 | 2026-03-27 | Consolidated the standalone regulatory-lead execution role into the QA-lead change domain and removed the redundant separate role reference. |
+| R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-016
 title: Quality Metrics and Data Analysis
-revision: R04
-effective_date: 2026-03-25
+revision: R05
+revision_date: 2026-04-27
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -74,10 +74,11 @@ Applies to QMS and product quality indicators used in operational monitoring and
 - SOP-014 Post-Market Surveillance
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
 | R01 | 2026-03-07 | Normalized metric-source responsibility language to the controlled small-team role model and aligned objectives with the engineering evidence workflow. |
 | R02 | 2026-03-07 | Renamed generic metric-source wording from role owners to role leads to match the simplified role taxonomy. |
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Expanded the metrics purpose, aligned analysis wording to threshold-and-trend evaluation, and clarified action/CAPA triggers for adverse trends. |
+| R05 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

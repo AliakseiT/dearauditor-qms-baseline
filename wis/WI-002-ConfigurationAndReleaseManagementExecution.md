@@ -1,8 +1,8 @@
 ---
 wi_id: WI-002
 title: Configuration and Release Management Execution
-revision: R09
-effective_date: 2026-03-27
+revision: R10
+revision_date: 2026-04-27
 status: Published
 owner_role: engineering_lead
 related_sops:
@@ -95,7 +95,7 @@ Applies to product releases, significant maintenance drops, and other controlled
 - Linked approval, V&V, risk, and rollback references
 
 ## 5. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-06 | Initial release defining GitHub-native configuration and release-baseline execution flow. |
 | R01 | 2026-03-06 | Clarified that product release baseline records are maintained in designated product/study repositories using QMS Lite templates as the default baseline. |
@@ -107,3 +107,4 @@ Applies to product releases, significant maintenance drops, and other controlled
 | R07 | 2026-03-07 | Removed overly specific signature-regulation terminology from the release signature wording and used technology-neutral language. |
 | R08 | 2026-03-10 | Updated upstream template-baseline naming references for product release-baseline records. |
 | R09 | 2026-03-27 | Consolidated the standalone regulatory-lead release signer role into the QA-lead baseline and reduced the default release signer sets accordingly. |
+| R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

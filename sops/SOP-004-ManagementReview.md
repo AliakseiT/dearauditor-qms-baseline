@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R06
-effective_date: 2026-03-18
+revision: R07
+revision_date: 2026-04-27
 status: Published
 owner_role: management_representative
 approver_role: management_representative
@@ -82,7 +82,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 - SOP-016 Quality Metrics and Data Analysis
 
 ## 10. Revision History
-| Revision | Effective Date | Change Summary |
+| Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-01 | Initial placeholder release. |
 | R01 | 2026-03-02 | Full management review governance procedure implemented. |
@@ -91,3 +91,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 | R04 | 2026-03-07 | Renamed generic presenter wording from role owners to role leads to match the simplified role taxonomy. |
 | R05 | 2026-03-08 | Split the Quality Manual out of SOP-005 and linked management review to both the top-level manual and the governance procedure. |
 | R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
+| R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
