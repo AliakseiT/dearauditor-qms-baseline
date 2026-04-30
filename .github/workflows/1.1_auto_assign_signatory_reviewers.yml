@@ -50,8 +50,15 @@ jobs:
             if (paths.some((path) => path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');
 
+            const body = pr.body || '';
+            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+            if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
+              requiredSignatures = 1;
+            }
+            const explicitReviewerMinimum = Math.max(0, requiredSignatures - 1);
             const policyMin = reasons.length > 0 ? 1 : 0;
-            const effectiveRequired = policyMin;
+            const effectiveRequired = Math.max(policyMin, explicitReviewerMinimum);
 
             core.setOutput('coapproval_required', reasons.length > 0 ? 'true' : 'false');
             core.setOutput('coapproval_reasons', reasons.join('; '));
