@@ -1,0 +1,32 @@
+version: 1
+record_type: verification_validation_evidence_manifest
+required_fields:
+  manifest_id: VVEM-KIT-2026-04-30-01
+  run_id: QMS-BASELINE-PREFLIGHT-SMOKE
+  planned_run_id: VVR-KIT-2026-03-18-01
+  target_revision: fc7b66eb4818a05e908764e36d0f2a293a112f93
+  planned_execution_date: "2026-03-18"
+  generated_on: "2026-04-30"
+  execution_log_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_execution_log.yml
+  evidence_index_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_evidence_index.yml
+  report_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_report.md
+  review_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_review.md
+  artifacts:
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_execution_log.yml
+      sha256: 4310ed237c4207f89ca0431f7f288ffbd5450b0a5a52b339afac9078cc30452b
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_evidence_index.yml
+      sha256: 7dfb0c1df4516db4d53c787acf5791b79919d95accf378b991463441226cda23
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_deviation_log.md
+      sha256: 96d565080c6cca5ea9720416ec24ee7768de9d8f2311a9e23c57be71b69365f8
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_review.md
+      sha256: 94c3c99ac9ed8c1a16010b1a678135414f128d60ea8774c8a326525326ce7e1e
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_report.md
+      sha256: 38cd10fc3437bdb549d4fbd6dbf5858a46ab38478886cb15baaa752c4dc72b60
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0001/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      sha256: ca0a0e1204afd43fc69680f03578f2ef0bbee9d2adf9fff614f57419b19f799f
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0002/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      sha256: 2d4c8e145e7d943d667c7c36ccacc88d68e6eaa9fc811cf6c3df3f971cba313a
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0003/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      sha256: 0aa3b2f5f52b1ec96cf8b937b941b2545e169a302e62106d56829d341d565675
+    - path: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0101/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      sha256: 4e637aed410d2b3f811547259eaec9efb03c03ea12ddbaf1b6c384b5465fe3ec

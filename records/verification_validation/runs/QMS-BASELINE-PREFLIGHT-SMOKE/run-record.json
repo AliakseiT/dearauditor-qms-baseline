@@ -1,0 +1,204 @@
+{
+  "reportId": "VSR-KIT-2026-04-30-01",
+  "productId": "conformance-kit",
+  "suiteVersion": "0.1.0",
+  "runId": "QMS-BASELINE-PREFLIGHT-SMOKE",
+  "plannedRunId": "VVR-KIT-2026-03-18-01",
+  "targetRevision": "fc7b66eb4818a05e908764e36d0f2a293a112f93",
+  "targetRef": "QMS-2026-04-09-R002",
+  "plannedExecutionDate": "2026-03-18",
+  "reportDate": "2026-04-30",
+  "generatedAt": "2026-04-30T12:40:25.528Z",
+  "executionMode": "dry_run",
+  "browserEvidence": false,
+  "recordsRoot": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE",
+  "targetRepository": {
+    "slug": "AliakseiT/dearauditor-qms-baseline",
+    "requestedRepository": "AliakseiT/dearauditor-qms-baseline",
+    "checkoutSource": "github",
+    "originUrl": "https://github.com/AliakseiT/dearauditor-qms-baseline.git",
+    "defaultBranch": "main",
+    "currentBranch": "unknown",
+    "headRevision": "fc7b66eb4818a05e908764e36d0f2a293a112f93",
+    "exactTags": [
+      "QMS-2026-04-09-R002",
+      "sig-pr330-hc2de3ee6b44f-r01"
+    ],
+    "visibility": "public"
+  },
+  "qmsUrls": [
+    "https://sign.qms.dearauditor.ch"
+  ],
+  "environmentReferences": [
+    "AliakseiT/dearauditor-qms-baseline",
+    "https://github.com/AliakseiT/dearauditor-qms-baseline.git",
+    "fc7b66eb4818a05e908764e36d0f2a293a112f93",
+    "https://sign.qms.dearauditor.ch"
+  ],
+  "coveredRequirements": [
+    "SYS-REQ-001",
+    "SYS-REQ-004",
+    "SYS-REQ-005",
+    "SYS-REQ-006",
+    "SYS-REQ-002",
+    "SYS-REQ-003"
+  ],
+  "coveredRiskReferences": [
+    "RISK-003",
+    "RISK-004",
+    "RISK-001",
+    "RISK-002"
+  ],
+  "counts": {
+    "pass": 1,
+    "fail": 0,
+    "blocked": 0,
+    "not_run": 3
+  },
+  "evidenceArtifacts": [
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_execution_log.yml",
+      "sha256": "4310ed237c4207f89ca0431f7f288ffbd5450b0a5a52b339afac9078cc30452b"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_evidence_index.yml",
+      "sha256": "7dfb0c1df4516db4d53c787acf5791b79919d95accf378b991463441226cda23"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_deviation_log.md",
+      "sha256": "96d565080c6cca5ea9720416ec24ee7768de9d8f2311a9e23c57be71b69365f8"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_review.md",
+      "sha256": "94c3c99ac9ed8c1a16010b1a678135414f128d60ea8774c8a326525326ce7e1e"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_report.md",
+      "sha256": "38cd10fc3437bdb549d4fbd6dbf5858a46ab38478886cb15baaa752c4dc72b60"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0001/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "sha256": "ca0a0e1204afd43fc69680f03578f2ef0bbee9d2adf9fff614f57419b19f799f"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0002/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "sha256": "2d4c8e145e7d943d667c7c36ccacc88d68e6eaa9fc811cf6c3df3f971cba313a"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0003/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "sha256": "0aa3b2f5f52b1ec96cf8b937b941b2545e169a302e62106d56829d341d565675"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0101/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "sha256": "4e637aed410d2b3f811547259eaec9efb03c03ea12ddbaf1b6c384b5465fe3ec"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/vv_evidence_manifest.yml",
+      "sha256": "9d914faff0a6f6721a0bb28d647f42f73cca80ea7bf5bc1077797b3d21fb34bb"
+    }
+  ],
+  "evidenceCompleteness": {
+    "executionLog": true,
+    "evidenceIndex": true,
+    "evidenceManifest": true,
+    "report": true,
+    "review": true,
+    "perTestEvidence": true,
+    "screenshotEvidence": false
+  },
+  "results": [
+    {
+      "testCaseId": "TC-KIT-0001",
+      "title": "Controlled upstream-baseline and review-path verification",
+      "status": "pass",
+      "evidenceType": "report",
+      "evidenceReference": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0001/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "notes": "Controlled GitHub-native QMS surface and review-path prerequisites are consistent for the target profile.",
+      "observed": {
+        "targetProfile": "baseline-or-adopter-qms",
+        "baselineRevision": "",
+        "checks": {
+          "github_controlled_surface_present": true,
+          "baseline_workflow_set_present": true,
+          "qms_matrices_present": true,
+          "controlled_document_templates_present": true,
+          "baseline_scripts_present": true,
+          "repository_metadata_available": true
+        }
+      },
+      "startedAt": "2026-04-30T12:40:26.878Z",
+      "completedAt": "2026-04-30T12:40:26.885Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0002",
+      "title": "Signature flow identity and request-context verification",
+      "status": "not_run",
+      "evidenceType": "log",
+      "evidenceReference": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0002/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "notes": "Repository-side signature preflight passed, but live signer execution was intentionally not performed in this dry run.",
+      "observed": {
+        "hasUiBaseUrl": true,
+        "signatureUiBaseUrl": "https://sign.qms.dearauditor.ch",
+        "signatureCeremonyUrl": "",
+        "missingSecrets": [],
+        "hasSigners": true,
+        "browserEvidence": {
+          "requested": false
+        },
+        "queryErrors": []
+      },
+      "startedAt": "2026-04-30T12:40:26.886Z",
+      "completedAt": "2026-04-30T12:40:27.813Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0003",
+      "title": "Immutable record-publication package verification",
+      "status": "not_run",
+      "evidenceType": "artifact",
+      "evidenceReference": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0003/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "notes": "Immutable record publication is structurally configured, but no dedicated DearAuditor QMS V&V record-publication execution was performed in this dry run.",
+      "observed": {
+        "workflowExists": true,
+        "supportsVerificationValidation": true,
+        "hasVvRelease": false,
+        "releaseTags": [
+          "sig-pr265-h75fe8ac2d022-r01",
+          "sig-pr254-he2453b012ecf-r01",
+          "sig-pr248-h3f26dd2d1ced-r01",
+          "sig-pr218-hfa1b308065e8-r01",
+          "sig-pr217-hc7d87ccbd913-r01",
+          "sig-pr216-h998712c126e3-r01",
+          "sig-pr356-hc6a42436ebf0-r01",
+          "sig-pr352-h878e0fc42c9c-r01",
+          "sig-pr357-hdabc71f570c7-r01",
+          "sig-pr353-h8e864a6fa69e-r01"
+        ],
+        "queryErrors": []
+      },
+      "startedAt": "2026-04-30T12:40:27.814Z",
+      "completedAt": "2026-04-30T12:40:29.098Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0101",
+      "title": "End-to-end intended-use validation scenario",
+      "status": "not_run",
+      "evidenceType": "report",
+      "evidenceReference": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0101/QMS-BASELINE-PREFLIGHT-SMOKE.md",
+      "notes": "End-to-end intended-use validation was intentionally not executed in this dry run; it still requires a real controlled change and live multi-user execution. Repository collaboration queries are recorded as advisory dry-run context.",
+      "observed": {
+        "pendingInvitations": [],
+        "hasInaPendingInvitation": false,
+        "queryWarnings": []
+      },
+      "startedAt": "2026-04-30T12:40:29.099Z",
+      "completedAt": "2026-04-30T12:40:29.614Z"
+    }
+  ],
+  "recommendation": "dry_run_only_not_ready_for_formal_release",
+  "generatedArtifacts": {
+    "runRecordJson": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/run-record.json",
+    "validationSummaryPdf": "records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/validation-summary.pdf",
+    "evidenceBundleZip": "evidence.zip",
+    "evidenceBundleSha256": "evidence.zip.sha256"
+  }
+}

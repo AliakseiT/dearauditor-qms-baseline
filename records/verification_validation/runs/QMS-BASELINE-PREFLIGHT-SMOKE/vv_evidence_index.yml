@@ -1,0 +1,34 @@
+version: 1
+record_type: evidence_index
+required_fields:
+  evidence_index_id: TEI-KIT-2026-04-30-01
+  run_id: QMS-BASELINE-PREFLIGHT-SMOKE
+  planned_run_id: VVR-KIT-2026-03-18-01
+  target_revision: fc7b66eb4818a05e908764e36d0f2a293a112f93
+  target_ref: QMS-2026-04-09-R002
+  planned_execution_date: "2026-03-18"
+  artifacts:
+    - test_case_id: TC-KIT-0001
+      evidence_type: report
+      evidence_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0001/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      evidence_attachments: []
+      generated_on: "2026-04-30"
+      generated_at_utc: "2026-04-30T12:40:25.528Z"
+    - test_case_id: TC-KIT-0002
+      evidence_type: log
+      evidence_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0002/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      evidence_attachments: []
+      generated_on: "2026-04-30"
+      generated_at_utc: "2026-04-30T12:40:25.528Z"
+    - test_case_id: TC-KIT-0003
+      evidence_type: artifact
+      evidence_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0003/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      evidence_attachments: []
+      generated_on: "2026-04-30"
+      generated_at_utc: "2026-04-30T12:40:25.528Z"
+    - test_case_id: TC-KIT-0101
+      evidence_type: report
+      evidence_reference: records/verification_validation/runs/QMS-BASELINE-PREFLIGHT-SMOKE/execution_evidence/TC-KIT-0101/QMS-BASELINE-PREFLIGHT-SMOKE.md
+      evidence_attachments: []
+      generated_on: "2026-04-30"
+      generated_at_utc: "2026-04-30T12:40:25.528Z"
