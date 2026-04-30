@@ -10,6 +10,29 @@ on:
         description: "Optional run ID. Defaults to <target_ref>__<plan_id>__DRY-RUN-R01."
         required: false
         default: ""
+      validation_mode:
+        description: "Validation workflow mode"
+        required: true
+        default: "preflight"
+        type: choice
+        options:
+          - preflight
+          - evidence_pr
+          - publication_verify
+          - live_probe
+      validation_plan_path:
+        description: "Optional validation plan path inside the private kit checkout"
+        required: false
+        default: ""
+      browser_evidence:
+        description: "Capture browser evidence when a live ceremony URL is supplied"
+        required: true
+        default: false
+        type: boolean
+      signature_ceremony_url:
+        description: "Optional live /sign ceremony URL for browser evidence"
+        required: false
+        default: ""
       kit_repository:
         description: "Private conformance-kit repository"
         required: true
@@ -22,6 +45,20 @@ on:
         description: "Base branch for the evidence PR"
         required: true
         default: "main"
+      evidence_branch:
+        description: "Optional evidence PR branch name"
+        required: false
+        default: ""
+      open_evidence_pr:
+        description: "Open an evidence PR after generating review artifacts"
+        required: true
+        default: true
+        type: boolean
+      include_binary_evidence:
+        description: "Commit binary evidence to git instead of release/artifact-only"
+        required: true
+        default: false
+        type: boolean
       artifact_retention_days:
         description: "Temporary review artifact retention in days"
         required: true
@@ -77,13 +114,19 @@ jobs:
         env:
           REQUESTED_RUN_ID: ${{ inputs.run_id }}
           TARGET_REF: ${{ inputs.target_ref }}
+          VALIDATION_MODE: ${{ inputs.validation_mode }}
+          VALIDATION_PLAN_PATH: ${{ inputs.validation_plan_path }}
         run: |
           set -euo pipefail
-          plan_id="$(node conformance-kit/kit/dist/cli.js show-plan --json | python3 -c 'import json,sys; print(json.load(sys.stdin)["planned_run_id"])')"
+          plan_args=()
+          if [ -n "$VALIDATION_PLAN_PATH" ]; then
+            plan_args=(--plan "$GITHUB_WORKSPACE/conformance-kit/$VALIDATION_PLAN_PATH")
+          fi
+          plan_id="$(node conformance-kit/kit/dist/cli.js show-plan --json "${plan_args[@]}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["planned_run_id"])')"
           if [ -n "$REQUESTED_RUN_ID" ]; then
             run_id="$REQUESTED_RUN_ID"
           else
-            run_id="$(PLAN_ID="$plan_id" python3 -c 'import os,re; raw=f"{os.environ[\"TARGET_REF\"]}__{os.environ[\"PLAN_ID\"]}__DRY-RUN-R01"; print(re.sub(r"[^A-Za-z0-9._-]+", "-", raw).strip("-._"))')"
+            run_id="$(PLAN_ID="$plan_id" python3 -c 'import os,re; raw=f"{os.environ[\"TARGET_REF\"]}__{os.environ[\"PLAN_ID\"]}__{os.environ[\"VALIDATION_MODE\"].upper()}-R01"; print(re.sub(r"[^A-Za-z0-9._-]+", "-", raw).strip("-._"))')"
           fi
           echo "plan_id=$plan_id" >> "$GITHUB_OUTPUT"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
@@ -92,16 +135,32 @@ jobs:
         env:
           RUN_ID: ${{ steps.ids.outputs.run_id }}
           TARGET_REF: ${{ inputs.target_ref }}
+          VALIDATION_MODE: ${{ inputs.validation_mode }}
+          VALIDATION_PLAN_PATH: ${{ inputs.validation_plan_path }}
+          BROWSER_EVIDENCE: ${{ inputs.browser_evidence }}
+          SIGNATURE_CEREMONY_URL: ${{ inputs.signature_ceremony_url }}
         run: |
           set -euo pipefail
           run_root="$RUNNER_TEMP/qms-conformance-output"
-          node conformance-kit/kit/dist/cli.js run \
+          run_args=(
+            run
             --repo-root "$GITHUB_WORKSPACE/target-qms" \
-            --mode preflight \
+            --mode "$VALIDATION_MODE" \
             --run-id "$RUN_ID" \
             --target-ref "$TARGET_REF" \
             --output-dir "$run_root" \
             --bundle
+          )
+          if [ -n "$VALIDATION_PLAN_PATH" ]; then
+            run_args+=(--plan "$GITHUB_WORKSPACE/conformance-kit/$VALIDATION_PLAN_PATH")
+          fi
+          if [ "$BROWSER_EVIDENCE" = "true" ]; then
+            run_args+=(--browser-evidence)
+          fi
+          if [ -n "$SIGNATURE_CEREMONY_URL" ]; then
+            run_args+=(--signature-ceremony-url "$SIGNATURE_CEREMONY_URL")
+          fi
+          node conformance-kit/kit/dist/cli.js "${run_args[@]}"
           run_dir="$(find "$run_root" -maxdepth 1 -type d -name 'run-*' | sort | tail -n 1)"
           echo "RUN_DIR=$run_dir" >> "$GITHUB_ENV"
 
@@ -131,18 +190,30 @@ jobs:
 
       - name: Open evidence PR in target repository
         id: evidence_pr
+        if: ${{ inputs.open_evidence_pr }}
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ steps.ids.outputs.run_id }}
           REVIEW_ARTIFACT_URL: ${{ steps.review_artifacts.outputs.artifact-url }}
+          EVIDENCE_BRANCH: ${{ inputs.evidence_branch }}
+          INCLUDE_BINARY_EVIDENCE: ${{ inputs.include_binary_evidence }}
         run: |
           set -euo pipefail
-          node conformance-kit/kit/dist/cli.js open-evidence-pr \
+          pr_args=(
+            open-evidence-pr
             --run-root "$RUN_DIR" \
             --repo-root "$GITHUB_WORKSPACE/target-qms" \
             --run-id "$RUN_ID" \
             --base-branch "${{ inputs.base_branch }}" \
-            --review-bundle-url "$REVIEW_ARTIFACT_URL" | tee "$RUNNER_TEMP/evidence-pr.json"
+            --review-bundle-url "$REVIEW_ARTIFACT_URL"
+          )
+          if [ -n "$EVIDENCE_BRANCH" ]; then
+            pr_args+=(--branch "$EVIDENCE_BRANCH")
+          fi
+          if [ "$INCLUDE_BINARY_EVIDENCE" = "true" ]; then
+            pr_args+=(--include-binary-evidence)
+          fi
+          node conformance-kit/kit/dist/cli.js "${pr_args[@]}" | tee "$RUNNER_TEMP/evidence-pr.json"
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import json
           import os
@@ -159,7 +230,10 @@ jobs:
             echo "- Target ref: \`${{ inputs.target_ref }}\`"
             echo "- Kit repository/ref: \`${{ inputs.kit_repository }}@${{ inputs.kit_ref }}\`"
             echo "- Validation plan: \`${{ steps.ids.outputs.plan_id }}\`"
+            echo "- Validation mode: \`${{ inputs.validation_mode }}\`"
+            echo "- Validation plan path: \`${{ inputs.validation_plan_path || 'packaged plan' }}\`"
             echo "- Run ID: \`${{ steps.ids.outputs.run_id }}\`"
             echo "- Review artifact: ${{ steps.review_artifacts.outputs.artifact-url }}"
+            echo "- Evidence PR requested: \`${{ inputs.open_evidence_pr }}\`"
             echo "- Evidence PR: ${{ steps.evidence_pr.outputs.pull_request_url }}"
           } >> "$GITHUB_STEP_SUMMARY"
