@@ -1,0 +1,165 @@
+name: 5.2 QMS Conformance Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: "Target QMS ref, tag, or SHA under validation"
+        required: true
+      run_id:
+        description: "Optional run ID. Defaults to <target_ref>__<plan_id>__DRY-RUN-R01."
+        required: false
+        default: ""
+      kit_repository:
+        description: "Private conformance-kit repository"
+        required: true
+        default: "AliakseiT/dearauditor-qms-sdlc"
+      kit_ref:
+        description: "Private conformance-kit ref"
+        required: true
+        default: "main"
+      base_branch:
+        description: "Base branch for the evidence PR"
+        required: true
+        default: "main"
+      artifact_retention_days:
+        description: "Temporary review artifact retention in days"
+        required: true
+        default: "14"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  run-validation:
+    name: Run private kit and open evidence PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout target QMS ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref }}
+          fetch-depth: 0
+          path: target-qms
+
+      - name: Checkout private conformance kit
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.kit_repository }}
+          ref: ${{ inputs.kit_ref }}
+          token: ${{ secrets.DEARAUDITOR_QMS_KIT_TOKEN }}
+          path: conformance-kit
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.24.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+          cache-dependency-path: conformance-kit/pnpm-lock.yaml
+
+      - name: Install kit dependencies
+        working-directory: conformance-kit
+        run: pnpm install --frozen-lockfile
+
+      - name: Build private conformance kit
+        working-directory: conformance-kit
+        run: pnpm --filter @dearauditor/qms-conformance-kit build
+
+      - name: Resolve run identifiers
+        id: ids
+        env:
+          REQUESTED_RUN_ID: ${{ inputs.run_id }}
+          TARGET_REF: ${{ inputs.target_ref }}
+        run: |
+          set -euo pipefail
+          plan_id="$(node conformance-kit/kit/dist/cli.js show-plan --json | python3 -c 'import json,sys; print(json.load(sys.stdin)["planned_run_id"])')"
+          if [ -n "$REQUESTED_RUN_ID" ]; then
+            run_id="$REQUESTED_RUN_ID"
+          else
+            run_id="$(PLAN_ID="$plan_id" python3 -c 'import os,re; raw=f"{os.environ[\"TARGET_REF\"]}__{os.environ[\"PLAN_ID\"]}__DRY-RUN-R01"; print(re.sub(r"[^A-Za-z0-9._-]+", "-", raw).strip("-._"))')"
+          fi
+          echo "plan_id=$plan_id" >> "$GITHUB_OUTPUT"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+
+      - name: Run conformance kit
+        env:
+          RUN_ID: ${{ steps.ids.outputs.run_id }}
+          TARGET_REF: ${{ inputs.target_ref }}
+        run: |
+          set -euo pipefail
+          run_root="$RUNNER_TEMP/qms-conformance-output"
+          node conformance-kit/kit/dist/cli.js run \
+            --repo-root "$GITHUB_WORKSPACE/target-qms" \
+            --mode preflight \
+            --run-id "$RUN_ID" \
+            --target-ref "$TARGET_REF" \
+            --output-dir "$run_root" \
+            --bundle
+          run_dir="$(find "$run_root" -maxdepth 1 -type d -name 'run-*' | sort | tail -n 1)"
+          echo "RUN_DIR=$run_dir" >> "$GITHUB_ENV"
+
+      - name: Prepare temporary review artifacts
+        env:
+          RUN_ID: ${{ steps.ids.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          records_dir="$RUN_DIR/records/verification_validation/runs/$RUN_ID"
+          review_dir="$RUNNER_TEMP/qms-review-artifacts"
+          mkdir -p "$review_dir"
+          cp "$RUN_DIR/evidence.zip" "$review_dir/evidence.zip"
+          cp "$records_dir/validation-summary.pdf" "$review_dir/validation-summary.pdf"
+          sha256sum "$review_dir/evidence.zip" | tee "$review_dir/evidence.zip.sha256"
+          sha256sum "$review_dir/validation-summary.pdf" | tee "$review_dir/validation-summary.pdf.sha256"
+          echo "REVIEW_DIR=$review_dir" >> "$GITHUB_ENV"
+
+      - name: Upload temporary review artifacts
+        id: review_artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: qms-vv-review-${{ steps.ids.outputs.run_id }}
+          path: |
+            ${{ runner.temp }}/qms-review-artifacts/evidence.zip
+            ${{ runner.temp }}/qms-review-artifacts/validation-summary.pdf
+          retention-days: ${{ inputs.artifact_retention_days }}
+
+      - name: Open evidence PR in target repository
+        id: evidence_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ steps.ids.outputs.run_id }}
+          REVIEW_ARTIFACT_URL: ${{ steps.review_artifacts.outputs.artifact-url }}
+        run: |
+          set -euo pipefail
+          node conformance-kit/kit/dist/cli.js open-evidence-pr \
+            --run-root "$RUN_DIR" \
+            --repo-root "$GITHUB_WORKSPACE/target-qms" \
+            --run-id "$RUN_ID" \
+            --base-branch "${{ inputs.base_branch }}" \
+            --review-bundle-url "$REVIEW_ARTIFACT_URL" | tee "$RUNNER_TEMP/evidence-pr.json"
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import os
+          from pathlib import Path
+          payload = json.loads(Path(os.environ["RUNNER_TEMP"], "evidence-pr.json").read_text())
+          print(f"pull_request_url={payload.get('pullRequestUrl', '')}")
+          PY
+
+      - name: Job summary
+        run: |
+          {
+            echo "## QMS Conformance Validation"
+            echo "- Target repository: \`${{ github.repository }}\`"
+            echo "- Target ref: \`${{ inputs.target_ref }}\`"
+            echo "- Kit repository/ref: \`${{ inputs.kit_repository }}@${{ inputs.kit_ref }}\`"
+            echo "- Validation plan: \`${{ steps.ids.outputs.plan_id }}\`"
+            echo "- Run ID: \`${{ steps.ids.outputs.run_id }}\`"
+            echo "- Review artifact: ${{ steps.review_artifacts.outputs.artifact-url }}"
+            echo "- Evidence PR: ${{ steps.evidence_pr.outputs.pull_request_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
