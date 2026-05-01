@@ -1,0 +1,44 @@
+version: 1
+record_type: verification_validation_evidence_manifest
+required_fields:
+  manifest_id: VVEM-KIT-2026-05-01-01
+  run_id: QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY
+  planned_run_id: VVR-KIT-2026-03-18-01
+  target_revision: fc7b66eb4818a05e908764e36d0f2a293a112f93
+  planned_execution_date: "2026-03-18"
+  generated_on: "2026-05-01"
+  execution_log_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_execution_log.yml
+  evidence_index_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_evidence_index.yml
+  report_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_report.md
+  review_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_review.md
+  artifacts:
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_execution_log.yml
+      sha256: 142381960f3c292b844eabc7dab0125724cf203f6fe047263b04cf6cbc836a83
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_evidence_index.yml
+      sha256: 63ba8300f58497b81615321a16a4da8dca14976f0f666b6e942678ceb169afa0
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_deviation_log.md
+      sha256: 96d565080c6cca5ea9720416ec24ee7768de9d8f2311a9e23c57be71b69365f8
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_run_protocol.md
+      sha256: d28f7be1a2cc7288c3dd8ea3868cbcef1e8595df158b270bd79900102bf50362
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_validation_basis.md
+      sha256: b5b77c54473131c8730e8dd711dd06c11355cbc5ed1654562235f8dacc9d0299
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_review.md
+      sha256: aec0e2428f60e4a7b07717cd963153634b9419a1f624c806e8a3368c440f556f
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0001/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      sha256: bcf38c157065bd5bb1efa526f0709d3750f0434038240f5a6065c97c99870a53
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      sha256: 7e7a2c1cfd49092ffd1cf823c0e5f8b327537b59a46575e174aeb1e8ca06ef12
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/ceremony/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg
+      sha256: 73d77bca00487b3041b2e5d813ac299ff590969dad6ecf1bcc3ececb09e28aa1
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0003/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      sha256: 9ffefe91092be51e6f453996cedc5ea26d0b435e92951913c364f1dd480bfd27
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0101/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      sha256: 1907fa7d7798dd926cc5383ee0075eaeefabc988bbc18914a3dee980d046f45e
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0201/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      sha256: 3513b9a9c2ab5375cc56536c874bb806d8f2a70da90e3ec50a62f36fdd1c1df9
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      sha256: 1e2998ba551622875aa3c2b904241f2b84d223186d6b26830fd7aa523ec48968
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/browser/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg
+      sha256: 73d77bca00487b3041b2e5d813ac299ff590969dad6ecf1bcc3ececb09e28aa1
+    - path: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_report.md
+      sha256: 42ab9ba0efac068b9a95ddc8575395b01b139b90678974da12eee3807ef1b33b

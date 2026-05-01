@@ -1,0 +1,299 @@
+{
+  "reportId": "VSR-KIT-2026-05-01-01",
+  "productId": "conformance-kit",
+  "suiteVersion": "0.1.0",
+  "runId": "QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY",
+  "plannedRunId": "VVR-KIT-2026-03-18-01",
+  "targetRevision": "fc7b66eb4818a05e908764e36d0f2a293a112f93",
+  "targetRef": "QMS-2026-04-09-R002",
+  "plannedExecutionDate": "2026-03-18",
+  "reportDate": "2026-05-01",
+  "generatedAt": "2026-05-01T12:55:07.919Z",
+  "executionMode": "live",
+  "browserEvidence": true,
+  "recordsRoot": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY",
+  "targetRepository": {
+    "slug": "AliakseiT/dearauditor-qms-baseline",
+    "requestedRepository": "AliakseiT/dearauditor-qms-baseline",
+    "checkoutSource": "github",
+    "originUrl": "https://github.com/AliakseiT/dearauditor-qms-baseline.git",
+    "defaultBranch": "main",
+    "currentBranch": "unknown",
+    "headRevision": "fc7b66eb4818a05e908764e36d0f2a293a112f93",
+    "exactTags": [
+      "QMS-2026-04-09-R002",
+      "sig-pr330-hc2de3ee6b44f-r01"
+    ],
+    "visibility": "public"
+  },
+  "qmsUrls": [
+    "https://sign.qms.dearauditor.ch"
+  ],
+  "environmentReferences": [
+    "AliakseiT/dearauditor-qms-baseline",
+    "https://github.com/AliakseiT/dearauditor-qms-baseline.git",
+    "fc7b66eb4818a05e908764e36d0f2a293a112f93",
+    "https://sign.qms.dearauditor.ch"
+  ],
+  "coveredRequirements": [
+    "SYS-REQ-001",
+    "SYS-REQ-004",
+    "SYS-REQ-005",
+    "SYS-REQ-006",
+    "SYS-REQ-002",
+    "SYS-REQ-003"
+  ],
+  "coveredRiskReferences": [
+    "RISK-003",
+    "RISK-004",
+    "RISK-001",
+    "RISK-002"
+  ],
+  "counts": {
+    "pass": 6,
+    "fail": 0,
+    "blocked": 0,
+    "not_run": 0
+  },
+  "evidenceArtifacts": [
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_execution_log.yml",
+      "sha256": "142381960f3c292b844eabc7dab0125724cf203f6fe047263b04cf6cbc836a83"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_evidence_index.yml",
+      "sha256": "63ba8300f58497b81615321a16a4da8dca14976f0f666b6e942678ceb169afa0"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_deviation_log.md",
+      "sha256": "96d565080c6cca5ea9720416ec24ee7768de9d8f2311a9e23c57be71b69365f8"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_run_protocol.md",
+      "sha256": "d28f7be1a2cc7288c3dd8ea3868cbcef1e8595df158b270bd79900102bf50362"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_validation_basis.md",
+      "sha256": "b5b77c54473131c8730e8dd711dd06c11355cbc5ed1654562235f8dacc9d0299"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_review.md",
+      "sha256": "aec0e2428f60e4a7b07717cd963153634b9419a1f624c806e8a3368c440f556f"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0001/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "sha256": "bcf38c157065bd5bb1efa526f0709d3750f0434038240f5a6065c97c99870a53"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "sha256": "7e7a2c1cfd49092ffd1cf823c0e5f8b327537b59a46575e174aeb1e8ca06ef12"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/ceremony/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg",
+      "sha256": "73d77bca00487b3041b2e5d813ac299ff590969dad6ecf1bcc3ececb09e28aa1"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0003/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "sha256": "9ffefe91092be51e6f453996cedc5ea26d0b435e92951913c364f1dd480bfd27"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0101/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "sha256": "1907fa7d7798dd926cc5383ee0075eaeefabc988bbc18914a3dee980d046f45e"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0201/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "sha256": "3513b9a9c2ab5375cc56536c874bb806d8f2a70da90e3ec50a62f36fdd1c1df9"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "sha256": "1e2998ba551622875aa3c2b904241f2b84d223186d6b26830fd7aa523ec48968"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/browser/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg",
+      "sha256": "73d77bca00487b3041b2e5d813ac299ff590969dad6ecf1bcc3ececb09e28aa1"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_report.md",
+      "sha256": "42ab9ba0efac068b9a95ddc8575395b01b139b90678974da12eee3807ef1b33b"
+    },
+    {
+      "path": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/vv_evidence_manifest.yml",
+      "sha256": "4bb133ac2f4af0185aa339d789ca36dcf2134f06d64a5dbe1251c6efcbf600d9"
+    }
+  ],
+  "evidenceCompleteness": {
+    "executionLog": true,
+    "evidenceIndex": true,
+    "evidenceManifest": true,
+    "report": true,
+    "review": true,
+    "perTestEvidence": true,
+    "screenshotEvidence": true
+  },
+  "results": [
+    {
+      "testCaseId": "TC-KIT-0001",
+      "title": "Controlled upstream-baseline and review-path verification",
+      "status": "pass",
+      "evidenceType": "report",
+      "evidenceReference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0001/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "notes": "Controlled GitHub-native QMS surface and review-path prerequisites are consistent for the target profile.",
+      "observed": {
+        "targetProfile": "baseline-or-adopter-qms",
+        "baselineRevision": "",
+        "checks": {
+          "github_controlled_surface_present": true,
+          "baseline_workflow_set_present": true,
+          "qms_matrices_present": true,
+          "controlled_document_templates_present": true,
+          "baseline_scripts_present": true,
+          "repository_metadata_available": true
+        }
+      },
+      "startedAt": "2026-05-01T12:55:09.802Z",
+      "completedAt": "2026-05-01T12:55:09.809Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0002",
+      "title": "Signature flow identity and request-context verification",
+      "status": "pass",
+      "evidenceType": "log",
+      "evidenceReference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "notes": "Target-generated signature ceremony was discovered and browser evidence was captured when requested.",
+      "observed": {
+        "hasUiBaseUrl": true,
+        "signatureUiBaseUrl": "https://sign.qms.dearauditor.ch",
+        "signatureCeremonyUrl": "https://sign.qms.dearauditor.ch/sign?repo=AliakseiT%2Fdearauditor-qms-baseline&pr=362&signer=aliakseit&role=Quality+Assurance+Lead",
+        "signatureCeremonyUrlSource": "target_repository_signature_request",
+        "signatureCeremonyUrlSourceReference": "AliakseiT/dearauditor-qms-baseline#362",
+        "signatureCeremonyUrlDiscoveryNotes": "Ceremony URL discovered from a target repository signature request comment.",
+        "missingSecrets": [],
+        "hasSigners": true,
+        "browserEvidence": {
+          "requested": true,
+          "ok": true,
+          "url": "https://sign.qms.dearauditor.ch/sign?repo=AliakseiT%2Fdearauditor-qms-baseline&pr=362&signer=aliakseit&role=Quality+Assurance+Lead",
+          "title": "DearAuditor Open QMS Baseline Sign",
+          "screenshot_reference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/ceremony/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg",
+          "notes": "Browser page loaded and screenshot evidence was captured."
+        },
+        "queryErrors": []
+      },
+      "evidenceAttachments": [
+        "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/ceremony/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg"
+      ],
+      "startedAt": "2026-05-01T12:55:09.810Z",
+      "completedAt": "2026-05-01T12:55:16.936Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0003",
+      "title": "Immutable record-publication package verification",
+      "status": "pass",
+      "evidenceType": "artifact",
+      "evidenceReference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0003/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "notes": "Immutable V&V publication path was exercised for the live probe campaign and a V&V release is present in the target repository.",
+      "observed": {
+        "workflowExists": true,
+        "supportsVerificationValidation": true,
+        "hasVvRelease": true,
+        "releaseTags": [
+          "sig-pr362-h291c3f4e427f-r01",
+          "sig-pr265-h75fe8ac2d022-r01",
+          "sig-pr254-he2453b012ecf-r01",
+          "sig-pr248-h3f26dd2d1ced-r01",
+          "sig-pr218-hfa1b308065e8-r01",
+          "sig-pr217-hc7d87ccbd913-r01",
+          "sig-pr216-h998712c126e3-r01",
+          "vv-qms-2026-04-09-r002-vvr-kit-2026-03-18-01-live-probe-r01",
+          "sig-pr362-h291c3f4e427f-r01",
+          "sig-pr356-hc6a42436ebf0-r01"
+        ],
+        "queryErrors": []
+      },
+      "startedAt": "2026-05-01T12:55:16.937Z",
+      "completedAt": "2026-05-01T12:55:18.092Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0101",
+      "title": "End-to-end intended-use validation scenario",
+      "status": "pass",
+      "evidenceType": "report",
+      "evidenceReference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0101/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "notes": "End-to-end intended-use validation was exercised by the controlled live probe PR, which was merged and signed in the target repository.",
+      "observed": {
+        "pendingInvitations": [],
+        "hasInaPendingInvitation": false,
+        "probePrNumber": 362,
+        "probePullRequestUrl": "https://github.com/AliakseiT/dearauditor-qms-baseline/pull/362",
+        "probeMerged": true,
+        "probeAttestationCount": 2,
+        "queryWarnings": []
+      },
+      "startedAt": "2026-05-01T12:55:18.092Z",
+      "completedAt": "2026-05-01T12:55:20.966Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0201",
+      "title": "Controlled live validation probe PR creation",
+      "status": "pass",
+      "evidenceType": "report",
+      "evidenceReference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0201/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "notes": "Controlled live probe PR creation was verified from the target repository PR supplied to this verify run.",
+      "observed": {
+        "requestedPhase": "verify_probe",
+        "probePrNumber": 362,
+        "pullRequestUrl": "https://github.com/AliakseiT/dearauditor-qms-baseline/pull/362",
+        "pullRequestState": "closed",
+        "merged": true,
+        "headRef": "qms-conformance/live-probe/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE",
+        "baseRef": "main",
+        "errors": []
+      },
+      "startedAt": "2026-05-01T12:55:20.967Z",
+      "completedAt": "2026-05-01T12:55:21.680Z"
+    },
+    {
+      "testCaseId": "TC-KIT-0202",
+      "title": "Post-merge signature and publication probe verification",
+      "status": "pass",
+      "evidenceType": "report",
+      "evidenceReference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md",
+      "notes": "Live probe PR was merged and target signature evidence was found.",
+      "observed": {
+        "requestedPhase": "verify_probe",
+        "probePrNumber": 362,
+        "pullRequestUrl": "https://github.com/AliakseiT/dearauditor-qms-baseline/pull/362",
+        "merged": true,
+        "mergedAt": "2026-04-30T20:48:18Z",
+        "mergeCommitSha": "d4771a7dcf44f7108c97872ea54a4dd8a19b47e1",
+        "signatureRequestFound": true,
+        "attestationCount": 2,
+        "ceremonyUrls": [
+          "https://sign.qms.dearauditor.ch/sign?repo=AliakseiT%2Fdearauditor-qms-baseline&pr=362&signer=aliakseit&role=Quality+Assurance+Lead",
+          "https://sign.qms.dearauditor.ch/sign?repo=AliakseiT%2Fdearauditor-qms-baseline&pr=362&signer=inatsitovich&role=Quality+Assurance+Lead"
+        ],
+        "browserEvidence": {
+          "requested": true,
+          "ok": true,
+          "url": "https://sign.qms.dearauditor.ch/sign?repo=AliakseiT%2Fdearauditor-qms-baseline&pr=362&signer=aliakseit&role=Quality+Assurance+Lead",
+          "title": "DearAuditor Open QMS Baseline Sign",
+          "screenshot_reference": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/browser/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg",
+          "notes": "Browser page loaded and screenshot evidence was captured."
+        },
+        "errors": []
+      },
+      "evidenceAttachments": [
+        "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/browser/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg"
+      ],
+      "startedAt": "2026-05-01T12:55:21.681Z",
+      "completedAt": "2026-05-01T12:55:25.423Z"
+    }
+  ],
+  "recommendation": "ready_for_formal_release",
+  "generatedArtifacts": {
+    "runRecordJson": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/run-record.json",
+    "validationSummaryPdf": "records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/validation-summary.pdf",
+    "evidenceBundleZip": "evidence.zip",
+    "evidenceBundleSha256": "evidence.zip.sha256"
+  }
+}

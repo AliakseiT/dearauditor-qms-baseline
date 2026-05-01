@@ -1,0 +1,73 @@
+version: 1
+record_type: test_execution_log
+required_fields:
+  execution_id: TEX-KIT-2026-05-01-01
+  run_id: QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY
+  planned_run_id: VVR-KIT-2026-03-18-01
+  plan_reference: records/verification_validation/test_case_index.yml
+  run_plan_reference: records/verification_validation/vv_run_plan.yml
+  target_revision: fc7b66eb4818a05e908764e36d0f2a293a112f93
+  target_ref: QMS-2026-04-09-R002
+  execution_mode: live
+  executed_by: DearAuditor QMS Conformance Kit
+  planned_execution_date: "2026-03-18"
+  executed_on: "2026-05-01"
+  generated_at_utc: "2026-05-01T12:55:07.919Z"
+  execution_configuration:
+    captured_before_execution: true
+    hardware_model_or_host: AliakseiT/dearauditor-qms-baseline
+    environment_name: live
+    release_binary_reference: DearAuditor QMS Conformance Kit 0.1.0
+    supporting_software_versions:
+      - git_head=fc7b66eb4818a05e908764e36d0f2a293a112f93
+      - target_ref=QMS-2026-04-09-R002
+      - exact_tags=QMS-2026-04-09-R002,sig-pr330-hc2de3ee6b44f-r01
+      - default_branch=main
+      - visibility=public
+    configuration_notes:
+      - origin_url=https://github.com/AliakseiT/dearauditor-qms-baseline.git
+      - target_repository=AliakseiT/dearauditor-qms-baseline
+      - target_checkout_source=github
+      - current_branch=unknown
+      - workflow_files=.github/workflows/1.1_auto_assign_signatory_reviewers.yml,.github/workflows/1.2_required_reviewer_approval_gate.yml,.github/workflows/1.3_auto_merge_after_signatory_approvals.yml,.github/workflows/1.4_qms_content_gate.yml,.github/workflows/1.5_pr_description_gate.yml,.github/workflows/1.6_release_evidence_gate.yml,.github/workflows/2.1_pr_signature_request_gate.yml,.github/workflows/2.2_publish_qms_records.yml,.github/workflows/2.3_publish_qms_release.yml,.github/workflows/2.4_signature_attestation_title_page.yml,.github/workflows/2.5_signature_git_native_fallback.yml,.github/workflows/2.6_pr_signature_label_reconciliation.yml,.github/workflows/2.7_qms_release_signature_flow.yml,.github/workflows/3.1_release_training_diff.yml,.github/workflows/3.2_training_issue_signature_flow.yml,.github/workflows/3.3_refresh_training_status_pr.yml,.github/workflows/4.1_deploy_signature_worker.yml,.github/workflows/4.2_artifact_quota_cleanup.yml
+      - gh_auth_available=true
+      - gh_auth_authenticated=true
+  results:
+    - test_case_id: TC-KIT-0001
+      status: pass
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0001/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      deviation_reference: ""
+      notes: Controlled GitHub-native QMS surface and review-path prerequisites are consistent for the target profile.
+    - test_case_id: TC-KIT-0002
+      status: pass
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments:
+        - records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/ceremony/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg
+      deviation_reference: ""
+      notes: Target-generated signature ceremony was discovered and browser evidence was captured when requested.
+    - test_case_id: TC-KIT-0003
+      status: pass
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0003/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      deviation_reference: ""
+      notes: Immutable V&V publication path was exercised for the live probe campaign and a V&V release is present in the target repository.
+    - test_case_id: TC-KIT-0101
+      status: pass
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0101/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      deviation_reference: ""
+      notes: End-to-end intended-use validation was exercised by the controlled live probe PR, which was merged and signed in the target repository.
+    - test_case_id: TC-KIT-0201
+      status: pass
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0201/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      deviation_reference: ""
+      notes: Controlled live probe PR creation was verified from the target repository PR supplied to this verify run.
+    - test_case_id: TC-KIT-0202
+      status: pass
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments:
+        - records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/browser/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg
+      deviation_reference: ""
+      notes: Live probe PR was merged and target signature evidence was found.

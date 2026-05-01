@@ -1,0 +1,48 @@
+version: 1
+record_type: evidence_index
+required_fields:
+  evidence_index_id: TEI-KIT-2026-05-01-01
+  run_id: QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY
+  planned_run_id: VVR-KIT-2026-03-18-01
+  target_revision: fc7b66eb4818a05e908764e36d0f2a293a112f93
+  target_ref: QMS-2026-04-09-R002
+  planned_execution_date: "2026-03-18"
+  artifacts:
+    - test_case_id: TC-KIT-0001
+      evidence_type: report
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0001/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      generated_on: "2026-05-01"
+      generated_at_utc: "2026-05-01T12:55:07.919Z"
+    - test_case_id: TC-KIT-0002
+      evidence_type: log
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments:
+        - records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0002/ceremony/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg
+      generated_on: "2026-05-01"
+      generated_at_utc: "2026-05-01T12:55:07.919Z"
+    - test_case_id: TC-KIT-0003
+      evidence_type: artifact
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0003/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      generated_on: "2026-05-01"
+      generated_at_utc: "2026-05-01T12:55:07.919Z"
+    - test_case_id: TC-KIT-0101
+      evidence_type: report
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0101/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      generated_on: "2026-05-01"
+      generated_at_utc: "2026-05-01T12:55:07.919Z"
+    - test_case_id: TC-KIT-0201
+      evidence_type: report
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0201/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments: []
+      generated_on: "2026-05-01"
+      generated_at_utc: "2026-05-01T12:55:07.919Z"
+    - test_case_id: TC-KIT-0202
+      evidence_type: report
+      evidence_reference: records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.md
+      evidence_attachments:
+        - records/verification_validation/runs/QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY/execution_evidence/TC-KIT-0202/browser/signature-ceremony-QMS-2026-04-09-R002__VVR-KIT-2026-03-18-01__LIVE-PROBE-VERIFY.jpg
+      generated_on: "2026-05-01"
+      generated_at_utc: "2026-05-01T12:55:07.919Z"
