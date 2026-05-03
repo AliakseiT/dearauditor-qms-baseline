@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Detect co-approval policy from changed paths
+      - name: Collect PR inputs and detect co-approval policy from changed paths
         id: policy
         uses: actions/github-script@v8
         with:
@@ -50,20 +50,52 @@ jobs:
             if (paths.some((path) => path.startsWith('records/management-reviews/'))) reasons.push('management review records (/records/management-reviews)');
             if (hasPath('matrices/')) reasons.push('matrix/role files (/matrices)');
 
-            const body = pr.body || '';
-            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
-            let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
-            if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
-              requiredSignatures = 1;
-            }
-            const explicitReviewerMinimum = Math.max(0, requiredSignatures - 1);
-            const policyMin = reasons.length > 0 ? 1 : 0;
-            const effectiveRequired = Math.max(policyMin, explicitReviewerMinimum);
-
+            // Single source of truth for PR-body parsing is the Python resolver
+            // (`scripts/resolve_signature_policy.py`). We only emit raw inputs
+            // here — required-signatures math is computed downstream from the
+            // resolver output combined with `coapproval_required`. This avoids
+            // drift from the resolver's `_extract_signature_field`, which
+            // prefers the LAST `**Required Signatures:**` occurrence (PR #347 /
+            // 3277b0d) so the qm/sops exact-declaration block in
+            // .github/pull_request_template.md and any narrative prose in the
+            // Context section don't shadow the actual declaration.
             core.setOutput('coapproval_required', reasons.length > 0 ? 'true' : 'false');
             core.setOutput('coapproval_reasons', reasons.join('; '));
-            core.setOutput('effective_required_reviewer_signatures', String(effectiveRequired));
             core.setOutput('changed_paths_json', JSON.stringify(paths));
+            core.setOutput('pr_body_base64', Buffer.from(String(pr.body || ''), 'utf8').toString('base64'));
+            core.setOutput('author_login', String(pr.user?.login || ''));
+
+      - name: Resolve signature policy from PR body and approval matrix
+        id: resolver
+        env:
+          AUTHOR_LOGIN: ${{ steps.policy.outputs.author_login }}
+          PR_BODY_BASE64: ${{ steps.policy.outputs.pr_body_base64 }}
+          CHANGED_PATHS_JSON: ${{ steps.policy.outputs.changed_paths_json }}
+        run: |
+          python3 scripts/resolve_signature_policy.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --author "${AUTHOR_LOGIN}" \
+            --body-base64 "${PR_BODY_BASE64}" \
+            --paths-json "${CHANGED_PATHS_JSON}" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Compute effective required reviewer signatures
+        id: math
+        env:
+          EXPLICIT_REVIEWER_MIN: ${{ steps.resolver.outputs.required_reviewer_signatures }}
+          COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
+        run: |
+          explicit="${EXPLICIT_REVIEWER_MIN:-0}"
+          policy_min=0
+          if [ "${COAPPROVAL_REQUIRED}" = "true" ]; then
+            policy_min=1
+          fi
+          if [ "$explicit" -gt "$policy_min" ]; then
+            effective="$explicit"
+          else
+            effective="$policy_min"
+          fi
+          echo "effective_required_reviewer_signatures=$effective" >> "$GITHUB_OUTPUT"
 
       - name: Build reviewer candidates from role matrix and CODEOWNERS
         id: plan
@@ -77,7 +109,7 @@ jobs:
 
       - name: Validate candidate availability
         env:
-          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.math.outputs.effective_required_reviewer_signatures }}
           CANDIDATES_CSV: ${{ steps.plan.outputs.reviewer_candidates_csv }}
         run: |
           required="${REQUIRED_REVIEWER_SIGNATURES:-0}"
@@ -105,7 +137,7 @@ jobs:
           ROLE_MATRIX_CANDIDATES_CSV: ${{ steps.plan.outputs.role_matrix_candidates_csv }}
           CANDIDATE_SUMMARY: ${{ steps.plan.outputs.candidate_resolution_summary }}
           CODEOWNERS_FILE: ${{ steps.plan.outputs.codeowners_file }}
-          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.policy.outputs.effective_required_reviewer_signatures }}
+          REQUIRED_REVIEWER_SIGNATURES: ${{ steps.math.outputs.effective_required_reviewer_signatures }}
           ROLE_IDS: ${{ steps.plan.outputs.fallback_role_ids }}
           COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
           COAPPROVAL_REASONS: ${{ steps.policy.outputs.coapproval_reasons }}

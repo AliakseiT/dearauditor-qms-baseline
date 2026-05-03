@@ -51,7 +51,12 @@ jobs:
             }
             const body = pr.body || '';
 
-            const meaningMatch = body.match(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/i);
+            // Last-match semantics mirror scripts/resolve_signature_policy.py
+            // (`_extract_signature_field`, fixed in PR #347 / 3277b0d). The
+            // qm/sops exact-declaration block in .github/pull_request_template.md
+            // and any narrative prose in the Context section that references
+            // these field names would otherwise shadow the actual declaration.
+            const meaningMatch = [...body.matchAll(/\*\*Meaning of Signature:\*\*\s*([^\n]+)/gi)].pop() || null;
             let meaning = meaningMatch ? meaningMatch[1].trim() : '';
             if (!meaning || meaning.startsWith('[')) {
               meaning = 'Approved Quality Record';
@@ -67,7 +72,7 @@ jobs:
             }
             const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
             const isAutomationAuthor = automationBotLogins.has(authorLogin);
-            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+            const sigMatch = [...body.matchAll(/\*\*Required Signatures:\*\*\s*([^\n]+)/gi)].pop() || null;
             let required = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
             if (!Number.isInteger(required) || required < 1) {
               required = 1;
