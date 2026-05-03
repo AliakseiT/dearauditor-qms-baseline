@@ -15,7 +15,14 @@ env:
   TARGET_RECORD_BRANCH: main
 
 concurrency:
-  group: signature-title-page-comment-${{ github.event.comment.id }}
+  # Per-PR (not per-comment) so that multiple attestation comments on the
+  # same PR serialize through this workflow. Per-comment grouping let two
+  # near-simultaneous attestations both pass the completion gate, both
+  # call `gh release create --draft` for the same tag (drafts share
+  # tag_name), then race on `gh release edit --draft=false` — the loser
+  # was left as an orphan untagged draft (e.g. release id 316110206 on
+  # PR #362). See Finding 2 of issue #364.
+  group: signature-title-page-pr-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
@@ -191,6 +198,24 @@ jobs:
             const recordId = `PR-${prNumber}-H${hashShort}`;
             const sourceTargetCommit = String(pr.merge_commit_sha || pr.head?.sha || sourceNorm.target_commit || '').trim();
 
+            // Idempotency: skip publication if a signature title page has
+            // already been published for this PR + hash. The publish step
+            // posts a `<!-- signature-title-page-published -->` comment as
+            // its final action, so its presence (with a tag matching
+            // `sig-pr{prNumber}-h{hashShort}-r\d+`) means the release was
+            // successfully created. This guards against re-fires when an
+            // attestation past the threshold posts a new comment, which
+            // previously raced a duplicate publication. See Finding 2 of
+            // issue #364.
+            const publishedMarker = '<!-- signature-title-page-published -->';
+            // hashShort is sha256-prefix hex, no regex metachars to escape.
+            const tagPattern = new RegExp(`sig-pr${prNumber}-h${hashShort}-r\\d+`);
+            const alreadyPublished = comments.some((c) => {
+              const body = String(c.body || '');
+              return body.includes(publishedMarker) && tagPattern.test(body);
+            });
+            const shouldPublish = allRequiredCollected && !alreadyPublished;
+
             const aggregate = {
               schema_version: 1,
               attestation_scope: 'pr_signature_ceremony',
@@ -218,20 +243,25 @@ jobs:
             core.setOutput('required_signatures', String(requiredSignatures));
             core.setOutput('captured_signatures', String(capturedSignatures));
             core.setOutput('all_required_collected', allRequiredCollected ? 'true' : 'false');
+            core.setOutput('already_published', alreadyPublished ? 'true' : 'false');
+            core.setOutput('should_publish', shouldPublish ? 'true' : 'false');
             core.setOutput('source_target_commit', sourceTargetCommit);
+            if (alreadyPublished) {
+              core.info('Signature title page already published for this PR + hash; skipping re-publication.');
+            }
 
       - name: Setup Python
-        if: steps.aggregate.outputs.all_required_collected == 'true'
+        if: steps.aggregate.outputs.should_publish == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install render dependencies
-        if: steps.aggregate.outputs.all_required_collected == 'true'
+        if: steps.aggregate.outputs.should_publish == 'true'
         run: python -m pip install --quiet fpdf2 pyyaml
 
       - name: Generate signature title-page PDF
-        if: steps.aggregate.outputs.all_required_collected == 'true'
+        if: steps.aggregate.outputs.should_publish == 'true'
         env:
           CERT_PDF: Electronic_Signature_Certificate_PR${{ github.event.issue.number }}.pdf
         run: |
@@ -241,7 +271,7 @@ jobs:
             --record-id "${{ steps.aggregate.outputs.record_id }}"
 
       - name: Publish immutable signature page release
-        if: steps.aggregate.outputs.all_required_collected == 'true'
+        if: steps.aggregate.outputs.should_publish == 'true'
         id: publish
         env:
           GH_TOKEN: ${{ steps.app_token.outputs.token }}
@@ -354,7 +384,7 @@ jobs:
           PY
 
       - name: Comment PR with signature page preview
-        if: steps.aggregate.outputs.all_required_collected == 'true'
+        if: steps.aggregate.outputs.should_publish == 'true'
         uses: actions/github-script@v8
         env:
           PR_NUMBER: ${{ github.event.issue.number }}
