@@ -124,6 +124,10 @@ interface ExistingAttestation {
   comment_url: string;
 }
 
+interface MatchingAttestation extends ExistingAttestation {
+  user_id: string;
+}
+
 const JSON_HEADERS = { "content-type": "application/json; charset=utf-8" };
 const HTML_HEADERS = { "content-type": "text/html; charset=utf-8" };
 const PIN_TTL_SECONDS = 5184000; // 60 days
@@ -301,7 +305,9 @@ async function handleAuthCallback(request: Request, env: Env): Promise<Response>
     );
   }
 
-  const duplicate = await findExistingAttestation(state.ctx, signerLogin, repoToken, env);
+  const matches = await listMatchingAttestations(state.ctx, repoToken, env);
+  const duplicate = findAttestationForSigner(matches, signerLogin);
+  assertSignatureCapNotReached(matches, duplicate, state.ctx);
   if (duplicate) {
     const repostToken = await signToken(buildRepostSessionState(state.ctx, signerLogin, registryFullName, duplicate.attestation_id), env.SIGNATURE_STATE_SECRET);
     if (apiMode || wantsJson(request)) {
@@ -435,7 +441,9 @@ async function handlePinComplete(request: Request, env: Env): Promise<Response> 
   const pinStatusAfter = await getPinStatus(env, session.signer_id, session.signer_login);
 
   const repoToken = await resolveRepoAccessToken(session.ctx.repo, env);
-  const duplicate = await findExistingAttestation(session.ctx, session.signer_login, repoToken, env);
+  const matches = await listMatchingAttestations(session.ctx, repoToken, env);
+  const duplicate = findAttestationForSigner(matches, session.signer_login);
+  assertSignatureCapNotReached(matches, duplicate, session.ctx);
   let attestationId = duplicate?.attestation_id || "";
   let timestamp = new Date().toISOString();
   let alreadySigned = Boolean(duplicate);
@@ -987,13 +995,18 @@ async function readSignerProfile(repo: string, login: string, token: string, env
   }
 }
 
-async function findExistingAttestation(ctx: SignatureContext, signer: string, token: string, env: Env): Promise<ExistingAttestation | null> {
+async function listMatchingAttestations(
+  ctx: SignatureContext,
+  token: string,
+  env: Env
+): Promise<MatchingAttestation[]> {
   const comments = await githubGet<Array<{ body?: string; html_url?: string }>>(
     `/repos/${ctx.repo}/issues/${ctx.pr}/comments?per_page=100`,
     token,
     env
   );
 
+  const out: MatchingAttestation[] = [];
   for (const c of comments) {
     const body = c.body || "";
     if (!body.includes("<!-- SIGNATURE_ATTESTATION_V1 -->") && !body.includes("<!-- PART11_ATTESTATION_V1 -->")) continue;
@@ -1005,21 +1018,66 @@ async function findExistingAttestation(ctx: SignatureContext, signer: string, to
         String(parsed.record_number || parsed.pr_number || "") === ctx.pr &&
         String(parsed.target_hash || parsed.commit_hash || "").toLowerCase() === ctx.hash.toLowerCase() &&
         String(parsed.meaning_of_signature || "") === ctx.meaning &&
-        String(parsed.signer_role || "").toLowerCase() === ctx.role.toLowerCase() &&
-        String(parsed.user_id || "").toLowerCase() === signer.toLowerCase()
+        String(parsed.signer_role || "").toLowerCase() === ctx.role.toLowerCase()
       ) {
-        return {
+        out.push({
           attestation_id: String(parsed.attestation_id || ""),
+          user_id: String(parsed.user_id || ""),
           comment_body: body,
           comment_url: String(c.html_url || ""),
-        };
+        });
       }
     } catch {
       continue;
     }
   }
+  return out;
+}
 
-  return null;
+function findAttestationForSigner(
+  matches: MatchingAttestation[],
+  signer: string
+): ExistingAttestation | null {
+  const lower = signer.toLowerCase();
+  const m = matches.find((a) => a.user_id.toLowerCase() === lower);
+  if (!m) return null;
+  return {
+    attestation_id: m.attestation_id,
+    comment_body: m.comment_body,
+    comment_url: m.comment_url,
+  };
+}
+
+async function findExistingAttestation(
+  ctx: SignatureContext,
+  signer: string,
+  token: string,
+  env: Env
+): Promise<ExistingAttestation | null> {
+  const matches = await listMatchingAttestations(ctx, token, env);
+  return findAttestationForSigner(matches, signer);
+}
+
+function assertSignatureCapNotReached(
+  matches: MatchingAttestation[],
+  duplicate: ExistingAttestation | null,
+  ctx: SignatureContext
+): void {
+  if (duplicate) return;
+  const required = Math.max(1, Number.parseInt(ctx.required_signatures || "1", 10) || 1);
+  if (matches.length >= required) {
+    throw new Error(
+      `Signature requirement already satisfied for this record (${matches.length}/${required} attestations on file). No additional signatures are needed.`
+    );
+  }
+  // TOCTOU note: this check is read-then-act. Two ceremonies submitting PINs
+  // simultaneously can both pass this check before either posts its
+  // attestation comment, producing one extra attestation. The downstream
+  // publication workflow (.github/workflows/2.4_signature_attestation_title_page.yml)
+  // is idempotent (#367 / Finding 2 of #364), so an over-cap attestation does
+  // not produce a duplicate release. A worker-side mutex (e.g. a conditional
+  // put on PIN_KV keyed on `repo+pr+hash`) would be the next-step mitigation
+  // if the residual race becomes a concern.
 }
 
 function resolveAutomationBotLogins(): Set<string> {
