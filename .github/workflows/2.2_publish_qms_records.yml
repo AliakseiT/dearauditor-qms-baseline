@@ -165,6 +165,48 @@ jobs:
             const deadline = Date.now() + timeoutSeconds * 1000;
 
             const prBody = pr.body || '';
+            const checklistFiles = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+            const checklistPaths = checklistFiles.map((f) => String(f.filename || ''));
+            const requiresEvidenceChecklist = checklistPaths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
+              /^##\s+Evidence Review Package\b/mi.test(prBody);
+            const evidenceChecklistStatus = (body) => {
+              const lines = String(body || '').split(/\r?\n/);
+              const start = lines.findIndex((line) => /^##\s+Evidence Review Checklist\b/i.test(line));
+              if (start < 0) return { present: false, complete: true, total: 0, open: [] };
+              const next = lines.findIndex((line, index) => index > start && /^##\s+\S/.test(line));
+              const section = lines.slice(start + 1, next < 0 ? undefined : next).join('\n');
+              const items = Array.from(section.matchAll(/^\s*-\s*\[( |x|X)\]\s+(.+)$/gm));
+              const open = items
+                .filter((item) => item[1] === ' ')
+                .map((item) => String(item[2] || '').trim())
+                .filter(Boolean);
+              return {
+                present: true,
+                complete: items.length > 0 && open.length === 0,
+                total: items.length,
+                open,
+              };
+            };
+            const checklist = evidenceChecklistStatus(prBody);
+            if (requiresEvidenceChecklist && !checklist.present) {
+              core.setFailed(
+                `PR #${prNumber} is an evidence-package PR but has no "## Evidence Review Checklist" section. Record publishing is blocked.`
+              );
+              return;
+            }
+            if (checklist.present && !checklist.complete) {
+              core.setFailed(
+                checklist.total === 0
+                  ? `PR #${prNumber} has an Evidence Review Checklist section but no checkable items. Record publishing is blocked.`
+                  : `PR #${prNumber} Evidence Review Checklist is incomplete; ${checklist.open.length} unchecked item(s) remain. Record publishing is blocked.`
+              );
+              return;
+            }
             const commentsBeforeWait = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,

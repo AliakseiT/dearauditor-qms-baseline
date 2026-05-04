@@ -82,6 +82,67 @@ jobs:
               }
               return;
             }
+            const disableAutoMerge = async (reason) => {
+              if (!fresh.auto_merge) {
+                core.info(reason);
+                return;
+              }
+              try {
+                await github.graphql(
+                  `mutation($pullRequestId: ID!) {
+                    disablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId}) {
+                      pullRequest { number }
+                    }
+                  }`,
+                  { pullRequestId: fresh.node_id }
+                );
+                core.info(`${reason} Disabled auto-merge for PR #${pr.number}.`);
+              } catch (error) {
+                core.warning(`Could not disable auto-merge for PR #${pr.number}: ${error.message}`);
+              }
+            };
+            const checklistFiles = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const checklistPaths = checklistFiles.map((f) => String(f.filename || ''));
+            const requiresEvidenceChecklist = checklistPaths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
+              /^##\s+Evidence Review Package\b/mi.test(fresh.body || '');
+            const evidenceChecklistStatus = (body) => {
+              const lines = String(body || '').split(/\r?\n/);
+              const start = lines.findIndex((line) => /^##\s+Evidence Review Checklist\b/i.test(line));
+              if (start < 0) return { present: false, complete: true, total: 0, open: [] };
+              const next = lines.findIndex((line, index) => index > start && /^##\s+\S/.test(line));
+              const section = lines.slice(start + 1, next < 0 ? undefined : next).join('\n');
+              const items = Array.from(section.matchAll(/^\s*-\s*\[( |x|X)\]\s+(.+)$/gm));
+              const open = items
+                .filter((item) => item[1] === ' ')
+                .map((item) => String(item[2] || '').trim())
+                .filter(Boolean);
+              return {
+                present: true,
+                complete: items.length > 0 && open.length === 0,
+                total: items.length,
+                open,
+              };
+            };
+            const checklist = evidenceChecklistStatus(fresh.body || '');
+            if (requiresEvidenceChecklist && !checklist.present) {
+              await disableAutoMerge(`PR #${pr.number} is an evidence-package PR but has no Evidence Review Checklist section.`);
+              core.setFailed('Evidence Review Checklist must be present and complete in the PR body before auto-merge can be enabled.');
+              return;
+            }
+            if (checklist.present && !checklist.complete) {
+              await disableAutoMerge(
+                checklist.total === 0
+                  ? `PR #${pr.number} has an Evidence Review Checklist section but no checkable items.`
+                  : `PR #${pr.number} Evidence Review Checklist is incomplete; ${checklist.open.length} unchecked item(s) remain.`
+              );
+              core.setFailed('Evidence Review Checklist must be completed in the PR body before auto-merge can be enabled.');
+              return;
+            }
             const headSha = (fresh.head?.sha || '').toLowerCase();
             const author = String(fresh.user?.login || '').toLowerCase();
             const requested = (fresh.requested_reviewers || []).map((r) => String(r.login || '').toLowerCase()).filter(Boolean);
