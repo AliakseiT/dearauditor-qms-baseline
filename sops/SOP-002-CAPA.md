@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-002
 title: Corrective and Preventive Action (CAPA)
-revision: R05
-revision_date: 2026-04-27
+revision: R06
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -94,3 +94,4 @@ Applies to quality system and product lifecycle nonconformities originating from
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Added trend-based CAPA initiation criteria, severity/frequency evaluation, released-product impact assessment, and explicit risk-file update expectations. |
 | R05 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R06 | 2026-05-04 | Standardize standards citations to specific versions. |

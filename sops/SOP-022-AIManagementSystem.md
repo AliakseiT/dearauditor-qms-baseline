@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-022
 title: AI Management System (ISO/IEC 42001:2023)
-revision: R01
-revision_date: 2026-04-27
+revision: R02
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -130,3 +130,4 @@ Applies to AI components, models, training data, inference behavior, and AI life
 |---|---|---|
 | R00 | 2026-04-25 | Initial release establishing the GitHub-native AIMS procedure, ISO/IEC 42001:2023 traceability baseline, AIMS register and Statement of Applicability templates, and AI lifecycle/impact/event interfaces to existing QMS controls. |
 | R01 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R02 | 2026-05-04 | Standardize standards citations to specific versions. |

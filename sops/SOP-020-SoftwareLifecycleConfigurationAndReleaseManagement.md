@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
-revision: R12
-revision_date: 2026-04-27
+revision: R13
+revision_date: 2026-05-04
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -162,3 +162,4 @@ Applies to regulated software products and significant product changes that requ
 | R10 | 2026-03-27 | Consolidated the standalone regulatory-lead release-oversight role into the QA-lead baseline and reduced the normal final release decision group accordingly. |
 | R11 | 2026-04-25 | Added an explicit retirement and decommissioning control for released health software products covering retirement decision, user/customer impact assessment, communication, residual-risk handling, retention, and MDF linkage to close IEC 82304-1:2016 clause 8. |
 | R12 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R13 | 2026-05-04 | Standardize standards citations to specific versions. |

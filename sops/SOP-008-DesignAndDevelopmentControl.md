@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R10
-revision_date: 2026-04-27
+revision: R11
+revision_date: 2026-05-04
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -126,3 +126,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R08 | 2026-03-25 | Added explicit lifecycle risk-management integration, expanded design transfer expectations, and linked design records to the MDF. |
 | R09 | 2026-03-27 | Consolidated the standalone regulatory-lead responsibilities into the QA-lead role and reduced the design-input baseline signer set accordingly. |
 | R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R11 | 2026-05-04 | Standardize standards citations to specific versions. |

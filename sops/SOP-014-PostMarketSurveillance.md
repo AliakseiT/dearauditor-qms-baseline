@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-014
 title: Post-Market Surveillance
-revision: R06
-revision_date: 2026-04-27
+revision: R07
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: qa_lead
@@ -83,3 +83,4 @@ Applies to all released products and product versions in active use.
 | R04 | 2026-03-25 | Expanded PMS-plan minimum content, generalized active-product trend frequency wording, and required maintained per-product PMS reports. |
 | R05 | 2026-03-27 | Consolidated the standalone regulatory-lead PMS-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |
 | R06 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R07 | 2026-05-04 | Standardize standards citations to specific versions. |

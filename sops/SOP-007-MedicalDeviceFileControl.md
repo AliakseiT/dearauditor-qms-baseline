@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R09
-revision_date: 2026-04-27
+revision: R10
+revision_date: 2026-05-04
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -92,3 +92,4 @@ Each product MDF must include at minimum:
 | R07 | 2026-03-25 | Expanded MDF scope and minimum content to cover technical-documentation expectations, release-baseline traceability, and release-readiness evidence. |
 | R08 | 2026-04-25 | Made accompanying information (IFU, user-facing labeling, technical description) and product retirement/decommissioning explicit minimum MDF content with controlled template references for IEC 82304-1:2016 clauses 7 and 8. |
 | R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R10 | 2026-05-04 | Standardize standards citations to specific versions. |

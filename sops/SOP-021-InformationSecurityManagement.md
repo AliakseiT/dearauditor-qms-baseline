@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-021
 title: Information Security Management (ISO/IEC 27001:2022)
-revision: R01
-revision_date: 2026-04-27
+revision: R02
+revision_date: 2026-05-04
 status: Published
 owner_role: technical_qms_maintainer
 approver_role: management_representative
@@ -136,3 +136,4 @@ Applies to information assets used to create, approve, release, operate, support
 |---|---|---|
 | R00 | 2026-04-27 | Initial release establishing the GitHub-native ISMS procedure, ISO/IEC 27001:2022 traceability baseline, required ISMS record template set, and tool-neutral evidence collection plan/report templates. |
 | R01 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R02 | 2026-05-04 | Standardize standards citations to specific versions. |

@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-016
 title: Quality Metrics and Data Analysis
-revision: R05
-revision_date: 2026-04-27
+revision: R06
+revision_date: 2026-05-04
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -82,3 +82,4 @@ Applies to QMS and product quality indicators used in operational monitoring and
 | R03 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R04 | 2026-03-25 | Expanded the metrics purpose, aligned analysis wording to threshold-and-trend evaluation, and clarified action/CAPA triggers for adverse trends. |
 | R05 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R06 | 2026-05-04 | Standardize standards citations to specific versions. |

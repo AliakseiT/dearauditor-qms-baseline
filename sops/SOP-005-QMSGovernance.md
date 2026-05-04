@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R21
-revision_date: 2026-04-27
+revision: R22
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -151,3 +151,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R19 | 2026-04-27 | Added ISO/IEC 27001:2022 adoption and linked the dedicated ISMS procedure into the governance baseline. |
 | R20 | 2026-04-27 | Added ISO/IEC 42001:2023 adoption for AI components inside ACME medical-device software and linked the dedicated AIMS procedure into the governance baseline. |
 | R21 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R22 | 2026-05-04 | Standardize standards citations to specific versions. |

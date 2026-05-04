@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-019
 title: Usability Engineering (IEC 62366-1:2015)
-revision: R12
-revision_date: 2026-04-27
+revision: R13
+revision_date: 2026-05-04
 status: Published
 owner_role: usability_lead
 approver_role: qa_lead
@@ -152,3 +152,4 @@ The file index is the entrypoint for audits and must reference current revisions
 | R10 | 2026-03-25 | Reframed the process as risk-based, clarified use-error and residual-risk wording, expanded the UOUP heading, and removed workflow-specific controls covered elsewhere in the QMS. |
 | R11 | 2026-03-27 | Consolidated the standalone regulatory-lead usability-review role into the QA-lead baseline and aligned the role table accordingly. |
 | R12 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R13 | 2026-05-04 | Standardize standards citations to specific versions. |

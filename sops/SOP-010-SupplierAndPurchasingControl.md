@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-010
 title: Supplier and Purchasing Control
-revision: R04
-revision_date: 2026-04-27
+revision: R05
+revision_date: 2026-05-04
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -85,3 +85,4 @@ Applies to all external providers of software components, cloud services, consul
 | R02 | 2026-03-18 | Removed top-table standards clause metadata and expanded supplier criticality, cloud certification, and hyperscale SLA/Terms of Service purchasing controls. |
 | R03 | 2026-03-25 | Added supplier risk-file impact, outsourced-process oversight, proportionate cloud assurance evidence, and event-triggered re-evaluation controls. |
 | R04 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R05 | 2026-05-04 | Standardize standards citations to specific versions. |
