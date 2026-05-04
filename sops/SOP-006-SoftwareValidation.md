@@ -68,9 +68,9 @@ Revalidation is required when:
 - Validation summary and approval record
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 4.1.6 | Defines validation/revalidation controls for QMS software applications. |
+| ISO 13485:2016 4.1.6 | Defines validation/revalidation controls for QMS software applications. |
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control

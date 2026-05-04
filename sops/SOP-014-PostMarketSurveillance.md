@@ -62,11 +62,11 @@ Applies to all released products and product versions in active use.
 - Escalation and action tracking evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.2.1 | Defines ongoing feedback collection as PMS input. |
-| 8.2.6 | Defines monitoring and measurement of product/process outputs post-release. |
-| 8.4 | Defines analysis of quality data and trend-based decision controls. |
+| ISO 13485:2016 8.2.1 | Defines ongoing feedback collection as PMS input. |
+| ISO 13485:2016 8.2.6 | Defines monitoring and measurement of product/process outputs post-release. |
+| ISO 13485:2016 8.4 | Defines analysis of quality data and trend-based decision controls. |
 
 ## 9. Related Controlled Documents
 - SOP-012 Feedback and Complaint Handling

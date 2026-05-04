@@ -1,6 +1,6 @@
 ---
 sop_id: SOP-019
-title: Usability Engineering (IEC 62366-1)
+title: Usability Engineering (IEC 62366-1:2015)
 revision: R12
 revision_date: 2026-04-27
 status: Published
@@ -9,7 +9,7 @@ approver_role: qa_lead
 related_issue: "#44"
 ---
 ## 1. Purpose
-Define a risk-based usability engineering process for ACME user-facing healthcare software products, aligned with IEC 62366-1 and integrated with risk management.
+Define a risk-based usability engineering process for ACME user-facing healthcare software products, aligned with IEC 62366-1:2015 and integrated with risk management.
 
 ## 2. Scope
 Applies to user interface design and evaluation activities that affect safety, including:
@@ -22,7 +22,7 @@ Applies to user interface design and evaluation activities that affect safety, i
 1. Maintain usability engineering records in a controlled system that supports traceability, review, and retention requirements.
 2. Keep records concise, structured, and focused on safety-related usability decisions.
 3. Maintain objective evidence sufficient to justify usability-related risk control and residual risk decisions.
-4. Link usability findings directly to ISO 14971 risk items and product changes.
+4. Link usability findings directly to ISO 14971:2019 risk items and product changes.
 5. This upstream baseline defines governance and traceability expectations; operational usability records are maintained in designated product or study repositories.
 
 ## 4. Required Inputs
@@ -61,13 +61,13 @@ The file index is the entrypoint for audits and must reference current revisions
 
 ## 8. Procedure
 
-### 8.1 General Requirements (IEC 62366-1 4.1.1)
+### 8.1 General Requirements (IEC 62366-1:2015 4.1.1)
 1. Apply usability engineering activities as part of development lifecycle.
 2. Tailor effort by risk, complexity, and novelty.
 3. Maintain objective evidence in the usability engineering file.
 
 ### 8.2 Risk Control and Information for Safety (4.1.2, 4.1.3)
-1. Treat user interface risk controls as risk controls within the ISO 14971 process.
+1. Treat user interface risk controls as risk controls within the ISO 14971:2019 process.
 2. Information for safety is used only when design/protective controls are insufficient.
 3. Claims that rely on user behavior must be verified in evaluation evidence.
 
@@ -122,15 +122,15 @@ The file index is the entrypoint for audits and must reference current revisions
 ## 10. Traceability
 | Standard Clause | Control in this SOP |
 |---|---|
-| ISO 13485 7.3 | Defines usability-related design and development controls and traceable evaluation outputs. |
-| ISO 13485 7.5.1 | Defines controlled implementation of user-interface measures and information for safety. |
-| IEC 62366-1 4.1.1-4.3 | Defines process, risk-control linkage, usability file, and effort tailoring. |
-| IEC 62366-1 5.1-5.7 | Defines use specification, hazard-related scenario identification, and evaluation planning. |
-| IEC 62366-1 5.8-5.9 | Defines formative iteration and summative validation evidence. |
-| IEC 62366-1 5.10 | Defines handling of user interface of unknown provenance. |
+| ISO 13485:2016 7.3 | Defines usability-related design and development controls and traceable evaluation outputs. |
+| ISO 13485:2016 7.5.1 | Defines controlled implementation of user-interface measures and information for safety. |
+| IEC 62366-1:2015 4.1.1-4.3 | Defines process, risk-control linkage, usability file, and effort tailoring. |
+| IEC 62366-1:2015 5.1-5.7 | Defines use specification, hazard-related scenario identification, and evaluation planning. |
+| IEC 62366-1:2015 5.8-5.9 | Defines formative iteration and summative validation evidence. |
+| IEC 62366-1:2015 5.10 | Defines handling of user interface of unknown provenance. |
 
 ## 11. Related Controlled Documents
-- SOP-018 Risk Management (ISO 14971)
+- SOP-018 Risk Management (ISO 14971:2019)
 - SOP-008 Design and Development Control
 - SOP-009 Change Management
 - SOP-012 Feedback and Complaint Handling
@@ -148,7 +148,7 @@ The file index is the entrypoint for audits and must reference current revisions
 | R06 | 2026-03-07 | Removed overly specific signature-regulation terminology from the usability signature workflow wording. |
 | R07 | 2026-03-10 | Updated open-source baseline naming and publication references used in the usability procedure set. |
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
-| R09 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the IEC 62366-1 references in Section 10. |
+| R09 | 2026-03-18 | Added the missing ISO 13485:2016 traceability mappings alongside the IEC 62366-1:2015 references in Section 10. |
 | R10 | 2026-03-25 | Reframed the process as risk-based, clarified use-error and residual-risk wording, expanded the UOUP heading, and removed workflow-specific controls covered elsewhere in the QMS. |
 | R11 | 2026-03-27 | Consolidated the standalone regulatory-lead usability-review role into the QA-lead baseline and aligned the role table accordingly. |
 | R12 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

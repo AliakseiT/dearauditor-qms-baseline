@@ -67,10 +67,10 @@ Applies to infrastructure supporting development, testing, release, and QMS reco
 - Infrastructure-related incident and action records
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 6.3 | Defines infrastructure determination, provision, and maintenance controls. |
-| 6.4 | Defines environmental/work-condition controls supporting conformity. |
+| ISO 13485:2016 6.3 | Defines infrastructure determination, provision, and maintenance controls. |
+| ISO 13485:2016 6.4 | Defines environmental/work-condition controls supporting conformity. |
 
 ## 9. Related Controlled Documents
 - SOP-009 Change Management

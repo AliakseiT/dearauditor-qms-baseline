@@ -69,11 +69,11 @@ Applies to formal management review meetings and resulting decisions/actions for
 - Action tracker with closure evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 5.6.1 | Defines management review frequency and governance ownership. |
-| 5.6.2 | Defines required review inputs. |
-| 5.6.3 | Defines required review outputs and action follow-up. |
+| ISO 13485:2016 5.6.1 | Defines management review frequency and governance ownership. |
+| ISO 13485:2016 5.6.2 | Defines required review inputs. |
+| ISO 13485:2016 5.6.3 | Defines required review outputs and action follow-up. |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual

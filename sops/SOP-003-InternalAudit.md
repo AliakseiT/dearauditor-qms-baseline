@@ -67,9 +67,9 @@ Applies to all QMS processes and records, including document control, design con
 - Closure/effectiveness evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.2.4 | Defines audit planning, independence, criteria, reporting, and follow-up controls. |
+| ISO 13485:2016 8.2.4 | Defines audit planning, independence, criteria, reporting, and follow-up controls. |
 
 ## 9. Related Controlled Documents
 - SOP-002 CAPA

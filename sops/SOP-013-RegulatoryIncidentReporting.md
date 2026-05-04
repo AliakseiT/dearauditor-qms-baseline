@@ -62,9 +62,9 @@ Applies to each product that qualifies as medical device software under applicab
 - Linked CAPA/change and closure summary
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.2.3 | Defines regulatory reporting controls for applicable adverse events/advisory notices. |
+| ISO 13485:2016 8.2.3 | Defines regulatory reporting controls for applicable adverse events/advisory notices. |
 
 ## 9. Related Controlled Documents
 - SOP-012 Feedback and Complaint Handling

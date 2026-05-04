@@ -1,6 +1,6 @@
 ---
 sop_id: SOP-021
-title: Information Security Management (ISO/IEC 27001)
+title: Information Security Management (ISO/IEC 27001:2022)
 revision: R01
 revision_date: 2026-04-27
 status: Published
@@ -103,15 +103,15 @@ Applies to information assets used to create, approve, release, operate, support
 - ISMS audit, management review, CAPA, and metric records
 
 ## 8. Traceability
-| ISO/IEC 27001 Clause | Control in this SOP | Linked Artifact |
+| Standard Clause | Control in this SOP | Linked Artifact |
 |---|---|---|
-| 4 | Defines ISMS scope, context, interested-party/security-context interfaces, and climate-change relevance determination. | ISMS scope record, asset/security-context record |
-| 5 | Defines security responsibilities and management approval of scope, risk acceptance, and SoA. | Role matrix, governance review, management review |
-| 6 | Defines information security risk assessment, treatment, objectives, and change planning. | Risk treatment records, SoA, security objectives |
-| 7 | Defines competence, awareness, communication, and controlled documented information through existing QMS controls. | `SOP-001`, `SOP-011` |
-| 8 | Defines operational planning, control operation, risk treatment execution, and change interfaces. | SoA evidence, change records, release records |
-| 9 | Defines monitoring, internal audit, and management-review inputs. | `SOP-003`, `SOP-004`, `SOP-016` |
-| 10 | Defines nonconformity, corrective action, and continual improvement interfaces. | `SOP-002`, CAPA records |
+| ISO/IEC 27001:2022 4 | Defines ISMS scope, context, interested-party/security-context interfaces, and climate-change relevance determination. | ISMS scope record, asset/security-context record |
+| ISO/IEC 27001:2022 5 | Defines security responsibilities and management approval of scope, risk acceptance, and SoA. | Role matrix, governance review, management review |
+| ISO/IEC 27001:2022 6 | Defines information security risk assessment, treatment, objectives, and change planning. | Risk treatment records, SoA, security objectives |
+| ISO/IEC 27001:2022 7 | Defines competence, awareness, communication, and controlled documented information through existing QMS controls. | `SOP-001`, `SOP-011` |
+| ISO/IEC 27001:2022 8 | Defines operational planning, control operation, risk treatment execution, and change interfaces. | SoA evidence, change records, release records |
+| ISO/IEC 27001:2022 9 | Defines monitoring, internal audit, and management-review inputs. | `SOP-003`, `SOP-004`, `SOP-016` |
+| ISO/IEC 27001:2022 10 | Defines nonconformity, corrective action, and continual improvement interfaces. | `SOP-002`, CAPA records |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual
@@ -126,13 +126,13 @@ Applies to information assets used to create, approve, release, operate, support
 - SOP-011 Competence, Training, and Awareness
 - SOP-016 Quality Metrics and Data Analysis
 - SOP-017 Infrastructure and Maintenance Control
-- SOP-018 Risk Management (ISO 14971)
-- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- SOP-018 Risk Management (ISO 14971:2019)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
 - WI-002 Configuration and Release Management Execution
 - `records/isms/README.md`
 
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-04-27 | Initial release establishing the GitHub-native ISMS procedure, ISO/IEC 27001 traceability baseline, required ISMS record template set, and tool-neutral evidence collection plan/report templates. |
+| R00 | 2026-04-27 | Initial release establishing the GitHub-native ISMS procedure, ISO/IEC 27001:2022 traceability baseline, required ISMS record template set, and tool-neutral evidence collection plan/report templates. |
 | R01 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

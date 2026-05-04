@@ -66,12 +66,12 @@ Applies to all external providers of software components, cloud services, consul
 - Supplier performance reviews and decisions
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 4.1.5 | Defines control of outsourced processes affecting conformity. |
-| 7.4.1 | Defines supplier evaluation and selection criteria. |
-| 7.4.2 | Defines purchasing information/requirements control. |
-| 7.4.3 | Defines verification of purchased product/service conformity. |
+| ISO 13485:2016 4.1.5 | Defines control of outsourced processes affecting conformity. |
+| ISO 13485:2016 7.4.1 | Defines supplier evaluation and selection criteria. |
+| ISO 13485:2016 7.4.2 | Defines purchasing information/requirements control. |
+| ISO 13485:2016 7.4.3 | Defines verification of purchased product/service conformity. |
 
 ## 9. Related Controlled Documents
 - SOP-009 Change Management

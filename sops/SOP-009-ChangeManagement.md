@@ -73,16 +73,16 @@ Classify each change as one or more of:
 - Verification evidence and closure summary
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 4.1.4 | Defines control of QMS process changes and their effect on conformity. |
-| 7.3.9 | Defines control of design/development changes. |
+| ISO 13485:2016 4.1.4 | Defines control of QMS process changes and their effect on conformity. |
+| ISO 13485:2016 7.3.9 | Defines control of design/development changes. |
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control
 - SOP-008 Design and Development Control
 - SOP-011 Competence, Training, and Awareness
-- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
 - WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History

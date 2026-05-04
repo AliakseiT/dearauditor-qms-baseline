@@ -101,10 +101,10 @@ Applies to all controlled QMS documents and quality records maintained within re
 - Training issue/record when applicable
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 4.2.4 | Defines document approval, revision control, and controlled availability. |
-| 4.2.5 | Defines record identification, retention, and immutability expectations. |
+| ISO 13485:2016 4.2.4 | Defines document approval, revision control, and controlled availability. |
+| ISO 13485:2016 4.2.5 | Defines record identification, retention, and immutability expectations. |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual

@@ -106,11 +106,11 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 - Product dossier governance decisions where applicable
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP | Linked Artifact |
+| Standard Clause | Control in this SOP | Linked Artifact |
 |---|---|---|
-| 4.1.4 | Defines QMS process change impact control and governance follow-up. | Change records, training matrix updates, published controlled-document index |
-| 4.1.6 | Defines governance of QMS software applications and validation expectations. | `matrices/qms_tooling_inventory.yml`, `sops/SOP-006-SoftwareValidation.md` |
-| 5.5 | Defines responsibilities, authority, communication, and governance dissemination. | Responsibility matrix, governance review minutes, dissemination records |
+| ISO 13485:2016 4.1.4 | Defines QMS process change impact control and governance follow-up. | Change records, training matrix updates, published controlled-document index |
+| ISO 13485:2016 4.1.6 | Defines governance of QMS software applications and validation expectations. | `matrices/qms_tooling_inventory.yml`, `sops/SOP-006-SoftwareValidation.md` |
+| ISO 13485:2016 5.5 | Defines responsibilities, authority, communication, and governance dissemination. | Responsibility matrix, governance review minutes, dissemination records |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual
@@ -120,11 +120,11 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 - SOP-010 Supplier and Purchasing Control
 - SOP-011 Competence, Training, and Awareness
 - SOP-017 Infrastructure and Maintenance Control
-- SOP-021 Information Security Management (ISO/IEC 27001)
-- SOP-022 AI Management System (ISO/IEC 42001)
-- SOP-018 Risk Management (ISO 14971)
-- SOP-019 Usability Engineering (IEC 62366-1)
-- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- SOP-021 Information Security Management (ISO/IEC 27001:2022)
+- SOP-022 AI Management System (ISO/IEC 42001:2023)
+- SOP-018 Risk Management (ISO 14971:2019)
+- SOP-019 Usability Engineering (IEC 62366-1:2015)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
 
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
@@ -133,10 +133,10 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R01 | 2026-03-01 | Expanded to full operating procedure with ACME GmbH context and governance controls. |
 | R02 | 2026-03-01 | Added exact CH/EU/US regulatory reference baseline, product-specific intended use/infrastructure rules, GitHub-only QMS tooling governance, and supplier-model dependency handling. |
 | R03 | 2026-03-02 | Aligned related-process references to implemented SOP-006..SOP-017 and finalized supplier/infrastructure cross-links. |
-| R04 | 2026-03-02 | Added ISO 14971 adoption and integrated risk governance linkage to SOP-018 and the risk matrix baseline. |
-| R05 | 2026-03-02 | Added IEC 62366-1 adoption and usability engineering governance linkage to SOP-019 and the usability matrix baseline. |
+| R04 | 2026-03-02 | Added ISO 14971:2019 adoption and integrated risk governance linkage to SOP-018 and the risk matrix baseline. |
+| R05 | 2026-03-02 | Added IEC 62366-1:2015 adoption and usability engineering governance linkage to SOP-019 and the usability matrix baseline. |
 | R06 | 2026-03-05 | Added repository-of-record governance for product/study records, clarified IEC 62366 evidence location, and added explicit rule to keep SOP lifecycle wording aligned with implemented GitHub workflow. |
-| R07 | 2026-03-06 | Added IEC 62304 adoption, linked lifecycle execution instructions, and required product-level lifecycle/release record references. |
+| R07 | 2026-03-06 | Added IEC 62304:2006+A1:2015 adoption, linked lifecycle execution instructions, and required product-level lifecycle/release record references. |
 | R08 | 2026-03-07 | Normalized small-team accountability language to role owners and management representative responsibilities used in the controlled role matrix. |
 | R09 | 2026-03-07 | Renamed controlled lead roles to the simplified `*_lead`/`auditor` taxonomy and removed product-owner wording from governance responsibilities. |
 | R10 | 2026-03-07 | Added `usability_lead` to the controlled role taxonomy and clarified that usability ownership is distinct from regulatory oversight. |
@@ -147,7 +147,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R15 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R16 | 2026-03-25 | Reduced governance-review cadence to quarterly, added explicit top-management accountability and recordkeeping, refined tooling-governance wording, and required review of newly applicable standards. |
 | R17 | 2026-03-27 | Consolidated the standalone regulatory-lead governance role into the QA-lead ownership baseline and removed the redundant separate role reference. |
-| R18 | 2026-04-23 | Added IEC 82304-1 as the adopted health software product-safety baseline standard and connected it to product-level lifecycle controls. |
-| R19 | 2026-04-27 | Added ISO/IEC 27001 adoption and linked the dedicated ISMS procedure into the governance baseline. |
-| R20 | 2026-04-27 | Added ISO/IEC 42001 adoption for AI components inside ACME medical-device software and linked the dedicated AIMS procedure into the governance baseline. |
+| R18 | 2026-04-23 | Added IEC 82304-1:2016 as the adopted health software product-safety baseline standard and connected it to product-level lifecycle controls. |
+| R19 | 2026-04-27 | Added ISO/IEC 27001:2022 adoption and linked the dedicated ISMS procedure into the governance baseline. |
+| R20 | 2026-04-27 | Added ISO/IEC 42001:2023 adoption for AI components inside ACME medical-device software and linked the dedicated AIMS procedure into the governance baseline. |
 | R21 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |

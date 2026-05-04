@@ -70,9 +70,9 @@ Training is required when:
 - Training status register, status report, and signed attestations
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 6.2 | Defines competence determination, training, awareness, and record maintenance. |
+| ISO 13485:2016 6.2 | Defines competence determination, training, awareness, and record maintenance. |
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control

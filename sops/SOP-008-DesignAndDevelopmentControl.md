@@ -99,16 +99,16 @@ Applies to new products, major features, and significant lifecycle changes affec
 - Verification/validation evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 7.1 | Planning of product realization and quality controls. |
-| 7.3.1-7.3.10 | End-to-end design/development controls from planning to changes. |
+| ISO 13485:2016 7.1 | Planning of product realization and quality controls. |
+| ISO 13485:2016 7.3.1-7.3.10 | End-to-end design/development controls from planning to changes. |
 
 ## 9. Related Controlled Documents
 - SOP-007 Medical Device File Control
 - SOP-009 Change Management
 - SOP-015 Nonconforming Product Control
-- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
 - WI-001 Verification and Validation Execution
 - WI-002 Configuration and Release Management Execution
 
@@ -116,7 +116,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 | Revision | Revision Date | Change Summary |
 |---|---|---|
 | R00 | 2026-03-02 | Initial full release. |
-| R01 | 2026-03-06 | Added IEC 62304 lifecycle/release linkage and default GitHub-native V&V execution reference. |
+| R01 | 2026-03-06 | Added IEC 62304:2006+A1:2015 lifecycle/release linkage and default GitHub-native V&V execution reference. |
 | R02 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and added explicit engineer execution responsibilities under approved plans. |
 | R03 | 2026-03-07 | Renamed lead roles to `engineering_lead` and `regulatory_lead` to remove owner-style role wording. |
 | R04 | 2026-03-07 | Clarified ownership of system requirements, regulatory design inputs, and usability inputs, and added `usability_lead` responsibilities. |

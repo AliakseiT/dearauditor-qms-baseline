@@ -64,10 +64,10 @@ Applies to all product feedback and complaint signals from users, customers, par
 - Linked CAPA/incident/PMS references
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.2.1 | Defines feedback collection and monitoring controls. |
-| 8.2.2 | Defines complaint handling workflow and records. |
+| ISO 13485:2016 8.2.1 | Defines feedback collection and monitoring controls. |
+| ISO 13485:2016 8.2.2 | Defines complaint handling workflow and records. |
 
 ## 9. Related Controlled Documents
 - SOP-013 Regulatory Incident Reporting

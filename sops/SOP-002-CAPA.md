@@ -75,10 +75,10 @@ Applies to quality system and product lifecycle nonconformities originating from
 - Action completion and effectiveness evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.5.2 | Corrective action trigger, investigation, implementation, and verification. |
-| 8.5.3 | Preventive action trigger, risk-based planning, and effectiveness monitoring. |
+| ISO 13485:2016 8.5.2 | Corrective action trigger, investigation, implementation, and verification. |
+| ISO 13485:2016 8.5.3 | Preventive action trigger, risk-based planning, and effectiveness monitoring. |
 
 ## 9. Related Controlled Documents
 - SOP-009 Change Management

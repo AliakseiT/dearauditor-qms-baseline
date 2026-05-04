@@ -63,10 +63,10 @@ Applies to QMS and product quality indicators used in operational monitoring and
 - Escalation/action linkage evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 5.4.1 | Supports quality objective measurement framework. |
-| 8.4 | Defines analysis of data for QMS effectiveness and improvement decisions. |
+| ISO 13485:2016 5.4.1 | Supports quality objective measurement framework. |
+| ISO 13485:2016 8.4 | Defines analysis of data for QMS effectiveness and improvement decisions. |
 
 ## 9. Related Controlled Documents
 - SOP-004 Management Review

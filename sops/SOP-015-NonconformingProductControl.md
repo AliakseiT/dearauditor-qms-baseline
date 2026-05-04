@@ -67,12 +67,12 @@ Disposition options:
 - Re-verification and closure evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.3.1 | Defines identification and control of nonconforming product. |
-| 8.3.2 | Defines response/actions to nonconformity. |
-| 8.3.3 | Defines concession/rework controls and requirements. |
-| 8.3.4 | Defines records for nonconformity and dispositions. |
+| ISO 13485:2016 8.3.1 | Defines identification and control of nonconforming product. |
+| ISO 13485:2016 8.3.2 | Defines response/actions to nonconformity. |
+| ISO 13485:2016 8.3.3 | Defines concession/rework controls and requirements. |
+| ISO 13485:2016 8.3.4 | Defines records for nonconformity and dispositions. |
 
 ## 9. Related Controlled Documents
 - SOP-002 CAPA
