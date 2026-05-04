@@ -63,6 +63,37 @@ jobs:
               pull_number: pr.number,
               per_page: 100,
             });
+            const changedPaths = files.map((f) => String(f.filename || ''));
+            const requiresEvidenceChecklist = changedPaths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
+              /^##\s+Evidence Review Package\b/mi.test(body);
+            const evidenceChecklistStatus = (prBody) => {
+              const lines = String(prBody || '').split(/\r?\n/);
+              const start = lines.findIndex((line) => /^##\s+Evidence Review Checklist\b/i.test(line));
+              if (start < 0) return { present: false, complete: true, total: 0, open: [] };
+              const next = lines.findIndex((line, index) => index > start && /^##\s+\S/.test(line));
+              const section = lines.slice(start + 1, next < 0 ? undefined : next).join('\n');
+              const items = Array.from(section.matchAll(/^\s*-\s*\[( |x|X)\]\s+(.+)$/gm));
+              const open = items
+                .filter((item) => item[1] === ' ')
+                .map((item) => String(item[2] || '').trim())
+                .filter(Boolean);
+              return {
+                present: true,
+                complete: items.length > 0 && open.length === 0,
+                total: items.length,
+                open,
+              };
+            };
+            const evidenceChecklist = evidenceChecklistStatus(body);
+            if (requiresEvidenceChecklist && !evidenceChecklist.present) {
+              errors.push('Evidence package PRs must include a "## Evidence Review Checklist" section.');
+            } else if (evidenceChecklist.present && !evidenceChecklist.complete) {
+              errors.push(
+                evidenceChecklist.total === 0
+                  ? 'Evidence Review Checklist section has no checkable items.'
+                  : `Evidence Review Checklist has ${evidenceChecklist.open.length} unchecked item(s): ${evidenceChecklist.open.join('; ')}`
+              );
+            }
             
             if (errors.length > 0) {
               core.setFailed(`PR description does not meet DearAuditor Open QMS Baseline structural requirements:\n- ${errors.join('\n- ')}`);
@@ -72,9 +103,8 @@ jobs:
 
             core.setOutput('author_login', pr.user?.login || '');
             core.setOutput('pr_body_base64', Buffer.from(body, 'utf8').toString('base64'));
-            core.setOutput('changed_paths_json', JSON.stringify(files.map((f) => String(f.filename || ''))));
+            core.setOutput('changed_paths_json', JSON.stringify(changedPaths));
             const authorLogin = String(pr.user?.login || '').toLowerCase();
-            const changedPaths = files.map((f) => String(f.filename || ''));
             const automationBotLogins = new Set([
               'dearauditor-open-qms-bot',
               'dearauditor-open-qms-bot[bot]',

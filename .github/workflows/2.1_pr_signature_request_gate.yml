@@ -85,6 +85,41 @@ jobs:
               per_page: 100,
             });
             const paths = changedFiles.map((f) => String(f.filename || ''));
+            const requiresEvidenceChecklist = paths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
+              /^##\s+Evidence Review Package\b/mi.test(body);
+            const evidenceChecklistStatus = (body) => {
+              const lines = String(body || '').split(/\r?\n/);
+              const start = lines.findIndex((line) => /^##\s+Evidence Review Checklist\b/i.test(line));
+              if (start < 0) return { present: false, complete: true, total: 0, open: [] };
+              const next = lines.findIndex((line, index) => index > start && /^##\s+\S/.test(line));
+              const section = lines.slice(start + 1, next < 0 ? undefined : next).join('\n');
+              const items = Array.from(section.matchAll(/^\s*-\s*\[( |x|X)\]\s+(.+)$/gm));
+              const open = items
+                .filter((item) => item[1] === ' ')
+                .map((item) => String(item[2] || '').trim())
+                .filter(Boolean);
+              return {
+                present: true,
+                complete: items.length > 0 && open.length === 0,
+                total: items.length,
+                open,
+              };
+            };
+            const checklist = evidenceChecklistStatus(body);
+            if (requiresEvidenceChecklist && !checklist.present) {
+              core.setFailed(
+                `PR #${prNumber} is an evidence-package PR but has no "## Evidence Review Checklist" section. Signature request was not posted.`
+              );
+              return;
+            }
+            if (checklist.present && !checklist.complete) {
+              core.setFailed(
+                checklist.total === 0
+                  ? `PR #${prNumber} has an Evidence Review Checklist section but no checkable items. Signature request was not posted.`
+                  : `PR #${prNumber} Evidence Review Checklist is incomplete; ${checklist.open.length} unchecked item(s) remain. Signature request was not posted.`
+              );
+              return;
+            }
             const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
             const isRecordArtifactPath = (path) => path.startsWith('records/') && /\.(md|ya?ml|json)$/i.test(path);
             const isTemplateRecordPath = (path) => /(^|[_-])template\.(md|ya?ml|json)$/i.test(path.split('/').pop() || '');
