@@ -211,18 +211,7 @@ Example:
 
 Post-production signals are reviewed against both top-down hazards and bottom-up failure modes; they are not treated as a separate risk method.
 
-## 9. Done Criteria for This Plan Revision
-
-Example:
-
-- Risk management plan approved
-- Intended use and device description references linked
-- Shared scoring and acceptability method defined
-- Seed analysis domains named for top-down, bottom-up, and cybersecurity perspectives
-- Risk register operating model and review cadence agreed
-- Linked downstream records identified for traceability, V&V, release, and post-production follow-up
-
-## 10. Approval Record
+## 9. Approval Record
 
 Example:
 

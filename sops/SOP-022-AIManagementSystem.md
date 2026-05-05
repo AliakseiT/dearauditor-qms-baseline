@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-022
-title: AI Management System (ISO/IEC 42001)
-revision: R01
-revision_date: 2026-04-27
+title: AI Management System (ISO/IEC 42001:2023)
+revision: R02
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
 related_issue: "#291"
 ---
 ## 1. Purpose
-Define the AI Management System (AIMS) procedure used to govern AI components inside ACME medical-device software so that AI-related accountability, lifecycle, risk, impact, and post-market interfaces are controlled. This procedure aligns the GitHub-native QMS operating model with ISO/IEC 42001 while reusing the existing QMS controls for document control, governance, design, change, supplier control, competence, audit, management review, CAPA, software lifecycle, product risk, and metrics.
+Define the AI Management System (AIMS) procedure used to govern AI components inside ACME medical-device software so that AI-related accountability, lifecycle, risk, impact, and post-market interfaces are controlled. This procedure aligns the GitHub-native QMS operating model with ISO/IEC 42001:2023 while reusing the existing QMS controls for document control, governance, design, change, supplier control, competence, audit, management review, CAPA, software lifecycle, product risk, and metrics.
 
 ## 2. Scope
 Applies to AI components, models, training data, inference behavior, and AI lifecycle decisions used inside ACME medical-device software products. AI tooling used to author or operate the QMS itself (for example authoring assistants, validation aids) is governed under existing supplier control, tooling validation, and document control procedures and is out of scope for the AIMS unless the same tooling becomes part of a released product.
@@ -24,7 +24,7 @@ Applies to AI components, models, training data, inference behavior, and AI life
 - AIMS scope, AI system inventory, and AI lifecycle context records
 - AI risk assessment and treatment records
 - AI system impact assessment records
-- Statement of Applicability for ISO/IEC 42001 Annex A
+- Statement of Applicability for ISO/IEC 42001:2023 Annex A
 - AI control implementation evidence
 - AI incident, anomaly, exception, and improvement records
 - AIMS audit and management-review inputs
@@ -95,16 +95,16 @@ Applies to AI components, models, training data, inference behavior, and AI life
 - AIMS audit, management review, CAPA, and metric records
 
 ## 8. Traceability
-| ISO/IEC 42001 Clause | Control in this SOP | Linked Artifact |
+| Standard Clause | Control in this SOP | Linked Artifact |
 |---|---|---|
-| 4 | Defines product-AI AIMS scope, AI system context interfaces, and non-product QMS AI tooling boundary. | AIMS scope record, AI system inventory |
-| 5 | Defines AI policy baseline, AI roles, and management approval of scope, risk acceptance, and SoA. | Company profile, role matrix, governance review, management review |
-| 6 | Defines AI risk assessment, AI system impact assessment, treatment, and AI objectives. | AI risk records, AI impact assessment records, SoA |
-| 7 | Defines AI competence, awareness, communication, and controlled documented information through existing QMS controls. | `SOP-001`, `SOP-011` |
-| 8 | Defines AI lifecycle, data, information for users, and operational change interfaces. | `SOP-008`, `SOP-009`, `SOP-020`, `WI-001`, `WI-002` |
-| 9 | Defines monitoring, internal audit, and management-review inputs for the AIMS. | `SOP-003`, `SOP-004`, `SOP-016` |
-| 10 | Defines nonconformity, corrective action, and continual improvement interfaces. | `SOP-002`, CAPA records |
-| Annex A | Defines applicable AI controls operationalized through this SOP and the SoA. | `records/aims/statement_of_applicability_template.yml` |
+| ISO/IEC 42001:2023 4 | Defines product-AI AIMS scope, AI system context interfaces, and non-product QMS AI tooling boundary. | AIMS scope record, AI system inventory |
+| ISO/IEC 42001:2023 5 | Defines AI policy baseline, AI roles, and management approval of scope, risk acceptance, and SoA. | Company profile, role matrix, governance review, management review |
+| ISO/IEC 42001:2023 6 | Defines AI risk assessment, AI system impact assessment, treatment, and AI objectives. | AI risk records, AI impact assessment records, SoA |
+| ISO/IEC 42001:2023 7 | Defines AI competence, awareness, communication, and controlled documented information through existing QMS controls. | `SOP-001`, `SOP-011` |
+| ISO/IEC 42001:2023 8 | Defines AI lifecycle, data, information for users, and operational change interfaces. | `SOP-008`, `SOP-009`, `SOP-020`, `WI-001`, `WI-002` |
+| ISO/IEC 42001:2023 9 | Defines monitoring, internal audit, and management-review inputs for the AIMS. | `SOP-003`, `SOP-004`, `SOP-016` |
+| ISO/IEC 42001:2023 10 | Defines nonconformity, corrective action, and continual improvement interfaces. | `SOP-002`, CAPA records |
+| ISO/IEC 42001:2023 Annex A | Defines applicable AI controls operationalized through this SOP and the SoA. | `records/aims/statement_of_applicability_template.yml` |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual
@@ -119,8 +119,8 @@ Applies to AI components, models, training data, inference behavior, and AI life
 - SOP-010 Supplier and Purchasing Control
 - SOP-011 Competence, Training, and Awareness
 - SOP-016 Quality Metrics and Data Analysis
-- SOP-018 Risk Management (ISO 14971)
-- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304)
+- SOP-018 Risk Management (ISO 14971:2019)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
 - WI-001 Verification and Validation Execution
 - WI-002 Configuration and Release Management Execution
 - `records/aims/README.md`
@@ -128,5 +128,6 @@ Applies to AI components, models, training data, inference behavior, and AI life
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-04-25 | Initial release establishing the GitHub-native AIMS procedure, ISO/IEC 42001 traceability baseline, AIMS register and Statement of Applicability templates, and AI lifecycle/impact/event interfaces to existing QMS controls. |
+| R00 | 2026-04-25 | Initial release establishing the GitHub-native AIMS procedure, ISO/IEC 42001:2023 traceability baseline, AIMS register and Statement of Applicability templates, and AI lifecycle/impact/event interfaces to existing QMS controls. |
 | R01 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R02 | 2026-05-04 | Standardize standards citations to specific versions. |

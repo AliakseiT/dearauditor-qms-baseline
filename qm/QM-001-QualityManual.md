@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R07
-revision_date: 2026-04-27
+revision: R08
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -37,13 +37,13 @@ Applies to the ACME GmbH QMS for healthcare software products, including product
 
 ## 4. QMS Intent and Quality Policy
 ACME maintains this QMS to:
-- ensure consistent compliance with ISO 13485 and applicable regulatory requirements
-- apply IEC 62304 lifecycle and maintenance controls to regulated software
-- apply ISO 14971 risk management across the software lifecycle, including cybersecurity-related harms
-- apply IEC 62366-1 usability engineering for safety-related user interfaces
-- apply IEC 82304-1 product-safety controls for health software placed on general computing platforms
-- apply ISO/IEC 27001 information security governance for QMS, product, supplier, and operational information assets
-- apply ISO/IEC 42001 AI management controls for AI components inside ACME medical-device software and AI-bearing supplier interfaces
+- ensure consistent compliance with ISO 13485:2016 and applicable regulatory requirements
+- apply IEC 62304:2006+A1:2015 lifecycle and maintenance controls to regulated software
+- apply ISO 14971:2019 risk management across the software lifecycle, including cybersecurity-related harms
+- apply IEC 62366-1:2015 usability engineering for safety-related user interfaces
+- apply IEC 82304-1:2016 product-safety controls for health software placed on general computing platforms
+- apply ISO/IEC 27001:2022 information security governance for QMS, product, supplier, and operational information assets
+- apply ISO/IEC 42001:2023 AI management controls for AI components inside ACME medical-device software and AI-bearing supplier interfaces
 - maintain product safety and performance through controlled lifecycle processes
 - retain objective evidence and traceability for quality decisions
 
@@ -124,12 +124,12 @@ QMS tooling and validation baselines are maintained in:
 - `records/validation/qms-tools/github-validation-record.md`
 
 ## 10. Traceability
-| ISO 13485 Clause | Quality Manual Coverage | Linked Baseline |
+| Standard Clause | Quality Manual Coverage | Linked Baseline |
 |---|---|---|
-| 4.1, 4.2.1, 4.2.2 | Defines QMS scope, structure, and interaction model | `matrices/quality_manual_traceability.yml` |
-| 5.1, 5.3 | Defines management commitment and quality policy context | `matrices/company_profile.yml`, `sops/SOP-004-ManagementReview.md` |
-| 5.4.1, 5.4.2 | Defines quality objectives and planning context | `matrices/company_profile.yml`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
-| 5.5 | Defines system-level responsibilities and communication overview | `sops/SOP-005-QMSGovernance.md`, `sops/SOP-011-CompetenceTrainingAndAwareness.md` |
+| ISO 13485:2016 4.1, 4.2.1, 4.2.2 | Defines QMS scope, structure, and interaction model | `matrices/quality_manual_traceability.yml` |
+| ISO 13485:2016 5.1, 5.3 | Defines management commitment and quality policy context | `matrices/company_profile.yml`, `sops/SOP-004-ManagementReview.md` |
+| ISO 13485:2016 5.4.1, 5.4.2 | Defines quality objectives and planning context | `matrices/company_profile.yml`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
+| ISO 13485:2016 5.5 | Defines system-level responsibilities and communication overview | `sops/SOP-005-QMSGovernance.md`, `sops/SOP-011-CompetenceTrainingAndAwareness.md` |
 
 ## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -148,7 +148,8 @@ QMS tooling and validation baselines are maintained in:
 | R01 | 2026-03-10 | Updated public upstream baseline naming, licensing, and repository references for open-source publication. |
 | R02 | 2026-03-25 | Tightened company-level scope wording, added risk-based quality framing and product performance objectives, and clarified auditor independence plus repository-of-record language. |
 | R03 | 2026-03-27 | Consolidated the standalone regulatory-lead baseline role into the QA-lead governance model and aligned the system-level role overview accordingly. |
-| R04 | 2026-04-23 | Added IEC 82304-1 health software product-safety scope to the QMS intent and standards framework. |
-| R05 | 2026-04-27 | Added ISO/IEC 27001 information security governance to the QMS intent and standards framework. |
-| R06 | 2026-04-27 | Added ISO/IEC 42001 AI management controls for AI components inside ACME medical-device software to the QMS intent and standards framework. |
+| R04 | 2026-04-23 | Added IEC 82304-1:2016 health software product-safety scope to the QMS intent and standards framework. |
+| R05 | 2026-04-27 | Added ISO/IEC 27001:2022 information security governance to the QMS intent and standards framework. |
+| R06 | 2026-04-27 | Added ISO/IEC 42001:2023 AI management controls for AI components inside ACME medical-device software to the QMS intent and standards framework. |
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R08 | 2026-05-04 | Standardize standards citations to specific versions. |

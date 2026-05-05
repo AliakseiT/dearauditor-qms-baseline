@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-018
-title: Risk Management (ISO 14971)
-revision: R09
-revision_date: 2026-04-27
+title: Risk Management (ISO 14971:2019)
+revision: R10
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -88,7 +88,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 
 ## 8. Procedure
 
-### 8.1 Planning (ISO 14971 Clause 4.4)
+### 8.1 Planning (ISO 14971:2019 Clause 4.4)
 1. Create product risk management plan before detailed analysis.
 2. Define acceptability criteria, methods, responsibilities, and review cadence.
 3. Define method for overall residual risk evaluation.
@@ -144,14 +144,14 @@ Cybersecurity controls follow the same priority and are not separated from safet
 ## 11. Traceability
 | Standard Clause | Control in this SOP |
 |---|---|
-| ISO 13485 7.1 | Defines risk-based planning and integration of risk management into product realization controls. |
-| ISO 13485 7.3 | Defines design and development risk-control interfaces governed through this SOP. |
-| ISO 13485 8.5.1 | Defines feedback-driven improvement and corrective action linkage for risk controls and post-production review. |
-| ISO 14971 4.1-4.5 | Defines risk system, responsibilities, plan, and file controls. |
-| ISO 14971 5.1-5.5 | Defines intended use/misuse, hazard identification, and estimation method. |
-| ISO 14971 6 | Defines acceptability-based evaluation. |
-| ISO 14971 7.1-7.6 | Defines option analysis, implementation/effectiveness checks, residual and completeness review. |
-| ISO 14971 8-10 | Defines overall residual risk, formal review, and post-production feedback loop. |
+| ISO 13485:2016 7.1 | Defines risk-based planning and integration of risk management into product realization controls. |
+| ISO 13485:2016 7.3 | Defines design and development risk-control interfaces governed through this SOP. |
+| ISO 13485:2016 8.5.1 | Defines feedback-driven improvement and corrective action linkage for risk controls and post-production review. |
+| ISO 14971:2019 4.1-4.5 | Defines risk system, responsibilities, plan, and file controls. |
+| ISO 14971:2019 5.1-5.5 | Defines intended use/misuse, hazard identification, and estimation method. |
+| ISO 14971:2019 6 | Defines acceptability-based evaluation. |
+| ISO 14971:2019 7.1-7.6 | Defines option analysis, implementation/effectiveness checks, residual and completeness review. |
+| ISO 14971:2019 8-10 | Defines overall residual risk, formal review, and post-production feedback loop. |
 
 ## 12. Related Controlled Documents
 - SOP-005 QMS Governance
@@ -164,13 +164,14 @@ Cybersecurity controls follow the same priority and are not separated from safet
 ## 13. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-03-02 | Initial full release with unified software, use-related, and cybersecurity risk method aligned to ISO 14971. |
+| R00 | 2026-03-02 | Initial full release with unified software, use-related, and cybersecurity risk method aligned to ISO 14971:2019. |
 | R01 | 2026-03-07 | Renamed the business-owner risk role to the controlled product/regulatory owner role used in small-team deployments. |
 | R02 | 2026-03-07 | Simplified risk-management role names to `engineering_lead`, `regulatory_lead`, and `auditor`. |
 | R03 | 2026-03-07 | Made `regulatory_lead` the risk-file owner, clarified QA process-governance responsibility, and added `usability_lead` for use-related risk inputs. |
 | R04 | 2026-03-08 | Updated the governance cross-reference after separating the Quality Manual from SOP-005. |
 | R05 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
-| R06 | 2026-03-18 | Added the missing ISO 13485 traceability mappings alongside the ISO 14971 references in Section 11. |
+| R06 | 2026-03-18 | Added the missing ISO 13485:2016 traceability mappings alongside the ISO 14971:2019 references in Section 11. |
 | R07 | 2026-03-25 | Refined the purpose wording, required state-of-the-art consideration in risk-control selection, and strengthened the overall residual-risk approval gate for release. |
 | R08 | 2026-03-27 | Consolidated the standalone regulatory-lead risk-file owner role into the QA-lead baseline and aligned the planning accountability wording plus ownership metadata. |
 | R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R10 | 2026-05-04 | Standardize standards citations to specific versions. |

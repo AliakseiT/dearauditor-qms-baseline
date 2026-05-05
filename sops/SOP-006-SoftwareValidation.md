@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-006
 title: Software Validation (QMS Tools)
-revision: R04
-revision_date: 2026-04-27
+revision: R05
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -68,9 +68,9 @@ Revalidation is required when:
 - Validation summary and approval record
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 4.1.6 | Defines validation/revalidation controls for QMS software applications. |
+| ISO 13485:2016 4.1.6 | Defines validation/revalidation controls for QMS software applications. |
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -84,3 +84,4 @@ Revalidation is required when:
 | R02 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R03 | 2026-03-25 | Generalized the purpose statement, added product-quality criticality language, required requirement-to-test traceability, and defined validated-state maintenance expectations. |
 | R04 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R05 | 2026-05-04 | Standardize standards citations to specific versions. |

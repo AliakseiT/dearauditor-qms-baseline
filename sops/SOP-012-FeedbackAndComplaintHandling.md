@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-012
 title: Feedback and Complaint Handling
-revision: R06
-revision_date: 2026-04-27
+revision: R07
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: qa_lead
@@ -64,10 +64,10 @@ Applies to all product feedback and complaint signals from users, customers, par
 - Linked CAPA/incident/PMS references
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.2.1 | Defines feedback collection and monitoring controls. |
-| 8.2.2 | Defines complaint handling workflow and records. |
+| ISO 13485:2016 8.2.1 | Defines feedback collection and monitoring controls. |
+| ISO 13485:2016 8.2.2 | Defines complaint handling workflow and records. |
 
 ## 9. Related Controlled Documents
 - SOP-013 Regulatory Incident Reporting
@@ -84,3 +84,4 @@ Applies to all product feedback and complaint signals from users, customers, par
 | R04 | 2026-03-25 | Added complaint definition, clarified incident-criteria input, required complaint investigation decisions, and linked complaint findings back to risk management. |
 | R05 | 2026-03-27 | Consolidated the standalone regulatory-lead complaint-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |
 | R06 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R07 | 2026-05-04 | Standardize standards citations to specific versions. |

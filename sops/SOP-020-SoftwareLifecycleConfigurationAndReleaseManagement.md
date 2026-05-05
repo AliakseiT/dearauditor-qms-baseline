@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-020
-title: Software Lifecycle, Configuration, and Release Management (IEC 62304)
-revision: R12
-revision_date: 2026-04-27
+title: Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
+revision: R13
+revision_date: 2026-05-04
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
 related_issue: "#45"
 ---
 ## 1. Purpose
-Define a risk-based software lifecycle control model aligned with IEC 62304 for software development planning, system classification, verification and validation linkage, controlled change management, release-readiness gating, configuration management, release baselining, maintenance, and problem resolution.
+Define a risk-based software lifecycle control model aligned with IEC 62304:2006+A1:2015 for software development planning, system classification, verification and validation linkage, controlled change management, release-readiness gating, configuration management, release baselining, maintenance, and problem resolution.
 
 ## 2. Scope
 Applies to regulated software products and significant product changes that require controlled software lifecycle records, including software made available through deployment or distribution.
@@ -128,13 +128,13 @@ Applies to regulated software products and significant product changes that requ
 ## 8. Traceability
 | Standard Clause | Control in this SOP |
 |---|---|
-| IEC 62304 4 | Defines quality system linkage and software lifecycle governance baseline. |
-| IEC 62304 5 | Defines software development planning and lifecycle outputs. |
-| IEC 62304 6 | Defines maintenance planning and execution linkage. |
-| IEC 62304 7 | Defines software risk-management interfaces to IEC 62304 activities. |
-| IEC 62304 8 | Defines configuration identification, change, and release baseline control. |
-| IEC 62304 9 | Defines problem-resolution recording and feedback. |
-| IEC 82304-1 8 | Defines product retirement and decommissioning controls, including impact assessment, communication, residual-risk handling, and record retention for released health software products. |
+| IEC 62304:2006+A1:2015 4 | Defines quality system linkage and software lifecycle governance baseline. |
+| IEC 62304:2006+A1:2015 5 | Defines software development planning and lifecycle outputs. |
+| IEC 62304:2006+A1:2015 6 | Defines maintenance planning and execution linkage. |
+| IEC 62304:2006+A1:2015 7 | Defines software risk-management interfaces to IEC 62304:2006+A1:2015 activities. |
+| IEC 62304:2006+A1:2015 8 | Defines configuration identification, change, and release baseline control. |
+| IEC 62304:2006+A1:2015 9 | Defines problem-resolution recording and feedback. |
+| IEC 82304-1:2016 8 | Defines product retirement and decommissioning controls, including impact assessment, communication, residual-risk handling, and record retention for released health software products. |
 
 ## 9. Related Controlled Documents
 - SOP-005 QMS Governance
@@ -142,14 +142,14 @@ Applies to regulated software products and significant product changes that requ
 - SOP-008 Design and Development Control
 - SOP-009 Change Management
 - SOP-015 Nonconforming Product Control
-- SOP-018 Risk Management (ISO 14971)
+- SOP-018 Risk Management (ISO 14971:2019)
 - WI-001 Verification and Validation Execution
 - WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-03-06 | Initial release establishing IEC 62304 lifecycle, configuration, release, maintenance, and problem-resolution controls in the GitHub-native QMS model. |
+| R00 | 2026-03-06 | Initial release establishing IEC 62304:2006+A1:2015 lifecycle, configuration, release, maintenance, and problem-resolution controls in the GitHub-native QMS model. |
 | R01 | 2026-03-07 | Normalized engineering and product/regulatory roles for small teams and clarified the distinction between engineer execution and engineering-owner accountability. |
 | R02 | 2026-03-07 | Simplified lifecycle role names to `engineering_lead` and `regulatory_lead`. |
 | R03 | 2026-03-07 | Clarified parallel change flow on product `main`, added the controlled release-readiness/V&V-entry gate, and made per-run execution configuration capture mandatory for formal release testing. |
@@ -160,5 +160,6 @@ Applies to regulated software products and significant product changes that requ
 | R08 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R09 | 2026-03-25 | Reframed the lifecycle purpose around risk-based control, expanded scope to deployed or distributed software, and required immutable uniquely identifiable approved release baselines. |
 | R10 | 2026-03-27 | Consolidated the standalone regulatory-lead release-oversight role into the QA-lead baseline and reduced the normal final release decision group accordingly. |
-| R11 | 2026-04-25 | Added an explicit retirement and decommissioning control for released health software products covering retirement decision, user/customer impact assessment, communication, residual-risk handling, retention, and MDF linkage to close IEC 82304-1 clause 8. |
+| R11 | 2026-04-25 | Added an explicit retirement and decommissioning control for released health software products covering retirement decision, user/customer impact assessment, communication, residual-risk handling, retention, and MDF linkage to close IEC 82304-1:2016 clause 8. |
 | R12 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R13 | 2026-05-04 | Standardize standards citations to specific versions. |

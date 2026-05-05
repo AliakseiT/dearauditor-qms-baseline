@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-015
 title: Nonconforming Product Control
-revision: R05
-revision_date: 2026-04-27
+revision: R06
+revision_date: 2026-05-04
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -67,12 +67,12 @@ Disposition options:
 - Re-verification and closure evidence
 
 ## 8. Traceability
-| ISO 13485 Clause | Control in this SOP |
+| Standard Clause | Control in this SOP |
 |---|---|
-| 8.3.1 | Defines identification and control of nonconforming product. |
-| 8.3.2 | Defines response/actions to nonconformity. |
-| 8.3.3 | Defines concession/rework controls and requirements. |
-| 8.3.4 | Defines records for nonconformity and dispositions. |
+| ISO 13485:2016 8.3.1 | Defines identification and control of nonconforming product. |
+| ISO 13485:2016 8.3.2 | Defines response/actions to nonconformity. |
+| ISO 13485:2016 8.3.3 | Defines concession/rework controls and requirements. |
+| ISO 13485:2016 8.3.4 | Defines records for nonconformity and dispositions. |
 
 ## 9. Related Controlled Documents
 - SOP-002 CAPA
@@ -89,3 +89,4 @@ Disposition options:
 | R03 | 2026-03-18 | Clarified quality-issue triage boundaries between development defects, formal nonconformities, and complaint-triggered intake while reserving formal nonconformity as the explicit post-milestone decision point. |
 | R04 | 2026-03-25 | Added explicit released-product impact assessment, clarified withdrawal/retirement disposition wording, and tightened CAPA escalation criteria for high-risk nonconformities. |
 | R05 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
+| R06 | 2026-05-04 | Standardize standards citations to specific versions. |
