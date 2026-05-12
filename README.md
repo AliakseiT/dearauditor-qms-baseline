@@ -2,7 +2,9 @@
 
 This repository publishes the open-source baseline behind [qms.dearauditor.ch](https://qms.dearauditor.ch/). It exists to provide a GitHub-native, reusable QMS baseline for remote-first medical device teams and to expose the controlled documents, templates, and workflows that make up the published example system.
 
-If you are here to use or read the QMS, start with the end-user links below. If you need repository/adoption background, use the [landing page](https://qms.dearauditor.ch/), the [open-source adoption model](docs/open-source/README.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
+This repository is not, by itself, an adopting company's operational QMS. It is the public upstream baseline that a company can select, mirror into a controlled private repository, tailor for its organization, validate for intended QMS use, train against, and approve before use. Product, study, supplier, validation, release, and operational evidence belongs in the adopter's designated controlled repositories, not in this public upstream baseline.
+
+If you are here to use or read the baseline, start with the end-user links below. If you need repository/adoption background, use the [landing page](https://qms.dearauditor.ch/), the [open-source adoption model](docs/open-source/README.md), and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the release landing page for that published QMS baseline.
 
@@ -10,8 +12,9 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 
 | I need to... | Open |
 |---|---|
-| Understand what this QMS is for | [Landing page](https://qms.dearauditor.ch/) |
-| Read the top-level QMS explanation | [QM-001 Quality Manual](qm/QM-001-QualityManual.md) |
+| Understand what this baseline is for | [Landing page](https://qms.dearauditor.ch/) |
+| Read the top-level baseline explanation | [QM-001 Quality Manual](qm/QM-001-QualityManual.md) |
+| Adopt the baseline into a company QMS | [Open-source adoption model](docs/open-source/README.md) |
 | Jump straight to the current published document set | [Published library](#published-library) |
 | Open the formal QMS release for this baseline | [QMS-2026-04-09-R002](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-04-09-R002) |
 | Find a specific SOP by topic | [SOP library by topic](#sop-library-by-topic) |
@@ -27,13 +30,19 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 
 ## Baseline Snapshot
 
-- Legal entity: `ACME GmbH`
+- Published upstream baseline example entity: `ACME GmbH`
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
 - Operating model: `Remote-first`
 - Current baseline shown in this README: `1` published Quality Manual, `21` published SOPs, and `2` published WIs
 - Formal QMS release for this baseline: [`QMS-2026-04-09-R002`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-04-09-R002)
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNNN`, where `RNNN` is the global sequential upstream baseline release number
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
+
+## Adoption Boundary
+
+The public upstream baseline provides reusable controlled content, templates, workflow automation, validators, and bootstrap tooling. The detailed adoption sequence is maintained in the [open-source adoption model](docs/open-source/README.md#adoption-model-2).
+
+The gap-analysis files in this repository show how the upstream baseline content maps to the current product-independent standards preparation set, including ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, and ISO/IEC 42001. They do not approve a downstream company, product, study, hosted service, or tool configuration by themselves.
 
 ## Training and Role Navigation
 

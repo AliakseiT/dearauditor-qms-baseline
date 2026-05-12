@@ -4,6 +4,8 @@
 
 Suggested OAuth app name: `DearAuditor Open QMS Baseline Sign`
 
+For adopter deployments, create this OAuth App under the adopting company's GitHub organization or account. The OAuth App verifies signer identity for the adopter's regulated QMS trust boundary and should not be borrowed from the public upstream project.
+
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
 - Scope used by worker: `read:user`
@@ -54,6 +56,8 @@ The committed `wrangler.toml` in this repository uses placeholders. Replace them
 ## 3. GitHub App Requirements
 
 Use a GitHub App installation for repository access. Minimum repository permissions:
+
+For adopter deployments, create this GitHub App under the adopting company's GitHub organization or account and install it only on adopter-controlled repositories that need QMS automation. The app posts attestations and supports repository automation, so its registration, private key, and installation scope are part of the adopter's controlled configuration.
 
 - Issues: `Read and write`
 - Pull requests: `Read-only`

@@ -34,7 +34,8 @@ For open-source distribution, this repository acts as the public upstream baseli
 | GitHub Actions | Policy evaluation, reviewer assignment, signature orchestration, training automation, publication, and maintenance jobs. |
 | GitHub Releases | Immutable publication surface for quality records and formal QMS release packages. |
 | Cloudflare signature worker | External signer UI and OAuth/PIN ceremony for the primary electronic-signature path. |
-| GitHub App token | Required for signature-attestation comments, PR automation, and merges, including PRs that modify workflow files. |
+| GitHub OAuth App | Verifies signer GitHub identity for the signature worker. In adopter deployments, this app registration belongs to the adopting company's GitHub organization or account. |
+| GitHub App token | Required for signature-attestation comments, PR automation, and merges, including PRs that modify workflow files. In adopter deployments, this GitHub App belongs to the adopting company's GitHub organization or account and is installed only on the adopter-controlled repositories that need it. |
 | Signer registry (`matrices/signer_registry.json`) | Source for resolved signatory legal names and job titles in attestation output. |
 
 ## 5. Primary Data Flows
@@ -171,7 +172,8 @@ flowchart LR
 |---|---|---|
 | GitHub-hosted Actions runner | External platform runtime | Execute automation logic, evaluate configured gates, and publish releases. |
 | Cloudflare Workers | External service | Hosts the signer-facing ceremony, validates link signatures, and posts attestation comments through the GitHub App. |
-| GitHub App credentials | Secret-managed integration | Authenticates PR-comment posting for signature requests and attestations. |
+| GitHub OAuth App registration | Adopter-owned identity integration | Verifies signer GitHub identity for the signature worker. The adopter creates and controls the OAuth app registration used for its regulated QMS trust boundary. |
+| GitHub App credentials | Adopter-owned secret-managed integration | Authenticates PR-comment posting, signature requests, attestations, and repository automation. The adopter creates and installs the GitHub App on the adopter-controlled repositories that need QMS automation. |
 | Repository secrets and variables | Controlled configuration | Provide signing and deployment configuration. |
 
 Signature-status labels are part of the operating model for merged PRs and signed issues:
