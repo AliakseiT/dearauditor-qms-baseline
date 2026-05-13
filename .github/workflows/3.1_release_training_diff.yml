@@ -212,6 +212,7 @@ jobs:
           python -m pip install --quiet pyyaml
           python <<'PY'
           import base64
+          import hashlib
           import json
           import os
           import re
