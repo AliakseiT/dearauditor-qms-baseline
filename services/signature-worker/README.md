@@ -60,7 +60,7 @@ The Worker script name defaults to `signature-worker`, but adopters can override
 
 ## GitHub OAuth App
 
-Use a standard GitHub OAuth App (not a GitHub App installation flow):
+Use a standard GitHub OAuth App (not a GitHub App installation flow). In adopter deployments, create this OAuth App under the adopting company's GitHub organization or account so signer identity verification stays inside the adopter's regulated trust boundary:
 
 - Homepage URL: `https://sign.qms.dearauditor.ch`
 - Authorization callback URL: `https://sign.qms.dearauditor.ch/auth/callback`
@@ -70,6 +70,8 @@ Use a standard GitHub OAuth App (not a GitHub App installation flow):
 ## GitHub App Access
 
 Repository reads and attestation-comment posting use a GitHub App installation, not a personal access token.
+
+In adopter deployments, create this GitHub App under the adopting company's GitHub organization or account and install it only on adopter-controlled repositories that need QMS automation. Do not reuse the public upstream project's GitHub App credentials for an adopter's regulated QMS trust boundary.
 
 Required GitHub App repository permissions:
 
