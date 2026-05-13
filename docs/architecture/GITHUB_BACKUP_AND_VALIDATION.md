@@ -56,6 +56,7 @@ This gives one scriptable result for automation and one result suitable for revi
 Known release validation rules currently cover:
 
 - formal QMS release bundles (`QMS-*`)
+- immutable QMS release signature releases (`sig-qms-release*`)
 - immutable PR signature page releases (`sig-pr*`)
 - immutable training signature releases (`sig-train*`)
 - immutable record bundle releases that publish `manifest.json` plus `signed_attestation.json`
