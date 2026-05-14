@@ -1,0 +1,24 @@
+version: 1
+analysis_date: "2026-05-14"
+record_type: privacy_data_protection_gap_index
+scope: "Index of privacy and data-protection framework gap analyses supported by SOP-023"
+shared_controls:
+  controlling_sop: "sops/SOP-023-DataProtectionAndPrivacyManagement.md"
+  shared_templates:
+    - "records/privacy/processing_activity_register_template.md"
+    - "records/privacy/lawful_basis_assessment_template.md"
+    - "records/privacy/dpia_screening_template.md"
+    - "records/privacy/dpia_template.md"
+    - "records/privacy/data_subject_request_log_template.md"
+    - "records/privacy/personal_data_breach_register_template.md"
+    - "records/privacy/transfer_assessment_template.md"
+framework_gap_analyses:
+  - framework: "GDPR"
+    file: "matrices/gdpr_gap_analysis.yml"
+    source_reference: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679"
+  - framework: "Swiss nFADP/nFDAP"
+    file: "matrices/swiss_nfadp_gap_analysis.yml"
+    source_reference: "https://www.fedlex.admin.ch/eli/cc/2022/491/en"
+notes:
+  - "Use this index only for navigation and quality-manual traceability. Legal obligation mapping is maintained in the framework-specific matrices."
+  - "An adopting company must instantiate framework records according to its approved quality manual scope before claiming compliance."
