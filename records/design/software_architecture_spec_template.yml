@@ -23,4 +23,24 @@ required_fields:
       summary: ""
       rationale: ""
       consequences: []
-
+  privacy_by_design:
+    applicable: "yes|no|not_assessed"
+    processing_activity_references: []
+    personal_data_flows:
+      - flow_id: "PDF-001"
+        source: ""
+        destination: ""
+        data_categories: []
+        purpose: ""
+        storage_location: ""
+        transfer_assessment_reference: ""
+    controls:
+      minimization: ""
+      purpose_limitation: ""
+      pseudonymization_or_anonymization: ""
+      encryption: ""
+      access_control: ""
+      audit_logging: ""
+      retention_and_deletion: ""
+      backup_restore_privacy_handling: ""
+      data_subject_rights_support: ""

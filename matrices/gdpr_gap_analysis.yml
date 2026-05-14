@@ -1,0 +1,85 @@
+version: 1
+analysis_date: "2026-05-14"
+framework:
+  exact_name: "Regulation (EU) 2016/679 General Data Protection Regulation (GDPR)"
+  normative_base: "GDPR"
+  source_reference: "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679"
+analysis_scope: "GDPR controls for companies adopting the DearAuditor Open QMS Baseline when GDPR is in scope"
+applicability_model:
+  principle: "The adopted quality manual and scope records determine whether GDPR controls are in scope. When in scope, the company instantiates the applicable SOP-023 privacy records for its processing activities."
+  applicability_statuses:
+    - "not_in_scope_no_personal_data"
+    - "not_in_scope_outside_jurisdiction"
+    - "not_yet_in_scope_before_personal_data_processing"
+    - "in_scope_controller"
+    - "in_scope_processor"
+    - "in_scope_joint_controller"
+    - "in_scope_mixed_roles_by_processing_activity"
+shared_controls:
+  controlling_sop: "SOP-023"
+  related_sops: ["SOP-001", "SOP-002", "SOP-003", "SOP-004", "SOP-005", "SOP-008", "SOP-009", "SOP-010", "SOP-011", "SOP-017", "SOP-018", "SOP-021", "SOP-022"]
+  templates:
+    - "records/privacy/processing_activity_register_template.md"
+    - "records/privacy/lawful_basis_assessment_template.md"
+    - "records/privacy/dpia_screening_template.md"
+    - "records/privacy/dpia_template.md"
+    - "records/privacy/data_subject_request_log_template.md"
+    - "records/privacy/personal_data_breach_register_template.md"
+    - "records/privacy/transfer_assessment_template.md"
+obligation_to_control_map:
+  - obligation_group: "Applicability and privacy governance"
+    gdpr_references: ["Art. 2", "Art. 3", "Art. 4", "Art. 24"]
+    controls: ["SOP-023 4.1", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Controller, processor, joint-controller, and recipient role determination"
+    gdpr_references: ["Art. 4", "Art. 26", "Art. 28"]
+    controls: ["SOP-023 4.1", "SOP-023 4.2", "SOP-023 4.3", "records/privacy/processing_activity_register_template.md", "records/suppliers/supplier_vetting_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Processing principles, lawful basis, special-category data, and transparency"
+    gdpr_references: ["Art. 5", "Art. 6", "Art. 7", "Art. 9", "Art. 12-14"]
+    controls: ["SOP-023 4.2", "records/privacy/lawful_basis_assessment_template.md", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Data-subject rights"
+    gdpr_references: ["Art. 12-22"]
+    controls: ["SOP-023 4.5", "records/privacy/data_subject_request_log_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Privacy by design and by default"
+    gdpr_references: ["Art. 25"]
+    controls: ["SOP-023 4.3", "records/design/design_development_plan_template.md", "records/design/system_requirements_spec_template.yml", "records/design/software_architecture_spec_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Records of processing activities"
+    gdpr_references: ["Art. 30"]
+    controls: ["SOP-023 4.2", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Security of processing"
+    gdpr_references: ["Art. 32"]
+    controls: ["SOP-021", "SOP-017", "SOP-023 4.3", "records/isms/isms_register_template.yml", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Personal data breach handling"
+    gdpr_references: ["Art. 33", "Art. 34"]
+    controls: ["SOP-023 4.5", "SOP-021 6.6", "records/privacy/personal_data_breach_register_template.md", "records/isms/isms_register_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "DPIA and high-risk processing"
+    gdpr_references: ["Art. 35", "Art. 36"]
+    controls: ["SOP-023 4.4", "records/privacy/dpia_screening_template.md", "records/privacy/dpia_template.md", "records/risk/risk_register_template.yml", "records/aims/aims_register_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Processor, subprocessor, and supplier data-protection controls"
+    gdpr_references: ["Art. 28"]
+    controls: ["SOP-023 4.2", "SOP-023 4.3", "SOP-010", "records/suppliers/supplier_vetting_template.yml", "records/privacy/transfer_assessment_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "International transfers"
+    gdpr_references: ["Art. 44-49"]
+    controls: ["SOP-023 4.3", "records/privacy/transfer_assessment_template.md", "records/suppliers/supplier_vetting_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Audit, review, CAPA, and management oversight"
+    gdpr_references: ["Art. 5(2)", "Art. 24"]
+    controls: ["SOP-023 4.6", "SOP-003", "SOP-004", "SOP-002", "SOP-016"]
+    status: "implemented_with_adopter_completion_required"
+outstanding_gaps_after_this_change:
+  - gap: "No company can claim GDPR compliance from the upstream baseline alone."
+    closure_condition: "The adopting company instantiates the applicable records, approves scope and roles, completes processing activity assessments, and retains evidence for its actual processing."
+  - gap: "Member-state derogations, supervisory authority lists, and sector-specific health/research rules are not embedded."
+    closure_condition: "The adopting company adds jurisdiction-specific references in the processing register, DPIA screening, and lawful-basis records."
+notes:
+  - "No copyrighted legal text is included; only article references, high-level obligation groups, and implementation decisions."
+  - "The upstream baseline is not a legal opinion. Adopting companies remain responsible for jurisdiction-specific legal review before claiming compliance."

@@ -1,5 +1,5 @@
 ---
-version: 27
+version: 28
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -155,6 +155,24 @@ roles:
       SOP-011: R11
       SOP-017: R06
       SOP-021: R02
+  privacy_lead:
+    users: []
+    required_documents:
+      - SOP-001
+      - SOP-010
+      - SOP-017
+      - SOP-021
+      - SOP-023
+    awareness_documents:
+      - SOP-008
+      - SOP-018
+      - SOP-022
+    required_revisions:
+      SOP-001: R15
+      SOP-010: R05
+      SOP-017: R06
+      SOP-021: R02
+      SOP-023: R00
   usability_lead:
     users:
       - AliakseiT

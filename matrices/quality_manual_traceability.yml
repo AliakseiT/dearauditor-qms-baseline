@@ -1,4 +1,4 @@
-version: 6
+version: 7
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
@@ -15,6 +15,11 @@ additional_standards:
     normative_base: "ISO/IEC 27001:2022 + ISO/IEC 27001:2022/Amd 1:2024"
   - exact_name: "ISO/IEC 42001:2023 Information technology - Artificial intelligence - Management system"
     normative_base: "ISO/IEC 42001:2023"
+additional_regulatory_frameworks:
+  - exact_name: "Regulation (EU) 2016/679 General Data Protection Regulation (GDPR)"
+    normative_base: "GDPR"
+  - exact_name: "Swiss Federal Act on Data Protection (FADP), revised Act in force from 2023-09-01"
+    normative_base: "Swiss nFADP/nFDAP"
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
@@ -109,6 +114,11 @@ quality_manual_sections:
     iso_clauses: ["ISO/IEC 42001 4-10", "ISO/IEC 42001 Annex A"]
     controlling_documents: ["SOP-022", "SOP-005", "SOP-008", "SOP-018", "SOP-020"]
     status: "implemented_with_product_specific_extensions"
+  - section_id: QM-19
+    section_name: "Data protection and privacy management"
+    iso_clauses: ["GDPR", "Swiss nFADP"]
+    controlling_documents: ["SOP-023", "SOP-010", "SOP-017", "SOP-021", "SOP-008"]
+    status: "implemented_with_company_specific_completion_when_in_scope"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -154,3 +164,7 @@ supporting_definitions:
     status: "implemented_with_product_specific_extensions"
     reference: "matrices/iso_iec_42001_gap_analysis.yml, sops/SOP-022-AIManagementSystem.md"
     note: "ISO/IEC 42001 AIMS scope, AI risk and impact assessment, Statement of Applicability, lifecycle, data, information for users, event handling, audit, review, and improvement interfaces are implemented through one dedicated AIMS SOP plus existing QMS controls. AI tooling used to author or operate the QMS itself is governed under existing supplier and tooling-validation controls."
+  - item: "Data protection and privacy management baseline"
+    status: "implemented_with_company_specific_completion_when_in_scope"
+    reference: "matrices/privacy_data_protection_gap_index.yml, matrices/gdpr_gap_analysis.yml, matrices/swiss_nfadp_gap_analysis.yml, sops/SOP-023-DataProtectionAndPrivacyManagement.md, records/privacy/*"
+    note: "GDPR and Swiss nFADP controls are provided for use when in scope. An adopting company must instantiate processing records, lawful-basis assessments, DPIA decisions, rights-request handling, breach records, supplier DPA evidence, and transfer assessments for its actual processing before claiming compliance."

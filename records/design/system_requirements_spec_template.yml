@@ -14,4 +14,15 @@ required_fields:
       linked_risk_items: []
       verification_method: "analysis|review|inspection|test|demonstration"
       acceptance_criteria: []
-
+privacy_requirements:
+  applicable: "yes|no|not_assessed"
+  processing_activity_references: []
+  requirements:
+    - requirement_id: "PRIV-REQ-001"
+      category: "minimization|purpose_limitation|access_control|audit_logging|pseudonymization|encryption|retention|deletion|export|rectification|restriction|consent|transparency|transfer|other"
+      statement: ""
+      rationale: ""
+      source_privacy_record: "records/privacy/processing_activity_register.md"
+      linked_risk_items: []
+      verification_method: "analysis|review|inspection|test|demonstration"
+      acceptance_criteria: []

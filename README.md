@@ -74,6 +74,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R06`
 - [SOP-021 Information Security Management (ISO/IEC 27001)](sops/SOP-021-InformationSecurityManagement.md) - `R02`
 - [SOP-022 AI Management System (ISO/IEC 42001)](sops/SOP-022-AIManagementSystem.md) - `R02`
+- [SOP-023 Data Protection and Privacy Management (GDPR and Swiss nFADP)](sops/SOP-023-DataProtectionAndPrivacyManagement.md) - `R00`
 
 #### Development, Risk, and Release
 
@@ -127,6 +128,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-05-04 | R13 | Published |
 | SOP-021 | Information Security Management (ISO/IEC 27001) | sops/SOP-021-InformationSecurityManagement.md | 2026-05-04 | R02 | Published |
 | SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-05-04 | R02 | Published |
+| SOP-023 | Data Protection and Privacy Management (GDPR and Swiss nFADP) | sops/SOP-023-DataProtectionAndPrivacyManagement.md | 2026-05-14 | R00 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-04-27 | R09 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-04-27 | R10 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->

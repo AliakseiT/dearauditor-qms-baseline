@@ -34,6 +34,7 @@ Some folders are intentionally empty until the first signed and published compan
 | Start with release/configuration templates | [Configuration and release templates](configuration/) |
 | Start with ISMS templates | [ISMS record templates](isms/) |
 | Start with AIMS templates | [AIMS record templates](aims/) |
+| Start with privacy/data-protection templates | [Privacy record templates](privacy/) |
 | Record a Word/PDF-origin controlled document | [External document manifest template](external/external_document_manifest_template.yml) |
 | Go back to the top-level project index | [DearAuditor Open QMS Baseline README](../README.md) |
 
@@ -58,6 +59,7 @@ Some folders are intentionally empty until the first signed and published compan
 - [Configuration and release](configuration/) - release readiness, final release decision, and release baseline manifest templates for designated product/study repositories
 - [ISMS](isms/) - ISO/IEC 27001 scope, asset, information security risk, access review, incident, exception, and Statement of Applicability templates
 - [AIMS](aims/) - ISO/IEC 42001 scope, AI system inventory, AI risk, impact assessment, event, exception, and Statement of Applicability templates
+- [Privacy](privacy/) - GDPR and Swiss nFADP processing activity, lawful basis, DPIA, rights request, breach, and transfer templates for use when in scope
 - [Validation](validation/qms-tools/) - QMS tooling validation evidence
 - [Post-market surveillance](pms/) - PMS plan and periodic report templates
 - [Feedback and complaints](feedback/complaint_case_log_template.yml) - complaint case log template
