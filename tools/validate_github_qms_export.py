@@ -17,9 +17,11 @@ from typing import Any
 
 QMS_TAG_RE = re.compile(r"^QMS-\d{4}-\d{2}-\d{2}-R\d{3}$")
 QMS_PREVIEW_TAG_RE = re.compile(r"^QMSPREVIEW-\d{4}-\d{2}-\d{2}-R\d{3}$")
+QMS_RELEASE_SIGNATURE_TAG_RE = re.compile(r"^sig-qms-release-\d+-h[a-f0-9]{1,12}-r\d+$")
 PR_SIGNATURE_TAG_RE = re.compile(r"^sig-pr\d+-h[a-f0-9]{1,12}-r\d+$")
 TRAINING_SIGNATURE_TAG_RE = re.compile(r"^sig-train-\d+-h[a-f0-9]{1,12}-r\d+$")
 CERTIFICATE_ASSET_RE = re.compile(r"^Electronic_Signature_Certificate_PR\d+\.pdf$")
+QMS_RELEASE_CERTIFICATE_ASSET_RE = re.compile(r"^Electronic_Signature_Certificate_QMS-\d{4}-\d{2}-\d{2}-R\d{3}\.pdf$")
 
 
 def utc_now() -> str:
@@ -75,6 +77,8 @@ def classify_release(tag_name: str, asset_names: list[str]) -> str:
         return "qms_release"
     if QMS_PREVIEW_TAG_RE.fullmatch(tag_name):
         return "qms_preview"
+    if QMS_RELEASE_SIGNATURE_TAG_RE.fullmatch(tag_name):
+        return "qms_release_signature_release"
     if PR_SIGNATURE_TAG_RE.fullmatch(tag_name):
         return "pr_signature_release"
     if TRAINING_SIGNATURE_TAG_RE.fullmatch(tag_name):
@@ -260,6 +264,86 @@ def validate_qms_release_assets(export_dir: Path, release: dict[str, Any], asset
                     "detail": f"QMS release signature attestation validated with {len(attestation.get('signed_attestations') or [])} captured attestation(s).",
                 }
             )
+    return findings
+
+
+def validate_qms_release_signature_release(export_dir: Path, release: dict[str, Any], asset_names: list[str]) -> list[dict[str, str]]:
+    findings: list[dict[str, str]] = []
+    tag_name = str(release.get("tag_name") or "")
+    cert_asset = next((name for name in asset_names if QMS_RELEASE_CERTIFICATE_ASSET_RE.fullmatch(name)), "")
+    missing = []
+    if "signed_attestation.json" not in asset_names:
+        missing.append("signed_attestation.json")
+    if not cert_asset:
+        missing.append("Electronic_Signature_Certificate_QMS-YYYY-MM-DD-RNNN.pdf")
+    if missing:
+        findings.append(
+            {
+                "status": "fail",
+                "name": f"release:{tag_name}",
+                "detail": f"Missing expected QMS release signature asset(s): {', '.join(missing)}",
+            }
+        )
+        return findings
+
+    attestation_path = asset_path_for_release(export_dir, tag_name, "signed_attestation.json")
+    if not attestation_path.exists():
+        findings.append(
+            {
+                "status": "warn",
+                "name": f"release:{tag_name}",
+                "detail": "QMS release signature assets are listed, but signed_attestation.json was not exported; deep validation skipped.",
+            }
+        )
+        return findings
+
+    payload = load_json(attestation_path)
+    missing_fields = validate_required_fields(
+        payload,
+        [
+            "attestation_scope",
+            "source_repository",
+            "source_issue",
+            "source_release_tag",
+            "part11_target_hash",
+            "signed_attestations",
+        ],
+    )
+    if missing_fields:
+        findings.append(
+            {
+                "status": "fail",
+                "name": f"release:{tag_name}",
+                "detail": f"signed_attestation.json missing field(s): {', '.join(missing_fields)}",
+            }
+        )
+        return findings
+    if str(payload.get("attestation_scope") or "") != "qms_release_signature":
+        findings.append(
+            {
+                "status": "fail",
+                "name": f"release:{tag_name}",
+                "detail": f"Unexpected attestation_scope '{payload.get('attestation_scope')}' for QMS release signature release.",
+            }
+        )
+        return findings
+    source_release_tag = str(payload.get("source_release_tag") or "")
+    if not QMS_TAG_RE.fullmatch(source_release_tag):
+        findings.append(
+            {
+                "status": "fail",
+                "name": f"release:{tag_name}",
+                "detail": f"source_release_tag '{source_release_tag}' is not a formal QMS release tag.",
+            }
+        )
+        return findings
+    findings.append(
+        {
+            "status": "pass",
+            "name": f"release:{tag_name}",
+            "detail": f"QMS release signature validated for {source_release_tag} with {len(payload.get('signed_attestations') or [])} captured attestation(s).",
+        }
+    )
     return findings
 
 
@@ -491,6 +575,9 @@ def validate_release_assets(export_dir: Path, manifest: dict[str, Any]) -> list[
         classification = classify_release(tag_name, asset_names)
         if classification == "qms_release":
             findings.extend(validate_qms_release_assets(export_dir, release, asset_names))
+            checked += 1
+        elif classification == "qms_release_signature_release":
+            findings.extend(validate_qms_release_signature_release(export_dir, release, asset_names))
             checked += 1
         elif classification == "pr_signature_release":
             findings.extend(validate_pr_signature_release(export_dir, release, asset_names))
