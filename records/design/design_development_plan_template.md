@@ -23,6 +23,8 @@ linked_records:
   verification_validation_plan_reference: "records/verification_validation/vv_plan.md"
   release_plan_reference: "records/configuration/release_plan.md"
   usability_file_index_reference: "records/usability/usability_file_index.md"
+  privacy_processing_register_reference: "records/privacy/processing_activity_register.md"
+  privacy_dpia_screening_reference: "records/privacy/dpia_screening.md"
 approval:
   meaning_of_signature: "Approved Design Inputs and Development Plan"
   signer_roles:
@@ -87,6 +89,8 @@ Example:
 - System requirements reference: `records/design/system_requirements_spec.md`
 - Classification decision reference: `records/mdf/classification_decision.md` when the product regulatory pathway or market classification is in scope for the baseline
 - Initial risk management plan reference: `records/risk/risk_management_plan.md`
+- Privacy applicability and processing activity reference: `records/privacy/processing_activity_register.md` when personal data is processed, or documented not-in-scope rationale when no personal data is processed
+- DPIA screening reference: `records/privacy/dpia_screening.md` when personal data is processed or the design introduces privacy-relevant data flows
 - Planned V&V strategy reference: `records/verification_validation/vv_plan.md` or equivalent approved product record
 - Usability inputs and critical-task references: `records/usability/usability_file_index.md`
 - Open constraints or deferred inputs: external SSO provider not finalized; production hosting region pending supplier contract review
@@ -103,6 +107,7 @@ Example minimum review set:
 - User needs
 - System requirements baseline
 - Initial risk management plan or approved risk-planning reference
+- Privacy applicability decision and DPIA screening, when personal data is in scope
 - Planned V&V strategy or approved V&V plan reference
 - Usability file index or equivalent input reference for user-facing products
 

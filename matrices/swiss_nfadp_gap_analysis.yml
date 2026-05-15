@@ -1,0 +1,82 @@
+version: 1
+analysis_date: "2026-05-14"
+framework:
+  exact_name: "Swiss Federal Act on Data Protection (FADP), revised Act in force from 2023-09-01"
+  normative_base: "Swiss nFADP/nFDAP"
+  source_reference: "https://www.fedlex.admin.ch/eli/cc/2022/491/en"
+analysis_scope: "Swiss nFADP controls for companies adopting the DearAuditor Open QMS Baseline when Swiss nFADP is in scope"
+applicability_model:
+  principle: "The adopted quality manual and scope records determine whether Swiss nFADP controls are in scope. When in scope, the company instantiates the applicable SOP-023 privacy records for its processing activities."
+  applicability_statuses:
+    - "not_in_scope_no_personal_data"
+    - "not_in_scope_outside_jurisdiction"
+    - "not_yet_in_scope_before_personal_data_processing"
+    - "in_scope_controller"
+    - "in_scope_processor"
+    - "in_scope_joint_controller"
+    - "in_scope_mixed_roles_by_processing_activity"
+shared_controls:
+  controlling_sop: "SOP-023"
+  related_sops: ["SOP-001", "SOP-002", "SOP-003", "SOP-004", "SOP-005", "SOP-008", "SOP-009", "SOP-010", "SOP-011", "SOP-017", "SOP-018", "SOP-021", "SOP-022"]
+  templates:
+    - "records/privacy/processing_activity_register_template.md"
+    - "records/privacy/lawful_basis_assessment_template.md"
+    - "records/privacy/dpia_screening_template.md"
+    - "records/privacy/dpia_template.md"
+    - "records/privacy/data_subject_request_log_template.md"
+    - "records/privacy/personal_data_breach_register_template.md"
+    - "records/privacy/transfer_assessment_template.md"
+obligation_to_control_map:
+  - obligation_group: "Applicability and privacy governance"
+    swiss_nfadp_references: ["Art. 2", "Art. 3", "Art. 5"]
+    controls: ["SOP-023 4.1", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Controller, processor, recipient, and processor role determination"
+    swiss_nfadp_references: ["Art. 5", "Art. 9"]
+    controls: ["SOP-023 4.1", "SOP-023 4.2", "SOP-023 4.3", "records/privacy/processing_activity_register_template.md", "records/suppliers/supplier_vetting_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Processing principles, sensitive personal data, transparency, and justification"
+    swiss_nfadp_references: ["Art. 6", "Art. 19", "Art. 20", "Art. 21"]
+    controls: ["SOP-023 4.2", "records/privacy/lawful_basis_assessment_template.md", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Data-subject rights"
+    swiss_nfadp_references: ["Art. 25-28"]
+    controls: ["SOP-023 4.5", "records/privacy/data_subject_request_log_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Data protection by design and by default"
+    swiss_nfadp_references: ["Art. 7"]
+    controls: ["SOP-023 4.3", "records/design/design_development_plan_template.md", "records/design/system_requirements_spec_template.yml", "records/design/software_architecture_spec_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Records of processing activities"
+    swiss_nfadp_references: ["Art. 12"]
+    controls: ["SOP-023 4.2", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Data security"
+    swiss_nfadp_references: ["Art. 8"]
+    controls: ["SOP-021", "SOP-017", "SOP-023 4.3", "records/isms/isms_register_template.yml", "records/privacy/processing_activity_register_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Data security breach notification"
+    swiss_nfadp_references: ["Art. 24"]
+    controls: ["SOP-023 4.5", "SOP-021 6.6", "records/privacy/personal_data_breach_register_template.md", "records/isms/isms_register_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "DPIA and high-risk processing"
+    swiss_nfadp_references: ["Art. 22", "Art. 23"]
+    controls: ["SOP-023 4.4", "records/privacy/dpia_screening_template.md", "records/privacy/dpia_template.md", "records/risk/risk_register_template.yml", "records/aims/aims_register_template.yml"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Processors, suppliers, and transfer controls"
+    swiss_nfadp_references: ["Art. 9", "Art. 16", "Art. 17"]
+    controls: ["SOP-023 4.2", "SOP-023 4.3", "SOP-010", "records/suppliers/supplier_vetting_template.yml", "records/privacy/transfer_assessment_template.md"]
+    status: "implemented_with_adopter_completion_required"
+  - obligation_group: "Audit, review, CAPA, and management oversight"
+    swiss_nfadp_references: ["Art. 6", "Art. 7", "Art. 12"]
+    controls: ["SOP-023 4.6", "SOP-003", "SOP-004", "SOP-002", "SOP-016"]
+    status: "implemented_with_adopter_completion_required"
+outstanding_gaps_after_this_change:
+  - gap: "No company can claim Swiss nFADP compliance from the upstream baseline alone."
+    closure_condition: "The adopting company instantiates the applicable records, approves scope and roles, completes processing activity assessments, and retains evidence for its actual processing."
+  - gap: "Sector-specific health, research, employment, or contractual privacy requirements are not embedded."
+    closure_condition: "The adopting company adds applicable sector-specific references in the processing register, DPIA screening, lawful-basis records, supplier records, and transfer assessments."
+notes:
+  - "Swiss acronym usage varies in practice. This matrix uses Swiss nFADP/nFDAP to refer to the revised Federal Act on Data Protection in force from 2023-09-01."
+  - "No copyrighted legal text is included; only article references, high-level obligation groups, and implementation decisions."
+  - "The upstream baseline is not a legal opinion. Adopting companies remain responsible for jurisdiction-specific legal review before claiming compliance."

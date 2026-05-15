@@ -10,6 +10,27 @@ required_fields:
   data_integrity_impact: "none|indirect|direct"
   service_model: "cloud|software|consulting|testing|other"
   jurisdictional_impact: []
+  personal_data_processing:
+    applicable: false
+    role: "none|controller|processor|subprocessor|joint_controller|independent_recipient|not_assessed"
+    processing_activity_reference: ""
+    categories_of_personal_data: []
+    sensitive_or_special_category_data_present: false
+    data_subject_categories: []
+    controller_or_customer_reference: ""
+    privacy_notice_or_transparency_reference: ""
+    dpa_or_privacy_terms_required: "yes|no|not_assessed"
+    dpa_or_privacy_terms_reference: ""
+    article_28_or_swiss_processor_terms_checked: false
+    subprocessor_authorization: "not_applicable|specific|general|not_assessed"
+    subprocessor_list_reference: ""
+    controller_assistance_obligations:
+      data_subject_rights: "covered|not_covered|not_applicable|not_assessed"
+      breach_notification: "covered|not_covered|not_applicable|not_assessed"
+      dpia_and_authority_consultation: "covered|not_covered|not_applicable|not_assessed"
+      deletion_or_return: "covered|not_covered|not_applicable|not_assessed"
+      audit_evidence: "covered|not_covered|not_applicable|not_assessed"
+    transfer_assessment_reference: ""
   purchasing_controls:
     agreement_basis: "quality_agreement|sla_tos_equivalent"
     agreement_reference: ""
