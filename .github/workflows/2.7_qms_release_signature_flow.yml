@@ -649,6 +649,8 @@ jobs:
             core.setOutput('release_tag', String(requestContext.release_tag || '').trim());
             core.setOutput('release_url', String(requestContext.release_url || '').trim());
             core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('target_hash', expectedHash);
+            core.setOutput('source_target_commit', String(requestContext.source_target_commit || '').trim());
 
       - name: Generate release signature certificate
         if: steps.aggregate.outputs.all_required_collected == 'true'
@@ -660,14 +662,109 @@ jobs:
             --output "${CERT_PDF}" \
             --record-id "${{ steps.aggregate.outputs.release_tag }}"
 
-      - name: Upload release signature assets
+      - name: Publish immutable release signature evidence
+        id: signature_release
         if: steps.aggregate.outputs.all_required_collected == 'true'
         env:
           GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
+          REPOSITORY: ${{ github.repository }}
           RELEASE_TAG: ${{ steps.aggregate.outputs.release_tag }}
+          RELEASE_URL: ${{ steps.aggregate.outputs.release_url }}
+          ISSUE_NUMBER: ${{ steps.aggregate.outputs.issue_number }}
+          TARGET_HASH: ${{ steps.aggregate.outputs.target_hash }}
+          SOURCE_TARGET_COMMIT: ${{ steps.aggregate.outputs.source_target_commit }}
           CERT_PDF: Electronic_Signature_Certificate_${{ steps.aggregate.outputs.release_tag }}.pdf
         run: |
-          gh release upload "${RELEASE_TAG}" --clobber signed_attestation.json "${CERT_PDF}"
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+          import time
+          from pathlib import Path
+
+          repository = os.environ["REPOSITORY"].strip()
+          release_tag = os.environ["RELEASE_TAG"].strip()
+          release_url = os.environ["RELEASE_URL"].strip()
+          issue_number = os.environ["ISSUE_NUMBER"].strip()
+          target_hash = os.environ["TARGET_HASH"].strip().lower()
+          source_target_commit = os.environ["SOURCE_TARGET_COMMIT"].strip()
+          target_ref = source_target_commit or release_tag
+          hash_short = (target_hash or "nohash")[:12]
+          base_tag = f"sig-qms-release-{issue_number}-h{hash_short}"
+          prefix = f"{base_tag}-r"
+          cert_pdf = os.environ["CERT_PDF"]
+
+          attestation = json.loads(Path("signed_attestation.json").read_text(encoding="utf-8"))
+          notes = "\n".join([
+            "# Immutable QMS Release Signature Record",
+            "",
+            f"- Source repository: `{repository}`",
+            f"- Release tag: `{release_tag}`",
+            f"- Release URL: {release_url}",
+            f"- Release planning issue: `#{issue_number}`",
+            f"- Release decision PR: `#{attestation.get('source_release_decision_pull_request', 'n/a')}`",
+            f"- Meaning of signature: `{attestation.get('meaning_of_signature', 'n/a')}`",
+            f"- Target hash: `{attestation.get('part11_target_hash', 'n/a')}`",
+            f"- Target ref: `{target_ref}`",
+            f"- Required/Captured signatures: `{attestation.get('required_signatures', 'n/a')}/{attestation.get('captured_signatures', 'n/a')}`",
+            "- Completion status: `complete`",
+            "",
+            "Assets:",
+            f"- `{cert_pdf}`",
+            "- `signed_attestation.json`",
+          ]) + "\n"
+          Path("release_signature_notes.md").write_text(notes, encoding="utf-8")
+
+          def run(cmd, attempts=5, sleep_seconds=3, allow_404=False):
+            last = ""
+            for _ in range(attempts):
+              proc = subprocess.run(cmd, text=True, capture_output=True)
+              if proc.returncode == 0:
+                return proc.stdout
+              stderr = (proc.stderr or "") + (proc.stdout or "")
+              if allow_404 and ("HTTP 404" in stderr or "Not Found" in stderr):
+                return None
+              last = stderr.strip()
+              time.sleep(sleep_seconds)
+            raise RuntimeError(f"Command failed: {' '.join(cmd)}\n{last}")
+
+          refs_raw = run(
+            ["gh", "api", f"repos/{repository}/git/matching-refs/tags/{prefix}"],
+            allow_404=True,
+          )
+          refs = json.loads(refs_raw) if refs_raw else []
+
+          max_rev = 0
+          for ref in refs:
+            ref_name = str(ref.get("ref") or "")
+            match = re.search(r"-r(\d+)$", ref_name)
+            if match:
+              max_rev = max(max_rev, int(match.group(1)))
+
+          signature_tag = f"{base_tag}-r{max_rev + 1:02d}"
+          run([
+            "gh", "release", "create", signature_tag,
+            "--repo", repository,
+            "--target", target_ref,
+            "--title", f"QMS Release Signature: {release_tag}",
+            "--notes-file", "release_signature_notes.md",
+            "--draft",
+            cert_pdf,
+            "signed_attestation.json",
+          ])
+          run(["gh", "release", "edit", signature_tag, "--repo", repository, "--draft=false"])
+
+          release_json = run(["gh", "api", f"repos/{repository}/releases/tags/{signature_tag}"])
+          release = json.loads(release_json)
+          assets = {asset.get("name", ""): asset.get("browser_download_url", "") for asset in release.get("assets", [])}
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+            output.write(f"signature_tag={signature_tag}\n")
+            output.write(f"signature_release_url={release.get('html_url', '')}\n")
+            output.write(f"signature_pdf_url={assets.get(cert_pdf, '')}\n")
+            output.write(f"signature_json_url={assets.get('signed_attestation.json', '')}\n")
+          PY
 
       - name: Mark release issue complete and close
         if: steps.aggregate.outputs.all_required_collected == 'true'
@@ -676,6 +773,10 @@ jobs:
           RELEASE_TAG: ${{ steps.aggregate.outputs.release_tag }}
           RELEASE_URL: ${{ steps.aggregate.outputs.release_url }}
           ISSUE_NUMBER: ${{ steps.aggregate.outputs.issue_number }}
+          SIGNATURE_TAG: ${{ steps.signature_release.outputs.signature_tag }}
+          SIGNATURE_RELEASE_URL: ${{ steps.signature_release.outputs.signature_release_url }}
+          SIGNATURE_PDF_URL: ${{ steps.signature_release.outputs.signature_pdf_url }}
+          SIGNATURE_JSON_URL: ${{ steps.signature_release.outputs.signature_json_url }}
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
@@ -698,9 +799,11 @@ jobs:
               '',
               `- Release tag: \`${String(process.env.RELEASE_TAG || '').trim()}\``,
               `- Release URL: ${String(process.env.RELEASE_URL || '').trim()}`,
+              `- Signature release tag: \`${String(process.env.SIGNATURE_TAG || '').trim()}\``,
+              `- Signature release URL: ${String(process.env.SIGNATURE_RELEASE_URL || '').trim()}`,
               '- Published signature assets:',
-              '  - `signed_attestation.json`',
-              `  - \`Electronic_Signature_Certificate_${String(process.env.RELEASE_TAG || '').trim()}.pdf\``,
+              `  - \`signed_attestation.json\`: ${String(process.env.SIGNATURE_JSON_URL || '').trim()}`,
+              `  - \`Electronic_Signature_Certificate_${String(process.env.RELEASE_TAG || '').trim()}.pdf\`: ${String(process.env.SIGNATURE_PDF_URL || '').trim()}`,
             ].join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
