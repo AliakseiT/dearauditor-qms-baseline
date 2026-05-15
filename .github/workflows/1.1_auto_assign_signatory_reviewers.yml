@@ -103,9 +103,11 @@ jobs:
           python3 scripts/resolve_reviewer_candidates.py \
             --repo-root "$GITHUB_WORKSPACE" \
             --paths-json "${CHANGED_PATHS_JSON}" \
+            --fallback-role-ids "${FALLBACK_ROLE_IDS}" \
             --github-output "$GITHUB_OUTPUT"
         env:
           CHANGED_PATHS_JSON: ${{ steps.policy.outputs.changed_paths_json }}
+          FALLBACK_ROLE_IDS: ${{ steps.resolver.outputs.signatory_role_ids }}
 
       - name: Validate candidate availability
         env:
