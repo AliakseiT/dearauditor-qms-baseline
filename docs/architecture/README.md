@@ -152,7 +152,7 @@ flowchart LR
 | `2.3_publish_qms_release.yml` | `push` on QMS release tag | Packages the approved repository state, publishes the formal QMS release bundle, and closes the linked release-plan issue after successful publication. | Active |
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
 | `2.5_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
-| `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published `QMS-*` release package, uploads the release attestation assets, and closes the release-plan issue after completion. Non-`QMS-*` GitHub Release events are ignored. | Active |
+| `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published immutable `QMS-*` release package, publishes the release attestation assets as a separate immutable `sig-qms-release-*` evidence release, and closes the release-plan issue after completion. Non-`QMS-*` GitHub Release events are ignored for request creation. | Active |
 
 ### 7.3 Training Lifecycle
 | Workflow | Primary trigger | Purpose | Status |
