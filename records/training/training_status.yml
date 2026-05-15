@@ -1,5 +1,5 @@
 version: 1
-generated_at_utc: '2026-04-08T21:24:24Z'
+generated_at_utc: '2026-05-13T19:36:39Z'
 source_repository: AliakseiT/dearauditor-qms-baseline
 source_event_count: 3
 users:
@@ -18,11 +18,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -39,11 +38,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -60,11 +58,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -81,11 +78,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -102,11 +98,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -123,11 +118,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -144,11 +138,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -165,11 +158,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -186,11 +178,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -207,11 +198,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -228,11 +218,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -249,11 +238,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -270,11 +258,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -291,11 +278,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -312,11 +298,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -333,11 +318,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -354,11 +338,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -375,11 +358,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
@@ -396,11 +378,10 @@ users:
         trained_at_utc: '2026-03-05T02:17:31.036Z'
         from_revision: UNTRAINED
         roles_in_scope:
-        - clinical_ops
-        - lead_auditor
+        - auditor
+        - engineer
         - management_representative
         - qa_lead
-        - software_engineer
         - technical_qms_maintainer
         source_issue: 143
         source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (sig-pr141-h1e51b8ebbe6d-r01)'
