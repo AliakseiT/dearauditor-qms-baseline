@@ -9,7 +9,10 @@ on:
       - wis/*.md
       - records/**
       - README.md
+      - matrices/company_profile.yml
+      - matrices/iso_9001_gap_analysis.yml
       - matrices/training_matrix.yml
+      - matrices/quality_manual_traceability.yml
 
 permissions:
   contents: read

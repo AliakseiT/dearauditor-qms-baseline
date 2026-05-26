@@ -18,6 +18,9 @@ RECORD_INDEX_RULES = [
     },
 ]
 
+ISO_9001_MATRIX_PATH = "matrices/iso_9001_gap_analysis.yml"
+ISO_9001_REQUIRED_CLAUSES = ["4.1", "5.1", "6.1", "7.1", "8.1", "9.1", "10.3"]
+
 ARGS = None
 
 
@@ -514,6 +517,50 @@ class QMSContentGuardTests(unittest.TestCase):
                 failures.append(
                     f"{rule['name']} must be updated when these record files change: {', '.join(sorted(watched_records))}."
                 )
+        self.assert_no_failures(failures)
+
+    def test_iso_9001_extension_is_published_and_mapped(self):
+        failures = []
+        matrix_path = Path(ISO_9001_MATRIX_PATH)
+        if not matrix_path.exists():
+            failures.append(f"{ISO_9001_MATRIX_PATH} must exist for the published ISO 9001 extension.")
+        elif f"({ISO_9001_MATRIX_PATH})" not in self.ctx.readme_text:
+            failures.append(f"README.md must link {ISO_9001_MATRIX_PATH}.")
+
+        traceability_path = Path("matrices/quality_manual_traceability.yml")
+        traceability_text = traceability_path.read_text(encoding="utf-8") if traceability_path.exists() else ""
+        if "ISO 9001:2015" not in traceability_text:
+            failures.append("matrices/quality_manual_traceability.yml must include ISO 9001:2015.")
+        if ISO_9001_MATRIX_PATH not in traceability_text:
+            failures.append(f"matrices/quality_manual_traceability.yml must reference {ISO_9001_MATRIX_PATH}.")
+
+        company_profile_path = Path("matrices/company_profile.yml")
+        company_profile_text = company_profile_path.read_text(encoding="utf-8") if company_profile_path.exists() else ""
+        if "ISO 9001" not in company_profile_text:
+            failures.append("matrices/company_profile.yml must include ISO 9001 in the QMS intent or objectives.")
+
+        if matrix_path.exists():
+            try:
+                matrix = load_yaml_via_ruby(ISO_9001_MATRIX_PATH) or {}
+            except Exception as exc:
+                failures.append(f"{ISO_9001_MATRIX_PATH}: YAML could not be parsed ({exc}).")
+            else:
+                standard = matrix.get("standard", {}) or {}
+                exact_name = str(standard.get("exact_name", ""))
+                normative_base = str(standard.get("normative_base", ""))
+                if "ISO 9001:2015" not in exact_name or "Amd 1:2024" not in normative_base:
+                    failures.append(
+                        f"{ISO_9001_MATRIX_PATH}: standard metadata must identify ISO 9001:2015 and Amd 1:2024."
+                    )
+                clause_map = matrix.get("clause_to_control_map", {}) or {}
+                missing_clauses = [clause for clause in ISO_9001_REQUIRED_CLAUSES if clause not in clause_map]
+                if missing_clauses:
+                    failures.append(
+                        f"{ISO_9001_MATRIX_PATH}: clause_to_control_map is missing {', '.join(missing_clauses)}."
+                    )
+                if "QM-001" not in json.dumps(clause_map):
+                    failures.append(f"{ISO_9001_MATRIX_PATH}: clause_to_control_map must reference QM-001.")
+
         self.assert_no_failures(failures)
 
     def test_risk_records_have_valid_schema(self):

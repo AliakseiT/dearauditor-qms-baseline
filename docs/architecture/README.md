@@ -139,7 +139,7 @@ flowchart LR
 | `1.1_auto_assign_signatory_reviewers.yml` | `pull_request` | Resolves required signatory reviewers from requested signature roles and assigns them. | Active |
 | `1.2_required_reviewer_approval_gate.yml` | `pull_request_review` | Validates that at least one required non-author approval exists on the current head SHA. | Active |
 | `1.3_auto_merge_after_signatory_approvals.yml` | `pull_request_review` | Enables auto-merge after assigned reviewer approvals are present; repository-level branch protection or rulesets are still required to hard-block manual merges. | Active |
-| `1.4_qms_content_gate.yml` | `pull_request` | Validates revision-history, README navigation/index, training-matrix synchronization, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
+| `1.4_qms_content_gate.yml` | `pull_request` | Validates revision-history, README navigation/index, training-matrix synchronization, ISO 9001 matrix publication/mapping, configured record-index sanity checks, and risk-record schema validation for controlled content changes. | Active |
 | `1.5_pr_description_gate.yml` | `pull_request` | Validates that the PR body contains structural headers for `Summary`, `Why` (or `Context`), and `Validation` (or `Testing`). | Active |
 | `1.6_release_evidence_gate.yml` | `pull_request` on release notes | Reports controlled-document signature coverage and traceability coverage for QMS release-note PRs; report mode does not block merges while historical evidence coverage is being baselined. | Report mode |
 

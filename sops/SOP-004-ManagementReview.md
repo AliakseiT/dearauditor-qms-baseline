@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R08
-revision_date: 2026-05-04
+revision: R09
+revision_date: 2026-05-26
 status: Published
 owner_role: management_representative
 approver_role: management_representative
@@ -18,6 +18,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 - Audit results and CAPA status
 - Complaint/feedback/PMS/incident trends
 - Process performance and quality objectives
+- Organization context, interested-party needs, customer satisfaction signals, and risks/opportunities
 - Supplier performance and regulatory changes
 - Resource and competence adequacy
 
@@ -46,7 +47,9 @@ Applies to formal management review meetings and resulting decisions/actions for
    - Previous action status
    - Audit and CAPA trends
    - Feedback/complaint/incident/PMS data
+   - Customer satisfaction and interested-party requirement trends
    - Quality objective performance
+   - Organization context, process risks/opportunities, and climate-relevance changes where applicable
    - Supplier and resource status
 
 ### 6.3 Review Execution
@@ -74,6 +77,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 | ISO 13485:2016 5.6.1 | Defines management review frequency and governance ownership. |
 | ISO 13485:2016 5.6.2 | Defines required review inputs. |
 | ISO 13485:2016 5.6.3 | Defines required review outputs and action follow-up. |
+| ISO 9001:2015 9.3 | Defines management review inputs and outputs for context, customer satisfaction, process performance, resources, risks/opportunities, and improvement. |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual
@@ -93,3 +97,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 | R06 | 2026-03-18 | Removed top-table standards clause metadata; normative references remain in the Traceability section. |
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R09 | 2026-05-26 | Added ISO 9001 management review inputs for context, interested parties, customer satisfaction, risks/opportunities, and improvement. |
