@@ -45,7 +45,36 @@ AUTOMATION_BOT_LOGINS = {
     "dearauditor-open-qms-bot[bot]",
     "dearauditor-qms-baseline-bot",
     "dearauditor-qms-baseline-sign",
+    "dependabot",
+    "dependabot[bot]",
     "github-actions[bot]",
+}
+
+DEPENDABOT_LOGINS = {
+    "dependabot",
+    "dependabot[bot]",
+}
+
+DEPENDABOT_SIGNATURE_MEANING = "Approved Dependency Update"
+DEPENDABOT_SIGNER_ROLES = ["Technical QMS Maintainer"]
+DEPENDABOT_REQUIRED_SIGNATURES = 1
+DEPENDENCY_UPDATE_PATH_RE = re.compile(r"(^|/)requirements[^/]*\.txt$", re.IGNORECASE)
+DEPENDENCY_UPDATE_FILENAMES = {
+    ".github/dependabot.yml",
+    "Cargo.lock",
+    "Cargo.toml",
+    "Gemfile",
+    "Gemfile.lock",
+    "Pipfile",
+    "Pipfile.lock",
+    "go.mod",
+    "go.sum",
+    "package-lock.json",
+    "package.json",
+    "pnpm-lock.yaml",
+    "poetry.lock",
+    "pyproject.toml",
+    "yarn.lock",
 }
 
 
@@ -103,6 +132,25 @@ def _parse_required_signatures(body: str) -> int:
     except ValueError:
         return 1
     return value if value > 0 else 1
+
+
+def _is_dependency_update_path(path: str) -> bool:
+    """True for dependency manifests/lockfiles Dependabot is allowed to update."""
+    return (
+        path in DEPENDENCY_UPDATE_FILENAMES
+        or path.rsplit("/", 1)[-1] in DEPENDENCY_UPDATE_FILENAMES
+        or (
+            path.startswith(".github/workflows/")
+            and path.lower().endswith((".yml", ".yaml"))
+        )
+        or DEPENDENCY_UPDATE_PATH_RE.search(path) is not None
+    )
+
+
+def _is_dependabot_dependency_update(author_key: str, paths: list[str]) -> bool:
+    return author_key in DEPENDABOT_LOGINS and bool(paths) and all(
+        _is_dependency_update_path(path) for path in paths
+    )
 
 
 def _strip_yaml_quotes(value: str) -> str:
@@ -310,7 +358,17 @@ def main() -> int:
     ]
     content_policy = _infer_content_signature_policy(changed_paths)
 
-    if content_policy:
+    if _is_dependabot_dependency_update(author_key, changed_paths):
+        final_roles = list(DEPENDABOT_SIGNER_ROLES)
+        required_signatures = DEPENDABOT_REQUIRED_SIGNATURES
+        meaning_of_signature = DEPENDABOT_SIGNATURE_MEANING
+        source = "dependabot"
+        signature_word = "signature" if required_signatures == 1 else "signatures"
+        summary = (
+            "Applied the fixed signature policy for Dependabot dependency updates: "
+            f"{'; '.join(final_roles)} with {required_signatures} required {signature_word}."
+        )
+    elif content_policy:
         expected_meaning = str(content_policy["meaning"])
         expected_roles = list(content_policy["roles"])
         expected_required_signatures = int(content_policy["required_signatures"])
@@ -399,9 +457,17 @@ def main() -> int:
                 f"Author roles: {author_roles or 'none resolved'}. Declare '**Signer Roles:**' explicitly in the PR body."
             )
 
+    final_role_ids: list[str] = []
+    for display in final_roles:
+        role_id = _role_id_for_label(display)
+        if role_id and role_id not in final_role_ids:
+            final_role_ids.append(role_id)
+
     outputs = {
         "signatory_roles": "; ".join(final_roles),
         "signatory_roles_json": json.dumps(final_roles),
+        "signatory_role_ids": ",".join(final_role_ids),
+        "signatory_role_ids_json": json.dumps(final_role_ids),
         "meaning_of_signature": meaning_of_signature,
         "required_signatures": str(required_signatures),
         "required_reviewer_signatures": str(required_signatures if is_automation_author else max(0, required_signatures - 1)),
