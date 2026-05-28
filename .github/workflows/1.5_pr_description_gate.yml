@@ -32,6 +32,46 @@ jobs:
               return;
             }
             
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100,
+            });
+            const changedPaths = files.map((f) => String(f.filename || ''));
+            const authorLogin = String(pr.user?.login || '').toLowerCase();
+            const isDependencyUpdatePath = (path) => (
+              path.endsWith('package.json') ||
+              path.endsWith('package-lock.json') ||
+              path.endsWith('pnpm-lock.yaml') ||
+              path.endsWith('yarn.lock') ||
+              path.endsWith('pyproject.toml') ||
+              path.endsWith('poetry.lock') ||
+              path.endsWith('Pipfile') ||
+              path.endsWith('Pipfile.lock') ||
+              path.endsWith('Gemfile') ||
+              path.endsWith('Gemfile.lock') ||
+              path.endsWith('go.mod') ||
+              path.endsWith('go.sum') ||
+              path.endsWith('Cargo.toml') ||
+              path.endsWith('Cargo.lock') ||
+              /^\.github\/workflows\/.+\.ya?ml$/i.test(path) ||
+              /(^|\/)requirements[^/]*\.txt$/i.test(path) ||
+              path === '.github/dependabot.yml'
+            );
+            if (
+              ['dependabot', 'dependabot[bot]'].includes(authorLogin) &&
+              changedPaths.length > 0 &&
+              changedPaths.every(isDependencyUpdatePath)
+            ) {
+              core.info('Dependabot dependency-update PR — bypassing PR description structure gate.');
+              core.setOutput('author_login', pr.user?.login || '');
+              core.setOutput('pr_body_base64', Buffer.from(pr.body || '', 'utf8').toString('base64'));
+              core.setOutput('changed_paths_json', JSON.stringify(changedPaths));
+              core.setOutput('skip_signer_role_policy', 'false');
+              return;
+            }
+
             const body = pr.body || '';
             const errors = [];
             const bodyWithoutFencedCodeBlocks = body.replace(/```[\s\S]*?```/g, '');
@@ -57,13 +97,6 @@ jobs:
               errors.push('PR body contains literal "\\n" text outside markdown code. Use real line breaks in markdown and update the PR with --body-file instead of shell-escaped multiline text.');
             }
 
-            const files = await github.paginate(github.rest.pulls.listFiles, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-              per_page: 100,
-            });
-            const changedPaths = files.map((f) => String(f.filename || ''));
             const requiresEvidenceChecklist = changedPaths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
               /^##\s+Evidence Review Package\b/mi.test(body);
             const evidenceChecklistStatus = (prBody) => {
@@ -104,7 +137,6 @@ jobs:
             core.setOutput('author_login', pr.user?.login || '');
             core.setOutput('pr_body_base64', Buffer.from(body, 'utf8').toString('base64'));
             core.setOutput('changed_paths_json', JSON.stringify(changedPaths));
-            const authorLogin = String(pr.user?.login || '').toLowerCase();
             const automationBotLogins = new Set([
               'dearauditor-open-qms-bot',
               'dearauditor-open-qms-bot[bot]',
