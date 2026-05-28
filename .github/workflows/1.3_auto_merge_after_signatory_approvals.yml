@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Create GitHub App token for PR merge/comment
         id: app_token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.QMS_BOT_APP_ID }}
           private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}

@@ -31,7 +31,7 @@ jobs:
       PART11_POLL_SECONDS: "20"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -478,7 +478,7 @@ jobs:
 
       - name: Setup Python
         if: steps.records.outputs.has_records == 'true'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -841,7 +841,7 @@ jobs:
       - name: Upload release bundle evidence
         if: steps.records.outputs.has_records == 'true'
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: qms-record-bundles-${{ github.run_id }}
           path: |
@@ -853,7 +853,7 @@ jobs:
       - name: Create GitHub App token for record release publication
         if: steps.records.outputs.has_records == 'true'
         id: app_token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.QMS_BOT_APP_ID }}
           private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}

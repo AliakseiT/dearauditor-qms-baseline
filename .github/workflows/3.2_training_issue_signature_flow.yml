@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Create GitHub App token for issue updates
         id: app_token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.QMS_BOT_APP_ID }}
           private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
@@ -289,7 +289,7 @@ jobs:
     steps:
       - name: Create GitHub App token for issue updates
         id: app_token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.QMS_BOT_APP_ID }}
           private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
@@ -298,13 +298,13 @@ jobs:
             ${{ github.event.repository.name }}
 
       - name: Checkout default branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ steps.app_token.outputs.token }}
           ref: ${{ github.event.repository.default_branch }}
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 

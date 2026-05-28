@@ -75,14 +75,14 @@ jobs:
 
     steps:
       - name: Checkout target QMS ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.target_ref }}
           fetch-depth: 0
           path: target-qms
 
       - name: Checkout private conformance kit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ inputs.kit_repository }}
           ref: ${{ inputs.kit_ref }}
@@ -90,12 +90,12 @@ jobs:
           path: conformance-kit
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10.24.0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: "pnpm"
@@ -180,7 +180,7 @@ jobs:
 
       - name: Upload temporary review artifacts
         id: review_artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: qms-vv-review-${{ steps.ids.outputs.run_id }}
           path: |
