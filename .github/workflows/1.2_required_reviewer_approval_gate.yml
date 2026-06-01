@@ -1,162 +1,104 @@
 name: 1.2 Required Reviewer Approval Gate
 run-name: 1.2 Reviewer Approval Gate
 
+# Runs on `pull_request_target` so the workflow definition is read from
+# the base branch (trusted), not the PR branch. Once the `main` ruleset
+# requires the `qms_approval_gate` commit status this workflow
+# publishes, a PR author with `pull_request:` could modify this
+# workflow in their PR to publish `success` unconditionally and bypass
+# the reviewer-approval gate. `pull_request_target` keeps the workflow
+# definition under the maintainers' control. The body never checks out
+# PR code or runs scripts (only `github-script` against the API), so
+# no further base-ref-checkout step is needed here. Mirrors the
+# commit-status gate shipped in adalyon-qms PR #25.
 on:
-  pull_request:
-    types: [opened, edited, reopened, ready_for_review, synchronize, review_requested, review_request_removed]
+  pull_request_target:
+    types: [opened, edited, reopened, ready_for_review, synchronize]
   pull_request_review:
     types: [submitted, edited, dismissed]
 
 permissions:
   pull-requests: read
+  issues: read
+  statuses: write
 
 jobs:
-  approval_gate:
+  publish_approval_status:
     if: github.event.pull_request != null
     runs-on: ubuntu-latest
     steps:
-      - name: Require non-author approval on current head
+      - name: Publish reviewer approval commit status
         uses: actions/github-script@v8
         with:
           script: |
+            const STATUS_CONTEXT = 'qms_approval_gate';
             const pr = context.payload.pull_request;
             if (!pr) {
               core.info('No pull request context; skipping.');
               return;
             }
-            if (pr.draft) {
-              core.info(`PR #${pr.number} is draft; gate deferred.`);
-              return;
-            }
 
-            const labels = (pr.labels || []).map((l) => String(l.name || '').toLowerCase());
-            if (labels.includes('review-only')) {
-              core.info(`PR #${pr.number} is labeled review-only; non-author approval gate skipped.`);
-              return;
-            }
-
-            const body = pr.body || '';
-            const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
-            let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
-            if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
-              requiredSignatures = 1;
-            }
-            const baseRequiredReviewerApprovals = Math.max(0, requiredSignatures - 1);
-
-            const fresh = (await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-            })).data;
-
-            if (fresh.state !== 'open') {
-              core.info(`PR #${pr.number} is ${fresh.state}; gate skipped.`);
-              return;
-            }
-
-            const checklistFiles = await github.paginate(github.rest.pulls.listFiles, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-              per_page: 100,
-            });
-            const checklistPaths = checklistFiles.map((f) => String(f.filename || ''));
-            const requiresEvidenceChecklist = checklistPaths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
-              /^##\s+Evidence Review Package\b/mi.test(fresh.body || '');
-            const evidenceChecklistStatus = (body) => {
-              const lines = String(body || '').split(/\r?\n/);
-              const start = lines.findIndex((line) => /^##\s+Evidence Review Checklist\b/i.test(line));
-              if (start < 0) return { present: false, complete: true, total: 0, open: [] };
-              const next = lines.findIndex((line, index) => index > start && /^##\s+\S/.test(line));
-              const section = lines.slice(start + 1, next < 0 ? undefined : next).join('\n');
-              const items = Array.from(section.matchAll(/^\s*-\s*\[( |x|X)\]\s+(.+)$/gm));
-              const open = items
-                .filter((item) => item[1] === ' ')
-                .map((item) => String(item[2] || '').trim())
-                .filter(Boolean);
-              return {
-                present: true,
-                complete: items.length > 0 && open.length === 0,
-                total: items.length,
-                open,
-              };
-            };
-            const checklist = evidenceChecklistStatus(fresh.body || '');
-            if (requiresEvidenceChecklist && !checklist.present) {
-              core.setFailed(
-                `PR #${pr.number} is an evidence-package PR but has no "## Evidence Review Checklist" section. Add and complete the checklist before approval/merge.`
-              );
-              return;
-            }
-            if (checklist.present && !checklist.complete) {
-              core.setFailed(
-                checklist.total === 0
-                  ? `PR #${pr.number} has an Evidence Review Checklist section but no checkable items.`
-                  : `PR #${pr.number} Evidence Review Checklist is incomplete. Complete ${checklist.open.length} unchecked item(s) in the PR body before approval/merge: ${checklist.open.join('; ')}`
-              );
-              return;
-            }
-
-            const author = String(fresh.user?.login || '').toLowerCase();
-            if (!author) {
-              core.setFailed(`Could not resolve PR #${pr.number} author.`);
-              return;
-            }
-            const headSha = String(fresh.head?.sha || '').toLowerCase();
-            if (!headSha) {
-              core.setFailed(`Could not resolve PR #${pr.number} head SHA.`);
-              return;
-            }
-            const marker = '<!-- signature-auto-reviewers -->';
-            const legacyMarker = '<!-- part11-auto-reviewers -->';
-            const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pr.number,
-              per_page: 100,
-            });
-            const markerComments = comments
-              .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            const latestMarkerBody = markerComments.length > 0 ? String(markerComments[markerComments.length - 1].body || '') : '';
-            const parseAssignedReviewers = (body) => {
-              const lineMatch = String(body || '').match(/Assigned reviewers:\s*([^\n]+)/i);
-              return lineMatch
-                ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
-                : [];
-            };
-            const parseBooleanLine = (body, label) => {
-              const match = String(body || '').match(new RegExp(`${label}:\\s*\`?(yes|no)\`?`, 'i'));
-              return match ? match[1].toLowerCase() === 'yes' : null;
-            };
-            const parseIntegerLine = (body, label) => {
-              const match = String(body || '').match(new RegExp(`${label}:\\s*\`?(\\d+)\`?`, 'i'));
-              return match ? Number.parseInt(match[1], 10) : null;
-            };
-
-            const requestedReviewers = (fresh.requested_reviewers || []).map((reviewer) => String(reviewer.login || '').toLowerCase()).filter(Boolean);
-            let requiredReviewerApprovals = null;
-            let reviewerPool = [];
-            let policySource = '';
-            let coapprovalReasons = [];
-
-            if (latestMarkerBody) {
-              const explicitApprovalRequired = parseBooleanLine(latestMarkerBody, 'Reviewer approval required for merge');
-              const explicitRequiredApprovals = parseIntegerLine(latestMarkerBody, 'Required reviewer approvals for merge');
-              if (explicitApprovalRequired !== null || explicitRequiredApprovals !== null) {
-                requiredReviewerApprovals = explicitApprovalRequired === false
-                  ? 0
-                  : explicitRequiredApprovals ?? Math.max(1, baseRequiredReviewerApprovals);
-                reviewerPool = Array.from(new Set([
-                  ...parseAssignedReviewers(latestMarkerBody),
-                  ...requestedReviewers,
-                ]));
-                policySource = 'assignment comment';
+            let headSha = String(pr.head?.sha || '').toLowerCase();
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const statusDescription = (description) => String(description || '').slice(0, 140);
+            const publishStatus = async (state, description) => {
+              if (!headSha) {
+                throw new Error(`Cannot publish ${STATUS_CONTEXT}; PR head SHA is empty.`);
               }
-            }
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: headSha,
+                state,
+                context: STATUS_CONTEXT,
+                description: statusDescription(description),
+                target_url: runUrl,
+              });
+              core.info(`Published ${STATUS_CONTEXT}=${state} for ${headSha}: ${description}`);
+            };
 
-            if (requiredReviewerApprovals === null) {
+            try {
+              const fresh = (await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+              })).data;
+
+              if (fresh.state !== 'open') {
+                core.info(`PR #${pr.number} is ${fresh.state}; approval status skipped.`);
+                return;
+              }
+
+              headSha = String(fresh.head?.sha || '').toLowerCase();
+              if (!headSha) {
+                throw new Error(`Could not resolve PR #${pr.number} head SHA.`);
+              }
+
+              if (fresh.draft) {
+                await publishStatus('pending', 'Draft PR; reviewer approval gate deferred.');
+                return;
+              }
+
+              const labels = (fresh.labels || []).map((l) => String(l.name || '').toLowerCase());
+              if (labels.includes('review-only')) {
+                await publishStatus('success', 'Review-only label bypasses reviewer approval gate.');
+                return;
+              }
+
+              const body = fresh.body || '';
+              const sigMatch = body.match(/\*\*Required Signatures:\*\*\s*([^\n]+)/i);
+              let requiredSignatures = sigMatch ? Number.parseInt(sigMatch[1].trim(), 10) : 1;
+              if (!Number.isInteger(requiredSignatures) || requiredSignatures < 1) {
+                requiredSignatures = 1;
+              }
+              const baseRequiredReviewerApprovals = Math.max(0, requiredSignatures - 1);
+
+              const author = String(fresh.user?.login || '').toLowerCase();
+              if (!author) {
+                await publishStatus('failure', 'Could not resolve PR author for reviewer approval gate.');
+                return;
+              }
+
               const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -164,85 +106,180 @@ jobs:
                 per_page: 100,
               });
               const paths = changedFiles.map((f) => String(f.filename || ''));
-              const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
-              if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
-              if (hasPath('records/')) coapprovalReasons.push('records (/records, including templates and index pages)');
-              if (paths.some((path) => path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
-              if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
-              const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
-              requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
-              reviewerPool = [];
-              policySource = 'path fallback';
-            }
-
-            if (requiredReviewerApprovals === 0) {
-              core.info(`PR #${pr.number} does not require reviewer approval for merge (${policySource}).`);
-              return;
-            }
-            if (reviewerPool.length === 0 && policySource === 'assignment comment') {
-              core.setFailed(`PR #${pr.number} requires reviewer approval for merge, but the assigned reviewer pool is empty in the automation comment.`);
-              return;
-            }
-
-            const reviews = await github.paginate(github.rest.pulls.listReviews, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-              per_page: 100,
-            });
-
-            const latestByUser = new Map();
-            for (const review of reviews) {
-              const login = String(review.user?.login || '').trim().toLowerCase();
-              if (!login) continue;
-              const submittedAt = Date.parse(review.submitted_at || review.submittedAt || review.updated_at || review.created_at || 0) || 0;
-              const current = latestByUser.get(login);
-              if (!current || submittedAt >= current.submittedAt) {
-                latestByUser.set(login, {
-                  state: String(review.state || '').toUpperCase(),
-                  commitId: String(review.commit_id || '').toLowerCase(),
-                  submittedAt,
-                });
-              }
-            }
-
-            const approvedNonAuthorOnHead = Array.from(latestByUser.entries())
-              .filter(([login, review]) => {
-                if (login === author) return false;
-                if (review.state !== 'APPROVED') return false;
-                return review.commitId === headSha;
-              })
-              .map(([login]) => login);
-
-            const reviewerPoolSet = new Set(reviewerPool.map((login) => login.toLowerCase()));
-            const approvedFromPoolOnHead = reviewerPool.length > 0
-              ? approvedNonAuthorOnHead.filter((login) => reviewerPoolSet.has(login.toLowerCase()))
-              : approvedNonAuthorOnHead;
-
-            if (approvedFromPoolOnHead.length < requiredReviewerApprovals) {
-              const staleApprovals = Array.from(latestByUser.entries())
-                .filter(([login, review]) => {
-                  if (login === author) return false;
-                  if (review.state !== 'APPROVED' || review.commitId === headSha) return false;
-                  return reviewerPool.length === 0 || reviewerPoolSet.has(login.toLowerCase());
-                })
-                .map(([login]) => '@' + login);
-              const hasAnyNonAuthorReviewActivity = Array.from(latestByUser.keys()).some((login) => login !== author);
-              if (context.eventName === 'pull_request' && !hasAnyNonAuthorReviewActivity) {
-                core.info(
-                  `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s), but no non-author reviews have been submitted yet. Waiting for reviewer activity.`
-                );
+              const requiresEvidenceChecklist = paths.some((path) => path.startsWith('records/verification_validation/runs/')) ||
+                /^##\s+Evidence Review Package\b/mi.test(body);
+              const evidenceChecklistStatus = (commentBody) => {
+                const lines = String(commentBody || '').split(/\r?\n/);
+                const start = lines.findIndex((line) => /^##\s+Evidence Review Checklist\b/i.test(line));
+                if (start < 0) return { present: false, complete: true, total: 0, open: [] };
+                const next = lines.findIndex((line, index) => index > start && /^##\s+\S/.test(line));
+                const section = lines.slice(start + 1, next < 0 ? undefined : next).join('\n');
+                const items = Array.from(section.matchAll(/^\s*-\s*\[( |x|X)\]\s+(.+)$/gm));
+                const open = items
+                  .filter((item) => item[1] === ' ')
+                  .map((item) => String(item[2] || '').trim())
+                  .filter(Boolean);
+                return {
+                  present: true,
+                  complete: items.length > 0 && open.length === 0,
+                  total: items.length,
+                  open,
+                };
+              };
+              const checklist = evidenceChecklistStatus(body);
+              if (requiresEvidenceChecklist && !checklist.present) {
+                core.info(`PR #${pr.number} is an evidence-package PR but has no "## Evidence Review Checklist" section.`);
+                await publishStatus('failure', 'Evidence-package PR is missing the Evidence Review Checklist section.');
                 return;
               }
-              core.setFailed(
-                [
-                  `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) on current head ${headSha}.`,
-                  reviewerPool.length > 0 ? `Eligible reviewer pool: ${reviewerPool.map((login) => '@' + login).join(', ')}` : '',
-                  coapprovalReasons.length > 0 ? `Fallback co-approval scope matched: ${coapprovalReasons.join('; ')}` : '',
-                  staleApprovals.length > 0 ? `Stale approvals on older commits: ${staleApprovals.join(', ')}` : 'No valid non-author approvals found.',
-                ].join(' ')
-              );
-              return;
-            }
+              if (checklist.present && !checklist.complete) {
+                if (checklist.total === 0) {
+                  core.info(`PR #${pr.number} has an Evidence Review Checklist section but no checkable items.`);
+                  await publishStatus('failure', 'Evidence Review Checklist has no checkable items.');
+                  return;
+                }
+                core.info(`Evidence Review Checklist incomplete; unchecked items: ${checklist.open.join('; ')}`);
+                await publishStatus('failure', `Evidence Review Checklist incomplete: ${checklist.open.length} unchecked item(s).`);
+                return;
+              }
 
-            core.info(`Approval gate passed for PR #${pr.number}; valid approvers: ${approvedFromPoolOnHead.map((x) => '@' + x).join(', ')}`);
+              const marker = '<!-- signature-auto-reviewers -->';
+              const legacyMarker = '<!-- part11-auto-reviewers -->';
+              const automationBotLogins = new Set(['dearauditor-open-qms-bot', 'dearauditor-open-qms-bot[bot]', 'dearauditor-qms-baseline-bot', 'dearauditor-qms-baseline-sign', 'github-actions[bot]']);
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                per_page: 100,
+              });
+              const markerComments = comments
+                .filter((c) => ((c.body || '').includes(marker) || (c.body || '').includes(legacyMarker)) && automationBotLogins.has(String(c.user?.login || '').toLowerCase()))
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+              const latestMarkerBody = markerComments.length > 0 ? String(markerComments[markerComments.length - 1].body || '') : '';
+              const parseAssignedReviewers = (commentBody) => {
+                const lineMatch = String(commentBody || '').match(/Assigned reviewers:\s*([^\n]+)/i);
+                return lineMatch
+                  ? Array.from((lineMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
+                  : [];
+              };
+              const parseBooleanLine = (commentBody, label) => {
+                const match = String(commentBody || '').match(new RegExp(`${label}:\\s*\`?(yes|no)\`?`, 'i'));
+                return match ? match[1].toLowerCase() === 'yes' : null;
+              };
+              const parseIntegerLine = (commentBody, label) => {
+                const match = String(commentBody || '').match(new RegExp(`${label}:\\s*\`?(\\d+)\`?`, 'i'));
+                return match ? Number.parseInt(match[1], 10) : null;
+              };
+
+              const requestedReviewers = (fresh.requested_reviewers || []).map((reviewer) => String(reviewer.login || '').toLowerCase()).filter(Boolean);
+              let requiredReviewerApprovals = null;
+              let reviewerPool = [];
+              let policySource = '';
+              let coapprovalReasons = [];
+
+              if (latestMarkerBody) {
+                const explicitApprovalRequired = parseBooleanLine(latestMarkerBody, 'Reviewer approval required for merge');
+                const explicitRequiredApprovals = parseIntegerLine(latestMarkerBody, 'Required reviewer approvals for merge');
+                if (explicitApprovalRequired !== null || explicitRequiredApprovals !== null) {
+                  requiredReviewerApprovals = explicitApprovalRequired === false
+                    ? 0
+                    : explicitRequiredApprovals ?? Math.max(1, baseRequiredReviewerApprovals);
+                  reviewerPool = Array.from(new Set([
+                    ...parseAssignedReviewers(latestMarkerBody),
+                    ...requestedReviewers,
+                  ]));
+                  policySource = 'assignment comment';
+                }
+              }
+
+              if (requiredReviewerApprovals === null) {
+                const hasPath = (prefix) => paths.some((p) => p.startsWith(prefix));
+                if (hasPath('qm/') || hasPath('sops/')) coapprovalReasons.push('controlled documents (/qm, /sops)');
+                if (hasPath('records/')) coapprovalReasons.push('records (/records, including templates and index pages)');
+                if (paths.some((path) => path.startsWith('records/management-reviews/'))) coapprovalReasons.push('management review records (/records/management-reviews)');
+                if (hasPath('matrices/')) coapprovalReasons.push('matrix/role files (/matrices)');
+                const policyMinimumApprovals = coapprovalReasons.length > 0 ? 1 : 0;
+                requiredReviewerApprovals = Math.max(baseRequiredReviewerApprovals, policyMinimumApprovals);
+                reviewerPool = [];
+                policySource = 'path fallback';
+              }
+
+              if (requiredReviewerApprovals === 0) {
+                await publishStatus('success', `No reviewer approval required for merge (${policySource}).`);
+                return;
+              }
+
+              if (reviewerPool.length === 0 && policySource === 'assignment comment') {
+                await publishStatus('failure', 'Reviewer approval required, but assigned reviewer pool is empty.');
+                return;
+              }
+
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 100,
+              });
+
+              const latestByUser = new Map();
+              for (const review of reviews) {
+                const login = String(review.user?.login || '').trim().toLowerCase();
+                if (!login) continue;
+                const submittedAt = Date.parse(review.submitted_at || review.submittedAt || review.updated_at || review.created_at || 0) || 0;
+                const current = latestByUser.get(login);
+                if (!current || submittedAt >= current.submittedAt) {
+                  latestByUser.set(login, {
+                    state: String(review.state || '').toUpperCase(),
+                    commitId: String(review.commit_id || '').toLowerCase(),
+                    submittedAt,
+                  });
+                }
+              }
+
+              const approvedNonAuthorOnHead = Array.from(latestByUser.entries())
+                .filter(([login, review]) => {
+                  if (login === author) return false;
+                  if (review.state !== 'APPROVED') return false;
+                  return review.commitId === headSha;
+                })
+                .map(([login]) => login);
+
+              const reviewerPoolSet = new Set(reviewerPool.map((login) => login.toLowerCase()));
+              const approvedFromPoolOnHead = reviewerPool.length > 0
+                ? approvedNonAuthorOnHead.filter((login) => reviewerPoolSet.has(login.toLowerCase()))
+                : approvedNonAuthorOnHead;
+
+              if (approvedFromPoolOnHead.length < requiredReviewerApprovals) {
+                const missing = requiredReviewerApprovals - approvedFromPoolOnHead.length;
+                const staleApprovals = Array.from(latestByUser.entries())
+                  .filter(([login, review]) => {
+                    if (login === author) return false;
+                    if (review.state !== 'APPROVED' || review.commitId === headSha) return false;
+                    return reviewerPool.length === 0 || reviewerPoolSet.has(login.toLowerCase());
+                  })
+                  .map(([login]) => '@' + login);
+                if (staleApprovals.length > 0) {
+                  core.info(`Stale approvals on older commits: ${staleApprovals.join(', ')}`);
+                }
+                if (reviewerPool.length > 0) {
+                  const pending = reviewerPool.filter((login) => !approvedFromPoolOnHead.includes(login.toLowerCase()));
+                  core.info(`Waiting for ${missing} approval(s) from reviewer pool: ${pending.map((login) => '@' + login).join(', ')}`);
+                } else if (coapprovalReasons.length > 0) {
+                  core.info(`Fallback co-approval scope matched: ${coapprovalReasons.join('; ')}`);
+                }
+                await publishStatus('pending', `Missing ${missing} required non-author approval(s) on current head.`);
+                return;
+              }
+
+              await publishStatus('success', `Approved on current head by ${approvedFromPoolOnHead.map((x) => '@' + x).join(', ')}.`);
+            } catch (err) {
+              const message = err && err.message ? err.message : String(err);
+              if (headSha) {
+                try {
+                  await publishStatus('error', `Approval gate automation error: ${message}`);
+                } catch (statusErr) {
+                  core.warning(`Could not publish ${STATUS_CONTEXT}=error: ${statusErr.message}`);
+                }
+              }
+              core.setFailed(`Approval status gate failed unexpectedly: ${message}`);
+            }
