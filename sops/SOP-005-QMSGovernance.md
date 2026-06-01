@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-005
 title: QMS Governance
-revision: R22
-revision_date: 2026-05-04
+revision: R23
+revision_date: 2026-05-26
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -16,6 +16,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 
 ## 3. Inputs
 - Applicable standards and regulatory requirements
+- Organization context, interested-party needs, and customer requirements
 - `QM-001 Quality Manual`
 - Management review outputs and KPI trends
 - Audit, CAPA, complaint, PMS, supplier, and regulatory-scope inputs
@@ -40,7 +41,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 
 ### 6.1 Governance Cadence
 1. Hold a QMS governance review at least quarterly.
-2. Review at minimum: KPI trends, open CAPAs, audit findings, late training, supplier status, post-market signals, and regulatory changes.
+2. Review at minimum: organization context, interested-party needs, customer satisfaction signals, KPI trends, open CAPAs, audit findings, late training, supplier status, post-market signals, process risks/opportunities, and regulatory changes.
 3. Governance review outputs and decisions must be recorded and maintained as controlled quality records.
 4. Formal management review under `SOP-004` uses governance-review outputs as an input for top-management confirmation of QMS suitability, adequacy, and effectiveness.
 
@@ -48,6 +49,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 1. Maintain the responsibility matrix for quality-affecting functions and role assignments in `matrices/training_matrix.yml` and related governance records.
 2. Disseminate governance decisions to impacted roles within five business days.
 3. Dissemination records must capture audience, channel, date, and any required follow-up.
+4. Maintain organizational knowledge needed to operate the QMS through controlled documents, training records, governance decisions, lessons learned, and approved repositories of record.
 
 ### 6.3 Quality Manual Interface
 1. `QM-001 Quality Manual` is the top-level orientation document for QMS purpose, scope, policy, objectives, and process interaction.
@@ -89,8 +91,9 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 4. ACME adopts `IEC 82304-1:2016` as the baseline standard for health software product safety, including product-level intended use, validation, identification, accompanying information, maintenance, and post-market interfaces.
 5. ACME adopts `ISO/IEC 27001:2022`, including `ISO/IEC 27001:2022/Amd 1:2024`, as the baseline standard for information security management across QMS repositories, product information, suppliers, operations, and supporting systems.
 6. ACME adopts `ISO/IEC 42001:2023` as the baseline standard for AI management for AI components inside ACME medical-device software, including AI policy, AI lifecycle, AI risk and impact assessment, and complete Annex A control consideration through a Statement of Applicability.
-7. Governance review verifies whether newly applicable standards, guidance, or changes to adopted standards affect the QMS baseline.
-8. Changes to these standards or their supporting processes must be reflected in the affected SOPs, WIs, and matrices.
+7. ACME adopts `ISO 9001:2015`, including `ISO 9001:2015/Amd 1:2024`, as the general quality-management baseline for organization context, customer focus, process performance, organizational knowledge, risks and opportunities, and continual improvement.
+8. Governance review verifies whether newly applicable standards, guidance, or changes to adopted standards affect the QMS baseline.
+9. Changes to these standards or their supporting processes must be reflected in the affected SOPs, WIs, and matrices.
 
 ### 6.10 GitHub Workflow Alignment Rule
 1. Controlled QMS changes follow a GitHub-native lifecycle: change context is established in a separate issue or directly in the pull request, then work proceeds through branch -> pull request -> required checks/approvals -> merge -> signature attestation -> immutable release evidence.
@@ -111,6 +114,7 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | ISO 13485:2016 4.1.4 | Defines QMS process change impact control and governance follow-up. | Change records, training matrix updates, published controlled-document index |
 | ISO 13485:2016 4.1.6 | Defines governance of QMS software applications and validation expectations. | `matrices/qms_tooling_inventory.yml`, `sops/SOP-006-SoftwareValidation.md` |
 | ISO 13485:2016 5.5 | Defines responsibilities, authority, communication, and governance dissemination. | Responsibility matrix, governance review minutes, dissemination records |
+| ISO 9001:2015 4, 5.1, 6.1, 7.1.6 | Defines organization context, interested-party/customer interfaces, process risks and opportunities, and organizational knowledge governance. | `matrices/iso_9001_gap_analysis.yml`, governance review minutes, management review inputs |
 
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual
@@ -119,6 +123,8 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 - SOP-006 Software Validation (QMS Tools)
 - SOP-010 Supplier and Purchasing Control
 - SOP-011 Competence, Training, and Awareness
+- SOP-012 Feedback and Complaint Handling
+- SOP-016 Quality Metrics and Data Analysis
 - SOP-017 Infrastructure and Maintenance Control
 - SOP-021 Information Security Management (ISO/IEC 27001:2022)
 - SOP-022 AI Management System (ISO/IEC 42001:2023)
@@ -152,3 +158,4 @@ Applies to QMS governance activities, company-level role responsibilities, docum
 | R20 | 2026-04-27 | Added ISO/IEC 42001:2023 adoption for AI components inside ACME medical-device software and linked the dedicated AIMS procedure into the governance baseline. |
 | R21 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R22 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R23 | 2026-05-26 | Added the ISO 9001 governance overlay for organization context, interested parties, customer satisfaction signals, process risks/opportunities, and organizational knowledge. |

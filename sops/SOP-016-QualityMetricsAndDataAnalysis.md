@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-016
 title: Quality Metrics and Data Analysis
-revision: R06
-revision_date: 2026-05-04
+revision: R07
+revision_date: 2026-05-26
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -17,6 +17,7 @@ Applies to QMS and product quality indicators used in operational monitoring and
 ## 3. Inputs
 - Metric definitions and targets from quality objective framework
 - Process/product data sources
+- Customer satisfaction, interested-party, and process risk/opportunity inputs
 - Audit, CAPA, complaint, incident, and PMS outputs
 
 ## 4. Outputs
@@ -36,7 +37,8 @@ Applies to QMS and product quality indicators used in operational monitoring and
 ### 6.1 Metric Definition
 1. Define each metric with ID, formula, owner, frequency, and target.
 2. Ensure each quality objective has at least one measurable indicator.
-3. Document rationale for threshold values.
+3. Include customer satisfaction, process performance, training, supplier, security, and improvement indicators where they are relevant to the approved QMS scope.
+4. Document rationale for threshold values.
 
 ### 6.2 Data Collection
 1. Collect data on defined cadence (weekly/monthly/quarterly).
@@ -46,7 +48,8 @@ Applies to QMS and product quality indicators used in operational monitoring and
 ### 6.3 Analysis
 1. Evaluate current values and trends over time against defined thresholds.
 2. Classify status as `on-target`, `warning`, or `out-of-target`.
-3. Perform root-cause-oriented analysis for sustained negative trends.
+3. Identify QMS process risks, opportunities, and improvement themes from sustained positive or negative trends.
+4. Perform root-cause-oriented analysis for sustained negative trends.
 
 ### 6.4 Escalation and Actions
 1. Initiate actions or CAPA where thresholds are breached or adverse trends are identified.
@@ -67,6 +70,7 @@ Applies to QMS and product quality indicators used in operational monitoring and
 |---|---|
 | ISO 13485:2016 5.4.1 | Supports quality objective measurement framework. |
 | ISO 13485:2016 8.4 | Defines analysis of data for QMS effectiveness and improvement decisions. |
+| ISO 9001:2015 6.2, 9.1, 10.3 | Defines quality-objective measurement, customer/process performance analysis, and continual improvement inputs. |
 
 ## 9. Related Controlled Documents
 - SOP-004 Management Review
@@ -83,3 +87,4 @@ Applies to QMS and product quality indicators used in operational monitoring and
 | R04 | 2026-03-25 | Expanded the metrics purpose, aligned analysis wording to threshold-and-trend evaluation, and clarified action/CAPA triggers for adverse trends. |
 | R05 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R06 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R07 | 2026-05-26 | Added ISO 9001 customer satisfaction, process-performance, risk/opportunity, and continual-improvement metric expectations. |

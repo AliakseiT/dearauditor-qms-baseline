@@ -1,0 +1,75 @@
+version: 1
+analysis_date: "2026-05-26"
+standard:
+  exact_name: "ISO 9001:2015 Quality management systems - Requirements, including ISO 9001:2015/Amd 1:2024"
+  normative_base: "ISO 9001:2015 + ISO 9001:2015/Amd 1:2024"
+analysis_scope: "DearAuditor Open QMS Baseline repository controls and controlled-document corpus for product-independent adopter use"
+summary:
+  baseline_sop_set:
+    reused_qms_sops:
+      - "SOP-001"
+      - "SOP-002"
+      - "SOP-003"
+      - "SOP-004"
+      - "SOP-005"
+      - "SOP-008"
+      - "SOP-009"
+      - "SOP-010"
+      - "SOP-011"
+      - "SOP-012"
+      - "SOP-015"
+      - "SOP-016"
+      - "SOP-017"
+      - "SOP-020"
+  covered_clause_groups:
+    - "4"
+    - "5"
+    - "6"
+    - "7"
+    - "8"
+    - "9"
+    - "10"
+  adopter_specific_or_tailored:
+    - clause: "4 context of the organization"
+      rationale: "The upstream baseline provides the governance method and example context. Each adopter must tailor company context, interested parties, scope, and climate relevance before operational use."
+    - clause: "5.1.2 customer focus"
+      rationale: "Customer focus is implemented through governance, feedback, satisfaction monitoring, and management review, but customer segments, contractual requirements, and satisfaction indicators are adopter-specific."
+    - clause: "6.1 risks and opportunities"
+      rationale: "The baseline routes QMS process risks, opportunities, adverse trends, and improvement actions through governance, metrics, change control, and CAPA. Product, service, and business-specific risks remain adopter-owned."
+    - clause: "7.1.6 organizational knowledge"
+      rationale: "Knowledge retention and transfer are controlled through document control, training, governance records, and lessons learned. Exact knowledge assets and owners are company-specific."
+    - clause: "8 operation"
+      rationale: "The baseline defines reusable software/service lifecycle, supplier, release, and nonconformity controls. Actual customer requirements, acceptance criteria, service delivery controls, and release records are completed in the adopter's controlled repositories."
+  outstanding_gaps: []
+clause_to_control_map:
+  "4.1": ["QM-001", "SOP-005", "matrices/company_profile.yml"]
+  "4.2": ["QM-001", "SOP-005", "SOP-012"]
+  "4.3": ["QM-001", "SOP-005", "docs/open-source/README.md"]
+  "4.4": ["QM-001", "SOP-005", "SOP-016", "matrices/quality_manual_traceability.yml"]
+  "5.1": ["QM-001", "SOP-004", "SOP-005", "SOP-012"]
+  "5.2": ["QM-001", "matrices/company_profile.yml"]
+  "5.3": ["QM-001", "SOP-005", "SOP-011", "matrices/training_matrix.yml"]
+  "6.1": ["SOP-005", "SOP-009", "SOP-016", "SOP-002"]
+  "6.2": ["QM-001", "SOP-016", "matrices/company_profile.yml"]
+  "6.3": ["SOP-005", "SOP-009"]
+  "7.1": ["SOP-004", "SOP-010", "SOP-011", "SOP-017"]
+  "7.2": ["SOP-011"]
+  "7.3": ["SOP-011", "SOP-005"]
+  "7.4": ["SOP-005"]
+  "7.5": ["SOP-001"]
+  "8.1": ["SOP-008", "SOP-009", "SOP-020", "WI-001", "WI-002"]
+  "8.2": ["SOP-008", "SOP-012"]
+  "8.3": ["SOP-008", "SOP-020"]
+  "8.4": ["SOP-010"]
+  "8.5": ["SOP-020", "SOP-017", "WI-002"]
+  "8.6": ["SOP-020", "WI-002"]
+  "8.7": ["SOP-015"]
+  "9.1": ["SOP-012", "SOP-016"]
+  "9.2": ["SOP-003"]
+  "9.3": ["SOP-004"]
+  "10.1": ["SOP-002", "SOP-016"]
+  "10.2": ["SOP-002", "SOP-015"]
+  "10.3": ["SOP-002", "SOP-004", "SOP-016"]
+notes:
+  - "No copyrighted standard text is included; only clause references, high-level control families, and implementation decisions."
+  - "This matrix is an upstream preparation artifact. Adopters must complete company-specific applicability, evidence, validation, training, and approval before claiming ISO 9001 conformity."

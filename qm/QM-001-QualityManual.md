@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R08
-revision_date: 2026-05-04
+revision: R09
+revision_date: 2026-05-26
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -37,6 +37,7 @@ Applies to the ACME GmbH QMS for healthcare software products, including product
 
 ## 4. QMS Intent and Quality Policy
 ACME maintains this QMS to:
+- apply ISO 9001:2015+Amd 1:2024 quality management expectations for organization context, customer focus, process performance, and continual improvement
 - ensure consistent compliance with ISO 13485:2016 and applicable regulatory requirements
 - apply IEC 62304:2006+A1:2015 lifecycle and maintenance controls to regulated software
 - apply ISO 14971:2019 risk management across the software lifecycle, including cybersecurity-related harms
@@ -60,6 +61,7 @@ The quality objective framework is maintained in `matrices/company_profile.yml` 
 - close critical quality actions on time
 - complete required controlled-document training on time
 - maintain management review cadence
+- monitor customer feedback, satisfaction signals, and process-performance trends
 - ensure products perform against defined performance criteria and complaint thresholds
 - maintain information security and AI management controls for applicable QMS and product lifecycle scope
 
@@ -98,6 +100,7 @@ Detailed governance responsibilities are defined in `sops/SOP-005-QMSGovernance.
 
 ## 8. Standards and Regulatory Framework
 Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`. The QMS baseline is aligned to:
+- ISO 9001:2015, including ISO 9001:2015/Amd 1:2024
 - ISO 13485:2016 / EVS-EN ISO 13485:2016+A11:2021
 - IEC 62304:2006+A1:2015
 - ISO 14971:2019 / EVS-EN ISO 14971:2019+A11:2021
@@ -130,6 +133,7 @@ QMS tooling and validation baselines are maintained in:
 | ISO 13485:2016 5.1, 5.3 | Defines management commitment and quality policy context | `matrices/company_profile.yml`, `sops/SOP-004-ManagementReview.md` |
 | ISO 13485:2016 5.4.1, 5.4.2 | Defines quality objectives and planning context | `matrices/company_profile.yml`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
 | ISO 13485:2016 5.5 | Defines system-level responsibilities and communication overview | `sops/SOP-005-QMSGovernance.md`, `sops/SOP-011-CompetenceTrainingAndAwareness.md` |
+| ISO 9001:2015 4-10 | Defines the general quality-management overlay for context, interested parties, customer focus, organizational knowledge, process performance, and improvement | `matrices/iso_9001_gap_analysis.yml`, `sops/SOP-005-QMSGovernance.md`, `sops/SOP-012-FeedbackAndComplaintHandling.md`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
 
 ## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -153,3 +157,4 @@ QMS tooling and validation baselines are maintained in:
 | R06 | 2026-04-27 | Added ISO/IEC 42001:2023 AI management controls for AI components inside ACME medical-device software to the QMS intent and standards framework. |
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |

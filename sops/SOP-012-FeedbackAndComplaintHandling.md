@@ -1,27 +1,29 @@
 ---
 sop_id: SOP-012
 title: Feedback and Complaint Handling
-revision: R07
-revision_date: 2026-05-04
+revision: R08
+revision_date: 2026-05-26
 status: Published
 owner_role: qa_lead
 approver_role: qa_lead
 related_issue: "#8"
 ---
 ## 1. Purpose
-Define a consistent process to collect, assess, investigate, and respond to user feedback and complaints for ACME healthcare software products.
+Define a consistent process to collect, assess, investigate, trend, and respond to user/customer feedback, satisfaction signals, and complaints for ACME healthcare software products.
 
 ## 2. Scope
-Applies to all product feedback and complaint signals from users, customers, partners, and internal channels across supported markets. A complaint is any written, electronic, or oral communication alleging deficiencies related to the identity, quality, durability, reliability, safety, or performance of a product.
+Applies to all product feedback, customer satisfaction, and complaint signals from users, customers, partners, and internal channels across supported markets. A complaint is any written, electronic, or oral communication alleging deficiencies related to the identity, quality, durability, reliability, safety, or performance of a product.
 
 ## 3. Inputs
 - Incoming feedback/complaint reports
+- Customer satisfaction signals, support trends, adoption friction, and customer requirement changes
 - Product release history and known issue context
 - Risk evaluation criteria and regulatory incident reporting criteria as defined in SOP-013
 
 ## 4. Outputs
 - Classified case record
 - Investigation outcome and response
+- Customer satisfaction trend summary and improvement recommendations where applicable
 - Escalations to CAPA, incident reporting, or PMS trend actions
 
 ## 5. Roles and Responsibilities
@@ -55,11 +57,13 @@ Applies to all product feedback and complaint signals from users, customers, par
 3. Link case to CAPA/change record when systemic action is required.
 
 ### 6.5 Trending and Escalation
-1. Review complaint trends monthly.
-2. Escalate adverse trends to PMS analysis and management review.
+1. Review feedback, complaint, customer satisfaction, and support trends monthly.
+2. Escalate adverse trends to PMS analysis, CAPA, change control, or management review as applicable.
+3. Identify improvement opportunities when satisfaction signals, repeated questions, support friction, or customer requirement changes indicate that QMS or product/service controls should be updated.
 
 ## 7. Required Records
 - Complaint/feedback case log
+- Customer satisfaction trend summary when satisfaction signals are reviewed
 - Investigation evidence and conclusion
 - Linked CAPA/incident/PMS references
 
@@ -68,6 +72,7 @@ Applies to all product feedback and complaint signals from users, customers, par
 |---|---|
 | ISO 13485:2016 8.2.1 | Defines feedback collection and monitoring controls. |
 | ISO 13485:2016 8.2.2 | Defines complaint handling workflow and records. |
+| ISO 9001:2015 5.1.2, 8.2, 9.1.2 | Defines customer focus, customer requirement review interfaces, and customer satisfaction monitoring. |
 
 ## 9. Related Controlled Documents
 - SOP-013 Regulatory Incident Reporting
@@ -85,3 +90,4 @@ Applies to all product feedback and complaint signals from users, customers, par
 | R05 | 2026-03-27 | Consolidated the standalone regulatory-lead complaint-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |
 | R06 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R07 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R08 | 2026-05-26 | Added ISO 9001 customer satisfaction and customer-requirement trend monitoring to the feedback process. |

@@ -1,4 +1,4 @@
-version: 1
+version: 2
 company:
   legal_name: "ACME GmbH"
   registered_address:
@@ -12,6 +12,7 @@ company:
   intended_use_policy: "Each product defines intended use, indications, claims, and regulatory classification before development and release under controlled procedures."
   infrastructure_policy: "Each product defines and approves infrastructure architecture and controls against applicable security, availability, and traceability requirements within the product dossier."
   qms_intent:
+    - "Apply ISO 9001 quality management expectations for organization context, interested-party needs, customer focus, process performance, organizational knowledge, and continual improvement."
     - "Ensure consistent compliance with ISO 13485 and applicable regulatory requirements."
     - "Apply IEC 62304 software lifecycle, maintenance, configuration, and problem-resolution controls for regulated software."
     - "Apply ISO 14971 risk management across the software lifecycle, including cybersecurity-related harms."
@@ -62,4 +63,8 @@ quality_objective_framework:
     - id: "QO-008"
       objective: "Maintain AI management controls for AI components inside released medical-device software"
       metric: "percent_required_aims_reviews_and_impact_assessments_completed_on_time"
+      target: ">=95%"
+    - id: "QO-009"
+      objective: "Monitor customer feedback, satisfaction signals, and process performance for improvement opportunities"
+      metric: "percent_required_customer_and_process_quality_reviews_completed_on_time"
       target: ">=95%"

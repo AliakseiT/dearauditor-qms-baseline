@@ -1,4 +1,4 @@
-version: 1
+version: 2
 company:
   legal_name: "REPLACE_WITH_COMPANY_LEGAL_NAME"
   registered_address:
@@ -12,6 +12,7 @@ company:
   intended_use_policy: "Product-specific intended use, claims, indications, and classification are approved per product dossier."
   infrastructure_policy: "Infrastructure architecture and validation are defined and approved per product or platform dossier."
   qms_intent:
+    - "Apply ISO 9001 quality management expectations for organization context, interested-party needs, customer focus, process performance, organizational knowledge, and continual improvement where adopted."
     - "Maintain a controlled, evidence-driven quality management system."
     - "Apply risk-based lifecycle controls to regulated software activities."
     - "Retain objective evidence for quality, regulatory, and release decisions."
@@ -36,3 +37,7 @@ quality_objective_framework:
       objective: "Maintain management review cadence"
       metric: "reviews_completed_per_plan"
       target: "100%"
+    - id: "QO-004"
+      objective: "Monitor customer feedback, satisfaction signals, and process performance for improvement opportunities"
+      metric: "percent_required_customer_and_process_quality_reviews_completed_on_time"
+      target: ">=95%"

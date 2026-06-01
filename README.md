@@ -42,7 +42,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 
 The public upstream baseline provides reusable controlled content, templates, workflow automation, validators, and bootstrap tooling. The detailed adoption sequence is maintained in the [open-source adoption model](docs/open-source/README.md#adoption-model-2).
 
-The gap-analysis files in this repository show how the upstream baseline content maps to the current product-independent standards preparation set, including ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, and ISO/IEC 42001. They do not approve a downstream company, product, study, hosted service, or tool configuration by themselves.
+The gap-analysis files in this repository show how the upstream baseline content maps to the current product-independent standards preparation set, including ISO 9001, ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, and ISO/IEC 42001. They do not approve a downstream company, product, study, hosted service, or tool configuration by themselves.
 
 ## Training and Role Navigation
 
@@ -58,7 +58,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 
 ### Quality Manual
 
-- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R08`
+- [QM-001 Quality Manual](qm/QM-001-QualityManual.md) - `R09`
 
 ### SOP Library By Topic
 
@@ -67,10 +67,10 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-001 Document and Record Control](sops/SOP-001-DocControl.md) - `R15`
 - [SOP-002 Corrective and Preventive Action (CAPA)](sops/SOP-002-CAPA.md) - `R06`
 - [SOP-003 Internal Audit](sops/SOP-003-InternalAudit.md) - `R07`
-- [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R08`
-- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R22`
-- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R11`
-- [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R06`
+- [SOP-004 Management Review](sops/SOP-004-ManagementReview.md) - `R09`
+- [SOP-005 QMS Governance](sops/SOP-005-QMSGovernance.md) - `R23`
+- [SOP-011 Competence, Training, and Awareness](sops/SOP-011-CompetenceTrainingAndAwareness.md) - `R12`
+- [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R07`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R06`
 - [SOP-021 Information Security Management (ISO/IEC 27001)](sops/SOP-021-InformationSecurityManagement.md) - `R02`
 - [SOP-022 AI Management System (ISO/IEC 42001)](sops/SOP-022-AIManagementSystem.md) - `R02`
@@ -89,7 +89,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 #### Suppliers, Complaints, and Post-Market
 
 - [SOP-010 Supplier and Purchasing Control](sops/SOP-010-SupplierAndPurchasingControl.md) - `R05`
-- [SOP-012 Feedback and Complaint Handling](sops/SOP-012-FeedbackAndComplaintHandling.md) - `R07`
+- [SOP-012 Feedback and Complaint Handling](sops/SOP-012-FeedbackAndComplaintHandling.md) - `R08`
 - [SOP-013 Regulatory Incident Reporting](sops/SOP-013-RegulatoryIncidentReporting.md) - `R07`
 - [SOP-014 Post-Market Surveillance](sops/SOP-014-PostMarketSurveillance.md) - `R07`
 - [SOP-015 Nonconforming Product Control](sops/SOP-015-NonconformingProductControl.md) - `R06`
@@ -105,23 +105,23 @@ Use the grouped links below for navigation. The raw machine-readable published c
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->
 | Document ID | Title | File | Revision Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-05-04 | R08 | Published |
+| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-05-26 | R09 | Published |
 | SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-05-04 | R15 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-05-04 | R06 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-05-04 | R07 | Published |
-| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-05-04 | R08 | Published |
-| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-05-04 | R22 | Published |
+| SOP-004 | Management Review | sops/SOP-004-ManagementReview.md | 2026-05-26 | R09 | Published |
+| SOP-005 | QMS Governance | sops/SOP-005-QMSGovernance.md | 2026-05-26 | R23 | Published |
 | SOP-006 | Software Validation (QMS Tools) | sops/SOP-006-SoftwareValidation.md | 2026-05-04 | R05 | Published |
 | SOP-007 | Medical Device File Control | sops/SOP-007-MedicalDeviceFileControl.md | 2026-05-04 | R10 | Published |
 | SOP-008 | Design and Development Control | sops/SOP-008-DesignAndDevelopmentControl.md | 2026-05-04 | R11 | Published |
 | SOP-009 | Change Management | sops/SOP-009-ChangeManagement.md | 2026-05-04 | R11 | Published |
 | SOP-010 | Supplier and Purchasing Control | sops/SOP-010-SupplierAndPurchasingControl.md | 2026-05-04 | R05 | Published |
-| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-05-04 | R11 | Published |
-| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-05-04 | R07 | Published |
+| SOP-011 | Competence, Training, and Awareness | sops/SOP-011-CompetenceTrainingAndAwareness.md | 2026-05-26 | R12 | Published |
+| SOP-012 | Feedback and Complaint Handling | sops/SOP-012-FeedbackAndComplaintHandling.md | 2026-05-26 | R08 | Published |
 | SOP-013 | Regulatory Incident Reporting | sops/SOP-013-RegulatoryIncidentReporting.md | 2026-05-04 | R07 | Published |
 | SOP-014 | Post-Market Surveillance | sops/SOP-014-PostMarketSurveillance.md | 2026-05-04 | R07 | Published |
 | SOP-015 | Nonconforming Product Control | sops/SOP-015-NonconformingProductControl.md | 2026-05-04 | R06 | Published |
-| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-05-04 | R06 | Published |
+| SOP-016 | Quality Metrics and Data Analysis | sops/SOP-016-QualityMetricsAndDataAnalysis.md | 2026-05-26 | R07 | Published |
 | SOP-017 | Infrastructure and Maintenance Control | sops/SOP-017-InfrastructureAndMaintenanceControl.md | 2026-05-04 | R06 | Published |
 | SOP-018 | Risk Management (ISO 14971) | sops/SOP-018-RiskManagement.md | 2026-05-04 | R10 | Published |
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-05-04 | R13 | Published |
@@ -143,7 +143,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)
 - [QMS tooling inventory and validation baseline](matrices/qms_tooling_inventory.yml)
 - [Signer registry](matrices/signer_registry.json)
-- Gap analyses: [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml), [ISO/IEC 27001](matrices/iso_27001_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml)
+- Gap analyses: [ISO 9001](matrices/iso_9001_gap_analysis.yml), [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml), [ISO/IEC 27001](matrices/iso_27001_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml)
 
 ## Architecture and Automation
 

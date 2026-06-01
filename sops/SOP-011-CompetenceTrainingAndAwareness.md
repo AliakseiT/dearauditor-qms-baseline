@@ -1,15 +1,15 @@
 ---
 sop_id: SOP-011
 title: Competence, Training, and Awareness
-revision: R11
-revision_date: 2026-05-04
+revision: R12
+revision_date: 2026-05-26
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
 related_issue: "#7"
 ---
 ## 1. Purpose
-Define how ACME GmbH establishes competence requirements, assigns training, verifies completion, and maintains awareness for quality-relevant responsibilities.
+Define how ACME GmbH establishes competence requirements, assigns training, verifies completion, maintains awareness, and preserves organizational knowledge needed for quality-relevant responsibilities.
 
 ## 2. Scope
 Applies to all personnel and contractors performing tasks that can affect product quality, regulatory compliance, or QMS record integrity.
@@ -18,10 +18,12 @@ Applies to all personnel and contractors performing tasks that can affect produc
 - Role definitions and required controlled-document set in `matrices/training_matrix.yml`
 - New or updated QM/SOP revisions
 - Onboarding and role-change events
+- Lessons learned, governance decisions, audit/CAPA outputs, and process knowledge needed to operate the QMS
 
 ## 4. Outputs
 - Assigned training tasks/issues
 - Completed and signed training records
+- Organizational knowledge updates or knowledge-transfer actions where needed
 - Current training status register and auditor-facing training status report
 
 ## 5. Roles and Responsibilities
@@ -64,15 +66,22 @@ Training is required when:
 1. Where applicable, training effectiveness shall be verified through assessment, supervision, or review of work outputs.
 2. Use audit/CAPA feedback to improve training assignments and content.
 
+### 6.6 Organizational Knowledge
+1. Identify knowledge needed to operate QMS processes and achieve product or service conformity, including controlled procedures, lessons learned, support decisions, supplier knowledge, validation rationale, and release evidence.
+2. Preserve required knowledge in approved repositories of record, controlled documents, training materials, governance records, or linked objective evidence.
+3. When roles, suppliers, tools, or processes change, assess whether knowledge transfer, training updates, or document changes are needed before the affected activity continues.
+
 ## 7. Required Records
 - Training matrix revisions
 - Training assignment issues
 - Training status register, status report, and signed attestations
+- Knowledge-transfer or lessons-learned records where required by governance, audit, CAPA, or role change
 
 ## 8. Traceability
 | Standard Clause | Control in this SOP |
 |---|---|
 | ISO 13485:2016 6.2 | Defines competence determination, training, awareness, and record maintenance. |
+| ISO 9001:2015 7.1.6, 7.2, 7.3 | Defines organizational knowledge, competence, awareness, and related evidence controls. |
 
 ## 9. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -94,3 +103,4 @@ Training is required when:
 | R09 | 2026-03-25 | Added competence-basis criteria, pre-task training completion expectation, and effectiveness-verification wording based on assessment or supervision. |
 | R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R11 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R12 | 2026-05-26 | Added ISO 9001 organizational-knowledge controls and knowledge-transfer triggers. |

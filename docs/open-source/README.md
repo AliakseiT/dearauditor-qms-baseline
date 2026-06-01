@@ -28,7 +28,7 @@ Use this sequence when turning the public baseline into a company-controlled QMS
 
 Only after this sequence is complete should the adopter use the repository as the governing QMS for product, study, supplier, release, validation, or operational evidence.
 
-The upstream gap analyses are product-independent preparation artifacts. They help adopters understand how the baseline maps to ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, ISO/IEC 42001, GDPR, and Swiss nFADP/nFDAP, but they do not replace adopter-specific applicability decisions, validation evidence, training, or approval.
+The upstream gap analyses are product-independent preparation artifacts. They help adopters understand how the baseline maps to ISO 9001, ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, ISO/IEC 42001, GDPR, and Swiss nFADP/nFDAP, but they do not replace adopter-specific applicability decisions, validation evidence, training, or approval.
 
 The privacy controls are used when GDPR or Swiss nFADP/nFDAP is in scope for the adopting company's quality manual. Adopters whose approved scope does not yet include in-scope personal data processing should record the scope rationale and review trigger, then instantiate the `records/privacy/` templates before privacy-relevant processing begins.
 
