@@ -294,37 +294,20 @@ jobs:
                 return;
               }
 
-              // Legacy fallback (marker carries no role map — e.g. a PR opened
-              // before this gate shipped): bare non-author count, scoped to the
-              // assigned reviewer pool when present.
-              const reviewerPoolSet = new Set(reviewerPool.map((login) => login.toLowerCase()));
-              const approvedFromPoolOnHead = reviewerPool.length > 0
-                ? approvedNonAuthorOnHead.filter((login) => reviewerPoolSet.has(login.toLowerCase()))
-                : approvedNonAuthorOnHead;
-
-              if (approvedFromPoolOnHead.length < requiredReviewerApprovals) {
-                const missing = requiredReviewerApprovals - approvedFromPoolOnHead.length;
-                const staleApprovals = Array.from(latestByUser.entries())
-                  .filter(([login, review]) => {
-                    if (login === author) return false;
-                    if (review.state !== 'APPROVED' || review.commitId === headSha) return false;
-                    return reviewerPool.length === 0 || reviewerPoolSet.has(login.toLowerCase());
-                  })
-                  .map(([login]) => '@' + login);
-                if (staleApprovals.length > 0) {
-                  core.info(`Stale approvals on older commits: ${staleApprovals.join(', ')}`);
-                }
-                if (reviewerPool.length > 0) {
-                  const pending = reviewerPool.filter((login) => !approvedFromPoolOnHead.includes(login.toLowerCase()));
-                  core.info(`Waiting for ${missing} approval(s) from reviewer pool: ${pending.map((login) => '@' + login).join(', ')}`);
-                } else if (coapprovalReasons.length > 0) {
-                  core.info(`Fallback co-approval scope matched: ${coapprovalReasons.join('; ')}`);
-                }
-                await publishStatus('pending', `Missing ${missing} required non-author approval(s) on current head.`);
-                return;
-              }
-
-              await publishStatus('success', `Approved on current head by ${approvedFromPoolOnHead.map((x) => '@' + x).join(', ')}.`);
+              // No (or invalid) role-coverage data on the bot marker: fail
+              // CLOSED. Never approve on a bare non-author count — that would
+              // re-open the signer-role gap (a wrong-role approval satisfying
+              // merge while a declared signer role stays uncovered, leaving 2.1
+              // to fail post-merge). A marker without the role map predates
+              // role-coverage emission; re-running 1.1 (push any commit, or
+              // edit the PR) regenerates it. We deliberately do NOT recompute
+              // the role map here — that would require the Python resolver in
+              // this gate; the trusted base-ref resolver runs in 1.1.
+              await publishStatus(
+                'pending',
+                'Signer-role coverage data missing from the reviewer-assignment marker — re-run 1.1 (push a commit or edit the PR) to regenerate it. This gate does not approve on a bare approval count.',
+              );
+              return;
             } catch (err) {
               const message = err && err.message ? err.message : String(err);
               if (headSha) {
