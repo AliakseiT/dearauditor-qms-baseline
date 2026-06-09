@@ -141,6 +141,12 @@ jobs:
           CODEOWNERS_FILE: ${{ steps.plan.outputs.codeowners_file }}
           REQUIRED_REVIEWER_SIGNATURES: ${{ steps.math.outputs.effective_required_reviewer_signatures }}
           ROLE_IDS: ${{ steps.plan.outputs.fallback_role_ids }}
+          # Dup-preserving declared-role slots + per-role qualifying members,
+          # emitted into the marker comment so the 1.2 merge gate can resolve
+          # signer-role coverage by order-independent matching (not a bare
+          # non-author count). Trusted: computed by the base-ref resolver.
+          ROLE_ID_SEQUENCE_JSON: ${{ steps.resolver.outputs.signatory_role_id_sequence_json }}
+          ROLE_MEMBERS_BY_ID_JSON: ${{ steps.resolver.outputs.role_members_lowercased_by_id_json }}
           COAPPROVAL_REQUIRED: ${{ steps.policy.outputs.coapproval_required }}
           COAPPROVAL_REASONS: ${{ steps.policy.outputs.coapproval_reasons }}
         with:
@@ -163,6 +169,16 @@ jobs:
               .filter(Boolean);
             
             const requiredReviewerSignatures = Math.max(0, Number.parseInt(process.env.REQUIRED_REVIEWER_SIGNATURES || '0', 10) || 0);
+
+            // Role-coverage data for the 1.2 merge gate: the dup-preserving
+            // declared-role slots and per-role qualifying members. Embedded as a
+            // hidden machine-readable line in the marker comment so 1.2 can
+            // enforce signer-role coverage by order-independent matching without
+            // re-running the resolver. Trusted: computed by the base-ref resolver.
+            const roleCoverageData = JSON.stringify({
+              sequence: JSON.parse(process.env.ROLE_ID_SEQUENCE_JSON || '[]'),
+              members: JSON.parse(process.env.ROLE_MEMBERS_BY_ID_JSON || '{}'),
+            });
 
             const marker = '<!-- signature-auto-reviewers -->';
             const legacyMarker = '<!-- part11-auto-reviewers -->';
@@ -205,6 +221,7 @@ jobs:
             const buildCommentBody = (assignedReviewers) => {
               const lines = [
                 marker,
+                `<!-- role-coverage-data: ${roleCoverageData} -->`,
                 '🤖 Auto-assigned signature reviewers from CODEOWNERS and role matrix',
                 '',
                 `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,

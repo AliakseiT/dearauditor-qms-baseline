@@ -7,10 +7,11 @@ run-name: 1.2 Reviewer Approval Gate
 # publishes, a PR author with `pull_request:` could modify this
 # workflow in their PR to publish `success` unconditionally and bypass
 # the reviewer-approval gate. `pull_request_target` keeps the workflow
-# definition under the maintainers' control. The body never checks out
-# PR code or runs scripts (only `github-script` against the API), so
-# no further base-ref-checkout step is needed here. Mirrors the
-# commit-status gate shipped in adalyon-qms PR #25.
+# definition under the maintainers' control. The only repository content
+# this gate loads is the shared signer-role matcher at
+# `.github/scripts/role-coverage.js`, checked out from the trusted base
+# ref (`persist-credentials: false`); all PR state is read via the API.
+# Mirrors the commit-status gate shipped in adalyon-qms PR #25.
 on:
   pull_request_target:
     types: [opened, edited, reopened, ready_for_review, synchronize]
@@ -18,6 +19,7 @@ on:
     types: [submitted, edited, dismissed]
 
 permissions:
+  contents: read
   pull-requests: read
   issues: read
   statuses: write
@@ -27,11 +29,31 @@ jobs:
     if: github.event.pull_request != null
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout base ref (trusted) for the shared role matcher
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
       - name: Publish reviewer approval commit status
         uses: actions/github-script@v8
         with:
           script: |
             const STATUS_CONTEXT = 'qms_approval_gate';
+            // Trusted base-ref module (checked out above). Single source of
+            // truth for signer-role coverage, shared with 2.1; unit-tested in
+            // .github/scripts/role-coverage.test.js.
+            const { matchRoleSlots } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/role-coverage.js`);
+            const parseRoleCoverageData = (body) => {
+              const m = String(body || '').match(/<!-- role-coverage-data:\s*(\{[\s\S]*?\})\s*-->/);
+              if (!m) return null;
+              try {
+                const d = JSON.parse(m[1]);
+                if (!Array.isArray(d.sequence) || typeof d.members !== 'object' || d.members === null) return null;
+                return { sequence: d.sequence, members: d.members };
+              } catch (_e) {
+                return null;
+              }
+            };
             const pr = context.payload.pull_request;
             if (!pr) {
               core.info('No pull request context; skipping.');
@@ -244,6 +266,37 @@ jobs:
                 })
                 .map(([login]) => login);
 
+              // Primary path: order-independent signer-role coverage. The role
+              // map (declared slots + per-role qualifying members) is the
+              // trusted base-ref resolver output embedded by 1.1. The author
+              // covers at most one declared role — whichever the reviewers did
+              // NOT — and every other role needs a distinct qualifying
+              // non-author approval on the current head. This replaces the bare
+              // non-author count, which could pass with a declared role left
+              // unfilled (e.g. an engineer's approval satisfying the count while
+              // no one covered QA).
+              const roleCoverage = parseRoleCoverageData(latestMarkerBody);
+              if (roleCoverage && roleCoverage.sequence.length > 0) {
+                const cov = matchRoleSlots(
+                  roleCoverage.sequence,
+                  roleCoverage.members,
+                  author,
+                  approvedNonAuthorOnHead,
+                  requiredReviewerApprovals,
+                );
+                if (!cov.covered) {
+                  const have = approvedNonAuthorOnHead.map((x) => '@' + x).join(', ') || 'none';
+                  await publishStatus('pending', `Unmet signer role(s): ${cov.missingRoleIds.join(', ')} — needs a non-author approval from a qualifying signer (non-author approvals on head: ${have}).`);
+                  return;
+                }
+                const approverList = approvedNonAuthorOnHead.map((x) => '@' + x).join(', ');
+                await publishStatus('success', `Signer roles covered on current head${approverList ? ` (non-author approvals: ${approverList})` : ''}.`);
+                return;
+              }
+
+              // Legacy fallback (marker carries no role map — e.g. a PR opened
+              // before this gate shipped): bare non-author count, scoped to the
+              // assigned reviewer pool when present.
               const reviewerPoolSet = new Set(reviewerPool.map((login) => login.toLowerCase()));
               const approvedFromPoolOnHead = reviewerPool.length > 0
                 ? approvedNonAuthorOnHead.filter((login) => reviewerPoolSet.has(login.toLowerCase()))

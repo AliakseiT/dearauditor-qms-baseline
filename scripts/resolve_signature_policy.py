@@ -408,16 +408,13 @@ def main() -> int:
             raise SystemExit(
                 f"Explicit signer roles count ({len(explicit_roles)}) must match required signatures ({required_signatures})."
             )
-        explicit_primary_role = explicit_roles[0]
-        explicit_primary_role_id = _role_id_for_label(explicit_primary_role)
-        if explicit_primary_role_id and not is_automation_author and not _qualifies_for_role(
-            explicit_primary_role_id, author_role_id_set, author_job_title
-        ):
-            raise SystemExit(
-                f"PR author @{author} is not eligible for explicit primary signer role '{explicit_primary_role}'. "
-                "The first listed '**Signer Roles:**' entry is treated as the PR author's role; "
-                "reviewer/co-signer roles must come after it."
-            )
+        # Declaration ORDER no longer determines which role the author covers:
+        # the shared matcher (.github/scripts/role-coverage.js, used by the 1.2
+        # merge gate and the 2.1 signature request) lets a qualifying author
+        # flexibly cover whichever declared role the reviewers did not. So the
+        # former "first listed '**Signer Roles:**' entry is the author's role"
+        # eligibility error is gone — it wrongly blocked PRs where the author
+        # qualified for a non-first declared role.
         final_roles = explicit_roles
         meaning_of_signature = explicit_meaning or DEFAULT_SIGNATURE_MEANING
         source = "explicit"
