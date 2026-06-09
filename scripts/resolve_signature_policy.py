@@ -463,11 +463,47 @@ def main() -> int:
         if role_id and role_id not in final_role_ids:
             final_role_ids.append(role_id)
 
+    # Role-coverage data for order-independent signer-role matching
+    # (.github/scripts/role-coverage.js, consumed by the 1.2 merge gate and the
+    # 2.1 attestation). `final_role_id_sequence` preserves declaration order AND
+    # duplicates (so "QA Lead; QA Lead" demands two QA signers);
+    # `role_members_lowercased_by_id` is the per-declared-role qualifying set
+    # (lowercased for case-insensitive JS lookup); `reviewer_candidates_by_role`
+    # is the non-author pool per role for reviewer assignment.
+    final_role_id_sequence: list[str] = []
+    for display in final_roles:
+        role_id = _role_id_for_label(display)
+        if role_id:
+            final_role_id_sequence.append(role_id)
+    role_members_lower_by_id = {
+        role_id: sorted(
+            {
+                str(u).strip().lower()
+                for u in (roles.get(role_id, {}).get("users", []) or [])
+                if str(u).strip()
+            }
+        )
+        for role_id in final_role_ids
+    }
+    reviewer_candidates_by_role = {
+        role_id: [
+            str(u).strip().lstrip("@")
+            for u in (roles.get(role_id, {}).get("users", []) or [])
+            if str(u).strip()
+            and str(u).strip().lower() != author_key
+            and str(u).strip().lower() != "replace_with_gh_username"
+        ]
+        for role_id in final_role_ids
+    }
+
     outputs = {
         "signatory_roles": "; ".join(final_roles),
         "signatory_roles_json": json.dumps(final_roles),
         "signatory_role_ids": ",".join(final_role_ids),
         "signatory_role_ids_json": json.dumps(final_role_ids),
+        "signatory_role_id_sequence_json": json.dumps(final_role_id_sequence),
+        "role_members_lowercased_by_id_json": json.dumps(role_members_lower_by_id),
+        "reviewer_candidates_by_role_json": json.dumps(reviewer_candidates_by_role),
         "meaning_of_signature": meaning_of_signature,
         "required_signatures": str(required_signatures),
         "required_reviewer_signatures": str(required_signatures if is_automation_author else max(0, required_signatures - 1)),
