@@ -98,4 +98,20 @@ assert.strictEqual(
   false,
 );
 
+// Defensive: the author appearing in the approver list must NOT let them fill a
+// second slot via their own login (only the single AUTHOR_NODE slot). With rrs
+// == slots the author is ineligible entirely, so a dual-qualified author who is
+// (wrongly) passed in as an approver still cannot cover both slots alone.
+assert.strictEqual(
+  matchRoleSlots(
+    ['engineering_lead', 'qa_lead'],
+    M({ engineering_lead: ['aliakseit'], qa_lead: ['aliakseit'] }),
+    'aliakseit',
+    ['aliakseit'],
+    2,
+  ).covered,
+  false,
+  'author in approver list must not fill two slots',
+);
+
 console.log('role-coverage: all assertions passed');

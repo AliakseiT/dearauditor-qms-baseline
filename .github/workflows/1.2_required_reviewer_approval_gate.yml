@@ -42,7 +42,26 @@ jobs:
             // Trusted base-ref module (checked out above). Single source of
             // truth for signer-role coverage, shared with 2.1; unit-tested in
             // .github/scripts/role-coverage.test.js.
-            const { matchRoleSlots } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/role-coverage.js`);
+            //
+            // Bootstrap window: on `pull_request_review` the workflow BODY runs
+            // from the PR head, but the body still checks out only the trusted
+            // BASE ref (default branch) for this module. On the very PR that
+            // INTRODUCES role-coverage.js, the base ref doesn't have it yet, so
+            // the require throws. We must never execute the PR-head copy (that's
+            // the injection vector the base-ref checkout exists to prevent), so
+            // we exit WITHOUT publishing and let the pre-existing default-branch
+            // 1.2 gate (the only one that can run for this one PR) govern it.
+            // The new matcher self-governs every PR after this one merges. This
+            // path is unreachable once the module is on the default branch — a
+            // PR-head deletion can't trigger it because we only ever load from
+            // base — so it engages solely during the legitimate bootstrap.
+            let matchRoleSlots;
+            try {
+              ({ matchRoleSlots } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/role-coverage.js`));
+            } catch (loadErr) {
+              core.warning(`Signer-role matcher not present on the base ref yet (bootstrap for the PR that introduces .github/scripts/role-coverage.js): ${loadErr && loadErr.message ? loadErr.message : loadErr}. Deferring to the default-branch gate for this PR; the matcher self-governs every PR after it merges.`);
+              return;
+            }
             const parseRoleCoverageData = (body) => {
               const m = String(body || '').match(/<!-- role-coverage-data:\s*(\{[\s\S]*?\})\s*-->/);
               if (!m) return null;
