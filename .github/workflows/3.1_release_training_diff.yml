@@ -27,6 +27,11 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: >-
+    training-release-diff-${{ github.event_name == 'push' && github.ref_name || format('{0}-{1}-{2}', github.event.inputs.release_tag || 'latest', github.event.inputs.training_user || 'all', github.event.inputs.additional_documents || 'auto') }}
+  cancel-in-progress: false
+
 jobs:
   open_training_diff_issues:
     runs-on: ubuntu-latest
@@ -881,4 +886,8 @@ jobs:
                 labels: entry.labels,
                 assignees: entry.assignees || [],
               });
+              openTitles.add(entry.title);
+              if (marker) {
+                openMarkers.add(marker);
+              }
             }
