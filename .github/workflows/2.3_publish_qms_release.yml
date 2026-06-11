@@ -6,8 +6,13 @@ on:
       - 'QMS-*'
 
 permissions:
+  actions: write
   contents: write
   issues: write
+
+concurrency:
+  group: qms-release-publish-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   publish_qms_release:
@@ -241,7 +246,42 @@ jobs:
                 archive.add(path, arcname=str(path))
           PY
 
+      - name: Resolve existing GitHub release
+        id: existing_release
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const releaseTag = String(process.env.RELEASE_TAG || '').trim();
+            try {
+              const release = (await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: releaseTag,
+              })).data;
+              const assets = Array.isArray(release.assets) ? release.assets : [];
+              const assetNames = new Set(assets.map((asset) => String(asset.name || '')));
+              const hasManifest = assetNames.has('qms_release_manifest.json');
+              const hasSnapshot = assetNames.has('qms_release_snapshot.tgz');
+              core.setOutput('exists', 'true');
+              core.setOutput('url', String(release.html_url || ''));
+              if (hasManifest && hasSnapshot) {
+                core.info(`Release ${releaseTag} already has both QMS release assets; publish step will be skipped.`);
+                core.setOutput('complete', 'true');
+                return;
+              }
+              core.setFailed(
+                `Release ${releaseTag} already exists but is missing expected assets: ` +
+                `${hasManifest ? '' : 'qms_release_manifest.json '} ${hasSnapshot ? '' : 'qms_release_snapshot.tgz'}`.trim()
+              );
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.info(`Release ${releaseTag} does not exist yet; publish step will create it.`);
+              core.setOutput('exists', 'false');
+              core.setOutput('complete', 'false');
+            }
+
       - name: Publish GitHub release
+        if: steps.existing_release.outputs.exists != 'true'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.RELEASE_TAG }}
@@ -269,6 +309,13 @@ jobs:
               issue_number: issueNumber,
             })).data;
 
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+
             const commentBody = [
               '<!-- qms-release-published -->',
               'QMS release published successfully.',
@@ -280,12 +327,20 @@ jobs:
               '  - `qms_release_snapshot.tgz`',
             ].join('\n');
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              body: commentBody,
+            const alreadyCommented = comments.some((comment) => {
+              const body = String(comment.body || '');
+              return body.includes('<!-- qms-release-published -->') && body.includes(`Release tag: \`${releaseTag}\``);
             });
+            if (!alreadyCommented) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: commentBody,
+              });
+            } else {
+              core.info(`Release planning issue #${issueNumber} already has a qms-release-published comment for ${releaseTag}.`);
+            }
 
             if (String(issue.state || '').toLowerCase() === 'open') {
               await github.rest.issues.update({
@@ -295,3 +350,44 @@ jobs:
                 state: 'closed',
               });
             }
+
+      - name: Request release package signature
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('qms_release_manifest.json', 'utf8'));
+            const issueNumber = Number.parseInt(String(manifest.release_planning_issue || '').trim(), 10);
+            const releaseTag = String(manifest.release_tag || process.env.RELEASE_TAG || '').trim();
+            if (!Number.isInteger(issueNumber) || issueNumber < 1) {
+              core.info('No release_planning_issue found in qms_release_manifest.json; skipping release-signature dispatch.');
+              return;
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+            const alreadyRequested = comments.some((comment) => {
+              const body = String(comment.body || '');
+              return (
+                body.includes('<!-- qms-release-signature-request -->') ||
+                body.includes('<!-- qms-release-signature-complete -->')
+              ) && body.includes(`"release_tag": "${releaseTag}"`);
+            });
+            if (alreadyRequested) {
+              core.info(`Release signature request/completion already exists for ${releaseTag}; skipping dispatch.`);
+              return;
+            }
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: '2.7_qms_release_signature_flow.yml',
+              ref: context.payload.repository.default_branch,
+              inputs: {
+                release_tag: releaseTag,
+              },
+            });
