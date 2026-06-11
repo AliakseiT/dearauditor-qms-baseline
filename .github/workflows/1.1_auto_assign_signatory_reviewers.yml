@@ -315,13 +315,18 @@ jobs:
             const codeownersEligible = toEligible(codeownersCandidates);
             const roleMatrixEligible = toEligible(roleMatrixCandidates);
             const roleCoverageEligible = toEligible(roleCoverageCandidates);
+            const reviewerSources = codeownersEligible.length >= requiredReviewerSignatures
+              ? [codeownersEligible]
+              : [codeownersEligible, roleMatrixEligible, roleCoverageEligible];
             const selected = [];
             const selectedSet = new Set();
-            for (const login of [...codeownersEligible, ...roleMatrixEligible, ...roleCoverageEligible]) {
-              const key = login.toLowerCase();
-              if (selectedSet.has(key)) continue;
-              selectedSet.add(key);
-              selected.push(login);
+            for (const source of reviewerSources) {
+              for (const login of source) {
+                const key = login.toLowerCase();
+                if (selectedSet.has(key)) continue;
+                selectedSet.add(key);
+                selected.push(login);
+              }
             }
 
             if (selected.length < requiredReviewerSignatures) {
