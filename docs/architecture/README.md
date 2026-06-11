@@ -43,14 +43,15 @@ For open-source distribution, this repository acts as the public upstream baseli
 2. Controlled changes are implemented on a branch and proposed through a pull request.
 3. Gate workflows evaluate approval and structural rules on the PR and can drive auto-merge behavior where repository settings allow enforcement.
 4. Once merged, post-merge workflows request signatures, maintain PR signature-status labels, collect attestations, and publish immutable record evidence for execution records maintained in the target repository.
-5. Training automations derive additional work items from released or merged state.
-6. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
+5. Release-plan attributed PRs that carry approved QMS release notes and complete PR signatures publish the formal `QMS-*` tag at the merge commit.
+6. Training automations derive additional work items from released or merged state.
+7. Formal QMS releases package the approved repository state as a GitHub Release on the QMS tag.
 
 For private adopter repos, the additional operating flow is:
 
-7. A company bootstraps a private adopter repo from a selected upstream baseline ref using `tools/bootstrap_company_repo.sh`.
-8. Company-owned matrices and operational records are tailored locally and validated before first use.
-9. Later upstream changes are proposed into the adopter repo by `tools/open_upstream_upgrade_pr.sh`, which updates only upstream-owned paths and records the proposed baseline in `adoption/upstream-baseline.json`.
+8. A company bootstraps a private adopter repo from a selected upstream baseline ref using `tools/bootstrap_company_repo.sh`.
+9. Company-owned matrices and operational records are tailored locally and validated before first use.
+10. Later upstream changes are proposed into the adopter repo by `tools/open_upstream_upgrade_pr.sh`, which updates only upstream-owned paths and records the proposed baseline in `adoption/upstream-baseline.json`.
 
 ## 6. Automation Map
 The current workflow topology is summarized below.
@@ -84,6 +85,7 @@ flowchart LR
     w23["2.3 publish QMS release<br/>2.3_publish_qms_release.yml"]
     w25["2.5 signature git-native fallback<br/>2.5_signature_git_native_fallback.yml"]
     w27["2.7 QMS release signature flow<br/>2.7_qms_release_signature_flow.yml"]
+    w28["2.8 publish QMS release tag<br/>2.8_publish_qms_release_tag.yml"]
   end
 
   subgraph training["3 Training Lifecycle"]
@@ -105,6 +107,7 @@ flowchart LR
   pr_review --> w13
   pr_closed --> w21
   pr_closed --> w22
+  pr_closed --> w28
   qms_tag --> w23
   qms_tag --> w27
   qms_tag --> w31
@@ -115,6 +118,7 @@ flowchart LR
   manual --> w21
   manual --> w26
   manual --> w25
+  manual --> w28
   manual --> w31
   manual --> w32
   manual --> w33
@@ -126,6 +130,8 @@ flowchart LR
   signer_ui --> w26
   signer_ui --> w22
   signer_ui --> w27
+  w26 --> w28
+  w28 --> qms_tag
   signer_ui -. fallback unavailable .-> w25
   w31 --> w32
   w32 --> w33
@@ -153,6 +159,7 @@ flowchart LR
 | `2.4_signature_attestation_title_page.yml` | `issue_comment` | Supports signature-certificate generation for attestation packages. | Active support workflow |
 | `2.5_signature_git_native_fallback.yml` | `workflow_dispatch` | Manual / break-glass fallback signature path if the primary worker flow is unavailable. | Fallback |
 | `2.7_qms_release_signature_flow.yml` | `release`, `issue_comment`, `workflow_dispatch` | Posts release-signature requests on the release-plan issue, binds signatures to the published immutable `QMS-*` release package, publishes the release attestation assets as a separate immutable `sig-qms-release-*` evidence release, and closes the release-plan issue after completion. Non-`QMS-*` GitHub Release events are ignored for request creation. | Active |
+| `2.8_publish_qms_release_tag.yml` | `pull_request` (closed/labeled on QMS release notes), `workflow_dispatch` | Creates the formal `QMS-*` release tag at the merge commit only for merged PRs with `signature/complete`, an approved QMS release-notes record, a matching release-plan issue pointer, and a release-change attribution to that PR. | Active |
 
 ### 7.3 Training Lifecycle
 | Workflow | Primary trigger | Purpose | Status |
