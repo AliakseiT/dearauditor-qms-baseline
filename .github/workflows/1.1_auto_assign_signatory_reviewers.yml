@@ -141,6 +141,8 @@ jobs:
           CODEOWNERS_FILE: ${{ steps.plan.outputs.codeowners_file }}
           REQUIRED_REVIEWER_SIGNATURES: ${{ steps.math.outputs.effective_required_reviewer_signatures }}
           ROLE_IDS: ${{ steps.plan.outputs.fallback_role_ids }}
+          AUTHOR_ELIGIBLE_ROLE_IDS: ${{ steps.resolver.outputs.author_eligible_role_ids }}
+          CANDIDATES_BY_ROLE_JSON: ${{ steps.resolver.outputs.reviewer_candidates_by_role_json }}
           # Dup-preserving declared-role slots + per-role qualifying members,
           # emitted into the marker comment so the 1.2 merge gate can resolve
           # signer-role coverage by order-independent matching (not a bare
@@ -164,6 +166,15 @@ jobs:
               .map((x) => x.trim())
               .filter(Boolean);
             const roleMatrixCandidates = (process.env.ROLE_MATRIX_CANDIDATES_CSV || '')
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean);
+            const candidatesByRole = JSON.parse(process.env.CANDIDATES_BY_ROLE_JSON || '{}');
+            const roleCoverageCandidates = Object.values(candidatesByRole)
+              .flatMap((pool) => Array.isArray(pool) ? pool : [])
+              .map((x) => String(x || '').trim())
+              .filter(Boolean);
+            const authorEligibleRoleIds = (process.env.AUTHOR_ELIGIBLE_ROLE_IDS || '')
               .split(',')
               .map((x) => x.trim())
               .filter(Boolean);
@@ -227,6 +238,7 @@ jobs:
                 `Path policy triggered assignment of role IDs: \`${roleIds.join(', ') || 'none'}\``,
                 `Reviewer candidate resolution: ${candidateSummary || 'fallback role matrix only'}`,
                 `CODEOWNERS file: \`${codeownersFile || 'not found'}\``,
+                `Author eligible signer roles: \`${authorEligibleRoleIds.join(', ') || 'none (all signatures from reviewers)'}\``,
                 'Co-approval policy requires a non-author reviewer when PR changes include: controlled documents (`/qm`, `/sops`), records under `/records` (including templates and index pages), or matrix/role files (`/matrices`).',
                 `Co-approval triggered for this PR: \`${coapprovalRequired ? 'yes' : 'no'}\`${coapprovalReasons ? ` (${coapprovalReasons})` : ''}`,
                 `Reviewer approval required for merge: \`${requiredReviewerSignatures > 0 ? 'yes' : 'no'}\``,
@@ -302,9 +314,10 @@ jobs:
             });
             const codeownersEligible = toEligible(codeownersCandidates);
             const roleMatrixEligible = toEligible(roleMatrixCandidates);
+            const roleCoverageEligible = toEligible(roleCoverageCandidates);
             const selected = [];
             const selectedSet = new Set();
-            for (const login of [...codeownersEligible, ...roleMatrixEligible]) {
+            for (const login of [...codeownersEligible, ...roleMatrixEligible, ...roleCoverageEligible]) {
               const key = login.toLowerCase();
               if (selectedSet.has(key)) continue;
               selectedSet.add(key);
@@ -313,7 +326,7 @@ jobs:
 
             if (selected.length < requiredReviewerSignatures) {
               core.setFailed(
-                `Co-approval policy requires at least ${requiredReviewerSignatures} reviewer signature(s). Only ${selected.length} eligible collaborator(s) were found after evaluating CODEOWNERS (${codeownersEligible.length}) and fallback role-matrix candidates (${roleMatrixEligible.length}).`
+                `Co-approval policy requires at least ${requiredReviewerSignatures} reviewer signature(s). Only ${selected.length} eligible collaborator(s) were found after evaluating CODEOWNERS (${codeownersEligible.length}), fallback role-matrix candidates (${roleMatrixEligible.length}), and signer-role coverage candidates (${roleCoverageEligible.length}).`
               );
               return;
             }

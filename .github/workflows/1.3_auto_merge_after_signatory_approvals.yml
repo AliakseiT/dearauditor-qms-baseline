@@ -15,6 +15,12 @@ jobs:
   auto_merge:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout base ref (trusted) for the shared role matcher
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+
       - name: Create GitHub App token for PR merge/comment
         id: app_token
         uses: actions/create-github-app-token@v3
@@ -30,6 +36,13 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            let matchRoleSlots = null;
+            try {
+              matchRoleSlots = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/role-coverage.js`).matchRoleSlots;
+            } catch (error) {
+              core.warning(`Shared role matcher is not available on the trusted base ref yet: ${error.message}. Deferring to the default-branch auto-merge gate for this bootstrap PR.`);
+              return;
+            }
             const pr = context.payload.pull_request;
             if (!pr) {
               core.info('No pull request context; skipping.');
@@ -173,6 +186,25 @@ jobs:
               const match = String(body || '').match(new RegExp(`${label}:\\s*\`?(\\d+)\`?`, 'i'));
               return match ? Number.parseInt(match[1], 10) : null;
             };
+            const parseRoleCoverageData = (body) => {
+              const m = String(body || '').match(/<!-- role-coverage-data:\s*(\{[\s\S]*?\})\s*-->/);
+              if (!m) return null;
+              try {
+                const d = JSON.parse(m[1]);
+                if (!Array.isArray(d.sequence) || typeof d.members !== 'object' || d.members === null) return null;
+                return {
+                  sequence: d.sequence.map((roleId) => String(roleId || '')).filter(Boolean),
+                  members: Object.fromEntries(
+                    Object.entries(d.members).map(([roleId, members]) => [
+                      roleId,
+                      Array.isArray(members) ? members.map((login) => String(login || '').toLowerCase()).filter(Boolean) : [],
+                    ]),
+                  ),
+                };
+              } catch (_error) {
+                return null;
+              }
+            };
 
             let requiredReviewerApprovals = null;
             let reviewerPool = [];
@@ -251,35 +283,44 @@ jobs:
               });
             }
 
-            const approvedReviewers = Array.from(latestReviewByUser.entries())
-              .filter(([login, review]) => login !== author && review.state === 'APPROVED')
-              .map(([login]) => login);
             const approvedOnHead = Array.from(latestReviewByUser.entries())
               .filter(([login, review]) => login !== author && review.state === 'APPROVED' && review.commitId === headSha)
               .map(([login]) => login);
-            const approvedOnHeadSet = new Set(approvedOnHead);
-            if (requiredReviewerApprovals > 0 && reviewerPool.length > 0 && reviewerPool.length < requiredReviewerApprovals) {
-              core.info(
-                `PR #${pr.number} requires ${requiredReviewerApprovals} reviewer approval(s) (author auto-signs 1), but only ${reviewerPool.length} reviewer candidate(s) were resolved.${coapprovalReasons.length > 0 ? ` Co-approval scope matched: ${coapprovalReasons.join('; ')}` : ''}`
-              );
-              return;
-            }
+            const stale = Array.from(latestReviewByUser.entries())
+              .filter(([login, review]) => login !== author && review.state === 'APPROVED' && review.commitId !== headSha)
+              .map(([login]) => login);
 
-            const approvedFromPool = reviewerPool.length > 0
-              ? reviewerPool.filter((login) => approvedOnHeadSet.has(login.toLowerCase()))
-              : approvedOnHead;
-            if (requiredReviewerApprovals > 0 && approvedFromPool.length < requiredReviewerApprovals) {
-              const pending = reviewerPool.filter((login) => !approvedOnHeadSet.has(login.toLowerCase()));
-              const stale = (reviewerPool.length > 0 ? reviewerPool : approvedReviewers).filter((login) => approvedReviewers.includes(login.toLowerCase()) && !approvedOnHeadSet.has(login.toLowerCase()));
-              if (stale.length > 0) {
-                core.info(`Found stale approvals on older commits from: ${stale.map((x) => '@' + x).join(', ')}`);
+            if (requiredReviewerApprovals > 0) {
+              const roleCoverage = parseRoleCoverageData(latestMarkerBody);
+              if (!roleCoverage || roleCoverage.sequence.length === 0) {
+                core.info(
+                  'Signer-role coverage data is missing from the reviewer-assignment marker; auto-merge will not use the legacy flat reviewer-pool count. Re-run 1.1 by pushing a commit or editing the PR.',
+                );
+                return;
               }
-              core.info(
-                reviewerPool.length > 0
-                  ? `Waiting for ${requiredReviewerApprovals - approvedFromPool.length} more approval(s) from reviewer pool: ${pending.map((x) => '@' + x).join(', ')}`
-                  : `Waiting for ${requiredReviewerApprovals - approvedFromPool.length} more non-author approval(s) on the current head.`
+              const missingMembershipForRoleIds = roleCoverage.sequence.filter((roleId) => !(roleId in roleCoverage.members));
+              if (missingMembershipForRoleIds.length > 0) {
+                core.info(
+                  `Signer-role coverage data is incomplete for role(s): ${missingMembershipForRoleIds.join(', ')}. Auto-merge skipped.`,
+                );
+                return;
+              }
+              const coverage = matchRoleSlots(
+                roleCoverage.sequence,
+                roleCoverage.members,
+                author,
+                approvedOnHead,
+                requiredReviewerApprovals,
               );
-              return;
+              if (!coverage.covered) {
+                if (stale.length > 0) {
+                  core.info(`Found stale approvals on older commits from: ${stale.map((x) => '@' + x).join(', ')}`);
+                }
+                core.info(
+                  `Waiting for signer-role coverage on current head. Missing role(s): ${coverage.missingRoleIds.join(', ')}. Non-author approvals on head: ${approvedOnHead.map((x) => '@' + x).join(', ') || 'none'}.`
+                );
+                return;
+              }
             }
 
             if (fresh.auto_merge) {
