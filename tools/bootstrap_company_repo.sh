@@ -9,6 +9,8 @@ UPSTREAM_REF=""
 UPSTREAM_REPO=""
 UPSTREAM_URL=""
 GH_REPO=""
+ORIGIN_URL=""
+ORIGIN_USE_SSH=0
 DEFAULT_BRANCH="main"
 CREATE_REPO=0
 PUSH_AFTER_BOOTSTRAP=0
@@ -36,6 +38,8 @@ Options:
                                    Logical upstream repository label written to adoption metadata
   --upstream-url <git-url>         Upstream git remote URL added as remote "upstream"
   --repo <owner/repo>              Downstream GitHub repository to create/use as origin
+  --origin-url <git-url>           Exact origin remote URL to use instead of deriving one from --repo
+  --ssh-origin                     Derive origin as git@github.com:<owner/repo>.git from --repo
   --create-repo                    Create the downstream GitHub repository with gh
   --push                           Push initial main branch after local bootstrap
   --default-branch <name>          Default branch name (default: main)
@@ -66,6 +70,8 @@ while [[ $# -gt 0 ]]; do
     --upstream-repository) UPSTREAM_REPO="$2"; shift 2 ;;
     --upstream-url) UPSTREAM_URL="$2"; shift 2 ;;
     --repo) GH_REPO="$2"; shift 2 ;;
+    --origin-url) ORIGIN_URL="$2"; shift 2 ;;
+    --ssh-origin) ORIGIN_USE_SSH=1; shift ;;
     --create-repo) CREATE_REPO=1; shift ;;
     --push) PUSH_AFTER_BOOTSTRAP=1; shift ;;
     --default-branch) DEFAULT_BRANCH="$2"; shift 2 ;;
@@ -89,6 +95,16 @@ done
 
 if [[ -z "${TARGET_DIR}" || -z "${UPSTREAM_REF}" ]]; then
   usage
+  exit 1
+fi
+
+if [[ -n "${ORIGIN_URL}" && "${ORIGIN_USE_SSH}" -eq 1 ]]; then
+  echo "--origin-url and --ssh-origin cannot be used together" >&2
+  exit 1
+fi
+
+if [[ "${ORIGIN_USE_SSH}" -eq 1 && -z "${GH_REPO}" ]]; then
+  echo "--ssh-origin requires --repo <owner/repo>" >&2
   exit 1
 fi
 
@@ -154,13 +170,22 @@ if [[ "${CREATE_REPO}" -eq 1 ]]; then
   gh repo create "${GH_REPO}" --private >/dev/null
 fi
 
-if [[ -n "${GH_REPO}" ]] && ! git -C "${TARGET_DIR}" remote get-url origin >/dev/null 2>&1; then
-  git -C "${TARGET_DIR}" remote add origin "https://github.com/${GH_REPO}.git"
+ORIGIN_REMOTE_URL="${ORIGIN_URL}"
+if [[ -z "${ORIGIN_REMOTE_URL}" && -n "${GH_REPO}" ]]; then
+  if [[ "${ORIGIN_USE_SSH}" -eq 1 ]]; then
+    ORIGIN_REMOTE_URL="git@github.com:${GH_REPO}.git"
+  else
+    ORIGIN_REMOTE_URL="https://github.com/${GH_REPO}.git"
+  fi
+fi
+
+if [[ -n "${ORIGIN_REMOTE_URL}" ]] && ! git -C "${TARGET_DIR}" remote get-url origin >/dev/null 2>&1; then
+  git -C "${TARGET_DIR}" remote add origin "${ORIGIN_REMOTE_URL}"
 fi
 
 if [[ "${PUSH_AFTER_BOOTSTRAP}" -eq 1 ]]; then
-  if [[ -z "${GH_REPO}" ]]; then
-    echo "--push requires --repo <owner/repo>" >&2
+  if ! git -C "${TARGET_DIR}" remote get-url origin >/dev/null 2>&1; then
+    echo "--push requires --repo <owner/repo> or --origin-url <git-url>" >&2
     exit 1
   fi
   git -C "${TARGET_DIR}" push -u origin "${DEFAULT_BRANCH}"
@@ -172,6 +197,7 @@ Bootstrap complete.
 Repo root: ${TARGET_DIR}
 Recorded upstream ref: ${UPSTREAM_REF}
 Downstream repo: ${GH_REPO:-not-created}
+Origin remote: ${ORIGIN_REMOTE_URL:-not-configured}
 
 Next commands:
   cd ${TARGET_DIR}
