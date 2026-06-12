@@ -1,8 +1,8 @@
 # Training Status Report
 
-- Generated at: `2026-06-11T21:57:52Z`
+- Generated at: `2026-06-12T11:08:46Z`
 - Source repository: `AliakseiT/dearauditor-qms-baseline`
-- Signed training events considered: `4`
+- Signed training events considered: `5`
 
 This report is generated from signed training issues and their immutable evidence links.
 
@@ -102,4 +102,6 @@ This report is generated from signed training issues and their immutable evidenc
 
 ## Additional Signed Training Not Currently Required
 
-No additional signed training outside the current role requirements.
+| Person | Login | Document | Trained Rev | Completed On | Evidence |
+|---|---|---|---|---|---|
+| Ina Tsitovich | `@inatsitovich` | `SOP-023` | `R00` | 2026-06-12T11:07:49.957Z | [`sig-train-404-h5d0ab2fb4a4a-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-db2aef0502d18fb9656e); [#404](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/404) |
