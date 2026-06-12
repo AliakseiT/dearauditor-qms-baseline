@@ -340,6 +340,24 @@ jobs:
               core.info(`Enabled auto-merge for PR #${pr.number}.`);
             } catch (error) {
               core.warning(`Could not enable auto-merge via GraphQL: ${error.message}`);
+              const isExpectedMergeWait = (message) => {
+                const text = String(message || '').toLowerCase();
+                return [
+                  'required status checks are expected',
+                  'required status checks is expected',
+                  'required status checks are failing',
+                  'required status check is failing',
+                  'required status check is expected',
+                  'required approving review',
+                  'changes have been requested',
+                  'pull request is not mergeable',
+                  'pull request is behind',
+                  'base branch was modified',
+                  'merge conflict',
+                  'head branch was modified',
+                  'not all requirements have been met',
+                ].some((needle) => text.includes(needle));
+              };
               try {
                 await github.rest.pulls.merge({
                   owner: context.repo.owner,
@@ -350,9 +368,14 @@ jobs:
                 core.info(`Merged PR #${pr.number} directly.`);
                 core.info(`Signature request will be posted by Issue-to-PR post-merge workflow for PR #${pr.number}.`);
               } catch (mergeError) {
-                core.warning(`Direct merge attempt failed for PR #${pr.number}: ${mergeError.message}`);
+                if (isExpectedMergeWait(mergeError.message)) {
+                  core.info(
+                    `PR #${pr.number} is approved but not mergeable yet: ${mergeError.message}. Auto-merge gate remains waiting; this is not an automation failure.`
+                  );
+                  return;
+                }
                 core.setFailed(
-                  `PR #${pr.number} could not be merged by automation. Verify GITHUB_TOKEN write permissions and repository action settings.`
+                  `PR #${pr.number} could not be merged by automation: ${mergeError.message}. Verify GitHub App permissions, repository action settings, and branch protection.`
                 );
               }
             }
