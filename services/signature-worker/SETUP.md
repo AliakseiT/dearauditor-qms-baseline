@@ -64,12 +64,16 @@ Use a GitHub App installation for repository access. Minimum repository permissi
 For adopter deployments, create this GitHub App under the adopting company's GitHub organization or account and install it only on adopter-controlled repositories that need QMS automation. The app posts attestations and supports repository automation, so its registration, private key, and installation scope are part of the adopter's controlled configuration.
 
 - Issues: `Read and write`
-- Pull requests: `Read-only`
-- Contents: `Read-only`
+- Pull requests: `Read and write`
+- Contents: `Read and write`
 - Workflows: `Read and write`
 - Metadata: `Read-only`
 
-The workflow permission is required because the repository uses the GitHub App token for automation that may merge PRs touching `.github/workflows/`.
+Minimum organization permissions:
+
+- Members: `Read-only`
+
+`Pull requests: Read and write` is required for reviewer requests, PR metadata updates, and approved PR merges. `Contents: Read and write` is required for merge operations and release/tag publication paths that write repository state. `Workflows: Read and write` is required because the repository uses the GitHub App token for automation that may merge PRs touching `.github/workflows/`. `Members: Read-only` lets installation tokens resolve collaborators and organization members for reviewer and signer eligibility checks.
 
 ## 4. Repository Settings
 

@@ -79,12 +79,16 @@ In adopter deployments, create this GitHub App under the adopting company's GitH
 Required GitHub App repository permissions:
 
 - Issues: `Read and write`
-- Pull requests: `Read-only`
-- Contents: `Read-only`
+- Pull requests: `Read and write`
+- Contents: `Read and write`
 - Workflows: `Read and write`
 - Metadata: `Read-only`
 
-`Workflows: Read and write` is needed because the same GitHub App token is also used by repository automation to merge PRs, including PRs that may modify `.github/workflows/`.
+Required GitHub App organization permissions:
+
+- Members: `Read-only`
+
+`Pull requests: Read and write` is needed because automation requests reviewers, updates PR metadata, and can merge approved PRs. `Contents: Read and write` is needed for merge operations and release/tag publication paths that write repository state. `Workflows: Read and write` is needed because the same GitHub App token is also used by repository automation to merge PRs, including PRs that may modify `.github/workflows/`. `Members: Read-only` lets installation tokens resolve collaborators and organization members when reviewer or signer eligibility is evaluated.
 
 ## Local Development
 
