@@ -341,7 +341,7 @@ jobs:
             };
 
             const links = signers.map((slot) =>
-              `- @${String(slot.signer || '').toLowerCase()} (${String(slot.role || '').trim()}): [Open signature ceremony](${buildLink(slot)})`
+              `- @${String(slot.signer || '').toLowerCase()} (${String(slot.role || '').trim()}): [Review and sign](${buildLink(slot)})`
             );
 
             async function ensureLabel(name, color, description) {
@@ -415,6 +415,22 @@ jobs:
               '-->',
               '🛑 Signature required',
               '',
+              'Please review the published QMS release package and complete your QMS signature.',
+              '',
+              'What you are approving:',
+              `- Published release package ${String(process.env.RELEASE_TAG || '').trim()}.`,
+              '- Signature meaning: Approved Published QMS Release.',
+              `- Release decision PR: #${String(process.env.RELEASE_PR || '').trim()}.`,
+              '',
+              'How to sign:',
+              '1. Open the link next to your GitHub username below.',
+              '2. Sign in with that same GitHub account.',
+              '3. Confirm with your QMS PIN.',
+              '',
+              ...links,
+              '',
+              '<details><summary>Technical details for the QMS release record</summary>',
+              '',
               'Meaning of signature: **Approved Published QMS Release**',
               `Required signatures: **${String(process.env.REQUIRED_SIGNATURES || signers.length || 1)}**`,
               `Designated signatory role(s): **${String(process.env.ROLES_CSV || '').trim()}**`,
@@ -427,9 +443,7 @@ jobs:
               `qms_release_manifest.json SHA-256: \`${String(process.env.MANIFEST_SHA256 || '').trim()}\``,
               `qms_release_snapshot.tgz SHA-256: \`${String(process.env.SNAPSHOT_SHA256 || '').trim()}\``,
               '',
-              'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
-              '',
-              ...links,
+              '</details>',
             ].join('\n');
 
             const comments = await github.paginate(github.rest.issues.listComments, {
