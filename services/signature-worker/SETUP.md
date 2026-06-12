@@ -18,6 +18,7 @@ Worker vars:
 - `DEFAULT_OAUTH_PROVIDER=github`
 - `ALLOWED_OAUTH_PROVIDERS=github`
 - `REPO_ALIASES_JSON={"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}` (optional; add old-slug to current-slug mappings after repo renames)
+- `QMS_AUTOMATION_BOT_LOGINS=<extra bot login list>` (optional; comma-, space-, or newline-separated GitHub App/bot logins trusted for signature request comments)
 
 Worker name:
 
@@ -49,9 +50,12 @@ preview_id = "<preview-namespace-id>"
 
 [vars]
 PUBLIC_BASE_URL = "https://sign.example.com"
+QMS_AUTOMATION_BOT_LOGINS = ""
 ```
 
 The committed `wrangler.toml` in this repository uses placeholders. Replace them before deploy, or let `./services/signature-worker/scripts/bootstrap_env.sh` write the values from `.env.local`.
+
+Set `QMS_AUTOMATION_BOT_LOGINS` when the repository automation GitHub App uses an adopter-specific name. The worker keeps its built-in defaults and adds each configured login, including the matching `[bot]` form.
 
 ## 3. GitHub App Requirements
 
@@ -80,6 +84,7 @@ Repository variable:
 - `PIN_KV_NAMESPACE_ID=<cloudflare kv namespace id>`
 - `PIN_KV_PREVIEW_NAMESPACE_ID=<cloudflare kv preview namespace id>`
 - `SIGNATURE_REPO_ALIASES_JSON={"AliakseiT/qms-lite":"AliakseiT/dearauditor-qms-baseline"}` (optional; recommended after repo renames)
+- `QMS_AUTOMATION_BOT_LOGINS=<extra bot login list>` (optional; set when signature request comments are authored by an adopter-specific app)
 
 Repository secrets:
 
@@ -101,7 +106,7 @@ The deploy command injects `WORKER_VERSION` automatically using the format `YYYY
 GitHub Actions:
 
 - run workflow `4.1 Deploy Signature Worker` manually (`workflow_dispatch`)
-- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_WORKER_NAME`, `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and optionally `SIGNATURE_REPO_ALIASES_JSON` before deploy
+- the workflow materializes `wrangler.toml` from repo variables `SIGNATURE_WORKER_NAME`, `SIGNATURE_UI_BASE_URL`, `PIN_KV_NAMESPACE_ID`, `PIN_KV_PREVIEW_NAMESPACE_ID`, and optionally `SIGNATURE_REPO_ALIASES_JSON` and `QMS_AUTOMATION_BOT_LOGINS` before deploy
 
 ## 6. One-Command Bootstrap
 
