@@ -44,6 +44,7 @@ Optional env keys:
   DEFAULT_OAUTH_PROVIDER
   ALLOWED_OAUTH_PROVIDERS
   REPO_ALIASES_JSON
+  QMS_AUTOMATION_BOT_LOGINS
   SIGNATURE_UI_BASE_URL
   PIN_KV_NAMESPACE_ID
   PIN_KV_PREVIEW_NAMESPACE_ID
@@ -233,6 +234,7 @@ sync_wrangler_config_from_env() {
   local preview_id="${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
   local public_base_url="${PUBLIC_BASE_URL:-}"
   local repo_aliases_json="${REPO_ALIASES_JSON:-}"
+  local automation_bot_logins="${QMS_AUTOMATION_BOT_LOGINS:-}"
 
   if ! is_placeholder "$worker_name"; then
     update_wrangler_string_value "name" "$worker_name"
@@ -248,6 +250,9 @@ sync_wrangler_config_from_env() {
   fi
   if ! is_placeholder "$repo_aliases_json"; then
     update_wrangler_string_value "REPO_ALIASES_JSON" "$repo_aliases_json"
+  fi
+  if ! is_placeholder "$automation_bot_logins"; then
+    update_wrangler_string_value "QMS_AUTOMATION_BOT_LOGINS" "$automation_bot_logins"
   fi
 }
 
@@ -276,6 +281,7 @@ PUBLIC_BASE_URL=${PUBLIC_BASE_URL:-}
 DEFAULT_OAUTH_PROVIDER=${DEFAULT_OAUTH_PROVIDER:-github}
 ALLOWED_OAUTH_PROVIDERS=${ALLOWED_OAUTH_PROVIDERS:-github}
 REPO_ALIASES_JSON=${REPO_ALIASES_JSON:-}
+QMS_AUTOMATION_BOT_LOGINS=${QMS_AUTOMATION_BOT_LOGINS:-}
 GITHUB_API_BASE_URL=${GITHUB_API_BASE_URL:-https://api.github.com}
 GITHUB_OAUTH_CLIENT_ID=${GITHUB_OAUTH_CLIENT_ID:-}
 GITHUB_OAUTH_CLIENT_SECRET=${GITHUB_OAUTH_CLIENT_SECRET:-}
@@ -309,6 +315,7 @@ if [[ "$SKIP_GH" -eq 0 ]]; then
   upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_NAMESPACE_ID" "${PIN_KV_NAMESPACE_ID:-}"
   upsert_repo_variable_if_present "$GH_REPO" "PIN_KV_PREVIEW_NAMESPACE_ID" "${PIN_KV_PREVIEW_NAMESPACE_ID:-}"
   upsert_repo_variable_if_present "$GH_REPO" "SIGNATURE_REPO_ALIASES_JSON" "${REPO_ALIASES_JSON:-}"
+  upsert_repo_variable_if_present "$GH_REPO" "QMS_AUTOMATION_BOT_LOGINS" "${QMS_AUTOMATION_BOT_LOGINS:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_ID" "${QMS_BOT_APP_ID:-}"
   set_repo_secret_if_present "$GH_REPO" "QMS_BOT_APP_PRIVATE_KEY" "${QMS_BOT_APP_PRIVATE_KEY:-}"
   set_repo_secret_if_present "$GH_REPO" "CLOUDFLARE_API_TOKEN" "${CLOUDFLARE_API_TOKEN:-}"

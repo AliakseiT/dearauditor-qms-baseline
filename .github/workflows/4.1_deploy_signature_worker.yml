@@ -39,6 +39,7 @@ jobs:
           PIN_KV_PREVIEW_NAMESPACE_ID: ${{ vars.PIN_KV_PREVIEW_NAMESPACE_ID }}
           SIGNATURE_UI_BASE_URL: ${{ vars.SIGNATURE_UI_BASE_URL }}
           SIGNATURE_REPO_ALIASES_JSON: ${{ vars.SIGNATURE_REPO_ALIASES_JSON }}
+          QMS_AUTOMATION_BOT_LOGINS: ${{ vars.QMS_AUTOMATION_BOT_LOGINS }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -52,6 +53,7 @@ jobs:
               "preview_id": os.environ.get("PIN_KV_PREVIEW_NAMESPACE_ID", "").strip(),
               "PUBLIC_BASE_URL": os.environ.get("SIGNATURE_UI_BASE_URL", "").strip(),
               "REPO_ALIASES_JSON": os.environ.get("SIGNATURE_REPO_ALIASES_JSON", "").strip() or "{\"AliakseiT/qms-lite\":\"AliakseiT/dearauditor-qms-baseline\"}",
+              "QMS_AUTOMATION_BOT_LOGINS": os.environ.get("QMS_AUTOMATION_BOT_LOGINS", "").strip(),
           }
 
           required_keys = ("id", "preview_id", "PUBLIC_BASE_URL")

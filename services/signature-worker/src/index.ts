@@ -4,6 +4,7 @@ interface Env {
   DEFAULT_OAUTH_PROVIDER?: string;
   ALLOWED_OAUTH_PROVIDERS?: string;
   REPO_ALIASES_JSON?: string;
+  QMS_AUTOMATION_BOT_LOGINS?: string;
   GITHUB_OAUTH_CLIENT_ID: string;
   GITHUB_OAUTH_CLIENT_SECRET: string;
   QMS_BOT_APP_ID?: string;
@@ -775,7 +776,7 @@ async function resolveLatestRequestComment(repo: string, prNumber: number, token
     token,
     env
   );
-  const botLogins = resolveAutomationBotLogins();
+  const botLogins = resolveAutomationBotLogins(env);
   const requestMarkers = [
     "<!-- signature-request -->",
     "<!-- signature-native-signature-request -->",
@@ -1080,8 +1081,38 @@ function assertSignatureCapNotReached(
   // if the residual race becomes a concern.
 }
 
-function resolveAutomationBotLogins(): Set<string> {
-  return new Set(DEFAULT_AUTOMATION_BOT_LOGINS.map((login) => login.toLowerCase()));
+function resolveAutomationBotLogins(env: Env): Set<string> {
+  const logins = new Set<string>();
+  for (const login of DEFAULT_AUTOMATION_BOT_LOGINS) {
+    addAutomationBotLogin(logins, login);
+  }
+  for (const login of parseAutomationBotLogins(env.QMS_AUTOMATION_BOT_LOGINS || "")) {
+    addAutomationBotLogin(logins, login);
+  }
+  return logins;
+}
+
+function parseAutomationBotLogins(raw: string): string[] {
+  return raw
+    .split(/[\s,;]+/)
+    .map((login) => login.trim().replace(/^@+/, "").toLowerCase())
+    .filter(Boolean);
+}
+
+function addAutomationBotLogin(logins: Set<string>, rawLogin: string): void {
+  const login = rawLogin.trim().replace(/^@+/, "").toLowerCase();
+  if (!login) {
+    return;
+  }
+  logins.add(login);
+  if (login.endsWith("[bot]")) {
+    const appSlug = login.slice(0, -"[bot]".length);
+    if (appSlug) {
+      logins.add(appSlug);
+    }
+    return;
+  }
+  logins.add(`${login}[bot]`);
 }
 
 function resolveBotAppId(env: Env): string {
