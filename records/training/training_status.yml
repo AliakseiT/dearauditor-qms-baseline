@@ -1,7 +1,7 @@
 version: 1
-generated_at_utc: '2026-06-11T21:57:52Z'
+generated_at_utc: '2026-06-12T11:08:46Z'
 source_repository: AliakseiT/dearauditor-qms-baseline
-source_event_count: 4
+source_event_count: 5
 users:
   aliakseit:
     full_name: Aliaksei Tsitovich
@@ -839,6 +839,24 @@ users:
         attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273#issuecomment-4083741888
         evidence_release_tag: ''
         evidence_release_url: ''
+        signer_login: inatsitovich
+        signer_full_name: Ina Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-023:
+        trained_revision: R00
+        trained_at_utc: '2026-06-12T11:07:49.957Z'
+        from_revision: MANUAL
+        roles_in_scope:
+        - engineer
+        - qa_lead
+        source_issue: 404
+        source_issue_title: 'TRAINING REQUIRED: Ina Tsitovich (QMS-2026-06-01-R004,
+          manual)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/404
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/404#issuecomment-4690612380
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/404#issuecomment-4690609397
+        evidence_release_tag: sig-train-404-h5d0ab2fb4a4a-r01
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-db2aef0502d18fb9656e
         signer_login: inatsitovich
         signer_full_name: Ina Tsitovich
         meaning_of_signature: Completed QMS Training Review
