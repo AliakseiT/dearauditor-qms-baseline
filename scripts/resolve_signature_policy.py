@@ -250,6 +250,63 @@ def _matches_role_sequence(actual_roles: list[str], expected_roles: list[str]) -
     return [_normalize_label(role) for role in actual_roles] == [_normalize_label(role) for role in expected_roles]
 
 
+def _match_role_slots(
+    role_id_sequence: list[str],
+    role_members_lower_by_id: dict[str, set[str]],
+    author_key: str,
+    approver_keys: list[str],
+    required_reviewer_signatures: int,
+) -> dict[str, Any]:
+    """Mirror .github/scripts/role-coverage.js for resolver-time sanity checks."""
+    slots = list(role_id_sequence)
+    author = str(author_key or "").lower()
+    approvers = sorted(
+        {
+            str(key or "").lower()
+            for key in approver_keys
+            if str(key or "").lower() and str(key or "").lower() != author
+        }
+    )
+    allow_author = bool(author) and len(slots) - required_reviewer_signatures >= 1
+    author_node = "\0author"
+    signer_nodes = [*approvers, author_node] if allow_author else list(approvers)
+
+    def qualifies(signer: str, role_id: str) -> bool:
+        who = author if signer == author_node else signer
+        return who in role_members_lower_by_id.get(role_id, set())
+
+    slot_of_signer: dict[str, int] = {}
+
+    def augment(slot_idx: int, visited: set[str]) -> bool:
+        for signer in signer_nodes:
+            if signer in visited or not qualifies(signer, slots[slot_idx]):
+                continue
+            visited.add(signer)
+            held = slot_of_signer.get(signer)
+            if held is None or augment(held, visited):
+                slot_of_signer[signer] = slot_idx
+                return True
+        return False
+
+    for idx in range(len(slots)):
+        augment(idx, set())
+
+    assignment: dict[int, str] = {}
+    author_role_id: str | None = None
+    for signer, slot_idx in slot_of_signer.items():
+        assignment[slot_idx] = author if signer == author_node else signer
+        if signer == author_node:
+            author_role_id = slots[slot_idx]
+
+    matched = set(assignment)
+    return {
+        "covered": len(matched) == len(slots),
+        "author_role_id": author_role_id,
+        "assignment": assignment,
+        "missing_role_ids": [role_id for idx, role_id in enumerate(slots) if idx not in matched],
+    }
+
+
 def _infer_content_signature_policy(paths: list[str]) -> dict[str, Any] | None:
     if any(path.startswith(("qm/", "sops/")) and path.lower().endswith(".md") for path in paths):
         return {
@@ -408,16 +465,13 @@ def main() -> int:
             raise SystemExit(
                 f"Explicit signer roles count ({len(explicit_roles)}) must match required signatures ({required_signatures})."
             )
-        explicit_primary_role = explicit_roles[0]
-        explicit_primary_role_id = _role_id_for_label(explicit_primary_role)
-        if explicit_primary_role_id and not is_automation_author and not _qualifies_for_role(
-            explicit_primary_role_id, author_role_id_set, author_job_title
-        ):
-            raise SystemExit(
-                f"PR author @{author} is not eligible for explicit primary signer role '{explicit_primary_role}'. "
-                "The first listed '**Signer Roles:**' entry is treated as the PR author's role; "
-                "reviewer/co-signer roles must come after it."
-            )
+        # Declaration ORDER no longer determines which role the author covers:
+        # the shared matcher (.github/scripts/role-coverage.js, used by the 1.2
+        # merge gate and the 2.1 signature request) lets a qualifying author
+        # flexibly cover whichever declared role the reviewers did not. So the
+        # former "first listed '**Signer Roles:**' entry is the author's role"
+        # eligibility error is gone — it wrongly blocked PRs where the author
+        # qualified for a non-first declared role.
         final_roles = explicit_roles
         meaning_of_signature = explicit_meaning or DEFAULT_SIGNATURE_MEANING
         source = "explicit"
@@ -463,11 +517,91 @@ def main() -> int:
         if role_id and role_id not in final_role_ids:
             final_role_ids.append(role_id)
 
+    # Role-coverage data for order-independent signer-role matching
+    # (.github/scripts/role-coverage.js, consumed by the 1.2 merge gate and the
+    # 2.1 attestation). `final_role_id_sequence` preserves declaration order AND
+    # duplicates (so "QA Lead; QA Lead" demands two QA signers);
+    # `role_members_lowercased_by_id` is the per-declared-role qualifying set
+    # (lowercased for case-insensitive JS lookup); `reviewer_candidates_by_role`
+    # is the non-author pool per role for reviewer assignment.
+    final_role_id_sequence: list[str] = []
+    for display in final_roles:
+        role_id = _role_id_for_label(display)
+        if role_id:
+            final_role_id_sequence.append(role_id)
+    role_members_lower_by_id_sets: dict[str, set[str]] = {
+        role_id: {
+            str(u).strip().lower()
+            for u in (roles.get(role_id, {}).get("users", []) or [])
+            if str(u).strip()
+        }
+        for role_id in final_role_ids
+    }
+    role_members_lower_by_id = {
+        role_id: sorted(members)
+        for role_id, members in role_members_lower_by_id_sets.items()
+    }
+    author_eligible_role_ids: list[str] = []
+    if not is_automation_author:
+        author_eligible_role_ids = [
+            role_id for role_id in final_role_ids if author_key in role_members_lower_by_id_sets.get(role_id, set())
+        ]
+        if source == "explicit" and not author_eligible_role_ids:
+            labels = ", ".join(final_roles)
+            raise SystemExit(
+                f"PR author @{args.author} is not eligible for any declared signer role: {labels}. "
+                "Signer roles are order-independent, but a human-authored PR with an explicit "
+                "Signature Requirements block must declare at least one role that the author can sign."
+            )
+
+    reviewer_candidates_by_role: dict[str, list[str]] = {}
+    for role_id in final_role_ids:
+        pool: list[str] = []
+        seen_keys: set[str] = set()
+        for user in roles.get(role_id, {}).get("users", []) or []:
+            login = str(user).strip().lstrip("@")
+            key = login.lower()
+            if not login or key == author_key or key == "replace_with_gh_username" or key in seen_keys:
+                continue
+            seen_keys.add(key)
+            pool.append(login)
+        reviewer_candidates_by_role[role_id] = pool
+
+    all_candidate_keys = sorted(
+        {
+            login.lower()
+            for pool in reviewer_candidates_by_role.values()
+            for login in pool
+            if login
+        }
+    )
+    coverage = _match_role_slots(
+        final_role_id_sequence,
+        role_members_lower_by_id_sets,
+        "" if is_automation_author else author_key,
+        all_candidate_keys,
+        required_signatures if is_automation_author else max(0, required_signatures - 1),
+    )
+    if not coverage["covered"]:
+        raise SystemExit(
+            "Insufficient reviewer candidates for declared signer role(s): "
+            + ", ".join(coverage["missing_role_ids"])
+            + ". Either add eligible users to those roles in "
+            "matrices/training_matrix.yml, or change the PR's "
+            "'**Signer Roles:**' declaration to roles with available signers."
+        )
+
     outputs = {
         "signatory_roles": "; ".join(final_roles),
         "signatory_roles_json": json.dumps(final_roles),
         "signatory_role_ids": ",".join(final_role_ids),
         "signatory_role_ids_json": json.dumps(final_role_ids),
+        "signatory_role_id_sequence_json": json.dumps(final_role_id_sequence),
+        "role_members_lowercased_by_id_json": json.dumps(role_members_lower_by_id),
+        "author_signed_role_id": "",
+        "author_eligible_role_ids": ",".join(author_eligible_role_ids),
+        "author_eligible_role_ids_json": json.dumps(author_eligible_role_ids),
+        "reviewer_candidates_by_role_json": json.dumps(reviewer_candidates_by_role),
         "meaning_of_signature": meaning_of_signature,
         "required_signatures": str(required_signatures),
         "required_reviewer_signatures": str(required_signatures if is_automation_author else max(0, required_signatures - 1)),

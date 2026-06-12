@@ -1,0 +1,291 @@
+name: 2.8 Publish QMS Release Tag
+run-name: 2.8 Publish QMS Release Tag
+
+on:
+  pull_request:
+    types: [closed, labeled]
+    paths:
+      - 'records/releases/QMS-*/release_notes.md'
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Merged release-decision PR number to publish as a QMS release tag"
+        required: true
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: qms-release-tag-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  publish_qms_release_tag:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.pull_request.merged == true &&
+        (
+          github.event.action == 'closed' ||
+          (
+            github.event.action == 'labeled' &&
+            github.event.label.name == 'signature/complete'
+          )
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub App token for release tag
+        id: app_token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.QMS_BOT_APP_ID }}
+          private-key: ${{ secrets.QMS_BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+
+      - name: Resolve release-plan attributed PR
+        id: release_pr
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const inputPrNumber = Number.parseInt(String(process.env.WORKFLOW_INPUT_PR_NUMBER || '').trim(), 10);
+            const eventPrNumber = context.payload.pull_request?.number;
+            const prNumber = Number.isInteger(inputPrNumber) && inputPrNumber > 0
+              ? inputPrNumber
+              : eventPrNumber;
+
+            if (!Number.isInteger(prNumber) || prNumber < 1) {
+              core.setFailed('A valid merged release-decision PR number is required.');
+              return;
+            }
+
+            const pr = (await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            })).data;
+
+            if (!pr.merged || !pr.merge_commit_sha) {
+              core.info(`PR #${prNumber} is not merged; skipping QMS release tag publication.`);
+              core.setOutput('should_publish', 'false');
+              return;
+            }
+
+            const labels = await github.paginate(github.rest.issues.listLabelsOnIssue, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const hasCompleteSignature = labels.some((label) => String(label.name || '') === 'signature/complete');
+            if (!hasCompleteSignature) {
+              core.info(`PR #${prNumber} is merged but does not have signature/complete; skipping QMS release tag publication.`);
+              core.setOutput('should_publish', 'false');
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              per_page: 100,
+            });
+
+            const releaseNotePaths = files
+              .map((file) => String(file.filename || ''))
+              .filter((path) => /^records\/releases\/QMS-\d{4}-\d{2}-\d{2}-R\d{3}\/release_notes\.md$/.test(path));
+
+            if (releaseNotePaths.length === 0) {
+              core.info(`PR #${prNumber} does not change a QMS release-notes record; skipping.`);
+              core.setOutput('should_publish', 'false');
+              return;
+            }
+            if (releaseNotePaths.length > 1) {
+              core.setFailed(`PR #${prNumber} changes multiple QMS release-notes records: ${releaseNotePaths.join(', ')}`);
+              return;
+            }
+
+            function parseFrontMatter(text) {
+              const source = String(text || '');
+              if (!source.startsWith('---\n')) return {};
+              const parts = source.split('---\n');
+              if (parts.length < 3) return {};
+              const front = parts[1];
+              const result = {};
+              for (const line of front.split(/\r?\n/)) {
+                if (!line.trim()) continue;
+                const match = /^([A-Za-z0-9_]+):\s*(.*)$/.exec(line);
+                if (!match) continue;
+                result[match[1]] = String(match[2] || '').trim().replace(/^"|"$/g, '');
+              }
+              return result;
+            }
+
+            const releaseNotePath = releaseNotePaths[0];
+            const encoded = (await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: releaseNotePath,
+              ref: pr.merge_commit_sha,
+            })).data;
+
+            if (!encoded || Array.isArray(encoded) || encoded.type !== 'file' || !encoded.content) {
+              core.setFailed(`Could not read ${releaseNotePath} at merge commit ${pr.merge_commit_sha}.`);
+              return;
+            }
+
+            const releaseNoteText = Buffer.from(encoded.content, 'base64').toString('utf8');
+            const meta = parseFrontMatter(releaseNoteText);
+            const pathTag = releaseNotePath.split('/')[2];
+            const releaseTag = String(meta.release_tag || '').trim();
+            const relatedIssueText = String(meta.related_issue || '').trim();
+            const relatedIssueMatch = /^#(\d+)$/.exec(relatedIssueText);
+
+            if (meta.record_type !== 'qms_baseline_release_notes') {
+              core.info(`${releaseNotePath} is not a qms_baseline_release_notes record; skipping.`);
+              core.setOutput('should_publish', 'false');
+              return;
+            }
+            if (String(meta.status || '').trim() !== 'approved') {
+              core.info(`${releaseNotePath} is not approved; skipping.`);
+              core.setOutput('should_publish', 'false');
+              return;
+            }
+            if (!/^QMS-\d{4}-\d{2}-\d{2}-R\d{3}$/.test(releaseTag) || releaseTag !== pathTag) {
+              core.setFailed(`${releaseNotePath} release_tag '${releaseTag}' does not match its QMS release path '${pathTag}'.`);
+              return;
+            }
+            if (!relatedIssueMatch) {
+              core.info(`${releaseNotePath} has no related_issue release-plan pointer; skipping.`);
+              core.setOutput('should_publish', 'false');
+              return;
+            }
+
+            const releaseIssueNumber = Number.parseInt(relatedIssueMatch[1], 10);
+            const issue = (await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: releaseIssueNumber,
+            })).data;
+
+            if (issue.pull_request) {
+              core.setFailed(`related_issue #${releaseIssueNumber} is a pull request, not a release-plan issue.`);
+              return;
+            }
+            if (!/^RELEASE PLAN:\s+/i.test(String(issue.title || ''))) {
+              core.setFailed(`related_issue #${releaseIssueNumber} is not titled as a release-plan issue.`);
+              return;
+            }
+            if (!String(issue.title || '').includes(releaseTag)) {
+              core.setFailed(`release-plan issue #${releaseIssueNumber} title does not reference ${releaseTag}.`);
+              return;
+            }
+
+            const bodyReferencesThisPr = /Release change request:\s+this PR/i.test(releaseNoteText) ||
+              new RegExp(`Release change request:\\s+GitHub PR\\s+\`?#${prNumber}\`?`, 'i').test(releaseNoteText);
+            if (!bodyReferencesThisPr) {
+              core.setFailed(`${releaseNotePath} does not attribute the release change request to PR #${prNumber}.`);
+              return;
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const hasBaselineSignatureRequest = comments.some((comment) => {
+              const body = String(comment.body || '');
+              return body.includes('<!-- signature-native-signature-request -->') &&
+                /Meaning of signature:\s+\*\*Approved Baseline Release\*\*/i.test(body);
+            });
+            if (!hasBaselineSignatureRequest) {
+              core.setFailed(`PR #${prNumber} has signature/complete but no Approved Baseline Release signature request.`);
+              return;
+            }
+
+            core.setOutput('should_publish', 'true');
+            core.setOutput('pr_number', String(prNumber));
+            core.setOutput('release_tag', releaseTag);
+            core.setOutput('release_issue_number', String(releaseIssueNumber));
+            core.setOutput('release_note_path', releaseNotePath);
+            core.setOutput('target_sha', pr.merge_commit_sha);
+        env:
+          WORKFLOW_INPUT_PR_NUMBER: ${{ github.event.inputs.pr_number || '' }}
+
+      - name: Create QMS release tag
+        if: steps.release_pr.outputs.should_publish == 'true'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ steps.app_token.outputs.token }}
+          script: |
+            const releaseTag = String(process.env.RELEASE_TAG || '').trim();
+            const targetSha = String(process.env.TARGET_SHA || '').trim();
+            const prNumber = Number.parseInt(String(process.env.PR_NUMBER || '').trim(), 10);
+            const releaseIssueNumber = Number.parseInt(String(process.env.RELEASE_ISSUE_NUMBER || '').trim(), 10);
+            const releaseNotePath = String(process.env.RELEASE_NOTE_PATH || '').trim();
+            const ref = `tags/${releaseTag}`;
+
+            let existing = null;
+            try {
+              existing = (await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref,
+              })).data;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            if (existing) {
+              const existingSha = String(existing.object?.sha || '').trim();
+              if (existingSha === targetSha) {
+                core.info(`${releaseTag} already points at ${targetSha}; nothing to do.`);
+                return;
+              }
+              core.setFailed(`${releaseTag} already exists at ${existingSha}, expected ${targetSha}.`);
+              return;
+            }
+
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/${ref}`,
+              sha: targetSha,
+            });
+
+            const marker = `<!-- qms-release-tag-published:${releaseTag} -->`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const alreadyCommented = comments.some((comment) => String(comment.body || '').includes(marker));
+            if (!alreadyCommented) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: [
+                  marker,
+                  'Published formal QMS release tag for the approved release-plan attributed PR.',
+                  '',
+                  `- Release tag: \`${releaseTag}\``,
+                  `- Target commit: \`${targetSha}\``,
+                  `- Release notes: \`${releaseNotePath}\``,
+                  `- Release planning issue: #${releaseIssueNumber}`,
+                ].join('\n'),
+              });
+            }
+        env:
+          RELEASE_TAG: ${{ steps.release_pr.outputs.release_tag }}
+          TARGET_SHA: ${{ steps.release_pr.outputs.target_sha }}
+          PR_NUMBER: ${{ steps.release_pr.outputs.pr_number }}
+          RELEASE_ISSUE_NUMBER: ${{ steps.release_pr.outputs.release_issue_number }}
+          RELEASE_NOTE_PATH: ${{ steps.release_pr.outputs.release_note_path }}

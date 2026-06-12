@@ -20,5 +20,5 @@ For PRs touching `qm/` or `sops/`, use this exact declaration:
 
 - **Meaning of Signature:** [e.g., Approved Quality Record]
 - **Signer Roles:** [e.g., Management Representative; Quality Assurance Lead]
-  List the PR author's eligible signer role first, followed by reviewer/co-signer roles.
+  Signer role order is not semantically meaningful; coverage is resolved by matching approved signers to declared roles.
 - **Required Signatures:** [e.g., 1 or 2]

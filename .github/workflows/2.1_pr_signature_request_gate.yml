@@ -286,6 +286,22 @@ jobs:
               .split(/[;,]/)
               .map((x) => x.trim())
               .filter(Boolean);
+            const roleIdSequenceRaw = process.env.SIGNATORY_ROLE_ID_SEQUENCE_JSON;
+            const roleMembersRaw = process.env.ROLE_MEMBERS_BY_ID_JSON;
+            if (!roleIdSequenceRaw || !roleMembersRaw) {
+              core.setFailed(
+                'Missing SIGNATORY_ROLE_ID_SEQUENCE_JSON or ROLE_MEMBERS_BY_ID_JSON env var. Resolver outputs are not threaded — re-run after checking `steps.roles` outputs.'
+              );
+              return;
+            }
+            const roleIdSequence = JSON.parse(roleIdSequenceRaw);
+            if (roleIdSequence.length !== roles.length) {
+              core.setFailed(
+                `Resolver returned ${roleIdSequence.length} role IDs but PR body declared ${roles.length} role(s); cannot pair signers without a 1:1 alignment.`
+              );
+              return;
+            }
+            const roleMembersById = JSON.parse(roleMembersRaw);
             const approvedSigners = (process.env.APPROVED_SIGNERS_CSV || '')
               .split(',')
               .map((x) => x.trim())
@@ -299,11 +315,64 @@ jobs:
               });
               return `${signingBaseUrl}/sign?${params.toString()}`;
             };
-            const signerSlots = approvedSigners.map((u, i) => ({
-              signer: u.toLowerCase(),
-              role: roles[i] || roles[0] || 'Quality Assurance Lead',
+
+            // Pair each declared role slot to an approved signer who actually
+            // qualifies for that role per the approval matrix — no `roles[i]`
+            // index-mapping and no role fallback. Order-independent coverage via
+            // the shared matcher (the same module the 1.2 merge gate uses). For
+            // human authors `approvedSigners[0]` is the author, who covers at
+            // most one declared role (whichever the reviewers did not); each
+            // remaining role pairs to a distinct qualifying non-author approver.
+            // Automation authors sign nothing (author ineligible) and may
+            // legitimately leave roles unfilled. See .github/scripts/role-coverage.js.
+            const { matchRoleSlots } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/role-coverage.js`);
+            const isAutomationAuthor = String(process.env.AUTHOR_IS_AUTOMATION_BOT || '').toLowerCase() === 'true';
+            const approvedSignersLower = approvedSigners.map((u) => u.toLowerCase());
+
+            const missingMembershipForRoleIds = roleIdSequence.filter((roleId) => !(roleId in roleMembersById));
+            if (missingMembershipForRoleIds.length > 0) {
+              core.setFailed(
+                `Resolver-output drift: role_members map missing entries for ${missingMembershipForRoleIds.join(', ')}. ` +
+                `Re-run after fixing scripts/resolve_signature_policy.py outputs.`
+              );
+              return;
+            }
+
+            const authorKey = isAutomationAuthor ? '' : (approvedSignersLower[0] || '');
+            const approverKeys = isAutomationAuthor ? approvedSignersLower : approvedSignersLower.slice(1);
+            const rrsForMatch = isAutomationAuthor ? roleIdSequence.length : Math.max(0, roleIdSequence.length - 1);
+            const coverage = matchRoleSlots(roleIdSequence, roleMembersById, authorKey, approverKeys, rrsForMatch);
+
+            const usedSigners = new Set();
+            const slotAssignments = [];
+            for (const [slotIdxStr, signer] of Object.entries(coverage.assignment)) {
+              slotAssignments.push({ slotIndex: Number(slotIdxStr), signer });
+              usedSigners.add(signer);
+            }
+            const unfilledRoleIds = coverage.missingRoleIds;
+            if (unfilledRoleIds.length > 0 && !isAutomationAuthor) {
+              core.setFailed(
+                `Cannot pair an approved signer to declared role(s): ${unfilledRoleIds.join(', ')}. ` +
+                `Approved signers: ${approvedSignersLower.join(', ') || '(none)'}. ` +
+                `Check the approval matrix — every declared role needs at least one qualifying approved signer.`
+              );
+              return;
+            }
+
+            slotAssignments.sort((a, b) => a.slotIndex - b.slotIndex);
+            const signerSlots = slotAssignments.map((a, i) => ({
+              signer: a.signer,
+              role: roles[a.slotIndex],
               signature_index: String(i + 1),
             }));
+
+            const unpairedSigners = approvedSignersLower.filter((s) => !usedSigners.has(s));
+            if (unpairedSigners.length > 0) {
+              core.warning(
+                `${unpairedSigners.length} approved signer(s) did not qualify for any declared role and were dropped from the signature request: ${unpairedSigners.join(', ')}. ` +
+                `This usually means a reviewer was requested manually rather than via 1.1.`
+              );
+            }
 
             const runLinks = signerSlots.length > 0
               ? signerSlots.map((slot) => `- @${slot.signer} (${slot.role}): [Open signature ceremony](${buildLink(slot)})`)
@@ -382,6 +451,9 @@ jobs:
           PR_NUMBER: ${{ steps.parse.outputs.pr_number }}
           MEANING: ${{ steps.roles.outputs.meaning_of_signature }}
           ROLES: ${{ steps.roles.outputs.signatory_roles }}
+          SIGNATORY_ROLE_ID_SEQUENCE_JSON: ${{ steps.roles.outputs.signatory_role_id_sequence_json }}
+          ROLE_MEMBERS_BY_ID_JSON: ${{ steps.roles.outputs.role_members_lowercased_by_id_json }}
+          AUTHOR_IS_AUTOMATION_BOT: ${{ steps.parse.outputs.author_is_automation_bot }}
           REQUIRED: ${{ steps.parse.outputs.required_signatures }}
           TARGET_HASH: ${{ steps.parse.outputs.target_hash }}
           APPROVED_SIGNERS_CSV: ${{ steps.parse.outputs.approved_signers_csv }}

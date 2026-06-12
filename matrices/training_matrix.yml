@@ -1,5 +1,5 @@
 ---
-version: 29
+version: 30
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -43,6 +43,7 @@ roles:
       - SOP-020
       - SOP-021
       - SOP-022
+      - SOP-023
     awareness_documents:
       - SOP-004
     required_revisions:
@@ -68,6 +69,7 @@ roles:
       SOP-020: R13
       SOP-021: R02
       SOP-022: R02
+      SOP-023: R00
   engineer:
     users:
       - AliakseiT
@@ -114,6 +116,7 @@ roles:
       - SOP-020
       - SOP-021
       - SOP-022
+      - SOP-023
     awareness_documents:
       - SOP-006
       - SOP-019
@@ -131,6 +134,7 @@ roles:
       SOP-020: R13
       SOP-021: R02
       SOP-022: R02
+      SOP-023: R00
   technical_qms_maintainer:
     users:
       - AliakseiT
@@ -142,6 +146,7 @@ roles:
       - SOP-011
       - SOP-017
       - SOP-021
+      - SOP-023
     awareness_documents:
       - SOP-002
       - SOP-007
@@ -155,6 +160,7 @@ roles:
       SOP-011: R12
       SOP-017: R06
       SOP-021: R02
+      SOP-023: R00
   privacy_lead:
     users: []
     required_documents:
@@ -188,6 +194,8 @@ roles:
     awareness_documents:
       - SOP-020
       - SOP-021
+      - SOP-022
+      - SOP-023
     required_revisions:
       QM-001: R09
       SOP-001: R15
@@ -222,6 +230,8 @@ roles:
       - SOP-019
       - SOP-020
       - SOP-021
+      - SOP-022
+      - SOP-023
     required_revisions:
       QM-001: R09
       SOP-001: R15
@@ -246,6 +256,7 @@ roles:
       SOP-020: R13
       SOP-021: R02
       SOP-022: R02
+      SOP-023: R00
   management_representative:
     users:
       - AliakseiT
@@ -273,6 +284,7 @@ roles:
       - SOP-020
       - SOP-021
       - SOP-022
+      - SOP-023
     required_revisions:
       QM-001: R09
       SOP-001: R15
@@ -297,3 +309,4 @@ roles:
       SOP-020: R13
       SOP-021: R02
       SOP-022: R02
+      SOP-023: R00
