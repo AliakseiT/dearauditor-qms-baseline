@@ -426,23 +426,23 @@ jobs:
 
             file_url = f"https://github.com/{repository}/blob/{default_branch}/{doc_file}" if doc_file else ""
             diff_url = ""
+            diff_label = ""
             diff_preview = ""
             if doc_file:
               history = file_history_info(doc_file)
               latest_sha = history.get("latest_sha", "")
               if from_revision in {"UNTRAINED", "MANUAL"}:
-                diff_url = file_url
+                diff_url = ""
               else:
                 from_sha = (history.get("rev_to_sha", {}) or {}).get(from_revision, "")
                 to_sha = (history.get("rev_to_sha", {}) or {}).get(to_revision, "") or latest_sha
                 if from_sha and to_sha and from_sha != to_sha:
                   diff_url = github_diff_url(
-                    f"https://github.com/{repository}/compare/{from_sha}...{to_sha}",
+                    f"https://github.com/{repository}/compare/{from_sha}..{to_sha}",
                     doc_file,
                   )
+                  diff_label = f"Compare {from_revision} -> {to_revision}"
                   diff_preview = build_diff_preview(doc_file, from_sha, to_sha)
-                else:
-                  diff_url = file_url
 
             return {
               "doc_id": doc_id,
@@ -452,6 +452,7 @@ jobs:
               "to_revision": to_revision,
               "roles": sorted(roles or []),
               "diff_url": diff_url,
+              "diff_label": diff_label,
               "file_url": file_url,
               "diff_preview": diff_preview,
             }
@@ -461,15 +462,19 @@ jobs:
           def render_gap_lines(gap, roles_label: str, default_roles_text: str, checkbox: bool = True, include_preview: bool = True):
             doc_suffix = f" ({gap['doc_title']})" if gap["doc_title"] else ""
             roles_text = ", ".join(gap["roles"]) if gap["roles"] else default_roles_text
-            diff_link = f"[Open diff]({gap['diff_url']})" if gap["diff_url"] else "n/a"
-            current_link = f"[Current document]({gap['file_url']})" if gap["file_url"] else "n/a"
+            links = []
+            if gap["diff_url"]:
+              links.append(f"[{gap['diff_label'] or 'Compare revisions'}]({gap['diff_url']})")
+            if gap["file_url"]:
+              links.append(f"[Current document]({gap['file_url']})")
+            links_text = " | ".join(links) if links else "n/a"
             prefix = "- [ ]" if checkbox else "-"
 
             lines = [
               f"{prefix} `{gap['doc_id']}`{doc_suffix}: `{gap['from_revision']}` -> `{gap['to_revision']}`",
               f"  - File: `{gap['doc_file'] or 'n/a'}`",
               f"  - {roles_label}: `{roles_text}`",
-              f"  - Links: {diff_link} | {current_link}",
+              f"  - Links: {links_text}",
             ]
 
             if include_preview and gap["diff_preview"]:
@@ -762,7 +767,7 @@ jobs:
               if not include_previews:
                 lines.extend(
                   [
-                    "Diff previews were omitted because the generated issue body would exceed GitHub's size limit. Use the `Open diff` links below for the full change set.",
+                    "Diff previews were omitted because the generated issue body would exceed GitHub's size limit. Use the revision-compare links below for the full change set.",
                     "",
                   ]
                 )
