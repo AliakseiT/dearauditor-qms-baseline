@@ -375,7 +375,7 @@ jobs:
             }
 
             const runLinks = signerSlots.length > 0
-              ? signerSlots.map((slot) => `- @${slot.signer} (${slot.role}): [Open signature ceremony](${buildLink(slot)})`)
+              ? signerSlots.map((slot) => `- @${slot.signer} (${slot.role}): [Review and sign](${buildLink(slot)})`)
               : ['- No eligible approved assigned reviewers found.'];
 
             const coapprovalReasons = (process.env.COAPPROVAL_REASONS || '').trim();
@@ -417,16 +417,29 @@ jobs:
               '-->',
               '🛑 Signature required',
               '',
+              'Please review the merged PR and complete your QMS signature.',
+              '',
+              'What you are approving:',
+              `- The approved merge state for PR #${prNumber}.`,
+              `- Signature meaning: ${process.env.MEANING}.`,
+              coapprovalReasons ? `- Additional matched approval scope: ${coapprovalReasons}.` : '',
+              '',
+              'How to sign:',
+              '1. Open the link next to your GitHub username below.',
+              '2. Sign in with that same GitHub account.',
+              '3. Confirm with your QMS PIN.',
+              '',
+              ...runLinks,
+              '',
+              '<details><summary>Technical details for the QMS record</summary>',
+              '',
               `Meaning of signature: **${process.env.MEANING}**`,
               `Required signatures: **${process.env.REQUIRED}**`,
               `Designated signatory role(s): **${roles.join(', ') || process.env.ROLES}**`,
               `Eligible signers: **${approvedSigners.length > 0 ? approvedSigners.map((x) => '@' + x).join(', ') : 'none found'}**`,
               `Target hash (PR merge state): \`${process.env.TARGET_HASH}\``,
-              coapprovalReasons ? `Co-approval scope matched: ${coapprovalReasons}` : '',
               '',
-              'Use your assigned link. GitHub login must match the designated signer, then confirm with your QMS PIN.',
-              '',
-              ...runLinks,
+              '</details>',
             ].filter(Boolean).join('\n');
 
             const latestRequest = requestComments.length > 0 ? requestComments[requestComments.length - 1] : null;
