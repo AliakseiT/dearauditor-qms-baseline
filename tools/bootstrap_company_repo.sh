@@ -14,6 +14,9 @@ ORIGIN_USE_SSH=0
 DEFAULT_BRANCH="main"
 CREATE_REPO=0
 PUSH_AFTER_BOOTSTRAP=0
+SYNC_CODEOWNERS=1
+CONFIGURE_GITHUB=0
+MERGE_CONTROLS_SOURCE_REPO=""
 COMPANY_NAME=""
 COMPANY_STREET=""
 COMPANY_POSTAL_CODE=""
@@ -43,6 +46,11 @@ Options:
   --create-repo                    Create the downstream GitHub repository with gh
   --push                           Push initial main branch after local bootstrap
   --default-branch <name>          Default branch name (default: main)
+  --skip-codeowners-sync           Do not regenerate .github/CODEOWNERS from matrices/signer_registry.json
+  --configure-github               After push, copy baseline rulesets/branch protection to --repo
+  --merge-controls-source-repo <owner/repo>
+                                   Source repo for --configure-github (default: --upstream-repository
+                                   when it is owner/repo, otherwise detected current gh repo)
   --company-name <name>
   --company-street <text>
   --company-postal-code <text>
@@ -63,6 +71,21 @@ require_cmd() {
   fi
 }
 
+is_owner_repo() {
+  [[ "$1" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]
+}
+
+detect_merge_controls_source_repo() {
+  if is_owner_repo "${UPSTREAM_REPO}"; then
+    printf '%s\n' "${UPSTREAM_REPO}"
+    return 0
+  fi
+
+  if command -v gh >/dev/null 2>&1; then
+    gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || true
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --target-dir) TARGET_DIR="$2"; shift 2 ;;
@@ -75,6 +98,9 @@ while [[ $# -gt 0 ]]; do
     --create-repo) CREATE_REPO=1; shift ;;
     --push) PUSH_AFTER_BOOTSTRAP=1; shift ;;
     --default-branch) DEFAULT_BRANCH="$2"; shift 2 ;;
+    --skip-codeowners-sync) SYNC_CODEOWNERS=0; shift ;;
+    --configure-github) CONFIGURE_GITHUB=1; shift ;;
+    --merge-controls-source-repo) MERGE_CONTROLS_SOURCE_REPO="$2"; shift 2 ;;
     --company-name) COMPANY_NAME="$2"; shift 2 ;;
     --company-street) COMPANY_STREET="$2"; shift 2 ;;
     --company-postal-code) COMPANY_POSTAL_CODE="$2"; shift 2 ;;
@@ -108,6 +134,21 @@ if [[ "${ORIGIN_USE_SSH}" -eq 1 && -z "${GH_REPO}" ]]; then
   exit 1
 fi
 
+if [[ "${CONFIGURE_GITHUB}" -eq 1 ]]; then
+  if [[ -z "${GH_REPO}" ]]; then
+    echo "--configure-github requires --repo <owner/repo>" >&2
+    exit 1
+  fi
+  if [[ "${PUSH_AFTER_BOOTSTRAP}" -ne 1 ]]; then
+    echo "--configure-github requires --push so the target branch exists before protection is applied" >&2
+    exit 1
+  fi
+  if [[ -n "${MERGE_CONTROLS_SOURCE_REPO}" ]] && ! is_owner_repo "${MERGE_CONTROLS_SOURCE_REPO}"; then
+    echo "--merge-controls-source-repo must be owner/repo" >&2
+    exit 1
+  fi
+fi
+
 require_cmd git
 require_cmd python3
 
@@ -136,6 +177,11 @@ python3 "${REPO_ROOT}/tools/qms_distribution.py" apply-bootstrap-overlays \
   --primary-full-name "${PRIMARY_FULL_NAME}" \
   --primary-job-title "${PRIMARY_JOB_TITLE}" \
   --signature-ui-base-url "${SIGNATURE_UI_BASE_URL}"
+
+if [[ "${SYNC_CODEOWNERS}" -eq 1 ]]; then
+  python3 "${REPO_ROOT}/tools/qms_distribution.py" sync-codeowners \
+    --target-root "${TARGET_DIR}" >/dev/null
+fi
 
 if [[ -z "${UPSTREAM_REPO}" ]]; then
   UPSTREAM_REPO="${UPSTREAM_URL}"
@@ -191,6 +237,22 @@ if [[ "${PUSH_AFTER_BOOTSTRAP}" -eq 1 ]]; then
   git -C "${TARGET_DIR}" push -u origin "${DEFAULT_BRANCH}"
 fi
 
+if [[ "${CONFIGURE_GITHUB}" -eq 1 ]]; then
+  require_cmd gh
+  require_cmd jq
+  if [[ -z "${MERGE_CONTROLS_SOURCE_REPO}" ]]; then
+    MERGE_CONTROLS_SOURCE_REPO="$(detect_merge_controls_source_repo)"
+  fi
+  if [[ -z "${MERGE_CONTROLS_SOURCE_REPO}" ]]; then
+    echo "Could not determine merge controls source repo. Pass --merge-controls-source-repo <owner/repo>." >&2
+    exit 1
+  fi
+  "${REPO_ROOT}/scripts/copy_github_merge_controls.sh" \
+    --branch "${DEFAULT_BRANCH}" \
+    "${MERGE_CONTROLS_SOURCE_REPO}" \
+    "${GH_REPO}"
+fi
+
 cat <<EOF
 Bootstrap complete.
 
@@ -198,6 +260,8 @@ Repo root: ${TARGET_DIR}
 Recorded upstream ref: ${UPSTREAM_REF}
 Downstream repo: ${GH_REPO:-not-created}
 Origin remote: ${ORIGIN_REMOTE_URL:-not-configured}
+CODEOWNERS synced from signer registry: $([[ "${SYNC_CODEOWNERS}" -eq 1 ]] && echo yes || echo no)
+GitHub merge controls configured: $([[ "${CONFIGURE_GITHUB}" -eq 1 ]] && echo yes || echo no)
 
 Next commands:
   cd ${TARGET_DIR}

@@ -112,6 +112,61 @@ def write_baseline_file(
     return dest
 
 
+def signer_registry_logins(target_root: Path, registry_path: str) -> list[str]:
+    path = target_root / registry_path
+    registry = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(registry, dict):
+        raise ValueError(f"{registry_path} must contain a JSON object keyed by GitHub login")
+
+    logins: list[str] = []
+    seen: set[str] = set()
+    for raw_login in registry.keys():
+        login = str(raw_login).strip().removeprefix("@")
+        if not login:
+            continue
+        key = login.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        logins.append(login)
+    return logins
+
+
+def render_codeowners(logins: list[str], registry_path: str) -> str:
+    owners = " ".join(f"@{login}" for login in logins)
+    return (
+        f"# Generated from {registry_path} by tools/qms_distribution.py sync-codeowners.\n"
+        f"* {owners}\n"
+    )
+
+
+def sync_codeowners(
+    target_root: Path,
+    registry_path: str,
+    codeowners_path: str,
+    check: bool,
+) -> int:
+    logins = signer_registry_logins(target_root, registry_path)
+    if not logins:
+        raise ValueError(f"{registry_path} does not contain any signer GitHub logins")
+
+    expected = render_codeowners(logins, registry_path)
+    target = target_root / codeowners_path
+
+    if check:
+        actual = target.read_text(encoding="utf-8") if target.exists() else ""
+        if actual != expected:
+            print(f"{codeowners_path} is not aligned with {registry_path}")
+            print(f"Expected owners: {' '.join(f'@{login}' for login in logins)}")
+            return 1
+        return 0
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(expected, encoding="utf-8")
+    print(codeowners_path)
+    return 0
+
+
 def placeholder_hits(repo_root: Path) -> list[str]:
     config = load_map(repo_root)
     prefixes = tuple(config.get("placeholder_prefixes", []))
@@ -195,6 +250,11 @@ def cmd_required_settings(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_sync_codeowners(args: argparse.Namespace) -> int:
+    target_root = Path(args.target_root).resolve()
+    return sync_codeowners(target_root, args.registry, args.codeowners, args.check)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="DearAuditor Open QMS Baseline distribution helper")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -232,6 +292,13 @@ def build_parser() -> argparse.ArgumentParser:
     settings_parser = sub.add_parser("required-settings")
     settings_parser.add_argument("--repo-root", default=str(REPO_ROOT))
     settings_parser.set_defaults(func=cmd_required_settings)
+
+    codeowners_parser = sub.add_parser("sync-codeowners")
+    codeowners_parser.add_argument("--target-root", default=str(REPO_ROOT))
+    codeowners_parser.add_argument("--registry", default="matrices/signer_registry.json")
+    codeowners_parser.add_argument("--codeowners", default=".github/CODEOWNERS")
+    codeowners_parser.add_argument("--check", action="store_true")
+    codeowners_parser.set_defaults(func=cmd_sync_codeowners)
 
     return parser
 
