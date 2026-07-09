@@ -206,7 +206,11 @@ supplied by the adopter.**
   [`WI-002`](../../wis/WI-002-ConfigurationAndReleaseManagementExecution.md)
   (configuration & release execution) — alongside the core SOP-006 (software
   validation) and SOP-020 (software lifecycle & release).
-- **Gap analyses:** ISO/IEC 27001, GDPR, Swiss nFADP, the privacy gap index.
+- **Gap analyses:** the optional
+  [GAMP 5 / GxP / CSV overlay](../../matrices/gamp5_gxp_gap_analysis.yml) (maps
+  which GxP/CSV/Part 11/Annex 11 expectations the baseline already covers by reuse
+  versus what you must supply), plus ISO/IEC 27001, GDPR, Swiss nFADP, and the
+  privacy gap index.
 - **Record families:** `records/validation`, `records/verification_validation`,
   `records/configuration`, `records/isms`, `records/privacy`.
 

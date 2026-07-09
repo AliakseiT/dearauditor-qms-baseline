@@ -295,6 +295,7 @@ profiles:
       - wis/WI-001-VerificationAndValidationExecution.md
       - wis/WI-002-ConfigurationAndReleaseManagementExecution.md
     gap_analyses:
+      - matrices/gamp5_gxp_gap_analysis.yml  # optional GxP/CSV overlay for this profile
       - matrices/iso_27001_gap_analysis.yml
       - matrices/gdpr_gap_analysis.yml
       - matrices/swiss_nfadp_gap_analysis.yml
