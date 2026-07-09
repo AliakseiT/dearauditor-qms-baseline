@@ -219,15 +219,37 @@ jobs:
             }
 
             const latestRequestBody = requestComments[requestComments.length - 1].body || '';
+            // Prefer the structured SIGNATURE_REQUEST_CONTEXT_V1 block; the
+            // human-readable list is Markdown before PR #412 and HTML after,
+            // so the text fallbacks accept both shapes. Mirrors
+            // .github/scripts/signature-request-context.js (not require()d
+            // here: this job runs without a checkout).
+            const structuredMatch = latestRequestBody.match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+            let requestContext = null;
+            if (structuredMatch && structuredMatch[1]) {
+              try { requestContext = JSON.parse(structuredMatch[1].trim()); } catch { requestContext = null; }
+            }
+            const requestSigners = Array.isArray(requestContext?.signers)
+              ? requestContext.signers
+                  .map((entry) => ({
+                    signer: String(entry?.signer || '').trim().toLowerCase(),
+                    role: String(entry?.role || '').trim(),
+                  }))
+                  .filter((entry) => entry.signer && entry.role)
+              : [];
             const meaningMatch = latestRequestBody.match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i)
+              || latestRequestBody.match(/Meaning of signature:\s*<strong>([^<]+)<\/strong>/i)
               || latestRequestBody.match(/Meaning of signature:\s*`([^`]+)`/i);
-            const requestMeaning = meaningMatch ? meaningMatch[1].trim() : '';
+            const requestMeaning = String(requestContext?.meaning || '').trim()
+              || (meaningMatch ? meaningMatch[1].trim() : '');
             const rolesMatch = latestRequestBody.match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i)
+              || latestRequestBody.match(/Designated signatory role\(s\):\s*<strong>([^<]+)<\/strong>/i)
               || latestRequestBody.match(/Signer role\(s\):\s*`([^`]+)`/i);
             const requestRoles = rolesMatch
               ? rolesMatch[1].split(/[;,]/).map((x) => x.trim()).filter(Boolean)
-              : [];
-            const eligibleMatch = latestRequestBody.match(/Eligible signers:\s*\*\*([^*]+)\*\*/i);
+              : requestSigners.map((entry) => entry.role).filter((role, i, all) => all.indexOf(role) === i);
+            const eligibleMatch = latestRequestBody.match(/Eligible signers:\s*\*\*([^*]+)\*\*/i)
+              || latestRequestBody.match(/Eligible signers:\s*<strong>([^<]+)<\/strong>/i);
             const requestEligibleSigners = eligibleMatch
               ? Array.from((eligibleMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
               : [];
@@ -245,6 +267,12 @@ jobs:
             }
 
             let resolvedSignerRole = inputSignerRole;
+            if (!resolvedSignerRole) {
+              // The structured signer slots pair each signer with their role
+              // authoritatively; the positional eligible-signers/roles pairing
+              // is only a legacy guess for pre-context request comments.
+              resolvedSignerRole = requestSigners.find((entry) => entry.signer === actor.toLowerCase())?.role || '';
+            }
             if (!resolvedSignerRole) {
               const actorIndex = requestEligibleSigners.length > 0
                 ? requestEligibleSigners.findIndex((x) => x.toLowerCase() === actor.toLowerCase())
