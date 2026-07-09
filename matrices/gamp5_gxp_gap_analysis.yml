@@ -1,0 +1,143 @@
+version: 1
+analysis_date: "2026-06-14"
+status: optional_overlay
+standard:
+  exact_name: "GAMP 5: A Risk-Based Approach to Compliant GxP Computerized Systems (ISPE, 2nd Edition, 2022)"
+  normative_base: "ISPE GAMP 5 (2nd ed., 2022); GxP (GMP/GCP/GLP/GDP) expectations; US FDA 21 CFR Part 11; EU GMP Annex 11"
+  framing_note: >-
+    Unlike the ISO/IEC gap analyses in this directory, this is a COMPOSITE,
+    OPTIONAL overlay rather than a single clause-numbered standard. It applies
+    only to adopters that run GxP-regulated computerized systems. It is not part
+    of the core ISO 13485 preparation set and adds no requirements to the core
+    controlled-document corpus (qm/, sops/, wis/).
+
+analysis_scope: >-
+  An adopter's GxP-regulated computerized systems used in regulated operational
+  or product activities (for example clinical data capture / study management
+  systems, laboratory or manufacturing systems). Selected explicitly via the
+  clinical_trial_software adoption profile. This overlay reuses the baseline's
+  validation MECHANICS but does not itself certify any adopter system.
+
+# Separation of concerns is the load-bearing design decision for this overlay.
+separation_of_concerns:
+  vs_sop_006_software_validation:
+    sop_006_scope: >-
+      SOP-006 validates QMS TOOLS - software that creates, modifies, approves, or
+      retains the QMS's own quality records and compliance evidence (the
+      GitHub-native QMS tooling).
+    this_overlay_scope: >-
+      This overlay concerns the ADOPTER'S GxP-regulated computerized systems used
+      in regulated operational/product activities - a different population of
+      systems and a different regulatory frame (GxP, not the QMS-tooling frame).
+    relationship: >-
+      The overlay REUSES SOP-006's risk-based validation method (intended use,
+      criticality, requirements-to-evidence traceability, captured execution
+      evidence, revalidation triggers) as a mechanic. It does not extend SOP-006's
+      scope and SOP-006 does not depend on this overlay.
+  vs_iso_13485_core:
+    statement: >-
+      GxP/GAMP/CSV is a separate regulatory frame from medical-device conformity.
+      This overlay adds NO obligation to the core ISO 13485 SOPs. An adopter
+      building a device under ISO 13485 is not pulled into GxP unless it also runs
+      a GxP-regulated activity, in which case it selects this overlay deliberately.
+    no_new_core_documents: >-
+      Intentionally introduces no dedicated SOP or WI. GxP-specific procedural
+      depth (IQ/OQ/PQ protocols, data-integrity procedure, periodic review of the
+      regulated system) is adopter-supplied so the core corpus stays unchanged.
+
+applies_to_profile: clinical_trial_software
+
+# What the baseline already provides that an adopter can lean on. No dedicated
+# GxP SOP exists by design; only reused QMS mechanics.
+baseline_reuse:
+  dedicated_gxp_sop: "none (intentional - see separation_of_concerns.vs_iso_13485_core)"
+  reused_qms_sops:
+    - "SOP-006"  # risk-based validation method (mechanic only; scoped to QMS tools)
+    - "SOP-009"  # change management
+    - "SOP-010"  # supplier and purchasing control (vendor assessment leverage)
+    - "SOP-011"  # competence and training
+    - "SOP-017"  # infrastructure and maintenance control
+    - "SOP-018"  # risk management (risk basis for test rigor)
+    - "SOP-020"  # software lifecycle, configuration and release management
+    - "SOP-021"  # information security management
+  reused_templates:
+    - "records/verification_validation/vv_plan_template.yml"
+    - "records/verification_validation/test_case_template.md"
+    - "records/verification_validation/test_execution_log_template.yml"
+    - "records/verification_validation/vv_report_template.md"
+    - "records/change/change_request_template.md"
+    - "records/suppliers/supplier_vetting_template.yml"
+    - "records/risk/risk_register_template.yml"
+  part_11_reference_implementation: >-
+    The baseline's own post-merge two-signature attestation ceremony is a working
+    Part 11-style electronic-records / electronic-signatures pattern for the QMS's
+    OWN records. It is a reference example, not a control set for the adopter's
+    regulated system.
+
+# Status legend: reuse = baseline control is sufficient as-is for this overlay;
+# partial = baseline provides a usable basis but the GxP layer must be added;
+# adopter_supplied = not in the baseline, the adopter must provide it.
+expectation_map:
+  - area: "CSV lifecycle (GAMP 5 specify-and-verify, risk-based)"
+    status: partial
+    baseline_basis: ["SOP-006", "records/verification_validation/*"]
+    adopter_adds: "URS/FS/DS definition and IQ/OQ/PQ applied to the regulated system."
+  - area: "GAMP software categorisation (1/3/4/5) and supplier leverage"
+    status: partial
+    baseline_basis: ["SOP-010", "records/suppliers/supplier_vetting_template.yml"]
+    adopter_adds: "Category model and supplier-evidence leverage decision per system."
+  - area: "Risk-based testing / CSA critical thinking"
+    status: partial
+    baseline_basis: ["SOP-018", "SOP-006"]
+    adopter_adds: "Test rigour scaled to GxP impact and system risk."
+  - area: "Data integrity (ALCOA+)"
+    status: adopter_supplied
+    baseline_basis: []
+    adopter_adds: "Data-integrity policy, ALCOA+ assessment, and controls for the regulated system."
+  - area: "Audit trails (regulated system)"
+    status: adopter_supplied
+    baseline_basis: []
+    adopter_adds: "Audit-trail configuration and audit-trail review for the regulated system."
+  - area: "Electronic records / signatures (21 CFR Part 11, EU Annex 11)"
+    status: partial
+    baseline_basis:
+      - ".github/workflows/2.1_pr_signature_request_gate.yml"
+      - ".github/workflows/2.4_signature_attestation_title_page.yml"
+    adopter_adds: "Control-by-control Part 11 / Annex 11 mapping for the regulated system (access control, audit trail, operational checks, e-signature manifestations, record copies, system documentation)."
+  - area: "Periodic review / validated-state maintenance"
+    status: partial
+    baseline_basis: ["SOP-006", "SOP-020"]
+    adopter_adds: "Periodic review of the regulated system in its operational use."
+  - area: "Supplier / vendor assessment"
+    status: reuse
+    baseline_basis: ["SOP-010", "records/suppliers/supplier_vetting_template.yml"]
+    adopter_adds: ""
+  - area: "Change and configuration management"
+    status: reuse
+    baseline_basis: ["SOP-009", "SOP-020", "wis/WI-002-ConfigurationAndReleaseManagementExecution.md"]
+    adopter_adds: ""
+  - area: "Training and competence (GxP roles)"
+    status: reuse
+    baseline_basis: ["SOP-011", "matrices/training_matrix.yml"]
+    adopter_adds: ""
+  - area: "IT infrastructure qualification"
+    status: partial
+    baseline_basis: ["SOP-017"]
+    adopter_adds: "Infrastructure qualification for the regulated operating environment."
+  - area: "GxP applicability determination"
+    status: adopter_supplied
+    baseline_basis: []
+    adopter_adds: "Determination of whether and where GMP/GCP/GLP/GDP applies (regulatory_market_scope.yml covers device qualification only)."
+
+outstanding_gaps:
+  - "GAMP software-category model"
+  - "ALCOA+ data-integrity policy, assessment, and controls"
+  - "21 CFR Part 11 / EU Annex 11 control mapping for the regulated system"
+  - "IQ/OQ/PQ protocols for the regulated system"
+  - "Audit-trail configuration and review procedure"
+  - "Periodic review of the regulated system"
+  - "GxP applicability determination and IT infrastructure qualification"
+
+notes:
+  - "No copyrighted standard or guide text is included; only high-level expectation areas, reuse decisions, and gaps."
+  - "This overlay is optional and discoverable only through the clinical_trial_software adoption profile; it is not referenced by the core ISO 13485 SOPs."
