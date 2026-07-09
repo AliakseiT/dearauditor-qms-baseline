@@ -25,6 +25,18 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        # Provides matrices/signer_registry.json for the attestation manifest
+        # (signer full-name validation and job title, previously dormant: the
+        # manifest step read the registry from a workspace that was never
+        # checked out, so it silently degraded to {}) and the shared
+        # signature-request-context parser. Pinned to the default branch so a
+        # dispatch from any other ref still enforces the authoritative
+        # registry.
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
       - name: Create GitHub App token for signature processing
         id: app_token
         uses: actions/create-github-app-token@v3
@@ -219,40 +231,20 @@ jobs:
             }
 
             const latestRequestBody = requestComments[requestComments.length - 1].body || '';
-            // Prefer the structured SIGNATURE_REQUEST_CONTEXT_V1 block; the
-            // human-readable list is Markdown before PR #412 and HTML after,
-            // so the text fallbacks accept both shapes. Mirrors
-            // .github/scripts/signature-request-context.js (not require()d
-            // here: this job runs without a checkout).
-            const structuredMatch = latestRequestBody.match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
-            let requestContext = null;
-            if (structuredMatch && structuredMatch[1]) {
-              try { requestContext = JSON.parse(structuredMatch[1].trim()); } catch { requestContext = null; }
-            }
-            const requestSigners = Array.isArray(requestContext?.signers)
-              ? requestContext.signers
-                  .map((entry) => ({
-                    signer: String(entry?.signer || '').trim().toLowerCase(),
-                    role: String(entry?.role || '').trim(),
-                  }))
-                  .filter((entry) => entry.signer && entry.role)
-              : [];
-            const meaningMatch = latestRequestBody.match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i)
-              || latestRequestBody.match(/Meaning of signature:\s*<strong>([^<]+)<\/strong>/i)
-              || latestRequestBody.match(/Meaning of signature:\s*`([^`]+)`/i);
-            const requestMeaning = String(requestContext?.meaning || '').trim()
-              || (meaningMatch ? meaningMatch[1].trim() : '');
-            const rolesMatch = latestRequestBody.match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i)
-              || latestRequestBody.match(/Designated signatory role\(s\):\s*<strong>([^<]+)<\/strong>/i)
-              || latestRequestBody.match(/Signer role\(s\):\s*`([^`]+)`/i);
-            const requestRoles = rolesMatch
-              ? rolesMatch[1].split(/[;,]/).map((x) => x.trim()).filter(Boolean)
-              : requestSigners.map((entry) => entry.role).filter((role, i, all) => all.indexOf(role) === i);
-            const eligibleMatch = latestRequestBody.match(/Eligible signers:\s*\*\*([^*]+)\*\*/i)
-              || latestRequestBody.match(/Eligible signers:\s*<strong>([^<]+)<\/strong>/i);
-            const requestEligibleSigners = eligibleMatch
-              ? Array.from((eligibleMatch[1] || '').matchAll(/@([A-Za-z0-9-]+)/g)).map((m) => m[1].toLowerCase())
-              : [];
+            // Trusted default-branch module (checked out above); shared with
+            // 2.4/2.6. Prefers the structured SIGNATURE_REQUEST_CONTEXT_V1
+            // block and accepts both the Markdown (pre-#412) and HTML
+            // (post-#412) human-readable shapes. Unit-tested in
+            // .github/scripts/signature-request-context.test.js. Returns null
+            // when the comment lacks a target hash or meaning, which fails
+            // closed below via the meaning_of_signature check.
+            const { parseSignatureRequestContext } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/signature-request-context.js`);
+            const requestContext = parseSignatureRequestContext(latestRequestBody);
+            const requestSigners = requestContext?.signers || [];
+            const requestMeaning = requestContext?.meaning || '';
+            const requestRoles = (requestContext?.roles?.length ? requestContext.roles : null)
+              || requestSigners.map((entry) => entry.role).filter((role, i, all) => all.indexOf(role) === i);
+            const requestEligibleSigners = requestContext?.eligibleSigners || [];
 
             const resolvedMeaning = inputMeaning || requestMeaning;
             if (!resolvedMeaning) {
@@ -344,13 +336,16 @@ jobs:
             const crypto = require('crypto');
             const registryPath = 'matrices/signer_registry.json';
 
+            // Read from the default-branch checkout. Fail closed: a missing
+            // or unparseable registry would otherwise silently disable the
+            // signer identity validation below (the pre-checkout dormant
+            // state of this control).
             let registry = {};
-            if (fs.existsSync(registryPath)) {
-              try {
-                registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
-              } catch (error) {
-                core.warning(`Could not parse ${registryPath}: ${error.message}`);
-              }
+            try {
+              registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+            } catch (error) {
+              core.setFailed(`Could not read signer registry ${registryPath}: ${error.message}`);
+              return;
             }
             const registryKey = (process.env.ACTOR_LOGIN || '').toLowerCase();
             const profile = Object.entries(registry).find(([login]) => login.toLowerCase() === registryKey)?.[1] || {};
