@@ -54,7 +54,7 @@ Some folders are intentionally empty until the first signed and published compan
 - [Design control](design/) - design and development plan templates, user needs, system requirements, software architecture, and traceability templates
 - [Risk management](risk/) - Markdown-first risk management plan and review templates, plus risk register templates/reference artifacts
 - [Usability engineering](usability/) - usability file index, use specification, hazard-related scenarios, formative/summative, and post-production usability review templates
-- [Medical device file](mdf/) - classification, device description, declaration of conformity, file index, and traceability summary templates
+- [Medical device file](mdf/) - classification, device description, declaration of conformity, file index, traceability summary, and in-house health-institution justification templates
 - [Verification and validation](verification_validation/) - V&V plan, test case, execution log, and report templates for designated product/study repositories
 - [Configuration and release](configuration/) - release readiness, final release decision, and release baseline manifest templates for designated product/study repositories
 - [ISMS](isms/) - ISO/IEC 27001 scope, asset, information security risk, access review, incident, exception, and Statement of Applicability templates
