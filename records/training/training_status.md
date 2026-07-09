@@ -1,8 +1,8 @@
 # Training Status Report
 
-- Generated at: `2026-06-12T11:08:46Z`
+- Generated at: `2026-07-09T16:06:52Z`
 - Source repository: `AliakseiT/dearauditor-qms-baseline`
-- Signed training events considered: `5`
+- Signed training events considered: `6`
 
 This report is generated from signed training issues and their immutable evidence links.
 
@@ -10,10 +10,10 @@ This report is generated from signed training issues and their immutable evidenc
 
 | Person | Login | Role(s) | Required Docs | Current | Missing/Outdated | Last Signed Training |
 |---|---|---|---:|---:|---:|---|
-| Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | 23 | 23 | 0 | 2026-06-11T21:56:55.559Z |
-| Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | 22 | 0 | 22 | 2026-03-18T16:07:46.946Z |
-| Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | 13 | 0 | 13 | n/a |
-| Søren Thorup | `@sorenwesthorup` | qa_lead | 22 | 0 | 22 | 2026-03-25T09:08:22.220Z |
+| Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | 24 | 24 | 0 | 2026-07-09T16:05:38.770Z |
+| Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | 23 | 1 | 22 | 2026-06-12T11:07:49.957Z |
+| Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | 14 | 0 | 14 | n/a |
+| Søren Thorup | `@sorenwesthorup` | qa_lead | 23 | 0 | 23 | 2026-03-25T09:08:22.220Z |
 
 ## Required Training Detail
 
@@ -41,6 +41,7 @@ This report is generated from signed training issues and their immutable evidenc
 | Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | `SOP-020` | `R13` | `R13` | Current | 2026-06-11T21:56:55.559Z | [`sig-train-394-h1a87e98efb77-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-d781719ba9139ef29e66); [#394](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/394) |
 | Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | `SOP-021` | `R02` | `R02` | Current | 2026-06-11T21:56:55.559Z | [`sig-train-394-h1a87e98efb77-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-d781719ba9139ef29e66); [#394](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/394) |
 | Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | `SOP-022` | `R02` | `R02` | Current | 2026-06-11T21:56:55.559Z | [`sig-train-394-h1a87e98efb77-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-d781719ba9139ef29e66); [#394](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/394) |
+| Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | `SOP-023` | `R00` | `R00` | Current | 2026-07-09T16:05:38.770Z | [`sig-train-401-h1d4e2bfba8c1-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-72efba25a0f5ed9e93ad); [#401](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401) |
 | Aliaksei Tsitovich | `@aliakseit` | engineer, engineering_lead, management_representative, qa_lead, technical_qms_maintainer, usability_lead | `SOP-004` | `R09` | `R09` | Current | 2026-06-11T21:56:55.559Z | [`sig-train-394-h1a87e98efb77-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-d781719ba9139ef29e66); [#394](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/394) |
 | Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | `QM-001` | `R09` | `R01` | Outdated | 2026-03-18T16:07:46.946Z | n/a; [#273](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273) |
 | Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | `SOP-001` | `R15` | `R11` | Outdated | 2026-03-18T16:07:46.946Z | n/a; [#273](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273) |
@@ -64,6 +65,7 @@ This report is generated from signed training issues and their immutable evidenc
 | Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | `SOP-020` | `R13` | `R07` | Outdated | 2026-03-18T16:07:46.946Z | n/a; [#273](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/273) |
 | Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | `SOP-021` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | `SOP-022` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
+| Ina Tsitovich | `@inatsitovich` | engineer, qa_lead | `SOP-023` | `R00` | `R00` | Current | 2026-06-12T11:07:49.957Z | [`sig-train-404-h5d0ab2fb4a4a-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-db2aef0502d18fb9656e); [#404](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/404) |
 | Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `QM-001` | `R09` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `SOP-001` | `R15` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `SOP-002` | `R06` | `UNTRAINED` | Missing | n/a | n/a; n/a |
@@ -77,6 +79,7 @@ This report is generated from signed training issues and their immutable evidenc
 | Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `SOP-020` | `R13` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `SOP-021` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `SOP-022` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
+| Lemmy Liikkanen | `@lemmykilmisterish` | engineering_lead | `SOP-023` | `R00` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Søren Thorup | `@sorenwesthorup` | qa_lead | `QM-001` | `R09` | `R01` | Outdated | 2026-03-25T09:08:22.220Z | [`sig-train-288-hdef87534dced-r03`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07); [#288](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288) |
 | Søren Thorup | `@sorenwesthorup` | qa_lead | `SOP-001` | `R15` | `R12` | Outdated | 2026-03-25T09:08:22.220Z | [`sig-train-288-hdef87534dced-r03`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07); [#288](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288) |
 | Søren Thorup | `@sorenwesthorup` | qa_lead | `SOP-002` | `R06` | `R03` | Outdated | 2026-03-25T09:08:22.220Z | [`sig-train-288-hdef87534dced-r03`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07); [#288](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288) |
@@ -99,9 +102,8 @@ This report is generated from signed training issues and their immutable evidenc
 | Søren Thorup | `@sorenwesthorup` | qa_lead | `SOP-020` | `R13` | `R08` | Outdated | 2026-03-25T09:08:22.220Z | [`sig-train-288-hdef87534dced-r03`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-3c838b252feded997e07); [#288](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/288) |
 | Søren Thorup | `@sorenwesthorup` | qa_lead | `SOP-021` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 | Søren Thorup | `@sorenwesthorup` | qa_lead | `SOP-022` | `R02` | `UNTRAINED` | Missing | n/a | n/a; n/a |
+| Søren Thorup | `@sorenwesthorup` | qa_lead | `SOP-023` | `R00` | `UNTRAINED` | Missing | n/a | n/a; n/a |
 
 ## Additional Signed Training Not Currently Required
 
-| Person | Login | Document | Trained Rev | Completed On | Evidence |
-|---|---|---|---|---|---|
-| Ina Tsitovich | `@inatsitovich` | `SOP-023` | `R00` | 2026-06-12T11:07:49.957Z | [`sig-train-404-h5d0ab2fb4a4a-r01`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-db2aef0502d18fb9656e); [#404](https://github.com/AliakseiT/dearauditor-qms-baseline/issues/404) |
+No additional signed training outside the current role requirements.
