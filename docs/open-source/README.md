@@ -18,10 +18,10 @@ The downstream repo is not expected to ingest every upstream tag. It records one
 Use this sequence when turning the public baseline into a company-controlled QMS:
 
 1. Select a released upstream baseline tag from the `QMS-*` namespace.
-2. Run [`../../tools/bootstrap_company_repo.sh`](../../tools/bootstrap_company_repo.sh) to create the downstream repository from that exact tag.
+2. Run [`../../tools/bootstrap_company_repo.sh`](../../tools/bootstrap_company_repo.sh) to create the downstream repository from that exact tag. The bootstrap syncs `.github/CODEOWNERS` from `matrices/signer_registry.json` so code owner review follows the registered QMS signers.
 3. Tailor company-owned files, including company profile, market scope, signer registry, training matrix, supplier state, QMS tooling inventory, and live operational records.
-4. Configure repository settings, required variables/secrets, branch protection or equivalent rules, signature hosting, and service dependencies. Create the GitHub App used by repository automation and the GitHub OAuth App used by the signature worker in the adopting company's GitHub organization or account, then install/configure them only for the adopter-controlled repositories that need them.
-5. Run [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh) to confirm placeholders and required repository settings are resolved.
+4. Configure repository settings, required variables/secrets, branch protection or equivalent rules, signature hosting, and service dependencies. When the target GitHub repository is created and pushed during bootstrap, pass `--configure-github` to copy the upstream baseline rulesets and branch protection into the downstream repo. Create the GitHub App used by repository automation and the GitHub OAuth App used by the signature worker in the adopting company's GitHub organization or account, then install/configure them only for the adopter-controlled repositories that need them.
+5. Run [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh) to confirm placeholders, CODEOWNERS alignment, and required repository settings are resolved.
 6. Validate the configured QMS toolchain for intended use under `SOP-006`, using the adopter's designated controlled validation repository or record location.
 7. Train assigned roles on the adopted controlled-document set and capture training evidence in the adopter repository.
 8. Approve the adopted QMS baseline for operational use through the adopter's controlled PR, signature, and release process.
@@ -54,11 +54,11 @@ Historical validation or mock-trial artifacts that are useful as public referenc
 Use the repository scripts instead of ad hoc copy/paste:
 
 1. [`../../tools/bootstrap_company_repo.sh`](../../tools/bootstrap_company_repo.sh)
-   Creates a downstream repo from a selected upstream ref and overlays generic company-owned seed files.
+   Creates a downstream repo from a selected upstream ref, overlays generic company-owned seed files, syncs CODEOWNERS from the signer registry, and can optionally copy baseline GitHub merge controls with `--configure-github`.
 2. [`../../tools/open_upstream_upgrade_pr.sh`](../../tools/open_upstream_upgrade_pr.sh)
    Opens a controlled branch containing only upstream-owned changes from a selected upstream ref.
 3. [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh)
-   Fails if placeholder tokens remain or if required GitHub repo settings are missing.
+   Fails if placeholder tokens remain, CODEOWNERS does not match the signer registry, or required GitHub repo settings are missing.
 
 ## Signature Hosting Options
 

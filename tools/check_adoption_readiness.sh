@@ -43,6 +43,7 @@ done
 
 require_cmd python3
 python3 "${REPO_ROOT}/tools/qms_distribution.py" check-placeholders --repo-root "${REPO_ROOT}"
+python3 "${REPO_ROOT}/tools/qms_distribution.py" sync-codeowners --target-root "${REPO_ROOT}" --check
 
 BASELINE_FILE="$(REPO_ROOT="${REPO_ROOT}" python3 - <<'PY'
 import json
