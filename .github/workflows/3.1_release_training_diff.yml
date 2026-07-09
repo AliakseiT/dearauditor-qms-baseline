@@ -218,6 +218,7 @@ jobs:
           python <<'PY'
           import base64
           import hashlib
+          import html
           import json
           import os
           import re
@@ -478,14 +479,22 @@ jobs:
             ]
 
             if include_preview and gap["diff_preview"]:
+              # HTML only inside <details>: Markdown there renders raw in GitHub email
+              # notifications. No blank lines either — a blank line (e.g. a diff context
+              # line for an empty source line, " ", after indenting) would end the HTML
+              # block and resume Markdown parsing mid-<details>. The two-space indent
+              # keeps raw diff lines from matching 3.2's line-anchored checklist parsers.
+              preview_lines = [
+                f"  {html.escape(ln)}" if ln.strip() else "  &nbsp;"
+                for ln in gap["diff_preview"].splitlines()
+              ]
               lines.extend(
                 [
                   "",
                   f"  <details><summary>{gap['doc_id']} diff preview</summary>",
-                  "",
-                  "  ```diff",
-                  *[f"  {ln}" for ln in gap["diff_preview"].splitlines()],
-                  "  ```",
+                  "  <pre><code>",
+                  *preview_lines,
+                  "  </code></pre>",
                   "  </details>",
                   "",
                 ]
