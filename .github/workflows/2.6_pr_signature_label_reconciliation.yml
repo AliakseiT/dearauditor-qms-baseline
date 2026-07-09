@@ -36,6 +36,12 @@ jobs:
       cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
+      # issue_comment and workflow_dispatch events run against the default
+      # branch, so this checks out the trusted default-branch copy of
+      # .github/scripts/ for the shared signature-request parser below.
+      - name: Checkout QMS scripts
+        uses: actions/checkout@v5
+
       - name: Create GitHub App token for label reconciliation
         id: app_token
         uses: actions/create-github-app-token@v3
@@ -51,6 +57,16 @@ jobs:
         with:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
+            // Trusted default-branch module (checked out above). Prefers the
+            // structured SIGNATURE_REQUEST_CONTEXT_V1 block and falls back to
+            // the human-readable list in BOTH its Markdown (pre-#412) and HTML
+            // (post-#412) shapes. Replaces the inline parser that regressed
+            // with PR #412 (Markdown-only regexes returned null on HTML
+            // comments even when the structured block parsed, so merged PRs
+            // never received signature/complete — see QMS-2026-07-09-R005).
+            // Unit-tested in .github/scripts/signature-request-context.test.js.
+            const { parseSignatureRequestContext } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/signature-request-context.js`);
+
             const ACTIVE_LABELS = {
               outstanding: {
                 name: 'signature/outstanding',
@@ -100,55 +116,6 @@ jobs:
               } catch {
                 return null;
               }
-            }
-
-            function parseRequestContext(body) {
-              const structuredMatch = String(body || '').match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
-              let structured = null;
-              if (structuredMatch && structuredMatch[1]) {
-                try {
-                  structured = JSON.parse(structuredMatch[1].trim());
-                } catch {
-                  structured = null;
-                }
-              }
-
-              const hashMatch = String(body || '').match(/Target hash \([^)]+\):\s*`([a-f0-9]{64})`/i);
-              const meaningMatch = String(body || '').match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i);
-              const requiredMatch = String(body || '').match(/Required signatures:\s*\*\*([0-9]+)\*\*/i);
-              const rolesMatch = String(body || '').match(/Designated signatory role\(s\):\s*\*\*([^*]+)\*\*/i);
-              const eligibleMatch = String(body || '').match(/Eligible signers:\s*\*\*([^*]+)\*\*/i);
-
-              const roles = (rolesMatch?.[1] || '')
-                .split(/[;,]/)
-                .map((x) => x.trim())
-                .filter(Boolean);
-              const eligibleSigners = Array.from(String(eligibleMatch?.[1] || '').matchAll(/@([A-Za-z0-9-]+)/g))
-                .map((match) => match[1].toLowerCase());
-              const signers = Array.isArray(structured?.signers)
-                ? structured.signers
-                    .map((entry) => {
-                      const signer = String(entry?.signer || '').trim().toLowerCase();
-                      const role = String(entry?.role || '').trim();
-                      const signatureIndex = String(entry?.signature_index || entry?.signatureIndex || '').trim() || '1';
-                      if (!signer || !role) return null;
-                      return { signer, role, signatureIndex };
-                    })
-                    .filter(Boolean)
-                : [];
-
-              if (!hashMatch?.[1] || !meaningMatch?.[1]) {
-                return null;
-              }
-
-              return {
-                hash: hashMatch[1].trim().toLowerCase(),
-                meaning: meaningMatch[1].trim(),
-                requiredSignatures: Number.parseInt(String(structured?.required_signatures || structured?.requiredSignatures || requiredMatch?.[1] || '1'), 10) || 1,
-                roles,
-                eligibleSigners,
-                signers,
-              };
             }
 
             function normalizeAttestation(comment) {
@@ -262,7 +229,7 @@ jobs:
               return;
             }
 
-            const request = parseRequestContext(requestComments[requestComments.length - 1].body || '');
+            const request = parseSignatureRequestContext(requestComments[requestComments.length - 1].body || '');
             if (!request) {
               core.warning(`Could not parse the latest signature request context for PR #${prNumber}; leaving labels unchanged.`);
               return;

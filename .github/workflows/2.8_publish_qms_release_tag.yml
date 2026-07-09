@@ -201,8 +201,22 @@ jobs:
             });
             const hasBaselineSignatureRequest = comments.some((comment) => {
               const body = String(comment.body || '');
-              return body.includes('<!-- signature-native-signature-request -->') &&
-                /Meaning of signature:\s+\*\*Approved Baseline Release\*\*/i.test(body);
+              if (!body.includes('<!-- signature-native-signature-request -->')) return false;
+              // Prefer the structured SIGNATURE_REQUEST_CONTEXT_V1 block; the
+              // human-readable list is Markdown before PR #412 and HTML after,
+              // so the text fallback accepts both shapes. Mirrors
+              // .github/scripts/signature-request-context.js (not require()d
+              // here: this job runs without a checkout).
+              const structuredMatch = body.match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
+              if (structuredMatch && structuredMatch[1]) {
+                try {
+                  const structured = JSON.parse(structuredMatch[1].trim());
+                  if (String(structured?.meaning || '').trim() === 'Approved Baseline Release') return true;
+                } catch {
+                  // fall through to the text check
+                }
+              }
+              return /Meaning of signature:\s*(?:\*\*|<strong>)Approved Baseline Release(?:\*\*|<\/strong>)/i.test(body);
             });
             if (!hasBaselineSignatureRequest) {
               core.setFailed(`PR #${prNumber} has signature/complete but no Approved Baseline Release signature request.`);

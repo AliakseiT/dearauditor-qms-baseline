@@ -55,6 +55,12 @@ jobs:
           github-token: ${{ steps.app_token.outputs.token }}
           script: |
             const fs = require('fs');
+            // Trusted default-branch module (checked out above); shared with
+            // 2.6. Prefers the structured SIGNATURE_REQUEST_CONTEXT_V1 block
+            // and accepts both the Markdown (pre-#412) and HTML (post-#412)
+            // human-readable shapes. Unit-tested in
+            // .github/scripts/signature-request-context.test.js.
+            const { parseSignatureRequestContext } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/signature-request-context.js`);
 
             const prNumber = Number(context.payload.issue?.number || 0);
             if (!prNumber) {
@@ -104,18 +110,6 @@ jobs:
               };
             }
 
-            function parseRequiredSignatures(requestBody) {
-              const m = String(requestBody || '').match(/Required signatures:\s*\*\*([0-9]+)\*\*/i);
-              const n = m ? Number.parseInt(m[1], 10) : 1;
-              return Number.isInteger(n) && n > 0 ? n : 1;
-            }
-
-            function parseMeaning(requestBody) {
-              const m = String(requestBody || '').match(/Meaning of signature:\s*\*\*([^*]+)\*\*/i)
-                || String(requestBody || '').match(/Meaning of signature:\s*`([^`]+)`/i);
-              return m ? String(m[1] || '').trim() : '';
-            }
-
             const sourcePayload = parseJsonBlock(sourceBody);
             if (!sourcePayload) {
               core.setFailed('Could not parse attestation JSON from triggering comment.');
@@ -148,8 +142,9 @@ jobs:
               })
               .sort((a, b) => Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0));
             const latestRequest = requestComments.length > 0 ? requestComments[requestComments.length - 1] : null;
-            const requiredSignatures = parseRequiredSignatures(latestRequest?.body || '');
-            const requestMeaning = parseMeaning(latestRequest?.body || '');
+            const requestContext = parseSignatureRequestContext(latestRequest?.body || '');
+            const requiredSignatures = requestContext?.requiredSignatures || 1;
+            const requestMeaning = requestContext?.meaning || '';
 
             const expectedHash = sourceNorm.target_hash || '';
             const expectedMeaning = sourceNorm.meaning_of_signature || requestMeaning || 'Approved Quality Record';
