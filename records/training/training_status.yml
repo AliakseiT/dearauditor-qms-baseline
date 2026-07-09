@@ -1,7 +1,7 @@
 version: 1
-generated_at_utc: '2026-07-09T16:06:52Z'
+generated_at_utc: '2026-07-09T18:30:09Z'
 source_repository: AliakseiT/dearauditor-qms-baseline
-source_event_count: 6
+source_event_count: 7
 users:
   aliakseit:
     full_name: Aliaksei Tsitovich
@@ -498,8 +498,8 @@ users:
         meaning_of_signature: Completed QMS Training Review
       SOP-023:
         trained_revision: R00
-        trained_at_utc: '2026-07-09T16:05:38.770Z'
-        from_revision: MANUAL
+        trained_at_utc: '2026-07-09T16:49:13.087Z'
+        from_revision: UNTRAINED
         roles_in_scope:
         - engineer
         - engineering_lead
@@ -507,14 +507,13 @@ users:
         - qa_lead
         - technical_qms_maintainer
         - usability_lead
-        source_issue: 401
-        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (QMS-2026-06-01-R004,
-          manual)'
-        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401
-        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401#issuecomment-4927138159
-        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401#issuecomment-4927134911
-        evidence_release_tag: sig-train-401-h1d4e2bfba8c1-r01
-        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-72efba25a0f5ed9e93ad
+        source_issue: 421
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (QMS-2026-07-09-R005)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/421
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/421#issuecomment-4927517362
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/421#issuecomment-4927514723
+        evidence_release_tag: sig-train-421-hce9dca370bff-r01
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-19f2c083a02d6b076ada
         signer_login: aliakseit
         signer_full_name: Aliaksei Tsitovich
         meaning_of_signature: Completed QMS Training Review
