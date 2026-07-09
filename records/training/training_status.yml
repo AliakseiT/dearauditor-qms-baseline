@@ -1,7 +1,7 @@
 version: 1
-generated_at_utc: '2026-06-12T11:08:46Z'
+generated_at_utc: '2026-07-09T16:06:52Z'
 source_repository: AliakseiT/dearauditor-qms-baseline
-source_event_count: 5
+source_event_count: 6
 users:
   aliakseit:
     full_name: Aliaksei Tsitovich
@@ -493,6 +493,28 @@ users:
         attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/394#issuecomment-4685453996
         evidence_release_tag: sig-train-394-h1a87e98efb77-r01
         evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-d781719ba9139ef29e66
+        signer_login: aliakseit
+        signer_full_name: Aliaksei Tsitovich
+        meaning_of_signature: Completed QMS Training Review
+      SOP-023:
+        trained_revision: R00
+        trained_at_utc: '2026-07-09T16:05:38.770Z'
+        from_revision: MANUAL
+        roles_in_scope:
+        - engineer
+        - engineering_lead
+        - management_representative
+        - qa_lead
+        - technical_qms_maintainer
+        - usability_lead
+        source_issue: 401
+        source_issue_title: 'TRAINING REQUIRED: Aliaksei Tsitovich (QMS-2026-06-01-R004,
+          manual)'
+        source_issue_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401
+        completion_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401#issuecomment-4927138159
+        attestation_comment_url: https://github.com/AliakseiT/dearauditor-qms-baseline/issues/401#issuecomment-4927134911
+        evidence_release_tag: sig-train-401-h1d4e2bfba8c1-r01
+        evidence_release_url: https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/untagged-72efba25a0f5ed9e93ad
         signer_login: aliakseit
         signer_full_name: Aliaksei Tsitovich
         meaning_of_signature: Completed QMS Training Review
