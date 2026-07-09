@@ -37,6 +37,16 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        # Provides the shared signature-request-context parser (this job
+        # previously carried an inline copy because it ran without a
+        # checkout). Pinned to the default branch so a dispatch or PR event
+        # from any other ref still uses the authoritative parser rather than
+        # a branch-local copy.
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
       - name: Create GitHub App token for release tag
         id: app_token
         uses: actions/create-github-app-token@v3
@@ -199,24 +209,20 @@ jobs:
               issue_number: prNumber,
               per_page: 100,
             });
+            // Trusted default-branch module (checked out above); shared with
+            // the other signature workflows (2.4/2.5/2.6). Prefers the
+            // structured SIGNATURE_REQUEST_CONTEXT_V1 block and accepts both
+            // the Markdown (pre-#412) and HTML (post-#412) human-readable
+            // shapes. Unit-tested in
+            // .github/scripts/signature-request-context.test.js. Returns null
+            // when the comment lacks a parseable target hash or meaning, so
+            // such comments do not count as a baseline signature request
+            // (fails closed via the check below).
+            const { parseSignatureRequestContext } = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/signature-request-context.js`);
             const hasBaselineSignatureRequest = comments.some((comment) => {
               const body = String(comment.body || '');
               if (!body.includes('<!-- signature-native-signature-request -->')) return false;
-              // Prefer the structured SIGNATURE_REQUEST_CONTEXT_V1 block; the
-              // human-readable list is Markdown before PR #412 and HTML after,
-              // so the text fallback accepts both shapes. Mirrors
-              // .github/scripts/signature-request-context.js (not require()d
-              // here: this job runs without a checkout).
-              const structuredMatch = body.match(/<!--\s*SIGNATURE_REQUEST_CONTEXT_V1\s*([\s\S]*?)-->/i);
-              if (structuredMatch && structuredMatch[1]) {
-                try {
-                  const structured = JSON.parse(structuredMatch[1].trim());
-                  if (String(structured?.meaning || '').trim() === 'Approved Baseline Release') return true;
-                } catch {
-                  // fall through to the text check
-                }
-              }
-              return /Meaning of signature:\s*(?:\*\*|<strong>)Approved Baseline Release(?:\*\*|<\/strong>)/i.test(body);
+              return parseSignatureRequestContext(body)?.meaning === 'Approved Baseline Release';
             });
             if (!hasBaselineSignatureRequest) {
               core.setFailed(`PR #${prNumber} has signature/complete but no Approved Baseline Release signature request.`);
