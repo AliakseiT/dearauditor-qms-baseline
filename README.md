@@ -27,7 +27,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 | Understand workflows, automations, and trust boundaries | [System architecture](docs/architecture/README.md) |
 | Open the end-to-end automation diagram | [Workflow automation map](docs/architecture/README.md#6-automation-map) |
 | Check published GitHub releases | [Releases](https://github.com/AliakseiT/dearauditor-qms-baseline/releases) |
-| Ask about adoption, support, or pilot use | [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch) |
+| Ask about adoption, support, or pilot use | [Commercial support and adoption help](#commercial-support-and-adoption-help) |
 
 ## Baseline Snapshot
 
@@ -152,6 +152,15 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [Workflow automation map](docs/architecture/README.md#6-automation-map)
 - [GitHub backup and validation](docs/architecture/GITHUB_BACKUP_AND_VALIDATION.md)
 - [Signature worker service](services/signature-worker/README.md)
+
+## Commercial Support and Adoption Help
+
+This baseline is maintained by DearAuditor. If you want hands-on help adopting it - mirroring it into your controlled repository, tailoring, training, validating it for intended use, or producing IQ/OQ/PQ validation documentation - contact the maintainers directly:
+
+- **Aliaksei Tsitovich** - Management Representative, maintainer - [LinkedIn](https://www.linkedin.com/in/aliaksei-tsitovich) - [aliaksei@dearauditor.ch](mailto:aliaksei@dearauditor.ch)
+- **Søren Thorup** - Quality Assurance Lead - [LinkedIn](https://www.linkedin.com/in/sorenthorup/) - [soren@dearauditor.ch](mailto:soren@dearauditor.ch)
+
+An introductory conversation costs nothing and does not commit you to anything.
 
 ## Repository Context
 
