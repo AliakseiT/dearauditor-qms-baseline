@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: If you reference this baseline in your work, cite it as below.
+title: DearAuditor Open QMS Baseline
+type: software
+authors:
+  - family-names: Tsitovich
+    given-names: Aliaksei
+    email: aliaksei@dearauditor.ch
+repository-code: https://github.com/AliakseiT/dearauditor-qms-baseline
+url: https://qms.dearauditor.ch
+abstract: >-
+  An open-source, GitHub-native electronic Quality Management System (eQMS)
+  baseline for medical device and regulated software teams. GitHub Issues,
+  Pull Requests, Actions, and Releases form the quality system of record.
+  The baseline ships a Quality Manual, SOPs, work instructions, gap analyses,
+  record templates, and workflow automation for ISO 9001, ISO 13485,
+  ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001,
+  ISO/IEC 42001, GDPR, and the Swiss nFADP, plus an optional GAMP 5 / GxP
+  overlay covering 21 CFR Part 11 and EU Annex 11 expectations.
+keywords:
+  - eQMS
+  - QMS
+  - quality management system
+  - medical devices
+  - SaMD
+  - ISO 13485
+  - IEC 62304
+  - ISO 14971
+  - 21 CFR Part 11
+  - GAMP 5
+  - regulatory compliance
+license:
+  - Apache-2.0
+  - CC-BY-SA-4.0
+version: QMS-2026-07-09-R005
+date-released: '2026-07-09'
