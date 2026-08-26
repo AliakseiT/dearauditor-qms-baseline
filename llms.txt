@@ -1,0 +1,33 @@
+# DearAuditor Open QMS Baseline
+
+> An open-source, GitHub-native electronic Quality Management System (eQMS)
+> baseline for medical device and regulated software teams. GitHub Issues,
+> Pull Requests, Actions, and Releases form the quality system of record.
+> Companies mirror the baseline into a private repository, tailor it,
+> validate it, and run their QMS entirely in Git. Covers ISO 9001, ISO 13485,
+> ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001,
+> ISO/IEC 42001, GDPR, Swiss nFADP, and an optional GAMP 5 / GxP overlay
+> (21 CFR Part 11, EU Annex 11).
+
+Current published baseline: QMS-2026-07-09-R005
+(https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-07-09-R005).
+Licensing: Apache-2.0 for code and automation, CC BY-SA 4.0 for documents.
+Contact: aliaksei@dearauditor.ch.
+
+## Docs
+
+- [README](README.md): project overview and navigation
+- [QM-001 Quality Manual](qm/QM-001-QualityManual.md): top-level policy and scope
+- [Open-source adoption model](docs/open-source/README.md): how a company adopts the baseline
+- [Adoption profiles overview](docs/adoption/README.md): which parts apply to which product type
+- [Adoption profiles in detail](docs/adoption/profiles.md): standards mapping per application scenario
+- [System architecture](docs/architecture/README.md): workflows, automations, trust boundaries
+- [Bootstrap example](examples/bootstrap/README.md): example matrices and records for a new adopter
+- [Agent guide](AGENTS.md): rules for AI agents working in this repository
+
+## Web
+
+- [Landing page](https://qms.dearauditor.ch/): human-readable overview with FAQ
+- [Site llms.txt](https://qms.dearauditor.ch/llms.txt): web version of this index
+- [Full project summary](https://qms.dearauditor.ch/llms-full.txt): scenarios, standards, and FAQ in one document
+- [DearAuditor toolset](https://dearauditor.ch): AI-assisted technical-documentation auditing application
