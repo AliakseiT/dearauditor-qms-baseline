@@ -1,0 +1,31 @@
+name: Regulatory Commitment Review
+description: Review an applied/planned/not_applicable/unknown entry in matrices/regulatory_market_scope.yml.
+title: "[Commitment review] "
+labels: ["regulatory", "governance"]
+body:
+  - type: input
+    id: framework
+    attributes:
+      label: Framework
+      placeholder: "EN 18286:2026 (EU AI Act provider QMS)"
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: New status
+      options: ["applied", "planned", "not_applicable", "unknown"]
+    validations:
+      required: true
+  - type: input
+    id: review_by
+    attributes:
+      label: Review by (YYYY-MM-DD)
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale / trigger narrative
+    validations:
+      required: true

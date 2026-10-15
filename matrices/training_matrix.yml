@@ -68,7 +68,7 @@ roles:
       SOP-019: R13
       SOP-020: R13
       SOP-021: R02
-      SOP-022: R02
+      SOP-022: R03
       SOP-023: R00
   engineer:
     users:
@@ -133,7 +133,7 @@ roles:
       SOP-018: R10
       SOP-020: R13
       SOP-021: R02
-      SOP-022: R02
+      SOP-022: R03
       SOP-023: R00
   technical_qms_maintainer:
     users:
@@ -255,7 +255,7 @@ roles:
       SOP-019: R13
       SOP-020: R13
       SOP-021: R02
-      SOP-022: R02
+      SOP-022: R03
       SOP-023: R00
   management_representative:
     users:
@@ -309,6 +309,6 @@ roles:
       SOP-019: R13
       SOP-020: R13
       SOP-021: R02
-      SOP-022: R02
+      SOP-022: R03
       SOP-023: R00
       SOP-024: R00

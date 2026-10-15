@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R09
-revision_date: 2026-05-26
+revision: R10
+revision_date: 2026-10-15
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -108,6 +108,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - IEC 82304-1:2016
 - ISO/IEC 27001:2022, including ISO/IEC 27001:2022/Amd 1:2024
 - ISO/IEC 42001:2023
+- EN 18286:2026 (EU AI Act provider QMS), when an AI system is provided in the EU
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
 - Switzerland: MedDO, including software classification references
@@ -158,3 +159,4 @@ QMS tooling and validation baselines are maintained in:
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
 | R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |
+| R10 | 2026-10-15 | Added EN 18286:2026 EU AI Act provider QMS to the standards framework and cross-referenced SOP-024. |
