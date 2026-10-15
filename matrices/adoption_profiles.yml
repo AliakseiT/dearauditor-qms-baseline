@@ -1,4 +1,4 @@
-version: 1
+version: 2
 owner_role: management_representative
 last_reviewed_on: "2026-06-14"
 status: optional_adoption_aid
@@ -114,6 +114,7 @@ profiles:
       - "IEC 82304-1:2016"
       - "ISO/IEC 42001:2023"
       - "ISO/IEC 27001:2022 (incl. Amd 1:2024)"
+      - "EN 18286:2026 (EU AI Act provider QMS, when an AI system is provided in the EU under Reg. (EU) 2024/1689)"
       - "GDPR / Swiss nFADP (where in scope)"
     boundary: >-
       Device qualification and classification must be determined per
@@ -155,6 +156,7 @@ profiles:
       - "ISO 9001:2015 (incl. Amd 1:2024)"
       - "ISO/IEC 42001:2023"
       - "ISO/IEC 27001:2022 (incl. Amd 1:2024)"
+      - "EN 18286:2026 (when an EU market placement is made under Reg. (EU) 2024/1689)"
       - "GDPR / Swiss nFADP (where personal data is processed)"
     boundary: >-
       Explicitly NOT a medical device: the ISO 13485 / IEC 62304 / IEC 62366-1
@@ -167,6 +169,54 @@ profiles:
           diagnostic/therapeutic claim; the product then qualifies as SaMD.
     adopter_must_provide:
       - Confirmation that the product makes no medical claim and is out of device scope.
+
+  - id: eu_ai_act_high_risk
+    name: "EU AI Act high-risk provider (AI system placed on the EU market)"
+    baseline_coverage: partial
+    intended_for: >-
+      A provider of an AI system that falls under Regulation (EU) 2024/1689 as
+      high-risk (Art. 6(1) Annex I: system is a safety component of a product
+      requiring third-party conformity assessment, or Art. 6(2) Annex III:
+      high-risk use case) and is placed on, or put into service in, the European
+      Union. Not tied to any product-specific industry; an adopter may combine
+      this with another profile (e.g. ai_diagnostic) for device software.
+    not_for:
+      - Adoption flows without an EU market placement (see app_with_ai).
+      - Standalone compliance advice: the adopter determines high-risk status per Reg. (EU) 2024/1689 Art. 6.
+    adds_sops:
+      - SOP-022  # AI management system
+      - SOP-024  # AI Act provider QMS
+      - SOP-021  # Information security management
+      - SOP-023  # Data protection and privacy management
+    gap_analyses:
+      - matrices/en_18286_gap_analysis.yml
+      - matrices/iso_iec_42001_gap_analysis.yml
+      - matrices/iso_27001_gap_analysis.yml
+      - matrices/gdpr_gap_analysis.yml
+      - matrices/swiss_nfadp_gap_analysis.yml
+      - matrices/privacy_data_protection_gap_index.yml
+    record_families:
+      - records/aims
+      - records/ai_act
+      - records/isms
+      - records/privacy
+    qms_intent_standards:
+      - "ISO 9001:2015 (incl. Amd 1:2024)"
+      - "ISO/IEC 42001:2023"
+      - "EN 18286:2026 (Reg. (EU) 2024/1689 Art. 17)"
+      - "ISO/IEC 27001:2022 (incl. Amd 1:2024)"
+      - "GDPR / Swiss nFADP (where personal data is processed)"
+    boundary: >-
+      High-risk qualification and conformity assessment route (Annex VI vs Annex VII)
+      must be recorded in matrices/regulatory_market_scope.yml before market placement.
+      ISO 13485 sectoral QMS controls apply only when the product is also a medical
+      device (combine with ai_diagnostic in that case).
+    escalation: []
+    adopter_must_provide:
+      - Role determination register (provider vs deployer/importer/distributor).
+      - Conformity assessment route decision (Annex VI internal control or Annex VII notified body).
+      - Technical documentation set mapping to Reg. (EU) 2024/1689 Annex IV (in addition to any device technical documentation).
+      - Post-market monitoring and serious incident procedures matching statutory deadlines.
 
   - id: digital_health_app
     name: "Digital health app (non-device / wellness boundary)"

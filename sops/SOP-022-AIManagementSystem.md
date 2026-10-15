@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-022
 title: AI Management System (ISO/IEC 42001:2023)
-revision: R02
-revision_date: 2026-05-04
+revision: R03
+revision_date: 2026-10-15
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -12,7 +12,7 @@ related_issue: "#291"
 Define the AI Management System (AIMS) procedure used to govern AI components inside ACME medical-device software so that AI-related accountability, lifecycle, risk, impact, and post-market interfaces are controlled. This procedure aligns the GitHub-native QMS operating model with ISO/IEC 42001:2023 while reusing the existing QMS controls for document control, governance, design, change, supplier control, competence, audit, management review, CAPA, software lifecycle, product risk, and metrics.
 
 ## 2. Scope
-Applies to AI components, models, training data, inference behavior, and AI lifecycle decisions used inside ACME medical-device software products. AI tooling used to author or operate the QMS itself (for example authoring assistants, validation aids) is governed under existing supplier control, tooling validation, and document control procedures and is out of scope for the AIMS unless the same tooling becomes part of a released product.
+Applies to AI components, models, training data, inference behavior, and AI lifecycle decisions used inside ACME software products placed on any market, including non-device EU-facing products. AI tooling used to author or operate the QMS itself (for example authoring assistants, validation aids) is governed under existing supplier control, tooling validation, and document control procedures and is out of scope for the AIMS unless the same tooling becomes part of a released product. The organisational governance layer is carried here (ISO/IEC 42001:2023); the regulatory layer for EU-provided AI systems is `SOP-024` (EN 18286:2026).
 
 ## 3. Inputs
 - AI-related requirements from intended use, users, regulators, customers, and adopted standards
@@ -131,3 +131,4 @@ Applies to AI components, models, training data, inference behavior, and AI life
 | R00 | 2026-04-25 | Initial release establishing the GitHub-native AIMS procedure, ISO/IEC 42001:2023 traceability baseline, AIMS register and Statement of Applicability templates, and AI lifecycle/impact/event interfaces to existing QMS controls. |
 | R01 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R02 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R03 | 2026-10-15 | Widen AIMS scope from medical-device-only to all software products placed on any market; add cross-reference to SOP-024 (EN 18286:2026 regulatory layer for EU AI provision). |

@@ -20,6 +20,14 @@ RECORD_INDEX_RULES = [
 
 ISO_9001_MATRIX_PATH = "matrices/iso_9001_gap_analysis.yml"
 ISO_9001_REQUIRED_CLAUSES = ["4.1", "5.1", "6.1", "7.1", "8.1", "9.1", "10.3"]
+EN_18286_MATRIX_PATH = "matrices/en_18286_gap_analysis.yml"
+EN_18286_ARTICLE_17_ELEMENTS = [
+    "first_sentence", "a_strategy_for_regulatory_compliance", "b_design_and_development_controls",
+    "c_techniques_for_verification", "d_test_and_validation_procedures", "e_selection_of_technical_specifications",
+    "f_data_management", "g_risk_management", "h_post_market_monitoring", "i_serious_incident_reporting",
+    "j_communications_with_authorities", "k_technical_documentation_and_instructions", "l_resource_management_and_suppliers",
+    "m_roles_responsibilities_authority"
+]
 
 ARGS = None
 
@@ -561,6 +569,55 @@ class QMSContentGuardTests(unittest.TestCase):
                 if "QM-001" not in json.dumps(clause_map):
                     failures.append(f"{ISO_9001_MATRIX_PATH}: clause_to_control_map must reference QM-001.")
 
+        self.assert_no_failures(failures)
+
+    def test_en_18286_gap_analysis_is_published_and_mapped(self):
+        failures = []
+        matrix_path = Path(EN_18286_MATRIX_PATH)
+        if not matrix_path.exists():
+            failures.append("EN 18286 gap analysis is missing: an Article 17 provider QMS must be published and mapped.")
+        else:
+            try:
+                matrix = load_yaml_via_ruby(EN_18286_MATRIX_PATH) or {}
+            except Exception as exc:
+                failures.append(f"{EN_18286_MATRIX_PATH}: YAML could not be parsed ({exc}).")
+                matrix = {}
+            if matrix:
+                standard = matrix.get("standard", {}) or {}
+                if "EN 18286" not in str(standard.get("exact_name", "")):
+                    failures.append(f"{EN_18286_MATRIX_PATH}: standard.exact_name must name EN 18286.")
+                if "EN 18286:2026" not in str(standard.get("normative_base", "")):
+                    failures.append(f"{EN_18286_MATRIX_PATH}: standard.normative_base must read EN 18286:2026.")
+                if matrix.get("analysis_provenance") is None:
+                    failures.append(f"{EN_18286_MATRIX_PATH}: analysis_provenance is required (clause numbering is provisional).")
+                c2c = matrix.get("clause_to_control_map", {}) or {}
+                for c in ("4", "5", "6", "7", "8", "9", "10"):
+                    if not c2c.get(c):
+                        failures.append(f"{EN_18286_MATRIX_PATH}: clause_to_control_map[{c}] is empty.")
+                a17 = matrix.get("article_17_element_to_control_map", {}) or {}
+                missing_elements = [e for e in EN_18286_ARTICLE_17_ELEMENTS if not a17.get(e)]
+                if missing_elements:
+                    failures.append(
+                        f"{EN_18286_MATRIX_PATH}: article_17_element_to_control_map is missing "
+                        f"{', '.join(missing_elements)}."
+                    )
+                if "SOP-024" not in str(c2c):
+                    failures.append(f"{EN_18286_MATRIX_PATH}: clause map must reference SOP-024.")
+                if matrix.get("technical_specification_selection") is None:
+                    failures.append(f"{EN_18286_MATRIX_PATH}: technical_specification_selection is required.")
+                if technical_specification_selection := matrix.get("technical_specification_selection", None):
+                    if not (technical_specification_selection.get("companion_standards")
+                           and any(cs.get("oj_cited") is True for cs in technical_specification_selection.get("companion_standards", []))):
+                        pass
+                    if not technical_specification_selection.get("companion_standards"):
+                        failures.append(f"{EN_18286_MATRIX_PATH}: companion_standards list required.")
+        if "(EN 18286:2026)" not in self.ctx.readme_text and matrix_path.exists():
+            # matrix is acceptable as a non-readme referent only when linked via README
+            if EN_18286_MATRIX_PATH not in self.ctx.readme_text:
+                failures.append(f"README.md must link {EN_18286_MATRIX_PATH}.")
+        trace_text = Path("matrices/quality_manual_traceability.yml").read_text(encoding="utf-8") if Path("matrices/quality_manual_traceability.yml").exists() else ""
+        if EN_18286_MATRIX_PATH not in trace_text:
+            failures.append(f"matrices/quality_manual_traceability.yml must reference {EN_18286_MATRIX_PATH}.")
         self.assert_no_failures(failures)
 
     def test_risk_records_have_valid_schema(self):

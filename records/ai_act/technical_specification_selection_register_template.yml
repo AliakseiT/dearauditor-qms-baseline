@@ -1,0 +1,47 @@
+version: 1
+record_type: technical_specification_selection_register
+register_id: "TSSR-<product>-<yyyy>-<nn>"
+product: "<product-id>"
+ai_system: "<ai-system-id>"
+prepared_by: "<github_login>"
+approval:
+  meaning_of_signature: "Approved technical specification selection register"
+  signer_roles: [Quality Assurance Lead]
+  required_signatures: 1
+last_reviewed_on: "2026-10-15"
+selections:
+  - element: "Risk management (Art. 9)"
+    standard: "EN 18286:2026"
+    selection_status: applied
+    coverage: "partial"
+    gap: "Operationalised; full clause coverage per companion EN 18228 pending (not OJ-cited)."
+    evidence: "sops/SOP-018-RiskManagement.md, SOP-024 Sec 6.4"
+  - element: "Data and data governance (Art. 10)"
+    standard: "EN 18229 / EN 18284"
+    selection_status: gap_justified
+    coverage: "alternative"
+    gap: "Companions not OJ-cited; data governance covered by this baseline's records/ai_act/ai_data_governance_record."
+    evidence: "records/ai_act/ai_data_governance_record_template.yml"
+  - element: "Transparency and human oversight (Art. 13/14)"
+    standard: "EN 18229 Parts 1-2"
+    selection_status: gap_justified
+    coverage: "partial"
+    gap: "AI Act operational elements covered by design outputs in records/design/; human oversight by use specification."
+    evidence: "records/design/system_requirements_spec_template.yml"
+  - element: "Cybersecurity (Art. 15 / Annex I Annex III)"
+    standard: "EN 18282"
+    selection_status: gap_justified
+    coverage: "alternative"
+    gap: "Not OJ-cited; requirements handled under SOP-021."
+    evidence: "sops/SOP-021-InformationSecurityManagement.md"
+  - element: "Logging and monitoring"
+    standard: "EN ISO/IEC 24970"
+    selection_status: gap_justified
+    coverage: "alternative"
+    gap: "Not OJ-cited; record keeping in SOP-001 + system logs."
+    evidence: "sops/SOP-001-DocumentAndRecordControl.md"
+  - element: "Quality management system (Art. 17)"
+    standard: "EN 18286:2026"
+    selection_status: applied
+    coverage: "full"
+    gap: "Clause numbers provisional; verify against purchased normative text."
