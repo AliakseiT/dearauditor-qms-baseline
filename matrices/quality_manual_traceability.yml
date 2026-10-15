@@ -1,4 +1,4 @@
-version: 8
+version: 9
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
@@ -17,11 +17,17 @@ additional_standards:
     normative_base: "ISO/IEC 27001:2022 + ISO/IEC 27001:2022/Amd 1:2024"
   - exact_name: "ISO/IEC 42001:2023 Information technology - Artificial intelligence - Management system"
     normative_base: "ISO/IEC 42001:2023"
+  - exact_name: "EN 18286:2026 Artificial intelligence - Quality management system for EU AI Act regulatory purposes"
+    normative_base: "EN 18286:2026"
 additional_regulatory_frameworks:
   - exact_name: "Regulation (EU) 2016/679 General Data Protection Regulation (GDPR)"
     normative_base: "GDPR"
   - exact_name: "Swiss Federal Act on Data Protection (FADP), revised Act in force from 2023-09-01"
     normative_base: "Swiss nFADP/nFDAP"
+  - exact_name: "Regulation (EU) 2024/1689 on artificial intelligence (Artificial Intelligence Act)"
+    normative_base: "EU AI Act"
+  - exact_name: "Commission Implementing Decision (EU) 2026/2274"
+    normative_base: "EU AI Act harmonised standard citation"
 company_reference: "matrices/company_profile.yml"
 regulatory_scope_reference: "matrices/regulatory_market_scope.yml"
 qms_tooling_reference: "matrices/qms_tooling_inventory.yml"
@@ -126,6 +132,11 @@ quality_manual_sections:
     iso_clauses: ["ISO 9001:2015 4-10"]
     controlling_documents: ["QM-001", "SOP-005", "SOP-004", "SOP-011", "SOP-012", "SOP-016", "matrices/iso_9001_gap_analysis.yml"]
     status: "implemented_with_adopter_specific_completion"
+  - section_id: QM-21
+    section_name: "AI Act provider QMS for AI systems placed on the EU market"
+    iso_clauses: ["EN 18286 4-10", "Regulation (EU) 2024/1689 Art. 9, 13, 14, 15, 17, 72, 73"]
+    controlling_documents: ["SOP-024", "SOP-022", "SOP-018", "SOP-014", "SOP-021"]
+    status: "implemented_with_product_specific_extensions"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -171,6 +182,10 @@ supporting_definitions:
     status: "implemented_with_product_specific_extensions"
     reference: "matrices/iso_iec_42001_gap_analysis.yml, sops/SOP-022-AIManagementSystem.md"
     note: "ISO/IEC 42001 AIMS scope, AI risk and impact assessment, Statement of Applicability, lifecycle, data, information for users, event handling, audit, review, and improvement interfaces are implemented through one dedicated AIMS SOP plus existing QMS controls. AI tooling used to author or operate the QMS itself is governed under existing supplier and tooling-validation controls."
+  - item: "EN 18286 provider QMS baseline for EU-provided AI systems"
+    status: "implemented_with_product_specific_extensions"
+    reference: "matrices/en_18286_gap_analysis.yml, sops/SOP-024-AIActProviderQMS.md"
+    note: "Article 17 QMS layer for AI systems placed on or put into service in the European Union. Activated via an applied EN 18286 commitment in matrices/regulatory_market_scope.yml."
   - item: "Data protection and privacy management baseline"
     status: "implemented_with_company_specific_completion_when_in_scope"
     reference: "matrices/privacy_data_protection_gap_index.yml, matrices/gdpr_gap_analysis.yml, matrices/swiss_nfadp_gap_analysis.yml, sops/SOP-023-DataProtectionAndPrivacyManagement.md, records/privacy/*"
