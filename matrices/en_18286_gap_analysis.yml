@@ -1,0 +1,25 @@
+version: 1
+analysis_date: "2026-10-15"
+status: placeholder
+standard:
+  exact_name: "EN 18286:2026 Artificial intelligence - Quality management system for EU AI Act regulatory purposes"
+  normative_base: "EN 18286:2026"
+  normative_source_verified: false
+analysis_scope: >
+  Provider quality management system for AI systems placed on the EU market under
+  Regulation (EU) 2024/1689. Clause numbering and content are pending verification
+  against the purchased standard; all refs are drafts current as of 2026-10-15.
+analysis_provenance:
+  sources:
+    - "DIN EN 18286:2026-09 published table of contents (clause 4-10 skeleton)"
+    - "CMS Law-Now analysis of prEN 18286 (Oct 2025 enquiry draft), Article 17(1) to clause map"
+    - "Commission Implementing Decision (EU) 2026/2274"
+  notes:
+    - "Clause numbers 8-10 were renumbered between the enquiry draft and the published edition; verify against the purchased normative text before treating any clause reference as binding."
+    - "Annex D maps to EN ISO/IEC 42001:2026, whereas this baseline tracks ISO/IEC 42001:2023. No correspondence is claimed until the 2026 edition is reviewed."
+outstanding_gaps:
+  - "Full clause_to_control_map populates in the SOP-024 PR."
+  - "article_17_element_to_control_map, technical_specification_selection, and annex crosswalk populate in the SOP-024 PR."
+clause_to_control_map: {}
+article_17_element_to_control_map: {}
+technical_specification_selection: {}
