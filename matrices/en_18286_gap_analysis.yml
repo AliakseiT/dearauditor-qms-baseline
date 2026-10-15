@@ -1,25 +1,94 @@
 version: 1
 analysis_date: "2026-10-15"
-status: placeholder
 standard:
   exact_name: "EN 18286:2026 Artificial intelligence - Quality management system for EU AI Act regulatory purposes"
   normative_base: "EN 18286:2026"
   normative_source_verified: false
 analysis_scope: >
-  Provider quality management system for AI systems placed on the EU market under
-  Regulation (EU) 2024/1689. Clause numbering and content are pending verification
-  against the purchased standard; all refs are drafts current as of 2026-10-15.
+  Provider quality management system for AI systems placed on, or put into service
+  in, the European Union under Regulation (EU) 2024/1689. Clause numbering and
+  content drawn from the published DIN EN 18286:2026-09 table of contents and the
+  October 2025 enquiry-draft analysis; verify against purchased normative text.
 analysis_provenance:
   sources:
-    - "DIN EN 18286:2026-09 published table of contents (clause 4-10 skeleton)"
-    - "CMS Law-Now analysis of prEN 18286 (Oct 2025 enquiry draft), Article 17(1) to clause map"
+    - "DIN EN 18286:2026-09 published table of contents"
+    - "CMS Law-Now analysis of prEN 18286 (Oct 2025 enquiry draft)"
     - "Commission Implementing Decision (EU) 2026/2274"
   notes:
-    - "Clause numbers 8-10 were renumbered between the enquiry draft and the published edition; verify against the purchased normative text before treating any clause reference as binding."
-    - "Annex D maps to EN ISO/IEC 42001:2026, whereas this baseline tracks ISO/IEC 42001:2023. No correspondence is claimed until the 2026 edition is reviewed."
+    - "Clauses 8-10 were renumbered between the enquiry draft and the published edition."
+    - "Annex D maps to EN ISO/IEC 42001:2026; this baseline tracks ISO/IEC 42001:2023. No full correspondence is claimed."
 outstanding_gaps:
-  - "Full clause_to_control_map populates in the SOP-024 PR."
-  - "article_17_element_to_control_map, technical_specification_selection, and annex crosswalk populate in the SOP-024 PR."
-clause_to_control_map: {}
-article_17_element_to_control_map: {}
-technical_specification_selection: {}
+  - "Normative clause content verification pending purchase of the standard."
+  - "AI Act companion standards (18228, 18282, 18283, 18284, 18229 Parts 1 and 2, 24970) are not OJ-cited."
+clause_to_control_map:
+  "4": ["SOP-024", "SOP-005", "QM-001", "matrices/regulatory_market_scope.yml"]
+  "5": ["QM-001", "SOP-005", "SOP-024"]
+  "6": ["SOP-024", "SOP-016", "SOP-018", "SOP-022"]
+  "7": ["SOP-001", "SOP-011", "SOP-024"]
+  "8": ["SOP-007", "SOP-008", "SOP-018", "SOP-019", "SOP-020", "SOP-022", "SOP-024", "WI-001", "WI-002"]
+  "9": ["SOP-009", "SOP-010", "SOP-012", "SOP-013", "SOP-014", "SOP-020", "SOP-024"]
+  "10": ["SOP-002", "SOP-003", "SOP-004", "SOP-016", "SOP-024"]
+article_17_element_to_control_map:
+  first_sentence:
+    - {clause: "4.1-4.4, 5.1, 5.3.1-5.3.3", control: "SOP-024 6.1", evidence: "records/mdf/*"}
+  a_strategy_for_regulatory_compliance:
+    - {clause: "4.4, 9.3.1-9.3.3", control: "SOP-024 6.2", evidence: "records/ai_act/regulatory_compliance_strategy_template.md"}
+  b_design_and_development_controls:
+    - {clause: "8.3.1-8.3.2", control: "SOP-024 6.4", evidence: "records/design/design_traceability_matrix_template.yml"}
+  c_techniques_for_verification:
+    - {clause: "8.4.1", control: "SOP-024 6.4", evidence: "WI-001-VerificationAndValidationExecution.md"}
+  d_test_and_validation_procedures:
+    - {clause: "8.4.2", control: "SOP-024 6.4", evidence: "WI-001-VerificationAndValidationExecution.md"}
+  e_selection_of_technical_specifications:
+    - {clause: "4.4.3", control: "SOP-024 6.3", evidence: "records/ai_act/technical_specification_selection_register_template.yml"}
+  f_data_management:
+    - {clause: "8.5", control: "SOP-024 6.5", evidence: "records/ai_act/ai_data_governance_record_template.yml"}
+  g_risk_management:
+    - {clause: "8.1", control: "SOP-018 + SOP-024 6.4", evidence: "records/risk/risk_register_template.yml"}
+  h_post_market_monitoring:
+    - {clause: "9.4", control: "SOP-014 + SOP-024 6.9", evidence: "records/pms/pms_plan_template.yml"}
+  i_serious_incident_reporting:
+    - {clause: "9.5", control: "SOP-013 + SOP-024 6.10", evidence: "records/ai_act/serious_incident_report_template.md"}
+  j_communications_with_authorities:
+    - {clause: "7.3", control: "SOP-024 6.12", evidence: "records/ai_act/authority_cooperation_log_template.md"}
+  k_technical_documentation_and_instructions:
+    - {clause: "4.5, 8.7", control: "SOP-024 6.11", evidence: "records/mdf/*"}
+  l_resource_management_and_suppliers:
+    - {clause: "7.1, 9.2", control: "SOP-010 + SOP-024 6.7", evidence: "records/suppliers/approved_supplier_list.yml"}
+  m_roles_responsibilities_authority:
+    - {clause: "5.3.1-5.3.3", control: "SOP-024 5", evidence: "QM-001"}
+technical_specification_selection:
+  companion_standards:
+    - {ref: "EN 18228 (AI risk management)", oj_cited: false, scope: "Art. 9 risk management system", interim: "Handled under existing SOP-018; Annex ZA reference only"}
+    - {ref: "EN 18282 (AI cybersecurity)", oj_cited: false, scope: "Art. 15 cybersecurity", interim: "Handled under SOP-021"}
+    - {ref: "EN 18283 (AI bias management)", oj_cited: false, scope: "Art. 10 data governance", interim: "Handled under SOP-024 6.5"}
+    - {ref: "EN 18284 (AI dataset governance)", oj_cited: false, scope: "Art. 10 data requirements", interim: "Handled under SOP-024 6.5"}
+    - {ref: "EN 18229 Parts 1-2 (trustworthiness)", oj_cited: false, scope: "Art. 12-15", interim: "Handled under SOP-019 + SOP-008"}
+    - {ref: "EN ISO/IEC 24970 (AI record keeping/logging)", oj_cited: false, scope: "Art. 12, Art. 72 PMM", interim: "System logs in ops + SOP-001"}
+    - {ref: "EN 18286:2026", oj_cited: true, scope: "Art. 17(1)(a)-(m)", interim: "OJ-cited via Implementing Decision (EU) 2026/2274"}
+baseline_reuse:
+  dedicated_sop: "SOP-024 (new)"
+  reused_qms_sops:
+    - "SOP-001"
+    - "SOP-002"
+    - "SOP-003"
+    - "SOP-004"
+    - "SOP-005"
+    - "SOP-007"
+    - "SOP-008"
+    - "SOP-009"
+    - "SOP-010"
+    - "SOP-011"
+    - "SOP-013"
+    - "SOP-014"
+    - "SOP-016"
+    - "SOP-018"
+    - "SOP-019"
+    - "SOP-020"
+    - "SOP-021"
+    - "SOP-022"
+    - "WI-001"
+    - "WI-002"
+notes:
+  - "No copyrighted standard text is included; only clause references, high-level control families, and implementation decisions."
+  - "AI Act companion standards are not OJ-cited as of 2026-10-15; 18228/18282/18283/18284/18229/24970 statuses are shown as such and they may be replaced by 42001 or 13485 controls in the interim."
