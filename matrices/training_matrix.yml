@@ -47,7 +47,7 @@ roles:
     awareness_documents:
       - SOP-004
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-002: R06
       SOP-003: R07
@@ -90,7 +90,7 @@ roles:
       - SOP-019
       - SOP-021
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-008: R11
       SOP-009: R11
@@ -121,7 +121,7 @@ roles:
       - SOP-006
       - SOP-019
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-002: R06
       SOP-007: R10
@@ -153,7 +153,7 @@ roles:
       - SOP-018
       - SOP-020
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-006: R05
       SOP-009: R11
@@ -197,7 +197,7 @@ roles:
       - SOP-022
       - SOP-023
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-008: R11
       SOP-011: R12
@@ -233,7 +233,7 @@ roles:
       - SOP-022
       - SOP-023
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-002: R06
       SOP-003: R07
@@ -287,7 +287,7 @@ roles:
       - SOP-023
       - SOP-024
     required_revisions:
-      QM-001: R09
+      QM-001: R10
       SOP-001: R15
       SOP-002: R06
       SOP-003: R07
