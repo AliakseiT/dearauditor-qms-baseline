@@ -74,8 +74,9 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [SOP-016 Quality Metrics and Data Analysis](sops/SOP-016-QualityMetricsAndDataAnalysis.md) - `R07`
 - [SOP-017 Infrastructure and Maintenance Control](sops/SOP-017-InfrastructureAndMaintenanceControl.md) - `R06`
 - [SOP-021 Information Security Management (ISO/IEC 27001)](sops/SOP-021-InformationSecurityManagement.md) - `R02`
-- [SOP-022 AI Management System (ISO/IEC 42001)](sops/SOP-022-AIManagementSystem.md) - `R02`
+- [SOP-022 AI Management System (ISO/IEC 42001)](sops/SOP-022-AIManagementSystem.md) - `R03`
 - [SOP-023 Data Protection and Privacy Management (GDPR and Swiss nFADP)](sops/SOP-023-DataProtectionAndPrivacyManagement.md) - `R00`
+- [SOP-024 AI Act Provider QMS (EN 18286:2026)](sops/SOP-024-AIActProviderQMS.md) - `R00`
 
 #### Development, Risk, and Release
 
@@ -128,8 +129,9 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-019 | Usability Engineering (IEC 62366-1) | sops/SOP-019-UsabilityEngineering.md | 2026-05-04 | R13 | Published |
 | SOP-020 | Software Lifecycle, Configuration, and Release Management (IEC 62304) | sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md | 2026-05-04 | R13 | Published |
 | SOP-021 | Information Security Management (ISO/IEC 27001) | sops/SOP-021-InformationSecurityManagement.md | 2026-05-04 | R02 | Published |
-| SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-05-04 | R02 | Published |
-| SOP-023 | Data Protection and Privacy Management (GDPR and Swiss nFADP) | sops/SOP-023-DataProtectionAndPrivacyManagement.md | 2026-05-14 | R00 | Published |
+| SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-10-15 | R03 | Published |
+| SOP-023 | Data Protection and Privacy Management (GDPR and Swiss nFADP) | sops/SOP-023-DataProtectionAndPrivacyManagement.md | 2026-05-14 | R00 | Published
+| SOP-024 | AI Act Provider QMS (EN 18286:2026) | sops/SOP-024-AIActProviderQMS.md | 2026-10-15 | R00 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-04-27 | R09 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-04-27 | R10 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->
@@ -144,7 +146,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)
 - [QMS tooling inventory and validation baseline](matrices/qms_tooling_inventory.yml)
 - [Signer registry](matrices/signer_registry.json)
-- Gap analyses: [ISO 9001](matrices/iso_9001_gap_analysis.yml), [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml), [ISO/IEC 27001](matrices/iso_27001_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml)
+- Gap analyses: [ISO 9001](matrices/iso_9001_gap_analysis.yml), [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml), [ISO/IEC 27001](matrices/iso_27001_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml), [EN 18286 (EU AI Act)](matrices/en_18286_gap_analysis.yml)
 
 ## Architecture and Automation
 
