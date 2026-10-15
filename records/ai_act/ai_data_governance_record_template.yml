@@ -1,0 +1,19 @@
+version: 1
+record_type: ai_data_governance_record
+record_id: "AIDG-<product>-<yyyy>-<nn>"
+product: "<product-id>"
+ai_system: "<ai-system-id>"
+prepared_by: "<github_login>"
+reviewed_on:
+datasets:
+  - dataset_id: "DS-01"
+    role: "training|validation|evaluation|monitoring"
+    origin: "<source description>"
+    licensing: "<license and terms>"
+    lawful_basis: "<GDPR lawful basis or N/A>"
+    representativeness_rationale: ""
+    special_category_data: "yes|no|not_assessed"
+    bias_examination: "<method and outcome>"
+    retention_policy: ""
+    decommissioning_plan: ""
+    controlled_by: "SOP-021 + records/privacy/lawful_basis_assessment_template.md"

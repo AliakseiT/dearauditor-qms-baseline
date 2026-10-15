@@ -1,0 +1,48 @@
+name: Regulatory Incident / AI Act Serious Incident Intake
+description: Log a potential regulatory incident (general + AI Act where applicable) with a statutory clock.
+title: "[Incident] "
+labels: ["incident", "regulatory"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      description: Affected product and version.
+      placeholder: "ACME product X v1.2.3"
+    validations:
+      required: true
+  - type: textarea
+    id: narrative
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: dropdown
+    id: deadline_class
+    attributes:
+      label: Deadline class (EU AI Act Art. 73)
+      options:
+        - "Critical infrastructure (2 days)"
+        - "Death (10 days)"
+        - "Rejected classification / other (15 days)"
+        - "Not on EU market / not high-risk (N/A)"
+    validations:
+      required: true
+  - type: input
+    id: occurred
+    attributes:
+      label: Incident occurred on (UTC)
+      placeholder: "2026-10-15T14:00Z"
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References (records/ai_act/serious_incident_report_template.md, SOP-013, SOP-024 6.10)
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have read SOP-013 and SOP-024 6.10. Report is filed as a SERIOUS incident within 24 hours of internal triage.
+          required: true
