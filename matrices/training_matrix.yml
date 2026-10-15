@@ -1,5 +1,5 @@
 ---
-version: 30
+version: 31
 users:
   AliakseiT:
     full_name: Aliaksei Tsitovich
@@ -285,6 +285,7 @@ roles:
       - SOP-021
       - SOP-022
       - SOP-023
+      - SOP-024
     required_revisions:
       QM-001: R09
       SOP-001: R15
@@ -310,3 +311,4 @@ roles:
       SOP-021: R02
       SOP-022: R02
       SOP-023: R00
+      SOP-024: R00
