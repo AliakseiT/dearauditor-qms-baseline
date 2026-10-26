@@ -20,6 +20,7 @@ analysis_provenance:
 outstanding_gaps:
   - "Normative clause content verification pending purchase of the standard."
   - "AI Act companion standards (18228, 18282, 18283, 18284, 18229 Parts 1 and 2, 24970) are not OJ-cited."
+  - "Annex ZA crosswalk (EN 18286 clause to Art. 17(1) element) waits for verification against the purchased normative text."
 clause_to_control_map:
   "4": ["SOP-024", "SOP-005", "QM-001", "matrices/regulatory_market_scope.yml"]
   "5": ["QM-001", "SOP-005", "SOP-024"]
