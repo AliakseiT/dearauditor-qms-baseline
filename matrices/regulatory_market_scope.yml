@@ -28,7 +28,7 @@ jurisdictions:
         - ref: "Regulation (EU) 2024/1689 (EU AI Act)"
           note: "Provider quality management system (Art. 17), risk management (Art. 9), post-market monitoring (Art. 72), serious incident reporting (Art. 73), technical documentation (Annex IV), and conformity assessment (Annexes VI/VII) apply to high-risk AI systems (Art. 6(1)/(2) + Annex I/III)."
         - ref: "Commission Implementing Decision (EU) 2026/2274 (12 Oct 2026)"
-          note: "Cites EN 18286:2026 (AI QMS) and provides presumption of conformity with Reg. (EU) 2024/1689 Art. 17(1)(a)-(m)."
+          note: "Cites EN 18286:2026 (AI QMS) in the Official Journal. Applying it gives a presumption of conformity only with the Reg. (EU) 2024/1689 Art. 17 requirements it covers, to the extent stated in its Annex ZA."
       source_links:
         - "https://eur-lex.europa.eu/eli/reg/2017/745/2025-01-10/eng"
         - "https://health.ec.europa.eu/latest-updates/update-mdcg-2019-11-rev1-qualification-and-classification-software-regulation-eu-2017745-and-2025-06-17_en"
@@ -71,25 +71,37 @@ regulatory_commitments:
     - framework: "EN ISO 13485:2016 (+A11:2021)"
       status: applied
       scope_note: "Core QMS spine; all medical-device SOPs applied."
+      evidence:
+        - "qm/QM-001-QualityManual.md"
+        - "matrices/iso_13485_gap_analysis.yml"
+        - "matrices/quality_manual_traceability.yml"
       scope_owner: management_representative
       re_evaluation_trigger: "Change in intended use or scope."
       review_by: "2026-12-31"
     - framework: "ISO/IEC 42001:2023"
       status: applied
       scope_note: "Product-AI AIMS under SOP-022; only when AI components are present in released or candidate products."
+      evidence:
+        - "sops/SOP-022-AIManagementSystem.md"
+        - "matrices/iso_iec_42001_gap_analysis.yml"
+        - "records/aims/"
       scope_owner: qa_lead
       re_evaluation_trigger: "Introduction or material change of an AI component."
       review_by: "2027-03-31"
     - framework: "EN 18286:2026 (EU AI Act provider QMS)"
       status: planned
-      scope_note: "Planned on EU market placement of a high-risk AI system, or reclassification to high-risk under Regulation (EU) 2024/1689 Art. 6(1)/(2) (Annex I/III)."
-      trigger: "EU market placement of a high-risk AI system, or high-risk classification under Reg. (EU) 2024/1689."
+      scope_note: "Planned ahead of placing a high-risk AI system on the EU market or putting it into service, or on reclassification to high-risk under Regulation (EU) 2024/1689 Art. 6(1)/(2) (Annex I/III). The Art. 17 QMS, Annex IV technical documentation, and conformity assessment must be complete before placement, so the commitment moves to applied before that date, not on it."
+      trigger: "Decision to place a high-risk AI system on the EU market or put it into service (start of conformity assessment planning), or high-risk classification under Reg. (EU) 2024/1689."
       scope_owner: management_representative
       re_evaluation_trigger: "Any EU AI system introduced, any product reclassified high-risk, any high-risk AI contract signed."
       review_by: "2027-09-30"
     - framework: "GDPR / Swiss nFADP"
       status: applied
       scope_note: "SOP-023 plus processing activity register; applicable only when personal data is processed."
+      evidence:
+        - "sops/SOP-023-DataProtectionAndPrivacyManagement.md"
+        - "matrices/privacy_data_protection_gap_index.yml"
+        - "records/privacy/processing_activity_register_template.md"
       scope_owner: privacy_lead
       re_evaluation_trigger: "New processing activity or jurisdiction change."
       review_by: "2026-12-31"
@@ -99,5 +111,5 @@ regulatory_commitments:
   # mistaken for a stale or uncontrolled artifact during audit.
   published_not_applied:
     - document: "SOP-024"
-      expected_release: "pr2-ai-act-provider-qms"
+      introduced_by: "#432"
       rationale: "EN 18286 layer ships with this baseline for adopters to opt into; not activated until a matching commitment is applied."

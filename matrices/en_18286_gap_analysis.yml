@@ -19,7 +19,8 @@ analysis_provenance:
     - "Annex D maps to EN ISO/IEC 42001:2026, whereas this baseline tracks ISO/IEC 42001:2023. No correspondence is claimed until the 2026 edition is reviewed."
 outstanding_gaps:
   - "Full clause_to_control_map populates in the SOP-024 PR."
-  - "article_17_element_to_control_map, technical_specification_selection, and annex crosswalk populate in the SOP-024 PR."
+  - "article_17_element_to_control_map and technical_specification_selection populate in the SOP-024 PR."
+  - "Annex ZA crosswalk (EN 18286 clause to Art. 17(1) element) waits for verification against the purchased normative text."
 clause_to_control_map: {}
 article_17_element_to_control_map: {}
 technical_specification_selection: {}
