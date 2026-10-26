@@ -6,7 +6,8 @@ ai_system: "<ai-system-id>"
 prepared_by: "<github_login>"
 approval:
   meaning_of_signature: "Approved technical specification selection register"
-  signer_roles: [Quality Assurance Lead]
+  signer_roles:
+    - qa_lead
   required_signatures: 1
 last_reviewed_on: "2026-10-15"
 selections:
@@ -39,9 +40,10 @@ selections:
     selection_status: gap_justified
     coverage: "alternative"
     gap: "Not OJ-cited; record keeping in SOP-001 + system logs."
-    evidence: "sops/SOP-001-DocumentAndRecordControl.md"
+    evidence: "sops/SOP-001-DocControl.md"
   - element: "Quality management system (Art. 17)"
     standard: "EN 18286:2026"
     selection_status: applied
-    coverage: "full"
-    gap: "Clause numbers provisional; verify against purchased normative text."
+    coverage: "partial"
+    gap: "Clause references are provisional and the Annex ZA crosswalk is unverified. Claim full coverage only after verification against the purchased normative text."
+    evidence: "sops/SOP-024-AIActProviderQMS.md, matrices/en_18286_gap_analysis.yml"

@@ -20,6 +20,7 @@ analysis_provenance:
 outstanding_gaps:
   - "Normative clause content verification pending purchase of the standard."
   - "AI Act companion standards (18228, 18282, 18283, 18284, 18229 Parts 1 and 2, 24970) are not OJ-cited."
+  - "Annex ZA crosswalk (EN 18286 clause to Art. 17(1) element) waits for verification against the purchased normative text."
 clause_to_control_map:
   "4": ["SOP-024", "SOP-005", "QM-001", "matrices/regulatory_market_scope.yml"]
   "5": ["QM-001", "SOP-005", "SOP-024"]
@@ -35,8 +36,8 @@ article_17_element_to_control_map:
     - {clause: "4.4, 9.3.1-9.3.3", control: "SOP-024 6.2", evidence: "records/ai_act/regulatory_compliance_strategy_template.md"}
   b_design_and_development_controls:
     - {clause: "8.3.1-8.3.2", control: "SOP-024 6.4", evidence: "records/design/design_traceability_matrix_template.yml"}
-  c_techniques_for_verification:
-    - {clause: "8.4.1", control: "SOP-024 6.4", evidence: "WI-001-VerificationAndValidationExecution.md"}
+  c_development_quality_control_and_assurance:
+    - {clause: "8 (sub-clause to verify)", control: "SOP-020 + SOP-024 6.4", evidence: "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"}
   d_test_and_validation_procedures:
     - {clause: "8.4.2", control: "SOP-024 6.4", evidence: "WI-001-VerificationAndValidationExecution.md"}
   e_selection_of_technical_specifications:
@@ -51,8 +52,8 @@ article_17_element_to_control_map:
     - {clause: "9.5", control: "SOP-013 + SOP-024 6.10", evidence: "records/ai_act/serious_incident_report_template.md"}
   j_communications_with_authorities:
     - {clause: "7.3", control: "SOP-024 6.12", evidence: "records/ai_act/authority_cooperation_log_template.md"}
-  k_technical_documentation_and_instructions:
-    - {clause: "4.5, 8.7", control: "SOP-024 6.11", evidence: "records/mdf/*"}
+  k_record_keeping:
+    - {clause: "4.5 (to verify)", control: "SOP-001 + SOP-024 6.11", evidence: "sops/SOP-001-DocControl.md"}
   l_resource_management_and_suppliers:
     - {clause: "7.1, 9.2", control: "SOP-010 + SOP-024 6.7", evidence: "records/suppliers/approved_supplier_list.yml"}
   m_roles_responsibilities_authority:

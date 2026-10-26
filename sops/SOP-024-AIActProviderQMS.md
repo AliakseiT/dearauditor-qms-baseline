@@ -34,9 +34,9 @@ third-party conformity assessment) or Art. 6(2) (Annex III: high-risk use
 case). It also applies to a provider's own EEA-facing AI systems even if the
 operating QMS is 13485-heavy.
 
-Provisional 13485 scope applies even when the adopting organisation serves
-the EU market through a non-device digital product: in that case the device
-SOPs fall away but this SOP and `SOP-022` remain in force.
+Where the adopting organisation serves the EU market through a non-device
+digital product, the ISO 13485 medical-device SOPs do not apply to that
+product, but this SOP and `SOP-022` remain in force.
 
 This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
 `matrices/adoption_profiles.yml` for which profile activates it.
@@ -77,15 +77,19 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
 
 ### 6.1 Provider role and QMS scope
 1. Determine the provider role per product: a **provider** is the organisation
-   that develops an AI system or that puts its name on a system and places it on
-   the EU market or puts it into service (Regulation (EU) 2024/1689 Art. 3(3))
-   while an **importer**, **distributor**, or **deployer** holds the other roles.
+   that develops an AI system, or has one developed, and places it on the EU
+   market or puts it into service under its own name or trademark (Regulation
+   (EU) 2024/1689 Art. 3(3)), while an **importer**, **distributor**, or
+   **deployer** holds the other roles.
 2. Record the determination in the product dossier (`records/mdf/`), because the
    role determines the whole obligation set; a deployer role carries a lighter
    set than a provider role.
-3. If an organisation merely integrates third-party AI without modifying it, it
-   still counts as a provider under Art. 3(3) second subparagraph in certain
-   cases; do not assume distributor status without review.
+3. An importer, distributor, deployer, or other third party becomes the provider
+   of a high-risk AI system under Art. 25(1) when it puts its name or trademark
+   on a high-risk AI system already on the market, makes a substantial
+   modification to one, or modifies the intended purpose of an AI system so that
+   it becomes high-risk. Integrating third-party AI therefore needs a recorded
+   role review; do not assume distributor or deployer status without one.
 4. Scope the QMS to each EEA-facing AI system at system level, linked through the
    AIMS register, not at organisational level. An organisation may run one corporate
    QMS for many AI systems provided the product-level scope and evidence are
@@ -114,9 +118,10 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
    technical documentation (`records/ai_act/technical_specification_selection_register_template.yml`).
 3. Maintain the companion-standard status block in
    `matrices/en_18286_gap_analysis.yml`; at the time of this SOP every AI Act
-   companion standard (18228/18282/18283/18284/18229 Parts 1-2/24970 is
-   **not OJ-cited**, so the register must show `none` as their status and
-   explain how their topics are handled in the interim.
+   companion standard (18228/18282/18283/18284/18229 Parts 1-2/24970) is
+   **not OJ-cited**. The gap matrix records them with `oj_cited: false`, and the
+   register records any of them that is used with `selection_status:
+   gap_justified`, stating how its topic is handled in the interim.
 4. When a companion becomes OJ-cited, the register is the single place where that
    transition is recorded.
 
@@ -143,9 +148,9 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
 
 ### 6.5 Data governance (clause 8.5)
 1. Implement processes for data acquisition, collection, labelling, analysis,
-   aggregation, storage, filtration, mining, aggregation, retention, and
-   decommissioning, including lawful destruction or archival that preserves
-   regulatory compliance capability.
+   storage, filtration, mining, aggregation, retention, and decommissioning,
+   including lawful destruction or archival that preserves regulatory compliance
+   capability.
 2. Capture dataset provenance, origin, licensing, representativeness rationale,
    and decommissioning conditions in `records/ai_act/ai_data_governance_record_template.yml`.
 3. Data documentation per model and per deployment environment, including lawful
@@ -202,35 +207,65 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
    deployer involvement is needed.
 
 ### 6.10 Serious incident reporting (Art. 73, clause 9.6)
-1. A serious incident is an incident or malfunctioning which directly or indirectly
-   causes: (a) death or serious harm; (b) a serious disruption of the management
-   or operation of critical infrastructure, road traffic, or water, waste water,
-   gas, heating, or electricity supply; (c) significant harm to property or the
-   environment where the system is essential to health; or (d) significant harm
-   to fundamental rights or affected persons.
-2. Timelines (measured from the act of the incident occurring, or from the point
-   where the provider has sufficient information):
-   - Critical infrastructure: **immediately, or no later than 2 days.**
-   - Death: **immediately, or no later than 10 days** (15 days under the
-     provisional-report route).
-   - Other cases: **immediately, or no later than 15 days.**
-3. Provisional reports are permitted where the investigation is not complete,
-   followed by a complete final report. Both count as the same regulatory event
-   trajectory.
-4. Document escalation roles, allocate resources for investigations, and maintain
+1. A serious incident is an incident or malfunctioning of an AI system that
+   directly or indirectly leads to any of the following (Regulation (EU)
+   2024/1689 Art. 3(49)):
+   - (a) the death of a person, or serious harm to a person's health;
+   - (b) a serious and irreversible disruption of the management or operation
+     of critical infrastructure;
+   - (c) the infringement of obligations under Union law intended to protect
+     fundamental rights;
+   - (d) serious harm to property or the environment.
+
+   Assess every candidate incident against all four categories. Do not narrow a
+   category by sector, by the purpose of the system, or by a significance
+   threshold that the definition does not contain.
+2. Every statutory clock runs from the moment the provider or, where applicable,
+   the deployer becomes aware of the serious incident. Record the awareness
+   time, and who became aware, at intake. Waiting for a complete investigation
+   or for more information does not delay the clock. Deadlines (Art. 73(2)-(4)):
+   - Widespread infringement (Art. 3(61)) or critical-infrastructure disruption
+     (Art. 3(49)(b)): **immediately, and not later than 2 days** after awareness.
+   - Death of a person: **immediately** once a causal relationship between the
+     AI system and the incident is established or suspected, **and not later
+     than 10 days** after awareness.
+   - All other serious incidents: **immediately** once a causal link between the
+     AI system and the incident, or its reasonable likelihood, is established,
+     **and not later than 15 days** after awareness.
+
+   Where more than one class applies, the shortest deadline governs.
+3. Where necessary to report on time, submit an initial report that is
+   incomplete, followed by a complete report (Art. 73(5)). An initial report does
+   not extend any deadline in item 2; it is the means of meeting it.
+4. Medical-device scope (Art. 73(10)): where the AI system is itself a device,
+   or a safety component of a device, under Regulation (EU) 2017/745 or (EU)
+   2017/746, the AI Act notification covers only infringements of
+   fundamental-rights obligations (Art. 3(49)(c)) and goes to the national
+   competent authority designated for that purpose in the Member State where the
+   incident occurred. Report every other serious incident involving such a
+   device through device vigilance under `SOP-013`. Art. 73(9) applies the same
+   limit to Annex III systems whose providers are subject to equivalent Union
+   reporting obligations.
+5. After reporting, investigate without delay, including a risk assessment of
+   the incident and corrective action. Cooperate with the competent authorities
+   and, where relevant, the notified body. Do not alter the AI system in a way
+   that could affect a later evaluation of the cause before informing the
+   competent authorities (Art. 73(6)).
+6. Document escalation roles, allocate resources for investigations, and maintain
    written evidence including root-cause analyses and corrective actions.
-5. Report using `records/ai_act/serious_incident_report_template.md`; a
-   preliminary entry is made within 24 hours internal triage, reserved against the
-   statutory clock.
-6. Cross-reference `SOP-013-RegulatoryIncidentReporting.md` for jurisdictional
-   reporting across CH/EU/US; this SOP supplies the AI-Act-specific clock values.
-   Note: SOP-013 §3.1 currently uses generic "applicable regulatory timelines"
-   wording and will be updated in a subsequent revision to cite the values above.
+7. Report using `records/ai_act/serious_incident_report_template.md`. Internal
+   triage makes a preliminary entry within 24 hours of awareness. That entry is
+   an internal record; it is not, and does not replace, the report to the
+   authority.
+8. Cross-reference `SOP-013-RegulatoryIncidentReporting.md` for jurisdictional
+   reporting across CH/EU/US. SOP-013 §6.3 item 3 requires submission timelines
+   to follow the applicable regulatory requirements; for AI Act serious
+   incidents, those are the values in item 2.
 
 ### 6.11 Technical documentation (clause 4.5, 8.7)
 1. Each AI system must carry technical documentation suitable for authorities and
    auditors in an EU official language, version-controlled, traceable, and
-   maintained per `SOP-001-DocumentAndRecordControl.md`.
+   maintained per `SOP-001-DocControl.md`.
 2. Technical documentation covers identification, system description, development
    process, data, V&V, risk management, monitoring, and changes; the AI Act
    Annex IV content set overlays (but does not replace) the MDR technical
