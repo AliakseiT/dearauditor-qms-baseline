@@ -6,7 +6,9 @@ ai_system: "<ai-system-id>"
 prepared_by: "<github_login>"
 approval:
   meaning_of_signature: "Approved AI system requirements"
-  signer_roles: [Engineering Lead; Quality Assurance Lead]
+  signer_roles:
+    - engineering_lead
+    - qa_lead
   required_signatures: 2
 essential_requirement_mapping:
   art_9_risk_management: [requirement_ids_here]

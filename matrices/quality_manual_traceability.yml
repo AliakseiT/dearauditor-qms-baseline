@@ -136,7 +136,7 @@ quality_manual_sections:
     section_name: "AI Act provider QMS for AI systems placed on the EU market"
     iso_clauses: ["EN 18286 4-10", "Regulation (EU) 2024/1689 Art. 9, 13, 14, 15, 17, 72, 73"]
     controlling_documents: ["SOP-024", "SOP-022", "SOP-018", "SOP-014", "SOP-021"]
-    status: "implemented_with_product_specific_extensions"
+    status: "implemented_with_company_specific_completion_when_in_scope"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -183,7 +183,7 @@ supporting_definitions:
     reference: "matrices/iso_iec_42001_gap_analysis.yml, sops/SOP-022-AIManagementSystem.md"
     note: "ISO/IEC 42001 AIMS scope, AI risk and impact assessment, Statement of Applicability, lifecycle, data, information for users, event handling, audit, review, and improvement interfaces are implemented through one dedicated AIMS SOP plus existing QMS controls. AI tooling used to author or operate the QMS itself is governed under existing supplier and tooling-validation controls."
   - item: "EN 18286 provider QMS baseline for EU-provided AI systems"
-    status: "implemented_with_product_specific_extensions"
+    status: "implemented_with_company_specific_completion_when_in_scope"
     reference: "matrices/en_18286_gap_analysis.yml, sops/SOP-024-AIActProviderQMS.md"
     note: "Article 17 QMS layer for AI systems placed on or put into service in the European Union. Activated via an applied EN 18286 commitment in matrices/regulatory_market_scope.yml."
   - item: "Data protection and privacy management baseline"

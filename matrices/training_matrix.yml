@@ -44,6 +44,7 @@ roles:
       - SOP-021
       - SOP-022
       - SOP-023
+      - SOP-024
     awareness_documents:
       - SOP-004
     required_revisions:
@@ -70,6 +71,7 @@ roles:
       SOP-021: R02
       SOP-022: R03
       SOP-023: R00
+      SOP-024: R00
   engineer:
     users:
       - AliakseiT
