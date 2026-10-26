@@ -168,7 +168,9 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
    documentation and instructions for use.
 3. Record in `records/ai_act/environmental_sustainability_assessment_template.md`.
 4. This item is fully documentation-bounded and reversible; it may be deferred
-   under the four-state commitment model as long as the deferral is recorded.
+   under the four-state commitment model as long as the deferral is recorded,
+   and it must be closed before the AI system is placed on the market or put
+   into service.
 
 ### 6.7 Supply chain (clause 9.2)
 1. Evaluate, select, monitor, and re-evaluate suppliers of components, data, and
