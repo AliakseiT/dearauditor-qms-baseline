@@ -185,7 +185,8 @@
   "placeholder_scan_paths": [
     "matrices/company_profile.yml",
     "matrices/training_matrix.yml",
-    "matrices/signer_registry.json"
+    "matrices/signer_registry.json",
+    "matrices/regulatory_market_scope.yml"
   ],
   "placeholder_prefixes": [
     "REPLACE_WITH_"

@@ -6,6 +6,7 @@ import argparse
 import datetime as dt
 import fnmatch
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -186,31 +187,70 @@ def load_matrix_ruby(path: Path) -> dict:
     return json.loads(proc.stdout or "{}")
 
 
-def check_regulatory_commitments(repo_root: Path, path: str = "matrices/regulatory_market_scope.yml") -> list[str]:
+COMMITMENT_STATUSES = {"applied", "planned", "not_applicable", "unknown"}
+ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+COMMITMENTS_MIGRATION_DOC = "docs/open-source/README.md#upgrade-notes"
+
+
+def parse_review_date(value: object) -> dt.date | None:
+    """Return the calendar date for a YYYY-MM-DD value, or None if it is not one."""
+    text = str(value or "").strip()
+    if not ISO_DATE_RE.fullmatch(text):
+        return None
+    try:
+        return dt.date.fromisoformat(text)
+    except ValueError:
+        return None
+
+
+def commitment_failures(
+    data: object, today: dt.date, path: str = "matrices/regulatory_market_scope.yml"
+) -> list[str]:
+    block = data.get("regulatory_commitments") if isinstance(data, dict) else None
+    entries = block.get("entries") if isinstance(block, dict) else None
+    if not isinstance(entries, list) or not entries:
+        return [
+            f"{path}: regulatory_commitments.entries is empty or missing; "
+            f"see {COMMITMENTS_MIGRATION_DOC} to add the ledger"
+        ]
+    failures: list[str] = []
+    for idx, entry in enumerate(entries, start=1):
+        if not isinstance(entry, dict):
+            failures.append(f"{path}: regulatory_commitments.entries[{idx}] must be a mapping")
+            continue
+        framework = str(entry.get("framework") or f"entries[{idx}]")
+        status = str(entry.get("status", "")).strip().lower()
+        if status not in COMMITMENT_STATUSES:
+            failures.append(f"{framework}: unknown commitment status {status!r}")
+            continue
+        raw_review_by = entry.get("review_by")
+        if raw_review_by in (None, ""):
+            if status in {"planned", "unknown"}:
+                failures.append(f"{framework}: {status} commitment is missing review_by")
+            continue
+        review_by = parse_review_date(raw_review_by)
+        if review_by is None:
+            failures.append(f"{framework}: review_by {raw_review_by!r} is not a valid YYYY-MM-DD calendar date")
+        elif status in {"planned", "unknown"} and review_by < today:
+            failures.append(
+                f"{framework}: {status} commitment overdue (review_by {review_by.isoformat()} < {today.isoformat()})"
+            )
+    return failures
+
+
+def check_regulatory_commitments(
+    repo_root: Path, path: str = "matrices/regulatory_market_scope.yml", today: dt.date | None = None
+) -> list[str]:
     matrix_path = repo_root / path
     try:
         data = load_matrix_ruby(matrix_path)
-    except (FileNotFoundError, RuntimeError) as exc:
+    except FileNotFoundError as exc:
         return [f"{path}: cannot read matrix ({exc})"]
-    block = data.get("regulatory_commitments") or {}
-    entries = block.get("entries") or []
-    if not entries:
-        return [f"{path}: regulatory_commitments.entries is empty or missing"]
-    today = dt.date.today().isoformat()
-    failures: list[str] = []
-    for entry in entries:
-        framework = str(entry.get("framework", "?"))
-        status = str(entry.get("status", "")).lower()
-        review_by = entry.get("review_by")
-        if status in {"planned", "unknown"}:
-            if not review_by:
-                failures.append(f"{framework}: {status} commitment is missing review_by")
-                continue
-            if str(review_by) < today:
-                failures.append(f"{framework}: {status} commitment overdue (review_by {review_by} < {today})")
-        if status not in {"applied", "planned", "not_applicable", "unknown"}:
-            failures.append(f"{framework}: unknown commitment status {status!r}")
-    return failures
+    except RuntimeError as exc:
+        hint = ' Quote dates as strings, for example review_by: "2027-03-31".' if "Date" in str(exc) else ""
+        return [f"{path}: cannot parse matrix ({exc}).{hint}"]
+    return commitment_failures(data, today or dt.date.today(), path)
+
 
 def placeholder_hits(repo_root: Path) -> list[str]:
     config = load_map(repo_root)

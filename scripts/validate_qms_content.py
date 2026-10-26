@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+import copy
+import datetime
+import importlib.util
 import json
 import os
 import re
@@ -23,11 +26,14 @@ ISO_9001_REQUIRED_CLAUSES = ["4.1", "5.1", "6.1", "7.1", "8.1", "9.1", "10.3"]
 EN_18286_MATRIX_PATH = "matrices/en_18286_gap_analysis.yml"
 EN_18286_ARTICLE_17_ELEMENTS = [
     "first_sentence", "a_strategy_for_regulatory_compliance", "b_design_and_development_controls",
-    "c_techniques_for_verification", "d_test_and_validation_procedures", "e_selection_of_technical_specifications",
-    "f_data_management", "g_risk_management", "h_post_market_monitoring", "i_serious_incident_reporting",
-    "j_communications_with_authorities", "k_technical_documentation_and_instructions", "l_resource_management_and_suppliers",
-    "m_roles_responsibilities_authority"
+    "c_development_quality_control_and_assurance", "d_test_and_validation_procedures",
+    "e_selection_of_technical_specifications", "f_data_management", "g_risk_management",
+    "h_post_market_monitoring", "i_serious_incident_reporting", "j_communications_with_authorities",
+    "k_record_keeping", "l_resource_management_and_suppliers", "m_roles_responsibilities_authority",
 ]
+EN_18286_REQUIRED_CLAUSES = ["4", "5", "6", "7", "8", "9", "10"]
+EN_18286_DEDICATED_SOP = "SOP-024"
+QUALITY_MANUAL_TRACEABILITY_PATH = "matrices/quality_manual_traceability.yml"
 
 ARGS = None
 
@@ -65,6 +71,88 @@ def load_yaml_via_ruby(path):
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or proc.stdout.strip() or "ruby YAML parse failed")
     return json.loads(proc.stdout or "{}")
+
+
+def en_18286_matrix_failures(matrix, readme_text, trace_text):
+    """Return coverage failures for the EN 18286 gap matrix. Empty or hollow content fails."""
+    path = EN_18286_MATRIX_PATH
+    failures = []
+    if not isinstance(matrix, dict) or not matrix:
+        failures.append(f"{path}: matrix must be a non-empty mapping.")
+        matrix = {}
+
+    standard = matrix.get("standard")
+    standard = standard if isinstance(standard, dict) else {}
+    if "EN 18286" not in str(standard.get("exact_name", "")):
+        failures.append(f"{path}: standard.exact_name must name EN 18286.")
+    if "EN 18286:2026" not in str(standard.get("normative_base", "")):
+        failures.append(f"{path}: standard.normative_base must read EN 18286:2026.")
+
+    provenance = matrix.get("analysis_provenance")
+    if not isinstance(provenance, dict) or not provenance.get("sources"):
+        failures.append(f"{path}: analysis_provenance.sources is required (clause numbering is provisional).")
+
+    c2c = matrix.get("clause_to_control_map")
+    c2c = c2c if isinstance(c2c, dict) else {}
+    for clause in EN_18286_REQUIRED_CLAUSES:
+        controls = c2c.get(clause)
+        if not isinstance(controls, list) or not controls:
+            failures.append(f"{path}: clause_to_control_map[{clause}] is empty.")
+        elif EN_18286_DEDICATED_SOP not in controls:
+            failures.append(f"{path}: clause_to_control_map[{clause}] must reference {EN_18286_DEDICATED_SOP}.")
+
+    a17 = matrix.get("article_17_element_to_control_map")
+    a17 = a17 if isinstance(a17, dict) else {}
+    missing_elements = [element for element in EN_18286_ARTICLE_17_ELEMENTS if not a17.get(element)]
+    if missing_elements:
+        failures.append(f"{path}: article_17_element_to_control_map is missing {', '.join(missing_elements)}.")
+
+    selection = matrix.get("technical_specification_selection")
+    companions = selection.get("companion_standards") if isinstance(selection, dict) else None
+    if not isinstance(companions, list) or not companions:
+        failures.append(f"{path}: technical_specification_selection.companion_standards must be a non-empty list.")
+        companions = []
+    for idx, entry in enumerate(companions, start=1):
+        if not isinstance(entry, dict) or not str(entry.get("ref", "")).strip():
+            failures.append(f"{path}: companion_standards[{idx}] must be a mapping with a ref.")
+        elif not isinstance(entry.get("oj_cited"), bool):
+            failures.append(f"{path}: companion_standards[{idx}] ({entry['ref']}) must set oj_cited to true or false.")
+    if not any(
+        isinstance(entry, dict) and "EN 18286" in str(entry.get("ref", "")) and entry.get("oj_cited") is True
+        for entry in companions
+    ):
+        failures.append(f"{path}: companion_standards must record EN 18286:2026 with oj_cited: true.")
+
+    if path not in readme_text:
+        failures.append(f"README.md must link {path}.")
+    if path not in trace_text:
+        failures.append(f"{QUALITY_MANUAL_TRACEABILITY_PATH} must reference {path}.")
+    return failures
+
+
+def valid_en_18286_matrix_fixture():
+    return {
+        "standard": {"exact_name": "EN 18286:2026 AI QMS", "normative_base": "EN 18286:2026"},
+        "analysis_provenance": {"sources": ["published table of contents"]},
+        "clause_to_control_map": {clause: [EN_18286_DEDICATED_SOP] for clause in EN_18286_REQUIRED_CLAUSES},
+        "article_17_element_to_control_map": {
+            element: [{"control": EN_18286_DEDICATED_SOP}] for element in EN_18286_ARTICLE_17_ELEMENTS
+        },
+        "technical_specification_selection": {
+            "companion_standards": [
+                {"ref": "EN 18286:2026", "oj_cited": True},
+                {"ref": "EN 18228", "oj_cited": False},
+            ]
+        },
+    }
+
+
+def load_qms_distribution_module():
+    path = Path(__file__).resolve().parents[1] / "tools" / "qms_distribution.py"
+    spec = importlib.util.spec_from_file_location("qms_distribution", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def parse_front_matter_value(text, key):
@@ -573,52 +661,77 @@ class QMSContentGuardTests(unittest.TestCase):
 
     def test_en_18286_gap_analysis_is_published_and_mapped(self):
         failures = []
-        matrix_path = Path(EN_18286_MATRIX_PATH)
-        if not matrix_path.exists():
+        if not Path(EN_18286_MATRIX_PATH).exists():
             failures.append("EN 18286 gap analysis is missing: an Article 17 provider QMS must be published and mapped.")
         else:
             try:
-                matrix = load_yaml_via_ruby(EN_18286_MATRIX_PATH) or {}
+                matrix = load_yaml_via_ruby(EN_18286_MATRIX_PATH)
             except Exception as exc:
                 failures.append(f"{EN_18286_MATRIX_PATH}: YAML could not be parsed ({exc}).")
-                matrix = {}
-            if matrix:
-                standard = matrix.get("standard", {}) or {}
-                if "EN 18286" not in str(standard.get("exact_name", "")):
-                    failures.append(f"{EN_18286_MATRIX_PATH}: standard.exact_name must name EN 18286.")
-                if "EN 18286:2026" not in str(standard.get("normative_base", "")):
-                    failures.append(f"{EN_18286_MATRIX_PATH}: standard.normative_base must read EN 18286:2026.")
-                if matrix.get("analysis_provenance") is None:
-                    failures.append(f"{EN_18286_MATRIX_PATH}: analysis_provenance is required (clause numbering is provisional).")
-                c2c = matrix.get("clause_to_control_map", {}) or {}
-                for c in ("4", "5", "6", "7", "8", "9", "10"):
-                    if not c2c.get(c):
-                        failures.append(f"{EN_18286_MATRIX_PATH}: clause_to_control_map[{c}] is empty.")
-                a17 = matrix.get("article_17_element_to_control_map", {}) or {}
-                missing_elements = [e for e in EN_18286_ARTICLE_17_ELEMENTS if not a17.get(e)]
-                if missing_elements:
-                    failures.append(
-                        f"{EN_18286_MATRIX_PATH}: article_17_element_to_control_map is missing "
-                        f"{', '.join(missing_elements)}."
-                    )
-                if "SOP-024" not in str(c2c):
-                    failures.append(f"{EN_18286_MATRIX_PATH}: clause map must reference SOP-024.")
-                if matrix.get("technical_specification_selection") is None:
-                    failures.append(f"{EN_18286_MATRIX_PATH}: technical_specification_selection is required.")
-                if technical_specification_selection := matrix.get("technical_specification_selection", None):
-                    if not (technical_specification_selection.get("companion_standards")
-                           and any(cs.get("oj_cited") is True for cs in technical_specification_selection.get("companion_standards", []))):
-                        pass
-                    if not technical_specification_selection.get("companion_standards"):
-                        failures.append(f"{EN_18286_MATRIX_PATH}: companion_standards list required.")
-        if "(EN 18286:2026)" not in self.ctx.readme_text and matrix_path.exists():
-            # matrix is acceptable as a non-readme referent only when linked via README
-            if EN_18286_MATRIX_PATH not in self.ctx.readme_text:
-                failures.append(f"README.md must link {EN_18286_MATRIX_PATH}.")
-        trace_text = Path("matrices/quality_manual_traceability.yml").read_text(encoding="utf-8") if Path("matrices/quality_manual_traceability.yml").exists() else ""
-        if EN_18286_MATRIX_PATH not in trace_text:
-            failures.append(f"matrices/quality_manual_traceability.yml must reference {EN_18286_MATRIX_PATH}.")
+            else:
+                trace_path = Path(QUALITY_MANUAL_TRACEABILITY_PATH)
+                trace_text = trace_path.read_text(encoding="utf-8") if trace_path.exists() else ""
+                failures.extend(en_18286_matrix_failures(matrix, self.ctx.readme_text, trace_text))
         self.assert_no_failures(failures)
+
+    def test_en_18286_matrix_check_rejects_hollow_content(self):
+        links = EN_18286_MATRIX_PATH
+        self.assertEqual(en_18286_matrix_failures(valid_en_18286_matrix_fixture(), links, links), [])
+
+        def without_sop_on_clause_5(matrix):
+            matrix["clause_to_control_map"]["5"] = ["QM-001"]
+
+        def companion_without_oj_status(matrix):
+            del matrix["technical_specification_selection"]["companion_standards"][1]["oj_cited"]
+
+        def no_oj_cited_en_18286(matrix):
+            matrix["technical_specification_selection"]["companion_standards"][0]["oj_cited"] = False
+
+        def hollow_blocks(matrix):
+            for key in [
+                "analysis_provenance",
+                "clause_to_control_map",
+                "article_17_element_to_control_map",
+                "technical_specification_selection",
+            ]:
+                matrix[key] = {}
+
+        cases = {
+            "empty mapping": {},
+            "empty file": None,
+            "list instead of mapping": [],
+        }
+        for label, mutate in {
+            "clause without SOP-024": without_sop_on_clause_5,
+            "companion without oj_cited": companion_without_oj_status,
+            "EN 18286 not OJ-cited": no_oj_cited_en_18286,
+            "hollow blocks": hollow_blocks,
+        }.items():
+            matrix = copy.deepcopy(valid_en_18286_matrix_fixture())
+            mutate(matrix)
+            cases[label] = matrix
+        for label, matrix in cases.items():
+            with self.subTest(label):
+                self.assertTrue(en_18286_matrix_failures(matrix, links, links))
+        self.assertTrue(en_18286_matrix_failures(valid_en_18286_matrix_fixture(), "", links))
+
+    def test_regulatory_commitment_review_dates_are_validated(self):
+        distribution = load_qms_distribution_module()
+        today = datetime.date(2026, 10, 26)
+
+        def ledger(review_by, status="planned"):
+            return {"regulatory_commitments": {"entries": [{"framework": "F", "status": status, "review_by": review_by}]}}
+
+        self.assertEqual(distribution.commitment_failures(ledger("2027-01-31"), today), [])
+        self.assertEqual(distribution.commitment_failures(ledger("2026-10-26"), today), [])
+        for invalid in ["tomorrow", "2099-99-99", "2027-02-30", "20991231", "REPLACE_WITH_REVIEW_DATE"]:
+            with self.subTest(invalid):
+                self.assertTrue(distribution.commitment_failures(ledger(invalid), today))
+        self.assertTrue(distribution.commitment_failures(ledger("2026-10-25"), today))
+        self.assertTrue(distribution.commitment_failures(ledger(None, status="unknown"), today))
+        self.assertTrue(distribution.commitment_failures(ledger("2027-01-31", status="deferred"), today))
+        self.assertTrue(distribution.commitment_failures({}, today))
+        self.assertTrue(distribution.commitment_failures({"regulatory_commitments": {"entries": []}}, today))
 
     def test_risk_records_have_valid_schema(self):
         failures = []

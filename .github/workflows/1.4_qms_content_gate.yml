@@ -11,8 +11,11 @@ on:
       - README.md
       - matrices/company_profile.yml
       - matrices/iso_9001_gap_analysis.yml
+      - matrices/en_18286_gap_analysis.yml
       - matrices/training_matrix.yml
       - matrices/quality_manual_traceability.yml
+      - scripts/validate_qms_content.py
+      - tools/qms_distribution.py
 
 permissions:
   contents: read
