@@ -1,4 +1,4 @@
-# Environmental Sustainability Assessment (EN 18286 clause 8.6)
+# Environmental Sustainability Assessment (SOP-024 §6.6)
 record_type: environmental_sustainability_assessment
 product: {{product_id}}
 ai_system: {{ai_system_id}}
