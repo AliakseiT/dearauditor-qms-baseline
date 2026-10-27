@@ -21,7 +21,7 @@ analysis_provenance:
   notes:
     - "Clause numbering changed between the prEN 18286 enquiry draft and the published edition; no draft-era clause number is used."
     - "Annex B gives clause correspondence with EN ISO 9001:2015 and Annex C with EN ISO/IEC 42001:2026. This baseline tracks ISO/IEC 42001:2023, so no Annex C correspondence is claimed until the 2026 edition is reviewed."
-    - "Sub-clause references in article_17_element_to_control_map reproduce one public secondary source of Table ZA.1 (Modulos). Sources disagree on the 8.9 sub-clause numbering, so 8.9 is cited without sub-clauses."
+    - "Sub-clause references in article_17_element_to_control_map and annex_za_other_rows reproduce the row-by-row Table ZA.1 published by Modulos, checked against the raw page text on 2026-10-27."
 outstanding_gaps:
   - "Clause references come from public secondary sources; verify them against the purchased normative text, including every Table ZA.1 row and condition."
   - "AI Act companion standards (18228, 18282, 18283, 18284, 18229 Parts 1 and 2, 24970) are not OJ-cited."
@@ -63,7 +63,7 @@ article_17_element_to_control_map:
   j_communications_with_authorities:
     - {clause: "7.3, 9.7.2.2", control: "SOP-024 6.12", evidence: "records/ai_act/authority_cooperation_log_template.md"}
   k_record_keeping:
-    - {clause: "4.5, 8.7, 8.9, 9.1, 9.5.3", control: "SOP-001 + SOP-024 6.11", evidence: "sops/SOP-001-DocControl.md"}
+    - {clause: "4.5, 8.7, 8.9.2, 8.9.3, 9.1, 9.5.3", control: "SOP-001 + SOP-024 6.11", evidence: "sops/SOP-001-DocControl.md"}
   l_resource_management_and_suppliers:
     - {clause: "7.1, 7.2, 9.3", control: "SOP-010 + SOP-024 6.7, 6.13", evidence: "records/suppliers/approved_supplier_list.yml"}
   m_roles_responsibilities_authority:
@@ -72,12 +72,12 @@ annex_za_other_rows:
   article_17_1_second_sentence_documentation:
     - {clause: "4.1, 4.2, 4.5, 5.2, 6, 8.3.1.1, 10.1.1.1, 10.1.3, 10.2", control: "SOP-001 + SOP-024 6.1", evidence: "sops/SOP-024-AIActProviderQMS.md", condition: "Covered if at least points (a) to (m) are documented."}
   article_11_1_first_sentence_technical_documentation:
-    - {clause: "8.9", control: "SOP-024 6.11", evidence: "records/mdf/*", condition: "Covered only if the technical documentation contains every Annex IV item."}
+    - {clause: "8.9.2", control: "SOP-024 6.11", evidence: "records/mdf/*", condition: "Covered only if the technical documentation contains every Annex IV item."}
 annex_za_not_covered:
   - "Art. 17(2) (proportionality to provider size): no presumption; any proportionality claim needs its own justification."
   - "Art. 17(3) (QMS aspects integrated into a QMS required by sectoral Union law, such as the MDR): no presumption. Integrating SOP-024 into the ISO 13485 QMS relies on Art. 17(3) itself, not on EN 18286."
   - "Art. 17(4) (financial institutions): no presumption; outside this baseline's scope."
-  - "Clauses with no Table ZA.1 row (public sources list, among others, 4.4.2, 8.1.2, 8.4.1, 8.6, 9.2, 9.6.2.2) give no presumption of conformity."
+  - "Clauses with no Table ZA.1 row give no presumption of conformity: 4.4.2, 8.1.2, 8.3.1.2 and 8.4.3.2 (consultation; SOP-024 6.4(7) still applies), 8.4.1, 8.6, 8.9.1, 9.2, 9.6.2.2, 10.1.1.2, 10.1.2."
 technical_specification_selection:
   companion_standards:
     - {ref: "EN 18228 (AI risk management)", oj_cited: false, scope: "Art. 9 risk management system", interim: "Handled under existing SOP-018; Annex ZA reference only"}
