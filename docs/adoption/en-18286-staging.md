@@ -5,9 +5,9 @@ service there, must operate an Article 17 quality management system. That is a
 large body of work. A startup that adopts EN 18286 too early carries the cost
 before it has revenue; one that adopts it too late finds that some facts can no
 longer be reconstructed. This guide handles that with two tools: a
-**four-state commitment model** and an **irreversibility test**.
+**commitment model** and an **irreversibility test**.
 
-## The four-state commitment model
+## The commitment model
 
 Commitment state is recorded per framework in
 [`matrices/regulatory_market_scope.yml`](../../matrices/regulatory_market_scope.yml)
@@ -16,8 +16,11 @@ Commitment state is recorded per framework in
 - `applied` — live now, with evidence locations.
 - `planned` — committed later; trigger, owner, and `review_by` are mandatory.
 - `not_applicable` — determined out of scope; rationale plus re-evaluation trigger.
-- `unknown` — no determination made. Startups live here by default. This state
-  is legal. Hiding it is not, so it is recorded explicitly with a review-by date.
+- `unknown` — no determination made. This state is legal. Hiding it is not, so
+  it is recorded explicitly with a review-by date.
+- `not_selected` — the organisation does not follow this framework. The
+  bootstrap seed starts every framework here, and nothing is checked until the
+  organisation selects it by moving it to another state.
 
 `tools/qms_distribution.py check-commitments` fails on any `planned` or `unknown`
 entry whose `review_by` date has passed or is not a valid `YYYY-MM-DD` date.
