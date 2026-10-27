@@ -107,7 +107,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->
 | Document ID | Title | File | Revision Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-10-15 | R10 | Published |
+| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-10-26 | R10 | Published |
 | SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-05-04 | R15 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-05-04 | R06 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-05-04 | R07 | Published |
@@ -131,7 +131,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-021 | Information Security Management (ISO/IEC 27001) | sops/SOP-021-InformationSecurityManagement.md | 2026-05-04 | R02 | Published |
 | SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-10-15 | R03 | Published |
 | SOP-023 | Data Protection and Privacy Management (GDPR and Swiss nFADP) | sops/SOP-023-DataProtectionAndPrivacyManagement.md | 2026-05-14 | R00 | Published |
-| SOP-024 | AI Act Provider QMS (EN 18286:2026) | sops/SOP-024-AIActProviderQMS.md | 2026-10-15 | R00 | Published |
+| SOP-024 | AI Act Provider QMS (EN 18286:2026) | sops/SOP-024-AIActProviderQMS.md | 2026-10-27 | R00 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-04-27 | R09 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-04-27 | R10 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->

@@ -2,7 +2,7 @@
 qm_id: QM-001
 title: Quality Manual
 revision: R10
-revision_date: 2026-10-15
+revision_date: 2026-10-26
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -160,4 +160,4 @@ QMS tooling and validation baselines are maintained in:
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
 | R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |
-| R10 | 2026-10-15 | Added EN 18286:2026 EU AI Act provider QMS and the EU AI Act to the standards and regulatory framework, with a traceability row cross-referencing SOP-024. |
+| R10 | 2026-10-26 | Added EN 18286:2026 EU AI Act provider QMS and the EU AI Act to the standards and regulatory framework, with a traceability row cross-referencing SOP-024. |

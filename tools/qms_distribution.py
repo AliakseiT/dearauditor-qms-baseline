@@ -187,7 +187,7 @@ def load_matrix_ruby(path: Path) -> dict:
     return json.loads(proc.stdout or "{}")
 
 
-COMMITMENT_STATUSES = {"applied", "planned", "not_applicable", "unknown"}
+COMMITMENT_STATUSES = {"applied", "planned", "not_applicable", "unknown", "not_selected"}
 ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 COMMITMENTS_MIGRATION_DOC = "docs/open-source/README.md#upgrade-notes"
 
@@ -222,6 +222,8 @@ def commitment_failures(
         status = str(entry.get("status", "")).strip().lower()
         if status not in COMMITMENT_STATUSES:
             failures.append(f"{framework}: unknown commitment status {status!r}")
+            continue
+        if status == "not_selected":
             continue
         raw_review_by = entry.get("review_by")
         if raw_review_by in (None, ""):

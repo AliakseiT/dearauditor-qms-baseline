@@ -1,26 +1,31 @@
 version: 1
-analysis_date: "2026-10-15"
+analysis_date: "2026-10-27"
 standard:
   exact_name: "EN 18286:2026 Artificial intelligence - Quality management system for EU AI Act regulatory purposes"
   normative_base: "EN 18286:2026"
   normative_source_verified: false
 analysis_scope: >
   Provider quality management system for AI systems placed on, or put into service
-  in, the European Union under Regulation (EU) 2024/1689. Clause numbering and
-  content drawn from the published DIN EN 18286:2026-09 table of contents and the
-  October 2025 enquiry-draft analysis; verify against purchased normative text.
+  in, the European Union under Regulation (EU) 2024/1689. Clause references follow
+  public secondary reproductions of the published edition and its Annex ZA (see
+  analysis_provenance); they are not verified against the purchased normative text.
 analysis_provenance:
+  retrieved_on: "2026-10-27"
   sources:
-    - "DIN EN 18286:2026-09 published table of contents"
-    - "CMS Law-Now analysis of prEN 18286 (Oct 2025 enquiry draft)"
-    - "Commission Implementing Decision (EU) 2026/2274"
+    - "Commission Implementing Decision (EU) 2026/2274 (OJ reference of EN 18286:2026, published 2026-10-14)"
+    - "Modulos, EN 18286 Annex ZA coverage table (updated 2026-10-19): https://docs.modulos.ai/frameworks/eu-ai-act/harmonized-standards/en-18286/annex-za-and-presumption"
+    - "Modulos, EN 18286 clause structure (updated 2026-10-19): https://docs.modulos.ai/frameworks/eu-ai-act/harmonized-standards/en-18286"
+    - "Intertek, EN 18286 is published (2026-09-29): https://www.intertek.com/blog/2026/10-01-en-18286-first-eu-ai-act-standards-puzzle-piece-is-on-the-table/"
+    - "Axipro, EN 18286 explained (2026-10-16): https://axipro.co/en-18286/"
+    - "CMS Law-Now analysis of prEN 18286 (Oct 2025 enquiry draft); draft numbering, superseded by the published edition"
   notes:
-    - "Clauses 8-10 were renumbered between the enquiry draft and the published edition."
-    - "Annex D maps to EN ISO/IEC 42001:2026; this baseline tracks ISO/IEC 42001:2023. No full correspondence is claimed."
+    - "Clause numbering changed between the prEN 18286 enquiry draft and the published edition; no draft-era clause number is used."
+    - "Annex B gives clause correspondence with EN ISO 9001:2015 and Annex C with EN ISO/IEC 42001:2026. This baseline tracks ISO/IEC 42001:2023, so no Annex C correspondence is claimed until the 2026 edition is reviewed."
+    - "Sub-clause references in article_17_element_to_control_map reproduce one public secondary source of Table ZA.1 (Modulos). Sources disagree on the 8.9 sub-clause numbering, so 8.9 is cited without sub-clauses."
 outstanding_gaps:
-  - "Normative clause content verification pending purchase of the standard."
+  - "Clause references come from public secondary sources; verify them against the purchased normative text, including every Table ZA.1 row and condition."
   - "AI Act companion standards (18228, 18282, 18283, 18284, 18229 Parts 1 and 2, 24970) are not OJ-cited."
-  - "Annex ZA crosswalk (EN 18286 clause to Art. 17(1) element) waits for verification against the purchased normative text."
+  - "Clause 9.2 (support services) has no mapped control yet; confirm its content against the purchased text before mapping it."
 clause_to_control_map:
   "4": ["SOP-024", "SOP-005", "QM-001", "matrices/regulatory_market_scope.yml"]
   "5": ["QM-001", "SOP-005", "SOP-024"]
@@ -28,36 +33,51 @@ clause_to_control_map:
   "7": ["SOP-001", "SOP-011", "SOP-024"]
   "8": ["SOP-007", "SOP-008", "SOP-018", "SOP-019", "SOP-020", "SOP-022", "SOP-024", "WI-001", "WI-002"]
   "9": ["SOP-009", "SOP-010", "SOP-012", "SOP-013", "SOP-014", "SOP-020", "SOP-024"]
-  "10": ["SOP-002", "SOP-003", "SOP-004", "SOP-016", "SOP-024"]
+  "10": ["SOP-002", "SOP-003", "SOP-004", "SOP-009", "SOP-016", "SOP-024"]
+clause_notes:
+  "8.6": "Retirement of the AI system is handled by SOP-020 6.8 (retirement and decommissioning)."
+# Clause references per Art. 17(1) element follow Table ZA.1 as reproduced by the
+# public sources above. Conditions are the Table ZA.1 remarks that limit the
+# presumption of conformity for that element.
 article_17_element_to_control_map:
   first_sentence:
-    - {clause: "4.1-4.4, 5.1, 5.3.1-5.3.3", control: "SOP-024 6.1", evidence: "records/mdf/*"}
+    - {clause: "4.1, 4.2, 4.3, 4.4.1, 4.4.3, 5, 6, 8.1.1, 8.1.4, 8.1.5, 8.3.1.1, 9.7, 10.1.1.1, 10.1.3, 10.2", control: "SOP-024 6.1", evidence: "records/mdf/*", condition: "The standard alone does not ensure compliance; each applicable legal requirement is checked and the solution becomes part of the QMS."}
   a_strategy_for_regulatory_compliance:
-    - {clause: "4.4, 9.3.1-9.3.3", control: "SOP-024 6.2", evidence: "records/ai_act/regulatory_compliance_strategy_template.md"}
+    - {clause: "4.4.1, 8.3.1.1, 8.8, 9.4", control: "SOP-024 6.2", evidence: "records/ai_act/regulatory_compliance_strategy_template.md"}
   b_design_and_development_controls:
-    - {clause: "8.3.1-8.3.2", control: "SOP-024 6.4", evidence: "records/design/design_traceability_matrix_template.yml"}
+    - {clause: "8.1.1, 8.1.4, 8.1.5, 8.2, 8.3.1.1, 8.3.2, 8.4.2", control: "SOP-024 6.4", evidence: "records/design/design_traceability_matrix_template.yml"}
   c_development_quality_control_and_assurance:
-    - {clause: "8 (sub-clause to verify)", control: "SOP-020 + SOP-024 6.4", evidence: "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"}
+    - {clause: "4.1, 4.2, 4.3, 4.4.1, 4.4.3, 4.5, 5, 6, 8.1.1, 8.1.4, 8.1.5, 8.2, 8.3.1.1, 8.3.2.2, 8.3.2.4, 8.4.2, 8.4.3.1, 8.5, 9.3.5, 9.7.1, 9.7.2.1, 9.7.3, 10.1.1.1, 10.1.3, 10.2", control: "SOP-020 + SOP-024 6.4", evidence: "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"}
   d_test_and_validation_procedures:
-    - {clause: "8.4.2", control: "SOP-024 6.4", evidence: "WI-001-VerificationAndValidationExecution.md"}
+    - {clause: "8.1.1, 8.1.3, 8.1.4, 8.1.5, 8.2, 8.3.1.1, 8.4.3.1", control: "SOP-024 6.4", evidence: "WI-001-VerificationAndValidationExecution.md"}
   e_selection_of_technical_specifications:
     - {clause: "4.4.3", control: "SOP-024 6.3", evidence: "records/ai_act/technical_specification_selection_register_template.yml"}
   f_data_management:
     - {clause: "8.5", control: "SOP-024 6.5", evidence: "records/ai_act/ai_data_governance_record_template.yml"}
   g_risk_management:
-    - {clause: "8.1", control: "SOP-018 + SOP-024 6.4", evidence: "records/risk/risk_register_template.yml"}
+    - {clause: "8.2", control: "SOP-018 + SOP-024 6.4", evidence: "records/risk/risk_register_template.yml", condition: "Presumption only if the risk management system used complies with Art. 9."}
   h_post_market_monitoring:
-    - {clause: "9.4", control: "SOP-014 + SOP-024 6.9", evidence: "records/pms/pms_plan_template.yml"}
+    - {clause: "9.1, 9.5", control: "SOP-014 + SOP-024 6.9", evidence: "records/pms/pms_plan_template.yml"}
   i_serious_incident_reporting:
-    - {clause: "9.5", control: "SOP-013 + SOP-024 6.10", evidence: "records/ai_act/serious_incident_report_template.md"}
+    - {clause: "9.6.1, 9.6.2.1", control: "SOP-013 + SOP-024 6.10", evidence: "records/ai_act/serious_incident_report_template.md"}
   j_communications_with_authorities:
-    - {clause: "7.3", control: "SOP-024 6.12", evidence: "records/ai_act/authority_cooperation_log_template.md"}
+    - {clause: "7.3, 9.7.2.2", control: "SOP-024 6.12", evidence: "records/ai_act/authority_cooperation_log_template.md"}
   k_record_keeping:
-    - {clause: "4.5 (to verify)", control: "SOP-001 + SOP-024 6.11", evidence: "sops/SOP-001-DocControl.md"}
+    - {clause: "4.5, 8.7, 8.9, 9.1, 9.5.3", control: "SOP-001 + SOP-024 6.11", evidence: "sops/SOP-001-DocControl.md"}
   l_resource_management_and_suppliers:
-    - {clause: "7.1, 9.2", control: "SOP-010 + SOP-024 6.7", evidence: "records/suppliers/approved_supplier_list.yml"}
+    - {clause: "7.1, 7.2, 9.3", control: "SOP-010 + SOP-024 6.7, 6.13", evidence: "records/suppliers/approved_supplier_list.yml"}
   m_roles_responsibilities_authority:
-    - {clause: "5.3.1-5.3.3", control: "SOP-024 5", evidence: "QM-001"}
+    - {clause: "5.1, 5.3, 7.4", control: "SOP-024 5", evidence: "QM-001"}
+annex_za_other_rows:
+  article_17_1_second_sentence_documentation:
+    - {clause: "4.1, 4.2, 4.5, 5.2, 6, 8.3.1.1, 10.1.1.1, 10.1.3, 10.2", control: "SOP-001 + SOP-024 6.1", evidence: "sops/SOP-024-AIActProviderQMS.md", condition: "Covered if at least points (a) to (m) are documented."}
+  article_11_1_first_sentence_technical_documentation:
+    - {clause: "8.9", control: "SOP-024 6.11", evidence: "records/mdf/*", condition: "Covered only if the technical documentation contains every Annex IV item."}
+annex_za_not_covered:
+  - "Art. 17(2) (proportionality to provider size): no presumption; any proportionality claim needs its own justification."
+  - "Art. 17(3) (QMS aspects integrated into a QMS required by sectoral Union law, such as the MDR): no presumption. Integrating SOP-024 into the ISO 13485 QMS relies on Art. 17(3) itself, not on EN 18286."
+  - "Art. 17(4) (financial institutions): no presumption; outside this baseline's scope."
+  - "Clauses with no Table ZA.1 row (public sources list, among others, 4.4.2, 8.1.2, 8.4.1, 8.6, 9.2, 9.6.2.2) give no presumption of conformity."
 technical_specification_selection:
   companion_standards:
     - {ref: "EN 18228 (AI risk management)", oj_cited: false, scope: "Art. 9 risk management system", interim: "Handled under existing SOP-018; Annex ZA reference only"}
@@ -92,4 +112,4 @@ baseline_reuse:
     - "WI-002"
 notes:
   - "No copyrighted standard text is included; only clause references, high-level control families, and implementation decisions."
-  - "AI Act companion standards are not OJ-cited as of 2026-10-15; 18228/18282/18283/18284/18229/24970 statuses are shown as such and they may be replaced by 42001 or 13485 controls in the interim."
+  - "AI Act companion standards are not OJ-cited as of 2026-10-27 (public sources list them as under preparation); 18228/18282/18283/18284/18229/24970 statuses are shown as such and they may be replaced by 42001 or 13485 controls in the interim."
