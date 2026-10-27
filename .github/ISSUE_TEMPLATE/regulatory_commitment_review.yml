@@ -1,5 +1,5 @@
 name: Regulatory Commitment Review
-description: Review an applied/planned/not_applicable/unknown entry in matrices/regulatory_market_scope.yml.
+description: Review an applied/planned/not_applicable/unknown/not_selected entry in matrices/regulatory_market_scope.yml.
 title: "[Commitment review] "
 labels: ["regulatory", "governance"]
 body:
@@ -14,15 +14,16 @@ body:
     id: status
     attributes:
       label: New status
-      options: ["applied", "planned", "not_applicable", "unknown"]
+      options: ["applied", "planned", "not_applicable", "unknown", "not_selected"]
     validations:
       required: true
   - type: input
     id: review_by
     attributes:
       label: Review by (YYYY-MM-DD)
+      description: Required for planned and unknown; leave empty for not_selected.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: rationale
     attributes:

@@ -732,6 +732,10 @@ class QMSContentGuardTests(unittest.TestCase):
         self.assertTrue(distribution.commitment_failures(ledger("2027-01-31", status="deferred"), today))
         self.assertTrue(distribution.commitment_failures({}, today))
         self.assertTrue(distribution.commitment_failures({"regulatory_commitments": {"entries": []}}, today))
+        not_selected = {"regulatory_commitments": {"entries": [{"framework": "F", "status": "not_selected"}]}}
+        self.assertEqual(distribution.commitment_failures(not_selected, today), [])
+        self.assertEqual(distribution.commitment_failures(ledger("2026-10-25", status="not_selected"), today), [])
+        self.assertEqual(distribution.commitment_failures(ledger("tomorrow", status="not_selected"), today), [])
 
     def test_risk_records_have_valid_schema(self):
         failures = []

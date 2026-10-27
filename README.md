@@ -107,7 +107,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:START -->
 | Document ID | Title | File | Revision Date | Published Revision | Status |
 |---|---|---|---|---|---|
-| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-10-15 | R10 | Published |
+| QM-001 | Quality Manual | qm/QM-001-QualityManual.md | 2026-10-26 | R10 | Published |
 | SOP-001 | Document and Record Control | sops/SOP-001-DocControl.md | 2026-05-04 | R15 | Published |
 | SOP-002 | Corrective and Preventive Action (CAPA) | sops/SOP-002-CAPA.md | 2026-05-04 | R06 | Published |
 | SOP-003 | Internal Audit | sops/SOP-003-InternalAudit.md | 2026-05-04 | R07 | Published |
