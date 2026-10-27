@@ -57,18 +57,31 @@ classification_and_claims_policy:
   principle: "Regulatory qualification, classification, intended use, and claims are maintained per product dossier and approved before release."
 
 # Framework commitment ledger. Orthogonal to jurisdictions above: records the
-# commitment state per regulatory framework so a deferred commitment cannot
-# rot silently. States:
+# commitment state for every framework the baseline ships a gap analysis for,
+# so a deferred commitment cannot rot silently. States:
 #   applied        - operating now, with scope boundary and evidence paths
 #   planned        - committed later; trigger + owner + review_by are required
 #   not_applicable - determined out of scope; rationale + re-evaluation trigger required
-#   unknown        - no determination made yet (the default startups actually live in)
+#   unknown        - no determination made yet; review_by sets the decision date
+#   not_selected   - the organisation does not follow this framework; nothing is enforced
 # Overdue "planned" / "unknown" entries fail tools/qms_distribution.py check-commitments.
+# "not_selected" entries are never checked.
 regulatory_commitments:
   version: 1
   commitment_owner_role: management_representative
   entries:
+    - framework: "ISO 9001:2015 (+Amd 1:2024)"
+      gap_analysis: "matrices/iso_9001_gap_analysis.yml"
+      status: applied
+      scope_note: "Product-independent QMS spine operated by every adopter."
+      evidence:
+        - "qm/QM-001-QualityManual.md"
+        - "matrices/iso_9001_gap_analysis.yml"
+      scope_owner: management_representative
+      re_evaluation_trigger: "Change in QMS scope or organisational context."
+      review_by: "2026-12-31"
     - framework: "EN ISO 13485:2016 (+A11:2021)"
+      gap_analysis: "matrices/iso_13485_gap_analysis.yml"
       status: applied
       scope_note: "Core QMS spine; all medical-device SOPs applied."
       evidence:
@@ -78,7 +91,58 @@ regulatory_commitments:
       scope_owner: management_representative
       re_evaluation_trigger: "Change in intended use or scope."
       review_by: "2026-12-31"
+    - framework: "EN ISO 14971:2019 (+A11:2021)"
+      gap_analysis: "matrices/iso_14971_gap_analysis.yml"
+      status: applied
+      scope_note: "Risk management across the software lifecycle, including cybersecurity-related harms."
+      evidence:
+        - "sops/SOP-018-RiskManagement.md"
+        - "matrices/iso_14971_gap_analysis.yml"
+      scope_owner: qa_lead
+      re_evaluation_trigger: "Change in intended use, scope, or risk acceptability policy."
+      review_by: "2026-12-31"
+    - framework: "IEC 62304:2006 (+A1:2015)"
+      gap_analysis: "matrices/iec_62304_gap_analysis.yml"
+      status: applied
+      scope_note: "Software lifecycle, maintenance, configuration, and problem resolution for regulated software."
+      evidence:
+        - "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"
+        - "matrices/iec_62304_gap_analysis.yml"
+      scope_owner: engineering_lead
+      re_evaluation_trigger: "New regulated software product or change in software safety classification."
+      review_by: "2026-12-31"
+    - framework: "IEC 62366-1:2015 (+A1:2020)"
+      gap_analysis: "matrices/iec_62366_1_gap_analysis.yml"
+      status: applied
+      scope_note: "Usability engineering for safety-related user interfaces of user-facing SaMD."
+      evidence:
+        - "sops/SOP-019-UsabilityEngineering.md"
+        - "matrices/iec_62366_1_gap_analysis.yml"
+      scope_owner: usability_lead
+      re_evaluation_trigger: "New user-facing product or change in user groups or use environment."
+      review_by: "2026-12-31"
+    - framework: "IEC 82304-1:2016"
+      gap_analysis: "matrices/iec_82304_1_gap_analysis.yml"
+      status: applied
+      scope_note: "Product safety for health software products operated on general computing platforms."
+      evidence:
+        - "sops/SOP-020-SoftwareLifecycleConfigurationAndReleaseManagement.md"
+        - "matrices/iec_82304_1_gap_analysis.yml"
+      scope_owner: engineering_lead
+      re_evaluation_trigger: "New health software product or platform change."
+      review_by: "2026-12-31"
+    - framework: "ISO/IEC 27001:2022 (+Amd 1:2024)"
+      gap_analysis: "matrices/iso_27001_gap_analysis.yml"
+      status: applied
+      scope_note: "Information security governance for QMS, product, supplier, and operational information assets."
+      evidence:
+        - "sops/SOP-021-InformationSecurityManagement.md"
+        - "matrices/iso_27001_gap_analysis.yml"
+      scope_owner: technical_qms_maintainer
+      re_evaluation_trigger: "Change in information assets, hosting, or threat landscape."
+      review_by: "2026-12-31"
     - framework: "ISO/IEC 42001:2023"
+      gap_analysis: "matrices/iso_iec_42001_gap_analysis.yml"
       status: applied
       scope_note: "Product-AI AIMS under SOP-022; only when AI components are present in released or candidate products."
       evidence:
@@ -89,13 +153,15 @@ regulatory_commitments:
       re_evaluation_trigger: "Introduction or material change of an AI component."
       review_by: "2027-03-31"
     - framework: "EN 18286:2026 (EU AI Act provider QMS)"
+      gap_analysis: "matrices/en_18286_gap_analysis.yml"
       status: planned
       scope_note: "Planned ahead of placing a high-risk AI system on the EU market or putting it into service, or on reclassification to high-risk under Regulation (EU) 2024/1689 Art. 6(1)/(2) (Annex I/III). The Art. 17 QMS, Annex IV technical documentation, and conformity assessment must be complete before placement, so the commitment moves to applied before that date, not on it."
       trigger: "Decision to place a high-risk AI system on the EU market or put it into service (start of conformity assessment planning), or high-risk classification under Reg. (EU) 2024/1689."
       scope_owner: management_representative
       re_evaluation_trigger: "Any EU AI system introduced, any product reclassified high-risk, any high-risk AI contract signed."
       review_by: "2027-09-30"
-    - framework: "GDPR / Swiss nFADP"
+    - framework: "GDPR (Regulation (EU) 2016/679)"
+      gap_analysis: "matrices/gdpr_gap_analysis.yml"
       status: applied
       scope_note: "SOP-023 plus processing activity register; applicable only when personal data is processed."
       evidence:
@@ -105,6 +171,21 @@ regulatory_commitments:
       scope_owner: privacy_lead
       re_evaluation_trigger: "New processing activity or jurisdiction change."
       review_by: "2026-12-31"
+    - framework: "Swiss revised FADP (nFADP)"
+      gap_analysis: "matrices/swiss_nfadp_gap_analysis.yml"
+      status: applied
+      scope_note: "SOP-023 plus processing activity register; applicable only when personal data is processed."
+      evidence:
+        - "sops/SOP-023-DataProtectionAndPrivacyManagement.md"
+        - "matrices/privacy_data_protection_gap_index.yml"
+        - "records/privacy/processing_activity_register_template.md"
+      scope_owner: privacy_lead
+      re_evaluation_trigger: "New processing activity or jurisdiction change."
+      review_by: "2026-12-31"
+    - framework: "GAMP 5 (2nd Edition, 2022)"
+      gap_analysis: "matrices/gamp5_gxp_gap_analysis.yml"
+      status: not_selected
+      scope_note: "Optional overlay for GxP computerized-system customers; QMS tooling is validated under SOP-006 without it."
   # Controlled documents that are present in this public baseline but not applied
   # by adopting organisations until the matching commitment moves to "applied".
   # Each entry appears here precisely so a published-but-unapplied SOP is not

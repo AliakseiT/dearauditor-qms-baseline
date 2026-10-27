@@ -2,7 +2,7 @@
 sop_id: SOP-024
 title: AI Act Provider QMS (EN 18286:2026)
 revision: R00
-revision_date: 2026-10-15
+revision_date: 2026-10-27
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -161,18 +161,18 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
    `SOP-021-InformationSecurityManagement.md`. Model serving data, input/output
    samples retained for monitoring, and PMS feedback data all count.
 
-### 6.6 Environmental sustainability (clause 8.6)
+### 6.6 Environmental sustainability (from the prEN 18286 draft; the published edition numbers 8.6 as retirement)
 1. Identify and assess the environmental impacts of the AI system, including
    compute, data storage, and deployment footprint, and the mitigations applied.
 2. Provide deployers with the relevant information, typically in the accompanying
    documentation and instructions for use.
 3. Record in `records/ai_act/environmental_sustainability_assessment_template.md`.
 4. This item is fully documentation-bounded and reversible; it may be deferred
-   under the four-state commitment model as long as the deferral is recorded,
+   under the commitment model in `matrices/regulatory_market_scope.yml` as long as the deferral is recorded,
    and it must be closed before the AI system is placed on the market or put
    into service.
 
-### 6.7 Supply chain (clause 9.2)
+### 6.7 Supply chain (clause 9.3)
 1. Evaluate, select, monitor, and re-evaluate suppliers of components, data, and
    services based on their ability to meet the regulatory requirements and the
    requirements of EN 18286, per `SOP-010-SupplierAndPurchasingControl.md`.
@@ -184,7 +184,7 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
    criticality and, for proprietary-model providers, with an approved sourcing
    decision.
 
-### 6.8 Changes and continuous learning (clause 8.8, 9.3, 9.4)
+### 6.8 Changes and continuous learning (clause 8.8, 9.4)
 1. Distinguish a substantial modification from a non-substantial one. A
    substantial modification is one likely to affect compliance with the regulation
    or to introduce a new risk, or to represent a change to the input data
@@ -198,7 +198,7 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
 4. Modifications also flow through `SOP-009-ChangeManagement.md`; the substantial
    modification test is a requirement added on top of its four categories.
 
-### 6.9 Post-market monitoring (Art. 72, clause 9.4, 9.5)
+### 6.9 Post-market monitoring (Art. 72, clause 9.1, 9.5)
 1. Integrate the AI Act post-market monitoring system into `SOP-014-PostMarketSurveillance.md`,
    including deployer feedback channels, system logs (logging aligned with
    ISO/IEC 24970 where applicable), authority reports, and complaint/incident inputs.
@@ -264,7 +264,7 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
    to follow the applicable regulatory requirements; for AI Act serious
    incidents, those are the values in item 2.
 
-### 6.11 Technical documentation (clause 4.5, 8.7)
+### 6.11 Technical documentation (clause 4.5, 8.7, 8.9)
 1. Each AI system must carry technical documentation suitable for authorities and
    auditors in an EU official language, version-controlled, traceable, and
    maintained per `SOP-001-DocControl.md`.
@@ -325,13 +325,13 @@ This SOP is optional at the upstream baseline; see `docs/adoption/README.md` and
 ## 8. Traceability
 Standard Clause | Control in this SOP | Linked Artifact
 ---|---|---
-EN 18286:2026 4 | Context, regulatory requirements, compliance strategy, scope. | `matrices/regulatory_market_scope.yml`, `records/ai_act/regulatory_compliance_strategy_template.md`
-EN 18286:2026 5 | Management responsibility, roles, authorities incl. risk management system. | QM-001, SOP-005, this SOP §5
-EN 18286:2026 6 | Planning and risk-based planning of AI systems. | SOP-022 §6.2, SOP-018
+EN 18286:2026 4 | Regulatory requirements, QMS scope, compliance strategy, documented information. | `matrices/regulatory_market_scope.yml`, `records/ai_act/regulatory_compliance_strategy_template.md`, SOP-001
+EN 18286:2026 5 | Leadership, quality policy, roles, responsibilities and authorities. | QM-001, SOP-005, this SOP §5
+EN 18286:2026 6 | Planning: risks to the functioning of the QMS, quality objectives. | SOP-022 §6.2, SOP-018
 EN 18286:2026 7 | Resources, competence, communications incl. authorities, awareness. | SOP-011, this SOP §6.13 and §6.12
-EN 18286:2026 8 | AI system realisation: lifecycle, design, V&V, data, environment, identification, continuous learning. | SOP-008, SOP-020, WI-001, §6.4-§6.8
-EN 18286:2026 9 | Operation: supply chain, changes, post-market, incidents, non-compliance. | SOP-009, SOP-010, SOP-013, SOP-014, §6.7-§6.10
-EN 18286:2026 10 | Performance evaluation, management review, continual improvement. | SOP-003, SOP-004, SOP-016, SOP-002
+EN 18286:2026 8 | AI system realisation: life cycle, AI system risks, design, V&V, data, retirement, identification, continuous learning, product documentation. | SOP-008, SOP-018, SOP-020 (§6.8 retirement), WI-001, §6.4-§6.8, §6.11
+EN 18286:2026 9 | Operation and control: deployment and monitoring, support services, supply chain, modifications, post-market monitoring, serious incidents, non-compliance. | SOP-009, SOP-010, SOP-013, SOP-014, §6.7-§6.10
+EN 18286:2026 10 | Performance evaluation: management review, planning of changes. | SOP-004, SOP-009, SOP-003, SOP-016, SOP-002
 Regulation (EU) 2024/1689 Art. 17 (all) | Maps via `matrices/en_18286_gap_analysis.yml` article_17_element_to_control_map. | matrix
 ISO/IEC 42001:2023 clauses 4-10 | Organisational governance layer. | `SOP-022`
 ISO 13485:2016 | Host QMS; document control, design, V&V, nonconformity, CAPA, MR. | SOP-001, SOP-008, SOP-015, SOP-002, SOP-004
@@ -366,4 +366,4 @@ ISO 13485:2016 | Host QMS; document control, design, V&V, nonconformity, CAPA, M
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-10-15 | Initial release establishing the GitHub-native AI Act provider QMS procedure, written compliance strategy, technical specification selection register, substantial-modification and pre-determined change controls, AI data governance, AI Act statutory incident clock, authority cooperation, environmental sustainability, and EN 18286:2026 traceability. Clause references are provisional against the purchased normative text. |
+| R00 | 2026-10-27 | Initial release establishing the GitHub-native AI Act provider QMS procedure, written compliance strategy, technical specification selection register, substantial-modification and pre-determined change controls, AI data governance, AI Act statutory incident clock, authority cooperation, environmental sustainability, and EN 18286:2026 traceability. Clause references follow public sources of the published edition and its Annex ZA; they are not verified against the purchased normative text. |

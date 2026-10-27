@@ -131,7 +131,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 | SOP-021 | Information Security Management (ISO/IEC 27001) | sops/SOP-021-InformationSecurityManagement.md | 2026-05-04 | R02 | Published |
 | SOP-022 | AI Management System (ISO/IEC 42001) | sops/SOP-022-AIManagementSystem.md | 2026-10-15 | R03 | Published |
 | SOP-023 | Data Protection and Privacy Management (GDPR and Swiss nFADP) | sops/SOP-023-DataProtectionAndPrivacyManagement.md | 2026-05-14 | R00 | Published |
-| SOP-024 | AI Act Provider QMS (EN 18286:2026) | sops/SOP-024-AIActProviderQMS.md | 2026-10-15 | R00 | Published |
+| SOP-024 | AI Act Provider QMS (EN 18286:2026) | sops/SOP-024-AIActProviderQMS.md | 2026-10-27 | R00 | Published |
 | WI-001 | Verification and Validation Execution | wis/WI-001-VerificationAndValidationExecution.md | 2026-04-27 | R09 | Published |
 | WI-002 | Configuration and Release Management Execution | wis/WI-002-ConfigurationAndReleaseManagementExecution.md | 2026-04-27 | R10 | Published |
 <!-- PUBLISHED-CONTROLLED-DOC-INDEX:END -->
