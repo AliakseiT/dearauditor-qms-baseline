@@ -6,6 +6,7 @@ import argparse
 import datetime as dt
 import fnmatch
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -167,6 +168,92 @@ def sync_codeowners(
     return 0
 
 
+
+def load_matrix_ruby(path: Path) -> dict:
+    if not path.exists():
+        raise FileNotFoundError(f"{path} does not exist")
+    script = (
+        'require "yaml"; require "json"; '
+        'data = YAML.safe_load(File.read(ARGV[0]), permitted_classes: [], aliases: false) || {}; '
+        'puts data.to_json'
+    )
+    proc = subprocess.run(
+        ["ruby", "-r", "yaml", "-e", script, str(path)],
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.strip() or "ruby YAML parse failed")
+    return json.loads(proc.stdout or "{}")
+
+
+COMMITMENT_STATUSES = {"applied", "planned", "not_applicable", "unknown", "not_selected"}
+ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+COMMITMENTS_MIGRATION_DOC = "docs/open-source/README.md#upgrade-notes"
+
+
+def parse_review_date(value: object) -> dt.date | None:
+    """Return the calendar date for a YYYY-MM-DD value, or None if it is not one."""
+    text = str(value or "").strip()
+    if not ISO_DATE_RE.fullmatch(text):
+        return None
+    try:
+        return dt.date.fromisoformat(text)
+    except ValueError:
+        return None
+
+
+def commitment_failures(
+    data: object, today: dt.date, path: str = "matrices/regulatory_market_scope.yml"
+) -> list[str]:
+    block = data.get("regulatory_commitments") if isinstance(data, dict) else None
+    entries = block.get("entries") if isinstance(block, dict) else None
+    if not isinstance(entries, list) or not entries:
+        return [
+            f"{path}: regulatory_commitments.entries is empty or missing; "
+            f"see {COMMITMENTS_MIGRATION_DOC} to add the ledger"
+        ]
+    failures: list[str] = []
+    for idx, entry in enumerate(entries, start=1):
+        if not isinstance(entry, dict):
+            failures.append(f"{path}: regulatory_commitments.entries[{idx}] must be a mapping")
+            continue
+        framework = str(entry.get("framework") or f"entries[{idx}]")
+        status = str(entry.get("status", "")).strip().lower()
+        if status not in COMMITMENT_STATUSES:
+            failures.append(f"{framework}: unknown commitment status {status!r}")
+            continue
+        if status == "not_selected":
+            continue
+        raw_review_by = entry.get("review_by")
+        if raw_review_by in (None, ""):
+            if status in {"planned", "unknown"}:
+                failures.append(f"{framework}: {status} commitment is missing review_by")
+            continue
+        review_by = parse_review_date(raw_review_by)
+        if review_by is None:
+            failures.append(f"{framework}: review_by {raw_review_by!r} is not a valid YYYY-MM-DD calendar date")
+        elif status in {"planned", "unknown"} and review_by < today:
+            failures.append(
+                f"{framework}: {status} commitment overdue (review_by {review_by.isoformat()} < {today.isoformat()})"
+            )
+    return failures
+
+
+def check_regulatory_commitments(
+    repo_root: Path, path: str = "matrices/regulatory_market_scope.yml", today: dt.date | None = None
+) -> list[str]:
+    matrix_path = repo_root / path
+    try:
+        data = load_matrix_ruby(matrix_path)
+    except FileNotFoundError as exc:
+        return [f"{path}: cannot read matrix ({exc})"]
+    except RuntimeError as exc:
+        hint = ' Quote dates as strings, for example review_by: "2027-03-31".' if "Date" in str(exc) else ""
+        return [f"{path}: cannot parse matrix ({exc}).{hint}"]
+    return commitment_failures(data, today or dt.date.today(), path)
+
+
 def placeholder_hits(repo_root: Path) -> list[str]:
     config = load_map(repo_root)
     prefixes = tuple(config.get("placeholder_prefixes", []))
@@ -245,6 +332,17 @@ def cmd_check_placeholders(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def cmd_check_commitments(args: argparse.Namespace) -> int:
+    repo_root = Path(args.repo_root).resolve()
+    path = getattr(args, "path", "matrices/regulatory_market_scope.yml")
+    failures = check_regulatory_commitments(repo_root, path)
+    if failures:
+        print("\n".join(failures))
+        return 1
+    print("Regulatory commitments check passed.")
+    return 0
+
 def cmd_required_settings(args: argparse.Namespace) -> int:
     print_required_settings(Path(args.repo_root).resolve())
     return 0
@@ -288,6 +386,11 @@ def build_parser() -> argparse.ArgumentParser:
     placeholders_parser = sub.add_parser("check-placeholders")
     placeholders_parser.add_argument("--repo-root", default=str(REPO_ROOT))
     placeholders_parser.set_defaults(func=cmd_check_placeholders)
+
+    commitments_parser = sub.add_parser("check-commitments")
+    commitments_parser.add_argument("--repo-root", default=str(REPO_ROOT))
+    commitments_parser.add_argument("--path", default="matrices/regulatory_market_scope.yml")
+    commitments_parser.set_defaults(func=cmd_check_commitments)
 
     settings_parser = sub.add_parser("required-settings")
     settings_parser.add_argument("--repo-root", default=str(REPO_ROOT))

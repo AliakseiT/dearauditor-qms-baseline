@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R09
-revision_date: 2026-05-26
+revision: R10
+revision_date: 2026-10-26
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -108,10 +108,11 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - IEC 82304-1:2016
 - ISO/IEC 27001:2022, including ISO/IEC 27001:2022/Amd 1:2024
 - ISO/IEC 42001:2023
+- EN 18286:2026 (EU AI Act provider QMS, implemented through `SOP-024`), for high-risk AI systems placed on the EU market or put into service
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
 - Switzerland: MedDO, including software classification references
-- European Union: MDR and MDCG software guidance
+- European Union: MDR and MDCG software guidance, and Regulation (EU) 2024/1689 (AI Act) for high-risk AI systems
 - United States: FD&C Act device definitions, section 520(o), FDA software guidance, and 21 CFR Part 820
 
 ## 9. Document Architecture and Record Model
@@ -134,6 +135,7 @@ QMS tooling and validation baselines are maintained in:
 | ISO 13485:2016 5.4.1, 5.4.2 | Defines quality objectives and planning context | `matrices/company_profile.yml`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
 | ISO 13485:2016 5.5 | Defines system-level responsibilities and communication overview | `sops/SOP-005-QMSGovernance.md`, `sops/SOP-011-CompetenceTrainingAndAwareness.md` |
 | ISO 9001:2015 4-10 | Defines the general quality-management overlay for context, interested parties, customer focus, organizational knowledge, process performance, and improvement | `matrices/iso_9001_gap_analysis.yml`, `sops/SOP-005-QMSGovernance.md`, `sops/SOP-012-FeedbackAndComplaintHandling.md`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
+| EN 18286:2026 4-10; Regulation (EU) 2024/1689 Art. 17 | Defines the AI Act provider QMS layer for high-risk AI systems placed on the EU market, applied when the EN 18286 commitment in `matrices/regulatory_market_scope.yml` is applied | `matrices/en_18286_gap_analysis.yml`, `sops/SOP-024-AIActProviderQMS.md` |
 
 ## 11. Related Controlled Documents
 - SOP-001 Document and Record Control
@@ -158,3 +160,4 @@ QMS tooling and validation baselines are maintained in:
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
 | R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |
+| R10 | 2026-10-26 | Added EN 18286:2026 EU AI Act provider QMS and the EU AI Act to the standards and regulatory framework, with a traceability row cross-referencing SOP-024. |

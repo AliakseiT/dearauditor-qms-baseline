@@ -1,0 +1,60 @@
+name: Regulatory Incident / AI Act Serious Incident Intake
+description: Log a potential regulatory incident (general + AI Act where applicable) with a statutory clock.
+title: "[Incident] "
+labels: ["incident", "regulatory"]
+body:
+  - type: input
+    id: product
+    attributes:
+      label: Product
+      description: Affected product and version.
+      placeholder: "ACME product X v1.2.3"
+    validations:
+      required: true
+  - type: textarea
+    id: narrative
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: dropdown
+    id: deadline_class
+    attributes:
+      label: Deadline class (EU AI Act Art. 73, counted from awareness)
+      description: >-
+        Pick the shortest class that applies. An incomplete initial report is
+        allowed but does not extend the deadline.
+      options:
+        - "Widespread infringement or critical-infrastructure disruption (2 days)"
+        - "Death of a person (10 days)"
+        - "Other serious incident (15 days)"
+        - "MDR/IVDR device, not a fundamental-rights infringement: device vigilance under SOP-013 (Art. 73(10))"
+        - "Not a high-risk AI system on the EU market (N/A)"
+    validations:
+      required: true
+  - type: input
+    id: became_aware
+    attributes:
+      label: Provider or deployer became aware on (UTC)
+      description: This time starts every AI Act statutory clock. Record who became aware in the narrative.
+      placeholder: "2026-10-15T14:00Z"
+    validations:
+      required: true
+  - type: input
+    id: occurred
+    attributes:
+      label: Incident occurred on (UTC), if known
+      placeholder: "2026-10-15T09:30Z"
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: References (records/ai_act/serious_incident_report_template.md, SOP-013, SOP-024 6.10)
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have read SOP-013 and SOP-024 6.10. A preliminary entry is recorded within 24 hours of awareness; the authority report is due by the deadline class above.
+          required: true

@@ -13,3 +13,60 @@ jurisdictions:
         - "REPLACE_WITH_SOURCE_LINK"
 classification_and_claims_policy:
   principle: "Regulatory qualification, classification, intended use, and claims are maintained per product dossier and approved before release."
+
+# Framework commitment ledger: one entry per framework the baseline ships a gap
+# analysis for. Every entry starts as not_selected; change the status of each
+# framework your organisation follows. States:
+#   applied        - operating now, with scope boundary and evidence paths
+#   planned        - committed later; trigger + owner + review_by are required
+#   not_applicable - determined out of scope; rationale + re-evaluation trigger required
+#   unknown        - no determination made yet; review_by sets the decision date
+#   not_selected   - the organisation does not follow this framework; nothing is enforced
+# tools/qms_distribution.py check-commitments fails on overdue planned/unknown
+# entries and on invalid review_by dates. It never checks not_selected entries.
+# Quote review_by dates, for example review_by: "2027-03-31".
+regulatory_commitments:
+  version: 1
+  commitment_owner_role: management_representative
+  entries:
+    - framework: "ISO 9001:2015 (+Amd 1:2024)"
+      gap_analysis: "matrices/iso_9001_gap_analysis.yml"
+      status: not_selected
+    - framework: "EN ISO 13485:2016 (+A11:2021)"
+      gap_analysis: "matrices/iso_13485_gap_analysis.yml"
+      status: not_selected
+    - framework: "EN ISO 14971:2019 (+A11:2021)"
+      gap_analysis: "matrices/iso_14971_gap_analysis.yml"
+      status: not_selected
+    - framework: "IEC 62304:2006 (+A1:2015)"
+      gap_analysis: "matrices/iec_62304_gap_analysis.yml"
+      status: not_selected
+    - framework: "IEC 62366-1:2015 (+A1:2020)"
+      gap_analysis: "matrices/iec_62366_1_gap_analysis.yml"
+      status: not_selected
+    - framework: "IEC 82304-1:2016"
+      gap_analysis: "matrices/iec_82304_1_gap_analysis.yml"
+      status: not_selected
+    - framework: "ISO/IEC 27001:2022 (+Amd 1:2024)"
+      gap_analysis: "matrices/iso_27001_gap_analysis.yml"
+      status: not_selected
+    - framework: "ISO/IEC 42001:2023"
+      gap_analysis: "matrices/iso_iec_42001_gap_analysis.yml"
+      status: not_selected
+    - framework: "EN 18286:2026 (EU AI Act provider QMS)"
+      gap_analysis: "matrices/en_18286_gap_analysis.yml"
+      status: not_selected
+    - framework: "GDPR (Regulation (EU) 2016/679)"
+      gap_analysis: "matrices/gdpr_gap_analysis.yml"
+      status: not_selected
+    - framework: "Swiss revised FADP (nFADP)"
+      gap_analysis: "matrices/swiss_nfadp_gap_analysis.yml"
+      status: not_selected
+    - framework: "GAMP 5 (2nd Edition, 2022)"
+      gap_analysis: "matrices/gamp5_gxp_gap_analysis.yml"
+      status: not_selected
+  # Upstream controlled documents synced into this repository but not applied
+  # until the matching commitment moves to applied.
+  published_not_applied:
+    - document: "SOP-024"
+      rationale: "EN 18286 layer synced from the upstream baseline; not activated until the EN 18286 commitment is applied."
