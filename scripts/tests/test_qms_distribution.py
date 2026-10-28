@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts import resolve_signature_policy
 from tools import qms_distribution
 
 
@@ -31,6 +32,9 @@ roles:
   management_representative:
     users:
       - mr-one
+  technical_qms_maintainer:
+    users:
+      - eng-one
 """
 
 
@@ -59,8 +63,39 @@ def test_sync_then_check_round_trip(tmp_path: Path) -> None:
     args = ("matrices/signer_registry.json", ".github/CODEOWNERS")
     assert qms_distribution.sync_codeowners(tmp_path, *args, check=True) == 1
     assert qms_distribution.sync_codeowners(tmp_path, *args, check=False) == 0
-    assert (tmp_path / ".github" / "CODEOWNERS").read_text(encoding="utf-8").endswith("* @qa-one\n")
+    assert "\n* @qa-one\n" in (tmp_path / ".github" / "CODEOWNERS").read_text(encoding="utf-8")
     assert qms_distribution.sync_codeowners(tmp_path, *args, check=True) == 0
+
+
+def test_tooling_paths_are_owned_by_the_technical_maintainer(tmp_path: Path) -> None:
+    _write_repo(tmp_path, {"qa-one": {}, "eng-one": {}})
+    args = ("matrices/signer_registry.json", ".github/CODEOWNERS")
+    assert qms_distribution.sync_codeowners(tmp_path, *args, check=False) == 0
+    rules = [
+        line
+        for line in (tmp_path / ".github" / "CODEOWNERS").read_text(encoding="utf-8").splitlines()
+        if not line.startswith("#")
+    ]
+    assert rules == [
+        "* @qa-one",
+        "/.github/ @eng-one",
+        "/scripts/ @eng-one",
+        "/services/signature-worker/ @eng-one",
+        "/tools/ @eng-one",
+    ]
+
+
+def test_tooling_paths_fall_back_to_approvers_without_a_maintainer_signer(tmp_path: Path) -> None:
+    _write_repo(tmp_path, {"qa-one": {}})
+    args = ("matrices/signer_registry.json", ".github/CODEOWNERS")
+    assert qms_distribution.sync_codeowners(tmp_path, *args, check=False) == 0
+    assert (tmp_path / ".github" / "CODEOWNERS").read_text(encoding="utf-8").endswith(
+        "qa_lead in matrices/training_matrix.yml.\n* @qa-one\n"
+    )
+
+
+def test_tooling_paths_match_the_signature_policy() -> None:
+    assert qms_distribution.TOOLING_PATH_PREFIXES == resolve_signature_policy.TECHNICAL_QMS_MAINTAINER_PREFIXES
 
 
 def test_sync_fails_without_an_approver_signer(tmp_path: Path) -> None:

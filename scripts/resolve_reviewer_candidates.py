@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import shlex
 import subprocess
 import sys
@@ -107,43 +106,38 @@ def _resolve_codeowners_candidates(repo_root: Path, changed_paths: list[str]) ->
     if not owners_by_line:
         return codeowners_path, []
 
-    gitignore_lines: list[str] = []
-    for line_number, raw_line in enumerate(lines, start=1):
-        stripped = raw_line.strip()
-        owners = owners_by_line.get(line_number)
-        if not stripped or stripped.startswith("#"):
-            gitignore_lines.append(raw_line)
-            continue
-        if owners is None:
-            gitignore_lines.append("")
-            continue
+    rules: list[tuple[int, str]] = []
+    for line_number in owners_by_line:
+        raw_line = lines[line_number - 1]
         try:
             tokens = shlex.split(raw_line, comments=False, posix=True)
         except ValueError:
             tokens = raw_line.strip().split()
-        gitignore_lines.append(tokens[0] if tokens else "")
+        if tokens:
+            rules.append((line_number, tokens[0]))
 
+    # Match one rule at a time. In a single .gitignore, a broad rule such as `*` also
+    # excludes parent directories, so git never reports a later, more specific rule like
+    # `/tools/`. CODEOWNERS applies the last matching rule, so later matches overwrite.
+    matched_line_by_path: dict[str, int] = {}
     with tempfile.TemporaryDirectory(prefix="codeowners-match-") as tmp_dir:
         tmp_root = Path(tmp_dir)
         subprocess.run(["git", "init", "-q"], cwd=tmp_root, check=True)
-        (tmp_root / ".gitignore").write_text("\n".join(gitignore_lines) + "\n", encoding="utf-8")
-        proc = subprocess.run(
-            ["git", "check-ignore", "-v", "--no-index", "--stdin"],
-            cwd=tmp_root,
-            check=False,
-            capture_output=True,
-            text=True,
-            input="".join(f"{path}\n" for path in changed_paths),
-        )
-        if proc.returncode not in {0, 1}:
-            raise RuntimeError(proc.stderr.strip() or "git check-ignore failed")
-
-    matched_line_by_path: dict[str, int] = {}
-    for raw_line in proc.stdout.splitlines():
-        match = re.match(r"^[^:]+:(\d+):[^\t]*\t(.+)$", raw_line)
-        if not match:
-            continue
-        matched_line_by_path[match.group(2)] = int(match.group(1))
+        for line_number, pattern in rules:
+            (tmp_root / ".gitignore").write_text(pattern + "\n", encoding="utf-8")
+            proc = subprocess.run(
+                ["git", "check-ignore", "--no-index", "--stdin", "-z"],
+                cwd=tmp_root,
+                check=False,
+                capture_output=True,
+                text=True,
+                input="".join(f"{path}\0" for path in changed_paths),
+            )
+            if proc.returncode not in {0, 1}:
+                raise RuntimeError(proc.stderr.strip() or "git check-ignore failed")
+            for matched_path in proc.stdout.split("\0"):
+                if matched_path:
+                    matched_line_by_path[matched_path] = line_number
 
     ordered_candidates: list[str] = []
     seen: set[str] = set()
