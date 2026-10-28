@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R10
-revision_date: 2026-10-26
+revision: R11
+revision_date: 2026-10-28
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -44,7 +44,8 @@ ACME maintains this QMS to:
 - apply IEC 62366-1:2015 usability engineering for safety-related user interfaces
 - apply IEC 82304-1:2016 product-safety controls for health software placed on general computing platforms
 - apply ISO/IEC 27001:2022 information security governance for QMS, product, supplier, and operational information assets
-- apply ISO/IEC 42001:2023 AI management controls for AI components inside ACME medical-device software and AI-bearing supplier interfaces
+- apply ISO/IEC 42001:2023 AI management controls for AI components inside ACME software products and AI-bearing supplier interfaces
+- apply EN 18286:2026 provider QMS controls, through `SOP-024`, when ACME places a high-risk AI system on the EU market or puts it into service
 - maintain product safety and performance through controlled lifecycle processes
 - retain objective evidence and traceability for quality decisions
 
@@ -161,3 +162,4 @@ QMS tooling and validation baselines are maintained in:
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
 | R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |
 | R10 | 2026-10-26 | Added EN 18286:2026 EU AI Act provider QMS and the EU AI Act to the standards and regulatory framework, with a traceability row cross-referencing SOP-024. |
+| R11 | 2026-10-28 | Aligned the QMS intent with SOP-022 R03, so ISO/IEC 42001 AI management controls cover AI components in all ACME software products, not only medical-device software, and added the EN 18286:2026 provider QMS intent implemented through SOP-024. |
