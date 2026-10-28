@@ -144,7 +144,7 @@ Use the grouped links below for navigation. The raw machine-readable published c
 - [Quality manual traceability matrix](matrices/quality_manual_traceability.yml)
 - [QMS tooling inventory and validation baseline](matrices/qms_tooling_inventory.yml)
 - [Signer registry](matrices/signer_registry.json)
-- Gap analyses: [ISO 9001](matrices/iso_9001_gap_analysis.yml), [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml), [ISO/IEC 27001](matrices/iso_27001_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml)
+- Gap analyses: [ISO 9001](matrices/iso_9001_gap_analysis.yml), [ISO 13485](matrices/iso_13485_gap_analysis.yml), [ISO 14971](matrices/iso_14971_gap_analysis.yml), [IEC 62304](matrices/iec_62304_gap_analysis.yml), [IEC 62366-1](matrices/iec_62366_1_gap_analysis.yml), [IEC 82304-1](matrices/iec_82304_1_gap_analysis.yml), [ISO/IEC 27001](matrices/iso_27001_gap_analysis.yml), [ISO/IEC 42001](matrices/iso_iec_42001_gap_analysis.yml), [EN 18286 (EU AI Act)](matrices/en_18286_gap_analysis.yml) - placeholder until SOP-024 ships in a follow-up PR
 
 ## Architecture and Automation
 

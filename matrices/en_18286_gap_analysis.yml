@@ -1,0 +1,31 @@
+version: 1
+analysis_date: "2026-10-15"
+status: placeholder
+standard:
+  exact_name: "EN 18286:2026 Artificial intelligence - Quality management system for EU AI Act regulatory purposes"
+  normative_base: "EN 18286:2026"
+  normative_source_verified: false
+analysis_scope: >
+  Provider quality management system for AI systems placed on, or put into service
+  in, the European Union under Regulation (EU) 2024/1689. Clause references follow
+  public secondary reproductions of the published edition and its Annex ZA (see
+  analysis_provenance); they are not verified against the purchased normative text.
+analysis_provenance:
+  retrieved_on: "2026-10-27"
+  sources:
+    - "Commission Implementing Decision (EU) 2026/2274 (OJ reference of EN 18286:2026, published 2026-10-14)"
+    - "Modulos, EN 18286 Annex ZA coverage table (updated 2026-10-19): https://docs.modulos.ai/frameworks/eu-ai-act/harmonized-standards/en-18286/annex-za-and-presumption"
+    - "Modulos, EN 18286 clause structure (updated 2026-10-19): https://docs.modulos.ai/frameworks/eu-ai-act/harmonized-standards/en-18286"
+    - "Intertek, EN 18286 is published (2026-09-29): https://www.intertek.com/blog/2026/10-01-en-18286-first-eu-ai-act-standards-puzzle-piece-is-on-the-table/"
+    - "Axipro, EN 18286 explained (2026-10-16): https://axipro.co/en-18286/"
+    - "CMS Law-Now analysis of prEN 18286 (Oct 2025 enquiry draft); draft numbering, superseded by the published edition"
+  notes:
+    - "Clause numbering changed between the prEN 18286 enquiry draft and the published edition; no draft-era clause number is used."
+    - "Annex B gives clause correspondence with EN ISO 9001:2015 and Annex C with EN ISO/IEC 42001:2026. This baseline tracks ISO/IEC 42001:2023, so no Annex C correspondence is claimed until the 2026 edition is reviewed."
+outstanding_gaps:
+  - "Full clause_to_control_map populates in the SOP-024 PR."
+  - "article_17_element_to_control_map and technical_specification_selection populate in the SOP-024 PR."
+  - "Clause references come from public secondary sources; verify them against the purchased normative text."
+clause_to_control_map: {}
+article_17_element_to_control_map: {}
+technical_specification_selection: {}
