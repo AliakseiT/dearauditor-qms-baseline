@@ -1,0 +1,28 @@
+version: 1
+record_type: ai_system_requirements_specification
+spec_id: "ARS-<product>-<yyyy>-<nn>"
+product: "<product-id>"
+ai_system: "<ai-system-id>"
+prepared_by: "<github_login>"
+approval:
+  meaning_of_signature: "Approved AI system requirements"
+  signer_roles:
+    - engineering_lead
+    - qa_lead
+  required_signatures: 2
+essential_requirement_mapping:
+  art_9_risk_management: [requirement_ids_here]
+  art_10_data_governance: []
+  art_11_technical_documentation: []
+  art_12_record_keeping_logging: []
+  art_13_transparency_instructions_for_use: []
+  art_14_human_oversight: []
+  art_15_accuracy: []
+  art_15_robustness: []
+  art_15_cybersecurity: []
+requirements:
+  - req_id: "AIR-001"
+    origin: "Reg. (EU) 2024/1689 Art. <n>"
+    verification_method: "test|analysis|inspection|demonstration"
+    acceptance_criteria: ""
+    owner:
