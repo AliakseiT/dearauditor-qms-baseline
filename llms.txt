@@ -6,11 +6,11 @@
 > Companies mirror the baseline into a private repository, tailor it,
 > validate it, and run their QMS entirely in Git. Covers ISO 9001, ISO 13485,
 > ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001,
-> ISO/IEC 42001, GDPR, Swiss nFADP, and an optional GAMP 5 / GxP overlay
-> (21 CFR Part 11, EU Annex 11).
+> ISO/IEC 42001, EN 18286:2026 (EU AI Act provider QMS), GDPR, Swiss nFADP,
+> and an optional GAMP 5 / GxP overlay (21 CFR Part 11, EU Annex 11).
 
-Current published baseline: QMS-2026-07-09-R005
-(https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-07-09-R005).
+Current published baseline: QMS-2026-10-28-R006
+(https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-10-28-R006).
 Licensing: Apache-2.0 for code and automation, CC BY-SA 4.0 for documents.
 Contact: aliaksei@dearauditor.ch.
 

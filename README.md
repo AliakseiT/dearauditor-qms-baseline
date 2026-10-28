@@ -17,7 +17,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 | Adopt the baseline into a company QMS | [Open-source adoption model](docs/open-source/README.md) |
 | Tailor the baseline to what I am building | [Adoption profiles](docs/adoption/README.md) |
 | Jump straight to the current published document set | [Published library](#published-library) |
-| Open the formal QMS release for this baseline | [QMS-2026-07-09-R005](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-07-09-R005) |
+| Open the formal QMS release for this baseline | [QMS-2026-10-28-R006](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-10-28-R006) |
 | Find a specific SOP by topic | [SOP library by topic](#sop-library-by-topic) |
 | Open the work instructions | [Work instructions](#work-instructions) |
 | See my training work as a logged-in GitHub user | [My open training issues](https://github.com/AliakseiT/dearauditor-qms-baseline/issues?q=is%3Aopen+is%3Aissue+label%3Atraining-diff+assignee%3A%40me+sort%3Aupdated-desc) |
@@ -34,8 +34,8 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 - Published upstream baseline example entity: `ACME GmbH`
 - Registered office: `Paradeplatz 8, 8001 Zurich, Switzerland`
 - Operating model: `Remote-first`
-- Current baseline shown in this README: `1` published Quality Manual, `23` published SOPs, and `2` published WIs
-- Formal QMS release for this baseline: [`QMS-2026-07-09-R005`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-07-09-R005)
+- Current baseline shown in this README: `1` published Quality Manual, `24` published SOPs, and `2` published WIs
+- Formal QMS release for this baseline: [`QMS-2026-10-28-R006`](https://github.com/AliakseiT/dearauditor-qms-baseline/releases/tag/QMS-2026-10-28-R006)
 - Formal QMS releases use `QMS-YYYY-MM-DD-RNNN`, where `RNNN` is the global sequential upstream baseline release number
 - This repository also publishes record-specific releases, so the newest overall release is not always the newest QMS baseline. In GitHub Releases, use the newest `QMS-...` entry when you need the latest published QMS version.
 
@@ -43,7 +43,7 @@ If you are reading this page on a `QMS-YYYY-MM-DD-RNNN` tag, this README is the 
 
 The public upstream baseline provides reusable controlled content, templates, workflow automation, validators, and bootstrap tooling. The detailed adoption sequence is maintained in the [open-source adoption model](docs/open-source/README.md#adoption-model-2). Optional [adoption profiles](docs/adoption/README.md) map common product types and use cases to the baseline areas that typically apply, without changing the product-independent default baseline.
 
-The gap-analysis files in this repository show how the upstream baseline content maps to the current product-independent standards preparation set, including ISO 9001, ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, and ISO/IEC 42001. They do not approve a downstream company, product, study, hosted service, or tool configuration by themselves.
+The gap-analysis files in this repository show how the upstream baseline content maps to the current product-independent standards preparation set, including ISO 9001, ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, ISO/IEC 42001, and EN 18286:2026 (EU AI Act provider QMS). They do not approve a downstream company, product, study, hosted service, or tool configuration by themselves.
 
 ## Training and Role Navigation
 
