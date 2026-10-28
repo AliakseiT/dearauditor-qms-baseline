@@ -231,3 +231,53 @@ baseline):
 - Electronic records / electronic signatures mapping to the applicable framework
   (for example 21 CFR Part 11, EU Annex 11) — not asserted by the baseline.
 - Sponsor / CRO / site interface obligations and trial-master-file linkage.
+
+---
+
+## EU AI Act high-risk provider
+
+Most controls are in the baseline. You supply the high-risk determination, the
+conformity-assessment route, and the Annex IV technical documentation.
+
+- **For:** a provider of an AI system that is high-risk under Regulation (EU)
+  2024/1689 and is placed on the EU market or put into service in the EU. That
+  covers Art. 6(1) with Annex I (the AI system is a safety component of, or is
+  itself, a product that needs third-party conformity assessment) and Art. 6(2)
+  with Annex III (a listed high-risk use case). It combines with another profile,
+  for example **AI-based diagnostic** for device software.
+- **Not for:** AI products with no EU market placement (see **App with AI**); a
+  substitute for your own high-risk determination under Art. 6.
+
+**Adds on top of core**
+
+- **SOPs:** SOP-022 (AI management system), SOP-024 (AI Act provider QMS,
+  EN 18286:2026), SOP-021 (information security), SOP-023 (data protection &
+  privacy).
+- **Gap analyses:** EN 18286, ISO/IEC 42001, ISO/IEC 27001, GDPR, Swiss nFADP,
+  the privacy gap index.
+- **Record families:** `records/aims`, `records/ai_act`, `records/isms`,
+  `records/privacy`.
+
+**`qms_intent` standards:** ISO 9001:2015 (incl. Amd 1:2024); ISO/IEC 42001:2023;
+EN 18286:2026 (Reg. (EU) 2024/1689 Art. 17); ISO/IEC 27001:2022 (incl. Amd
+1:2024); GDPR / Swiss nFADP where personal data is processed.
+
+**Boundary.** Record the high-risk qualification and the conformity-assessment
+route (Annex VI internal control or Annex VII notified body) in
+[`regulatory_market_scope.yml`](../../matrices/regulatory_market_scope.yml)
+before market placement. ISO 13485 device controls apply only when the product
+is also a medical device; combine with **AI-based diagnostic** in that case.
+
+**Activation.** Adopt this profile when the EN 18286 commitment moves to
+`applied`, which has to happen before market placement. See
+[EN 18286 staging](en-18286-staging.md) for what to do while the commitment is
+`planned` or `unknown`.
+
+**Adopter must provide.**
+
+- Role determination: provider versus deployer, importer, or distributor.
+- The conformity-assessment route decision.
+- Annex IV technical documentation, in addition to any device technical
+  documentation.
+- Post-market monitoring and serious-incident procedures that meet the Art. 73
+  deadlines.
