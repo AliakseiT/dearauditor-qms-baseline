@@ -35,7 +35,7 @@ Since R005, the baseline gained four things:
 4. **Signature and automation maintenance.** Fixes to how signature workflows read requests,
    how training diffs render in email, and how auto-merge reports an open change request.
 
-Three controlled documents changed: the Quality Manual (`QM-001` R10), the AI management system
+Three controlled documents changed: the Quality Manual (`QM-001` R11), the AI management system
 procedure (`SOP-022` R03), and the new `SOP-024` (R00). All other controlled documents enter this
 release unchanged.
 
@@ -54,14 +54,14 @@ release unchanged.
 
 Included under this tag:
 
-- `QM-001` (R10, changed since R005)
+- `QM-001` (R11, changed since R005)
 - `SOP-001` through `SOP-024`: `SOP-022` (R03) changed and `SOP-024` (R00) is new
 - `WI-001`, `WI-002`
 
 All other documents are unchanged since R005 and enter this release at their R005-approved
 revisions.
 
-### EU AI Act provider QMS (PRs `#431`, `#432`, `#433`, `#434`)
+### EU AI Act provider QMS (PRs `#431`, `#432`, `#433`, `#434`, `#440`)
 
 - `sops/SOP-024-AIActProviderQMS.md` covers provider role determination, a written compliance
   strategy, selection of technical specifications, data governance, substantial modifications
@@ -72,6 +72,8 @@ revisions.
 - `SOP-022` R03 extends the AI management system from medical devices to all software products
   and points to SOP-024 as the AI Act layer.
 - `QM-001` R10 adds EN 18286:2026 and the EU AI Act to the standards and regulatory framework.
+  R11 aligns the QMS intent with SOP-022 R03, so the AI management controls cover all software
+  products, and adds the EN 18286 provider QMS intent.
 - `matrices/en_18286_gap_analysis.yml` maps the standard's clauses and the Article 17 QMS
   requirements to baseline controls. It follows the public Annex ZA table, including its
   conditions, and lists what Annex ZA does not cover.
@@ -195,7 +197,7 @@ For this release, the training focus is:
 - `SOP-024` R00 for the roles with duties in it: QA Lead, Management Representative,
   Engineering Lead, Privacy Lead, and Auditor
 - `SOP-022` R03 for its existing role holders
-- `QM-001` R10 for all roles
+- `QM-001` R11 for all roles
 - how to record framework commitments in the ledger, and when a review date is required
 - how review requests are routed now that tooling paths belong to the Technical QMS Maintainer
 
