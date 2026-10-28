@@ -58,7 +58,18 @@ Use the repository scripts instead of ad hoc copy/paste:
 2. [`../../tools/open_upstream_upgrade_pr.sh`](../../tools/open_upstream_upgrade_pr.sh)
    Opens a controlled branch containing only upstream-owned changes from a selected upstream ref.
 3. [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh)
-   Fails if placeholder tokens remain, CODEOWNERS does not match the signer registry, or required GitHub repo settings are missing.
+   Fails if placeholder tokens remain, the regulatory commitments ledger is missing or has an overdue or invalid `review_by` date, CODEOWNERS does not match the signer registry, or required GitHub repo settings are missing.
+
+## Upgrade Notes
+
+### Regulatory commitments ledger
+
+Baselines that include `SOP-024` (EN 18286:2026) add a `regulatory_commitments` ledger to `matrices/regulatory_market_scope.yml`, and `check_adoption_readiness.sh` runs `tools/qms_distribution.py check-commitments` against it. New bootstraps get the ledger from the seed file. Existing adopters do not, because `matrices/` is company-owned and `open_upstream_upgrade_pr.sh` does not change it. Before or with the upgrade PR:
+
+1. Copy the `regulatory_commitments` block from [`../../examples/bootstrap/matrices/regulatory_market_scope.yml`](../../examples/bootstrap/matrices/regulatory_market_scope.yml) into your `matrices/regulatory_market_scope.yml`.
+2. The block lists every framework the baseline ships a gap analysis for, each as `not_selected`. Change the `status` of each framework you follow to `applied`, `planned`, `not_applicable`, or `unknown`. List evidence paths for `applied` entries. Give `planned` and `unknown` entries a quoted `review_by` date in `YYYY-MM-DD` form. `not_selected` entries are never checked.
+3. Replace every `REPLACE_WITH_` value. The readiness check now scans `matrices/regulatory_market_scope.yml` for placeholders.
+4. Run `python3 tools/qms_distribution.py check-commitments --repo-root .` and `tools/check_adoption_readiness.sh --skip-gh`, then approve the matrix change through your controlled PR process.
 
 ## Signature Hosting Options
 

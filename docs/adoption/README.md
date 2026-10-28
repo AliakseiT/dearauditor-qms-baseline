@@ -23,7 +23,7 @@ are building, then add its layers to your core.
 The machine-readable mapping is [`matrices/adoption_profiles.yml`](../../matrices/adoption_profiles.yml).
 That file is the source of truth for the SOP sets, gap analyses, record
 families, and `qms_intent` standards listed here; this page is the readable
-companion. The per-profile detail lives in [`profiles.md`](profiles.md).
+companion. The per-profile detail lives in [`profiles.md`](profiles.md). Staging guidance for EN 18286 (opt-in timeline) lives in [`en-18286-staging.md`](en-18286-staging.md).
 
 ## Pick your profile
 
@@ -34,6 +34,7 @@ companion. The per-profile detail lives in [`profiles.md`](profiles.md).
 | A digital-health / wellness app that is **not** a medical device | [Digital health app](profiles.md#digital-health-app) | All the controls this profile needs |
 | Software built inside a clinic for its own patients (not placed on the market) | [In-house clinical software](profiles.md#in-house-clinical-software) | Most controls; you supply the in-house regulatory basis |
 | A computerized system used in clinical research / trials | [Clinical-trial / study-support software](profiles.md#clinical-trial--study-support-software) | Opt-in; validation/security/privacy only — you supply the clinical-research layer |
+| A provider of a high-risk AI system on the EU market (Reg. (EU) 2024/1689) | [EU AI Act high-risk provider](profiles.md#eu-ai-act-high-risk-provider) | Only when the commitment moves to applied: SOP-024 + EN 18286 layer |
 
 Not sure whether your product is a medical device? Resolve qualification and
 classification first using
