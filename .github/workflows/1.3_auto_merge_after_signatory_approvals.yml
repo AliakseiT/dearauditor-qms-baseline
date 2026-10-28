@@ -350,6 +350,7 @@ jobs:
                   'required status check is expected',
                   'required approving review',
                   'changes have been requested',
+                  'requesting changes',
                   'pull request is not mergeable',
                   'pull request is behind',
                   'base branch was modified',
