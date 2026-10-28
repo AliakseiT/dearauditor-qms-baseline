@@ -21,14 +21,14 @@ Use this sequence when turning the public baseline into a company-controlled QMS
 2. Run [`../../tools/bootstrap_company_repo.sh`](../../tools/bootstrap_company_repo.sh) to create the downstream repository from that exact tag. The bootstrap syncs `.github/CODEOWNERS` from `matrices/signer_registry.json` and `matrices/training_matrix.yml`: the registered signers who hold the Management Representative or QA Lead role own every path, so code owner review follows the signers who approve controlled documents. The signers who hold the Technical QMS Maintainer role own the tooling paths (`.github/`, `scripts/`, `services/signature-worker/`, `tools/`), so a tooling-only change does not request quality review. Re-run `python3 tools/qms_distribution.py sync-codeowners` after changing either file.
 3. Tailor company-owned files, including company profile, market scope, signer registry, training matrix, supplier state, QMS tooling inventory, and live operational records.
 4. Configure repository settings, required variables/secrets, branch protection or equivalent rules, signature hosting, and service dependencies. When the target GitHub repository is created and pushed during bootstrap, pass `--configure-github` to copy the upstream baseline rulesets and branch protection into the downstream repo. Create the GitHub App used by repository automation and the GitHub OAuth App used by the signature worker in the adopting company's GitHub organization or account, then install/configure them only for the adopter-controlled repositories that need them.
-5. Run [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh) to confirm placeholders, CODEOWNERS alignment, and required repository settings are resolved.
+5. Run [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh) to confirm placeholders, the regulatory commitments ledger, CODEOWNERS alignment, and required repository settings are resolved.
 6. Validate the configured QMS toolchain for intended use under `SOP-006`, using the adopter's designated controlled validation repository or record location.
 7. Train assigned roles on the adopted controlled-document set and capture training evidence in the adopter repository.
 8. Approve the adopted QMS baseline for operational use through the adopter's controlled PR, signature, and release process.
 
 Only after this sequence is complete should the adopter use the repository as the governing QMS for product, study, supplier, release, validation, or operational evidence.
 
-The upstream gap analyses are product-independent preparation artifacts. They help adopters understand how the baseline maps to ISO 9001, ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, ISO/IEC 42001, GDPR, and Swiss nFADP/nFDAP, but they do not replace adopter-specific applicability decisions, validation evidence, training, or approval.
+The upstream gap analyses are product-independent preparation artifacts. They help adopters understand how the baseline maps to ISO 9001, ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001, ISO/IEC 42001, EN 18286:2026 (EU AI Act provider QMS), GDPR, and Swiss nFADP/nFDAP, but they do not replace adopter-specific applicability decisions, validation evidence, training, or approval.
 
 The privacy controls are used when GDPR or Swiss nFADP/nFDAP is in scope for the adopting company's quality manual. Adopters whose approved scope does not yet include in-scope personal data processing should record the scope rationale and review trigger, then instantiate the `records/privacy/` templates before privacy-relevant processing begins.
 
@@ -58,7 +58,7 @@ Use the repository scripts instead of ad hoc copy/paste:
 2. [`../../tools/open_upstream_upgrade_pr.sh`](../../tools/open_upstream_upgrade_pr.sh)
    Opens a controlled branch containing only upstream-owned changes from a selected upstream ref.
 3. [`../../tools/check_adoption_readiness.sh`](../../tools/check_adoption_readiness.sh)
-   Fails if placeholder tokens remain, the regulatory commitments ledger is missing or has an overdue or invalid `review_by` date, CODEOWNERS does not match the signer registry, or required GitHub repo settings are missing.
+   Fails if placeholder tokens remain, the regulatory commitments ledger is missing or has an overdue or invalid `review_by` date, CODEOWNERS does not match the signer registry and training matrix, or required GitHub repo settings are missing.
 
 ## Upgrade Notes
 

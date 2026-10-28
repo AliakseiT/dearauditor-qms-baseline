@@ -15,7 +15,8 @@ abstract: >-
   The baseline ships a Quality Manual, SOPs, work instructions, gap analyses,
   record templates, and workflow automation for ISO 9001, ISO 13485,
   ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1, ISO/IEC 27001,
-  ISO/IEC 42001, GDPR, and the Swiss nFADP, plus an optional GAMP 5 / GxP
+  ISO/IEC 42001, EN 18286:2026 (EU AI Act provider QMS), GDPR, and the
+  Swiss nFADP, plus an optional GAMP 5 / GxP
   overlay covering 21 CFR Part 11 and EU Annex 11 expectations.
 keywords:
   - eQMS
@@ -27,10 +28,12 @@ keywords:
   - IEC 62304
   - ISO 14971
   - 21 CFR Part 11
+  - EU AI Act
+  - EN 18286
   - GAMP 5
   - regulatory compliance
 license:
   - Apache-2.0
   - CC-BY-SA-4.0
-version: QMS-2026-07-09-R005
-date-released: '2026-07-09'
+version: QMS-2026-10-28-R006
+date-released: '2026-10-28'
