@@ -109,6 +109,18 @@ baseline does not, by itself, give any adopter a presumption of conformity.
 - `CITATION.cff`, `AGENTS.md`, and `llms.txt` were added for citation and discoverability
   (`#430`).
 
+### Documentation brought in line with this release
+
+- `README.md` counts 24 published SOPs, and its standards summary, `CITATION.cff`, and `llms.txt`
+  list EN 18286:2026.
+- `docs/adoption/profiles.md` lists EN 18286:2026 among the `qms_intent` standards of the
+  AI-based diagnostic and App with AI profiles, matching `matrices/adoption_profiles.yml`, and
+  says when to combine them with the EU AI Act high-risk provider profile.
+- `docs/open-source/README.md` adds EN 18286 to the standards it describes and the commitments
+  ledger and training matrix to the readiness-check description.
+- `examples/bootstrap/README.md` notes that the seed ledger starts every framework as
+  `not_selected`, and `llms.txt` links the EN 18286 staging guide.
+
 This release does not approve any downstream company's implementation, product release, privacy
 compliance claim, AI Act conformity, or certification claim.
 

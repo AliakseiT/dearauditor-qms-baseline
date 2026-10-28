@@ -21,6 +21,7 @@ Contact: aliaksei@dearauditor.ch.
 - [Open-source adoption model](docs/open-source/README.md): how a company adopts the baseline
 - [Adoption profiles overview](docs/adoption/README.md): which parts apply to which product type
 - [Adoption profiles in detail](docs/adoption/profiles.md): standards mapping per application scenario
+- [EN 18286 staging](docs/adoption/en-18286-staging.md): when and how to opt into the EU AI Act provider QMS (SOP-024)
 - [System architecture](docs/architecture/README.md): workflows, automations, trust boundaries
 - [Bootstrap example](examples/bootstrap/README.md): example matrices and records for a new adopter
 - [Agent guide](AGENTS.md): rules for AI agents working in this repository

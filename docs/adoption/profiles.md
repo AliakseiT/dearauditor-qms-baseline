@@ -41,12 +41,16 @@ control this profile needs is already in the baseline.
 **`qms_intent` standards:** ISO 13485:2016 (+A11:2021); ISO 14971:2019
 (+A11:2021); IEC 62304:2006 (+A1:2015); IEC 62366-1:2015 (+A1:2020);
 IEC 82304-1:2016; ISO/IEC 42001:2023; ISO/IEC 27001:2022 (incl. Amd 1:2024);
+EN 18286:2026 (EU AI Act provider QMS) when the AI system is provided in the EU;
 GDPR / Swiss nFADP where in scope — on top of the core ISO 9001:2015.
 
 **Boundary.** Device qualification and classification must be determined per
 [`regulatory_market_scope.yml`](../../matrices/regulatory_market_scope.yml)
 before development and release. The AI layer (SOP-022, ISO/IEC 42001) applies to
-AI components inside the device and to AI-bearing supplier interfaces.
+AI components inside the device and to AI-bearing supplier interfaces. Device
+software that needs notified-body assessment is high-risk under Regulation (EU)
+2024/1689; for EU market placement, combine this profile with
+**EU AI Act high-risk provider** for SOP-024 and EN 18286.
 
 **Adopter must provide.** Product intended use, indications, claims, and
 regulatory classification; the conformity route and notified-body / regulator
@@ -75,8 +79,9 @@ Every control this profile needs is already in the baseline.
   `records/usability` (optional).
 
 **`qms_intent` standards:** ISO 9001:2015 (incl. Amd 1:2024); ISO/IEC 42001:2023;
-ISO/IEC 27001:2022 (incl. Amd 1:2024); GDPR / Swiss nFADP where personal data is
-processed.
+ISO/IEC 27001:2022 (incl. Amd 1:2024); EN 18286:2026 when an EU market placement
+is made under Regulation (EU) 2024/1689; GDPR / Swiss nFADP where personal data
+is processed.
 
 **Boundary.** Explicitly **not** a medical device: the ISO 13485 / IEC 62304 /
 IEC 62366-1 medical-device controls and the medical device file are out of scope
@@ -84,7 +89,9 @@ unless the product later acquires a medical purpose.
 
 **Escalation.** → **AI-based diagnostic** when AI output is used for a medical
 purpose or the product makes a diagnostic/therapeutic claim (it then qualifies
-as SaMD).
+as SaMD). → **EU AI Act high-risk provider** when the AI system is high-risk
+under Regulation (EU) 2024/1689 (for example an Annex III use case) and is
+placed on the EU market or put into service in the EU.
 
 **Adopter must provide.** Confirmation that the product makes no medical claim
 and is out of device scope.
