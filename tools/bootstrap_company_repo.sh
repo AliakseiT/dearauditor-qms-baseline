@@ -46,7 +46,7 @@ Options:
   --create-repo                    Create the downstream GitHub repository with gh
   --push                           Push initial main branch after local bootstrap
   --default-branch <name>          Default branch name (default: main)
-  --skip-codeowners-sync           Do not regenerate .github/CODEOWNERS from matrices/signer_registry.json
+  --skip-codeowners-sync           Do not regenerate .github/CODEOWNERS from the signer registry and training matrix
   --configure-github               After push, copy baseline rulesets/branch protection to --repo
   --merge-controls-source-repo <owner/repo>
                                    Source repo for --configure-github (default: --upstream-repository
@@ -260,7 +260,7 @@ Repo root: ${TARGET_DIR}
 Recorded upstream ref: ${UPSTREAM_REF}
 Downstream repo: ${GH_REPO:-not-created}
 Origin remote: ${ORIGIN_REMOTE_URL:-not-configured}
-CODEOWNERS synced from signer registry: $([[ "${SYNC_CODEOWNERS}" -eq 1 ]] && echo yes || echo no)
+CODEOWNERS synced from signer registry and training matrix: $([[ "${SYNC_CODEOWNERS}" -eq 1 ]] && echo yes || echo no)
 GitHub merge controls configured: $([[ "${CONFIGURE_GITHUB}" -eq 1 ]] && echo yes || echo no)
 
 Next commands:
