@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-007
 title: Medical Device File Control
-revision: R10
-revision_date: 2026-05-04
+revision: R11
+revision_date: 2026-11-19
 status: Published
 owner_role: management_representative
 approver_role: qa_lead
@@ -43,7 +43,7 @@ Each product MDF must include at minimum:
 5. Verification/validation summary and traceability
 6. Release history and post-market references
 7. Repository path/structure that identifies where controlled MDF records are maintained
-8. Clinical or performance evaluation references where applicable
+8. Clinical evaluation plan, clinical evaluation report, and PMCF plan and evaluation report under `SOP-025`, or performance evaluation references where applicable
 9. Accompanying information, including instructions for use, user-facing labeling, and technical description, controlled per `records/mdf/accompanying_information_template.md` or an equivalent product-specific record
 10. Usability engineering file references where applicable
 11. Cybersecurity and data protection considerations where applicable
@@ -68,6 +68,7 @@ Each product MDF must include at minimum:
 - Product MDF index and change history in the designated product/study repository
 - Classification and regulatory decision records
 - Traceability summary evidence
+- Clinical evaluation and PMCF records under `SOP-025` (`records/clinical/`)
 
 ## 8. Traceability
 | Standard Clause | Control in this SOP |
@@ -78,6 +79,7 @@ Each product MDF must include at minimum:
 - SOP-008 Design and Development Control
 - SOP-009 Change Management
 - SOP-014 Post-Market Surveillance
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
@@ -93,3 +95,4 @@ Each product MDF must include at minimum:
 | R08 | 2026-04-25 | Made accompanying information (IFU, user-facing labeling, technical description) and product retirement/decommissioning explicit minimum MDF content with controlled template references for IEC 82304-1:2016 clauses 7 and 8. |
 | R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R10 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R11 | 2026-11-19 | Named the clinical evaluation plan, clinical evaluation report, and PMCF records under SOP-025 as required MDF content. |

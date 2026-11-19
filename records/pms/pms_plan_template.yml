@@ -17,3 +17,19 @@ required_fields:
     risk_reference: ""
     complaint_log_reference: ""
     incident_log_reference: ""
+    pmcf_plan_reference: ""          # records/clinical/pmcf_plan.md (SOP-025 §6.12); MDR Annex III 1.1(b)
+    clinical_evaluation_report_reference: ""
+  clinical_feedback_loop:
+    cer_update_triggers:
+      - "significant safety signal"
+      - "PMCF result affecting safety, performance, or benefit-risk"
+      - "state-of-the-art change affecting CER benchmarks"
+  ai_performance_monitoring:       # only when the product contains AI/ML components
+    applicable: false
+    metrics:
+      - metric: ""
+        threshold: ""
+        escalation_path: ""
+    input_drift_detection: ""
+    subgroup_performance_monitoring: ""
+    human_oversight_indicators: ""   # e.g. override and disagreement rates

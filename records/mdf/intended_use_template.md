@@ -16,7 +16,7 @@ approval:
 
 This template shows one workable Markdown-first intended use and claims record for a software medical device product or subsystem.
 
-Use it to define what the product is for, who the intended users are, the intended use environment, in-scope and out-of-scope claims, and the product-versus-configured-use boundary. Intended use is a primary design input per `SOP-008 §6.2` and is referenced from device description, classification decision, risk management plan, V&V plan, user needs, and usability records.
+Use it to define what the product is for, who the intended users are, the intended use environment, normal conditions of use, the inputs and outputs and how the output is used clinically, in-scope and out-of-scope claims, and the product-versus-configured-use boundary. Intended use is a primary design input per `SOP-008 §6.2` and the foundation of the clinical evaluation per `SOP-025 §6.2`. It is referenced from device description, classification decision, clinical evaluation plan, risk management plan, V&V plan, user needs, and usability records.
 
 Before this template was published, product repositories referenced `docs/regulatory/intended_use.md`. New instantiations should place the record at `records/mdf/intended_use.md` alongside the other medical-device-file records so the MDF is self-contained. Existing products may migrate incrementally; references inside the QMS repo should use the new path.
 
@@ -32,8 +32,28 @@ Example:
 - Intended users: trained clinical staff operating the product in the defined workflow.
 - Use environment: approved clinical networks accessed through supported web browsers on managed devices.
 - Patient population: adult outpatients presenting to the triage workflow within the approved indication scope.
+- Medical condition and indications: the conditions or clinical questions the output relates to, with severity or stage where relevant.
+- Software inputs: the data the product relies on (types, sources, acquisition devices, quality requirements).
+- Software outputs and their clinical use: what the output is, who acts on it, and which diagnostic, treatment, monitoring, or patient-management decision it informs, drives, or determines.
+- Intended clinical benefit: the positive effect on patient health, patient management, or public health the product is expected to achieve (MDR Art. 2(53)).
+
+## 1a. Normal Conditions of Use
+
+Describe how the product will realistically be used, not how it would ideally be used. Restrictions stated here do not remove risks that arise in realistic use; see `SOP-025 §6.2`.
+
+Example:
+
+- User expertise range: newly qualified to senior triage nurses; no algorithm-specific training assumed beyond the onboarding module.
+- Workload and environment: busy shifts with interruptions; output reviewed on shared workstations.
+- Workflow variants: sites that act on the output directly versus sites that require a second review.
+- Foreseeable variation in inputs and population: incomplete records, non-native-language free text, paediatric patients presented despite the adult-only indication.
+- Reasonably foreseeable misuse: use as the sole basis for discharge decisions.
+- Novel aspects: none / list new technology, application, population, workflow, or user interaction.
+- Expected lifetime and performance-relevant changes over it: platform updates, guideline changes, drift in input data.
 
 ## 2. Claims In Scope
+
+List every claim, wherever it will appear (labelling, IFU, website, marketing material, technical documentation). Each claim must be supportable through the clinical evaluation under `SOP-025`; unsupported claims are not permitted (MDR Art. 7).
 
 Example:
 
@@ -64,6 +84,7 @@ Example:
 
 - Device description: `records/mdf/device_description.md`
 - Classification decision: `records/mdf/classification_decision.md`
+- Clinical evaluation plan and report: `records/clinical/clinical_evaluation_plan.md`, `records/clinical/clinical_evaluation_report.md`
 - MDF index: `records/mdf/medical_device_file_index.md`
 - Design and development plan: `records/design/design_development_plan.md`
 - Risk management plan: `records/risk/risk_management_plan.md`

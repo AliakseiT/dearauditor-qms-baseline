@@ -1,8 +1,8 @@
 ---
 qm_id: QM-001
 title: Quality Manual
-revision: R11
-revision_date: 2026-10-28
+revision: R12
+revision_date: 2026-11-19
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -82,7 +82,7 @@ High-level process interaction:
 |---|---|---|
 | QMS framing and policy | `QM-001`, `SOP-005`, `SOP-004`, `SOP-016` | Scope statement, policy, objectives, management review decisions |
 | Document and training control | `SOP-001`, `SOP-011` | Controlled revisions, training assignments, training logs |
-| Product lifecycle control | `SOP-007`, `SOP-008`, `SOP-009`, `SOP-020`, `WI-001`, `WI-002` | Product dossier, development plans, release baselines, V&V evidence |
+| Product lifecycle control | `SOP-007`, `SOP-008`, `SOP-009`, `SOP-020`, `SOP-025`, `WI-001`, `WI-002` | Product dossier, development plans, release baselines, V&V evidence, clinical evaluation and PMCF records |
 | Risk and usability | `SOP-018`, `SOP-019` | Risk file, usability file, residual risk decisions |
 | Suppliers and post-market processes | `SOP-010`, `SOP-012`, `SOP-013`, `SOP-014`, `SOP-015` | Supplier approvals, complaint/PMS/incidents, nonconformity handling |
 | Improvement and oversight | `SOP-002`, `SOP-003`, `SOP-004`, `SOP-016` | CAPAs, audits, reviews, metrics and improvement actions |
@@ -113,7 +113,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
 - Switzerland: MedDO, including software classification references
-- European Union: MDR and MDCG software guidance, and Regulation (EU) 2024/1689 (AI Act) for high-risk AI systems
+- European Union: MDR and MDCG software guidance, including MDR Art. 61 and Annex XIV clinical evaluation and PMCF (implemented through `SOP-025`), and Regulation (EU) 2024/1689 (AI Act) for high-risk AI systems
 - United States: FD&C Act device definitions, section 520(o), FDA software guidance, and 21 CFR Part 820
 
 ## 9. Document Architecture and Record Model
@@ -136,6 +136,7 @@ QMS tooling and validation baselines are maintained in:
 | ISO 13485:2016 5.4.1, 5.4.2 | Defines quality objectives and planning context | `matrices/company_profile.yml`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
 | ISO 13485:2016 5.5 | Defines system-level responsibilities and communication overview | `sops/SOP-005-QMSGovernance.md`, `sops/SOP-011-CompetenceTrainingAndAwareness.md` |
 | ISO 9001:2015 4-10 | Defines the general quality-management overlay for context, interested parties, customer focus, organizational knowledge, process performance, and improvement | `matrices/iso_9001_gap_analysis.yml`, `sops/SOP-005-QMSGovernance.md`, `sops/SOP-012-FeedbackAndComplaintHandling.md`, `sops/SOP-016-QualityMetricsAndDataAnalysis.md` |
+| Regulation (EU) 2017/745 Art. 61, Annex XIV; ISO 13485:2016 7.3.7 | Defines clinical evaluation and PMCF for medical device products as part of design validation and post-market surveillance | `matrices/mdr_clinical_evaluation_gap_analysis.yml`, `sops/SOP-025-ClinicalEvaluation.md` |
 | EN 18286:2026 4-10; Regulation (EU) 2024/1689 Art. 17 | Defines the AI Act provider QMS layer for high-risk AI systems placed on the EU market, applied when the EN 18286 commitment in `matrices/regulatory_market_scope.yml` is applied | `matrices/en_18286_gap_analysis.yml`, `sops/SOP-024-AIActProviderQMS.md` |
 
 ## 11. Related Controlled Documents
@@ -163,3 +164,4 @@ QMS tooling and validation baselines are maintained in:
 | R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |
 | R10 | 2026-10-26 | Added EN 18286:2026 EU AI Act provider QMS and the EU AI Act to the standards and regulatory framework, with a traceability row cross-referencing SOP-024. |
 | R11 | 2026-10-28 | Aligned the QMS intent with SOP-022 R03, so ISO/IEC 42001 AI management controls cover AI components in all ACME software products, not only medical-device software, and added the EN 18286:2026 provider QMS intent implemented through SOP-024. |
+| R12 | 2026-11-19 | Added MDR Art. 61 and Annex XIV clinical evaluation and PMCF to the regulatory framework and process structure, with a traceability row cross-referencing SOP-025. |

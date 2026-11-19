@@ -30,11 +30,12 @@ control this profile needs is already in the baseline.
   SOP-013 (regulatory incident reporting), SOP-014 (post-market surveillance),
   SOP-015 (nonconforming product), SOP-018 (risk management), SOP-019
   (usability engineering), SOP-021 (information security), SOP-022 (AI
-  management system), SOP-023 (data protection & privacy).
+  management system), SOP-023 (data protection & privacy), SOP-025 (clinical
+  evaluation and PMCF).
 - **Gap analyses:** ISO 13485, ISO 14971, IEC 62304, IEC 62366-1, IEC 82304-1,
-  ISO/IEC 42001, ISO/IEC 27001, GDPR, Swiss nFADP, the privacy gap index, and
-  `regulatory_market_scope.yml`.
-- **Record families:** `records/mdf`, `records/design`, `records/risk`,
+  MDR clinical evaluation (Art. 61, Annex XIV), ISO/IEC 42001, ISO/IEC 27001,
+  GDPR, Swiss nFADP, the privacy gap index, and `regulatory_market_scope.yml`.
+- **Record families:** `records/mdf`, `records/clinical`, `records/design`, `records/risk`,
   `records/usability`, `records/incidents`, `records/pms`,
   `records/nonconformity`, `records/aims`, `records/isms`, `records/privacy`.
 

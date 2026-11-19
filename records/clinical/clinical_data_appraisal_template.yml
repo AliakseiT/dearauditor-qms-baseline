@@ -1,0 +1,56 @@
+version: 1
+record_type: clinical_data_appraisal
+appraisal_id: "CDA-<product>-<yyyy-mm-dd>"
+product_id: ""
+linked_cep_reference: "records/clinical/clinical_evaluation_plan.md"
+linked_literature_search_reference: "records/clinical/literature_search_protocol.md"
+approval:
+  meaning_of_signature: "Approved Clinical Data Appraisal"
+  signer_roles:
+    - qa_lead
+# Implements SOP-025 §6.6 and §6.7. One entry per data set: a publication,
+# an internal study report, a PMS/PMCF data extract, a usability report, etc.
+# Apply the method stated in the CEP to every entry. Weighting guidance:
+# MDCG 2020-6 Appendix III and MEDDEV 2.7/1 rev. 4 section 9 / appendix 6.
+appraisal_method:
+  weighting_scheme_reference: ""
+  reviewers: []
+  disagreement_resolution: ""
+data_sets:
+  - data_set_id: "D-01"
+    reference: ""                      # citation or controlled record path
+    source_kind: "clinical_investigation|clinical_performance_study|literature|registry|pms|pmcf|survey|case_report|retrospective_analytical_study|mrmc_or_simulated_use|usability_evaluation|bench_or_verification|standards_or_common_specifications"
+    device: "device_under_evaluation|equivalent_device|state_of_the_art_comparator"
+    # MDR Art. 2(48): clinical data comes from clinical use of the device (or a
+    # demonstrated equivalent). Algorithm testing on stored clinical datasets
+    # is technical/analytical data, even though the inputs came from patients.
+    data_type: "clinical_data|technical_or_analytical_data|other_supporting_evidence"
+    evidence_chain_level:              # SOP-025 §6.6; list every level this data set supports
+      - "valid_clinical_association|technical_performance|clinical_performance|clinical_benefit|safety"
+    relevance:
+      device_and_version_match: ""
+      intended_purpose_match: ""
+      population_users_environment_match: ""
+      rating: "high|medium|low"
+    representativeness_of_normal_use:
+      conditions: "real_world|simulated|controlled"
+      limitations: ""
+    methodological_quality:
+      design: ""
+      sample_size_and_power: ""
+      reference_standard: ""
+      statistics: ""
+      bias_and_confounding: ""
+      rating: "high|medium|low"
+    results_summary: ""
+    favourable_or_unfavourable: "favourable|unfavourable|mixed|neutral"
+    supports_claims: []                # claim / endpoint IDs from the CEP
+    supports_risks: []                 # risk IDs from the risk management file
+    weight: "pivotal|supportive|not_used"
+    weight_rationale: ""
+gaps_and_uncertainties:
+  - id: "U-01"
+    description: ""
+    affected_claims: []
+    disposition: "generate_data_pre_market|pmcf|pms|accepted_with_rationale"
+    rationale: ""
