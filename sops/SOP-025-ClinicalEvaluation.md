@@ -181,8 +181,8 @@ identified. The CEP shall contain, as a minimum:
 ### 6.6 Evidence Chain for Software
 Assess and report each link separately. Evidence for one link is not evidence
 for the next (MDCG 2020-1; IMDRF/SaMD WG/N41).
-1. **Valid clinical association**: the output is meaningfully related to the
-   clinical condition or decision targeted.
+1. **Valid clinical association**: the output is associated with the targeted
+   clinical condition or physiological state.
 2. **Technical (analytical) performance**: the software reliably and
    accurately produces the intended output from the input data. Choose metrics
    relevant to the clinical task; justify why a chosen metric reflects

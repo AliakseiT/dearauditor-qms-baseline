@@ -44,9 +44,9 @@ Also address:
 | | | |
 
 If the device supports clinical decisions, explain how the evidence covers the
-step from analytical performance to clinical performance: user interaction,
-presentation of information, workflow integration, variability between users,
-and use error.
+step from analytical performance to clinical performance: how users read and
+act on the output, how it fits the clinical workflow, how results differ from
+one user to another, and use error.
 
 ## 4. Why the Totality of Evidence Is Sufficient
 Argue sufficiency against GSPR 1, GSPR 8, and the other GSPRs listed in the CEP,
