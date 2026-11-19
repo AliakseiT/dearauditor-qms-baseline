@@ -119,4 +119,6 @@ Full citation list, numbered to match references in the text.
 ## 14. Signatures
 - Evaluators (name, role, date):
 - QA Lead approval:
+- Management Representative approval:
+- External evaluator sign-off attached to the approving PR (where applicable):
 - Linked approving PR:

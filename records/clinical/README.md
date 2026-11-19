@@ -20,6 +20,22 @@ intended use and classification decision these records depend on stay in
 | `pmcf_plan_template.md` | PMCF plan per Annex XIV Part B (MDCG 2020-7). | §6.12 |
 | `pmcf_evaluation_report_template.md` | PMCF evaluation report (MDCG 2020-8). | §6.12 |
 
+## Keeping the Record Set Small
+
+The CEP, CER, PMCF plan, PMCF evaluation reports, and evaluator declarations
+are separate approved records. The state of the art assessment, literature
+search report, appraisal, equivalence assessment, and Art. 61(10)
+justification may instead be appendices of the CER, provided each still has
+the content its template asks for and can be found and sampled by a reviewer.
+The literature search protocol itself (sections 1 to 4) must still be
+approved before the search runs. Refer to a table in another record rather
+than copying it: for example, the CER points to the CEP claims table instead
+of repeating it.
+
+External clinical evaluators who are not registered signers sign outside
+GitHub; their signed declaration, CV, and sign-off are attached to the
+approving PR (`SOP-025 §6.1`).
+
 ## Sources
 
 The templates are written from the legal text and public guidance:

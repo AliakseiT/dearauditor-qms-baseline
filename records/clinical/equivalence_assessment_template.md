@@ -25,7 +25,10 @@ clinical relevance, not on matching specification sheets.
 
 ## 2. Access to Data
 - Basis for sufficient access to the equivalent device's technical documentation and clinical data:
-- For class III or implantable devices of another manufacturer: contract reference allowing ongoing full access (MDR Art. 61(5)):
+- For class III or implantable devices of another manufacturer, used in order not to perform a clinical investigation (MDR Art. 61(5)):
+  - Contract reference allowing ongoing full access to the technical documentation:
+  - Evidence that the equivalent device's original clinical evaluation was performed in compliance with the MDR:
+  - How both are presented to the notified body:
 
 ## 3. Characteristics Comparison
 For each row, state the differences and give the scientific evidence that each

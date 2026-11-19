@@ -18,6 +18,7 @@ required_fields:
     complaint_log_reference: ""
     incident_log_reference: ""
     pmcf_plan_reference: ""          # records/clinical/pmcf_plan.md (SOP-025 §6.12); MDR Annex III Section 1(b)
+    pmcf_not_applicable_justification: ""  # only if no PMCF plan: residual uncertainties, why PMS data suffice, why class/novelty/evidence make that acceptable (SOP-025 §6.12(6)); QA Lead + MR approval
     clinical_evaluation_report_reference: ""
   clinical_feedback_loop:
     cer_update_triggers:

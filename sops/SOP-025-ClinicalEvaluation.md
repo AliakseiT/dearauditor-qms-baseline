@@ -31,6 +31,14 @@ as a medical device and software driving or influencing a device) in a
 jurisdiction recorded in `matrices/regulatory_market_scope.yml`, for every
 class, from the start of design and development until the product is retired.
 
+The steps apply to every class, but their depth does not. Scale the volume and
+type of evidence to the class, the novelty of the device, the severity of the
+clinical risks, and how directly the output affects patient management, and
+record that reasoning in the CEP. A class I device with a narrow,
+well-established purpose may need little more than a focused literature and
+state of the art review; a novel class IIb or III device usually needs data
+generated for that device.
+
 Software components without their own medical intended purpose (libraries,
 APIs, algorithm modules) are evaluated as part of the device they are
 integrated into. A component placed on the market on its own, with its own
@@ -69,8 +77,8 @@ in vitro diagnostic software under Regulation (EU) 2017/746 is out of scope.
 ## 5. Roles and Responsibilities
 | Role | Responsibilities |
 |---|---|
-| QA Lead | Owns this SOP and each product's clinical evaluation file; confirms evaluator competence; checks that the CER, risk file, PMS/PMCF documents, and accompanying information stay consistent; approves CEP, CER, and PMCF records. |
-| Management Representative | Approves the evaluation strategy for new devices and any use of equivalence or Art. 61(10); provides resources; receives CER conclusions in management review. |
+| QA Lead | Owns this SOP and each product's clinical evaluation file; confirms evaluator competence; checks that the CER, risk file, PMS/PMCF documents, and accompanying information stay consistent; approves every clinical evaluation record. |
+| Management Representative | Co-approves with the QA Lead the CEP, CER, PMCF plan, any equivalence assessment, and any use of Art. 61(10); confirms evaluator competence where the QA Lead is also an evaluator; provides resources; receives CER conclusions in management review. |
 | Engineering Lead | Supplies device description, technical and analytical performance evidence, change impact information, and data for AI-enabled functions. |
 | Usability Lead | Supplies evidence on use-related risk controls and on user performance with the device under representative conditions. |
 | Clinical evaluator(s) | Plan and perform the evaluation and author the CER. Not a QMS role: a competence requirement assigned per product under §6.1 and recorded in the CEP. May be employees or external experts. |
@@ -88,8 +96,14 @@ in vitro diagnostic software under Regulation (EU) 2017/746 is out of scope.
    declaration of interests using
    `records/clinical/clinical_evaluator_declaration_template.md`. A declared
    interest is not automatically disqualifying; record how it is managed.
-3. The QA Lead confirms competence before the CEP is approved. Guidance on
-   expected qualifications: MEDDEV 2.7/1 rev. 4 section 6.4.
+3. The QA Lead confirms competence before the CEP is approved. Nobody
+   confirms their own competence: where the QA Lead is also an evaluator, the
+   Management Representative confirms instead. Guidance on expected
+   qualifications: MEDDEV 2.7/1 rev. 4 section 6.4.
+4. External evaluators who are not in `matrices/signer_registry.json` sign
+   their declaration, and their sign-off of the CEP or CER, outside GitHub.
+   Attach the signed documents and a dated CV to the record's approving PR,
+   and record there which internal signer checked them.
 
 ### 6.2 Define the Device and Its Clinical Context
 1. The intended purpose must be stable and specific before conformity
@@ -137,8 +151,8 @@ identified. The CEP shall contain, as a minimum:
 2. The intended purpose, target groups, indications, and contraindications.
 3. The intended clinical benefits, each with specified, measurable clinical
    outcome parameters.
-4. The methods for examining clinical safety, including residual risks and
-   side effects.
+4. The methods for examining the qualitative and quantitative aspects of
+   clinical safety, with explicit reference to residual risks and side effects.
 5. The parameters and acceptance criteria used to judge benefit-risk
    acceptability, derived from the state of the art.
 6. The evidence strategy: the evidence chain in §6.6, the data sources to be
@@ -147,6 +161,18 @@ identified. The CEP shall contain, as a minimum:
 7. A clinical development plan describing how evidence will be generated
    before and after market placement, with milestones and acceptance criteria,
    and a link to the PMCF plan.
+8. How benefit-risk questions raised by particular components (medicinal
+   substances, non-viable tissues of human or animal origin) are addressed.
+   For standalone software this is normally "not applicable"; say so and give
+   the reason, because the item is checked.
+
+Approve the CEP in two steps so that acceptance criteria are never set after
+seeing the device's own results. The first approval covers scope, the
+questions to answer, and the state of the art search protocol. Once the state
+of the art assessment (§6.5(4)) is done, a CEP revision adds the benchmarks
+and acceptance criteria, and must be approved before any device-specific data
+set is appraised under §6.7. Any later change to an acceptance criterion needs
+a recorded reason in the CEP revision history and is reported in the CER.
 
 ### 6.5 Identify Data and Establish the State of the Art (Annex XIV Part A 1(b))
 1. Identify all available data relevant to the device, its equivalent device
@@ -179,7 +205,12 @@ identified. The CEP shall contain, as a minimum:
    justification, including algorithms, inputs, outputs, user interface, and
    workflow. Use `records/clinical/equivalence_assessment_template.md`. Any
    difference must be shown, with evidence, not to change clinical safety or
-   performance.
+   performance. For a class III or implantable device that relies on
+   equivalence to another manufacturer's device in order not to perform a
+   clinical investigation, Art. 61(5) adds two conditions, both to be
+   evidenced to the notified body: a contract giving ongoing full access to
+   that device's technical documentation, and an original clinical evaluation
+   performed in compliance with the MDR.
 
 ### 6.6 Evidence Chain for Software
 Assess and report each link separately. Evidence for one link is not evidence
@@ -212,6 +243,8 @@ the device. Label every data set accordingly in the appraisal.
    contributes to; and its overall weight.
 3. Use a recognised hierarchy of evidence to weight data, such as MDCG 2020-6
    Appendix III together with MEDDEV 2.7/1 rev. 4 section 9 and appendix 6.
+   MDCG 2020-6 was written for legacy devices; its ranking is used here by
+   analogy, and the CEP states that.
 4. Summarise the appraisal as gaps, uncertainties, and open questions for
    §6.8.
 
@@ -232,6 +265,21 @@ the device. Label every data set accordingly in the appraisal.
    participants require the applicable ethics and legal approvals.
 4. Report results against the protocol, including deviations, unmet
    endpoints, limitations, and bias, and their effect on conclusions.
+5. For class III and implantable devices, clinical investigations are
+   required (Art. 61(4)) unless one of the exemptions in Art. 61(4) to (6)
+   applies, such as a modification of the manufacturer's own marketed device
+   whose equivalence the notified body has endorsed, equivalence under the
+   Art. 61(5) conditions, or a device type covered by Art. 61(6). Record in the
+   CEP either the planned investigation or the exemption relied on and the
+   evidence for it (MDCG 2023-7). Where the device is a class III implantable
+   device, or a class IIb active device that administers or removes a medicinal
+   product (Rule 12), plan for the notified body's clinical evaluation
+   consultation procedure (Art. 54).
+6. A PMCF investigation that adds invasive or burdensome procedures to normal
+   use (for example extra imaging, sampling, or visits to establish a
+   reference result) must be notified to the Member States concerned at least
+   30 days before it starts, with the Annex XV Chapter II documentation
+   (Art. 74(1)). Build that lead time into the PMCF plan.
 
 ### 6.9 Article 61(10) Pathway
 1. Art. 61(10) may be used only where demonstration of conformity based on
@@ -252,6 +300,9 @@ the device. Label every data set accordingly in the appraisal.
 4. The Management Representative approves any use of Art. 61(10). Clinical
    data that becomes available after market placement, through PMS or PMCF,
    must still be collected and evaluated.
+5. Art. 61(10) applies without prejudice to Art. 61(4). For a class III or
+   implantable device it does not remove the requirement for clinical
+   investigations; only an exemption under Art. 61(4) to (6) does (§6.8(5)).
 
 ### 6.10 Analyse and Conclude (Annex XIV Part A 1(e))
 1. Analyse the whole body of appraised evidence against the CEP endpoints,
@@ -282,7 +333,7 @@ the device. Label every data set accordingly in the appraisal.
    reproducing them, and references each source so that a reviewer can sample
    it. It reports favourable and unfavourable findings.
 3. The CER identifies the software version evaluated and is signed by the
-   evaluators and approved by the QA Lead.
+   evaluators and approved by the QA Lead and the Management Representative.
 
 ### 6.12 Post-Market Clinical Follow-up (Annex XIV Part B)
 1. Prepare a PMCF plan using `records/clinical/pmcf_plan_template.md` as part
@@ -307,6 +358,16 @@ the device. Label every data set accordingly in the appraisal.
    the risk management file (Annex XIV Section 8) and, where applicable, the
    summary of safety and clinical performance (SSCP, Art. 32) and periodic
    safety update report (PSUR, Art. 86).
+5. The PMCF plan also states why each chosen general and specific method is
+   suitable for the question it serves (Annex XIV Section 6.2(c)), not only
+   why other methods were left out.
+6. Concluding that no PMCF is needed at all is a separate decision from
+   having a PMCF plan without specific methods. Record it in the PMS plan with
+   its justification (Annex III Section 1(b)): which residual uncertainties
+   exist, why PMS data alone are enough to address them, and why the device's
+   class, novelty, and evidence base make that acceptable. The QA Lead and
+   Management Representative approve it, and it is re-examined at every CER
+   update.
 
 ### 6.13 Updating the Clinical Evaluation (Art. 61(11))
 1. Update the clinical evaluation and its documentation throughout the
@@ -314,13 +375,34 @@ the device. Label every data set accordingly in the appraisal.
    update frequency in the CEP and justify it by class, risk, novelty, and how
    fast the state of the art changes. For class III and implantable devices,
    the PMCF evaluation report and, where indicated, the SSCP are updated at
-   least annually.
+   least annually. Review the CER and PMCF results at least as often as the
+   PSUR is updated (Art. 86(1): at least annually for class IIb and III, at
+   least every two years for class IIa), so the PSUR never reports clinical
+   conclusions the CER does not contain.
 2. Update it out of cycle when there is a significant safety signal, a PMCF
    result, a change in the state of the art that affects the benchmarks, a
    design change that may affect clinical performance or safety under
    `SOP-009`, or a change to intended purpose or claims.
 3. The CER always reflects the current released device version. Superseded
    versions remain retrievable under `SOP-001`.
+4. Screen every software change raised under `SOP-009` for clinical impact,
+   and record the outcome in the change record as one of:
+   (a) no effect on clinical performance, safety, intended purpose, or claims,
+   with the reason (for example a refactoring with unchanged outputs, or a
+   dependency patch with passing regression tests);
+   (b) a CER addendum that records the new version and why existing evidence
+   still covers it;
+   (c) new analytical or clinical performance evidence before release, such
+   as retesting a retrained or re-thresholded model on the locked test set
+   under §6.14(6);
+   (d) a full CER update.
+   Changes to a model, decision threshold, input type, output, or intended
+   user always need at least (b), with the reasoning for not choosing (c).
+5. Where the conformity assessment route requires it, inform the notified
+   body before introducing changes that could affect safety, performance, or
+   the conditions of use (for example MDR Annex IX Section 4.10 or Annex X
+   Section 5.2). The outcome of the screening in item 4 is the input to that
+   decision.
 
 ### 6.14 AI-Enabled Software
 In addition to the steps above:
@@ -342,6 +424,18 @@ In addition to the steps above:
    monitoring can be reused in the clinical evaluation after appraisal under
    §6.7. Meeting AI Act obligations is not in itself evidence of MDR
    conformity, and the reverse also holds (MDCG 2025-6).
+6. Performance studies of an AI model must show:
+   (a) how the reference standard (ground truth) was established, by whom,
+   whether they were blinded to the device output, and how disagreement
+   between them was measured and resolved;
+   (b) that no patient, and where relevant no site, appears in both the data
+   used to develop or tune the model and the data used to test it, and that
+   the test set was fixed before the final model was evaluated and not reused
+   to tune it;
+   (c) how performance holds across sites, acquisition equipment and
+   protocols, and patient subgroups, and how the prevalence of the condition in
+   the intended care setting changes predictive values compared with the
+   study population.
 
 ## 7. Required Records
 - Clinical evaluator declarations (`records/clinical/clinical_evaluator_declaration_template.md`)
@@ -362,10 +456,14 @@ All records are kept in the product's medical device file under `SOP-007`.
 |---|---|
 | Regulation (EU) 2017/745 Art. 61(1) | GSPR conformity and level of clinical evidence (§6.4, §6.10). |
 | Regulation (EU) 2017/745 Art. 61(1) third subparagraph, Art. 61(3), Annex XIV Part A Section 1 | Plan, identify, appraise, generate, analyse (§6.4 to §6.10). |
-| Regulation (EU) 2017/745 Art. 61(4) to (6), Annex XIV Part A 3 | Clinical investigations for class III and implantables; equivalence (§6.5(5), §6.8). |
+| Regulation (EU) 2017/745 Art. 61(4) to (6), Annex XIV Part A 3 | Clinical investigations for class III and implantables; equivalence (§6.5(5), §6.8(5), §6.9(5)). |
+| Regulation (EU) 2017/745 Art. 54 | Clinical evaluation consultation procedure planned where applicable (§6.8(5)). |
+| Regulation (EU) 2017/745 Art. 74(1) | PMCF investigation notification (§6.8(6)). |
+| Regulation (EU) 2017/745 Art. 86(1) | CER and PMCF review aligned with PSUR cadence (§6.13(1)). |
+| Regulation (EU) 2017/745 Annex IX 4.10, Annex X 5.2 | Clinical impact screening of changes and notified body information (§6.13(4), (5)). |
 | Regulation (EU) 2017/745 Art. 61(10) | Justification for non-clinical evidence (§6.9). |
 | Regulation (EU) 2017/745 Art. 61(11), (12); Annex XIV Part A 4 | Updates and CER (§6.11, §6.13). |
-| Regulation (EU) 2017/745 Annex XIV Part B | PMCF (§6.12). |
+| Regulation (EU) 2017/745 Annex XIV Part B; Annex III Section 1(b) | PMCF, including method rationale and any decision that PMCF is not needed (§6.12). |
 | Regulation (EU) 2017/745 Art. 7 | Claims supported by evidence (§6.10(2)). |
 | ISO 13485:2016 7.3.7 | Clinical evaluation as part of design and development validation. |
 | ISO 14971:2019 7.4, 8 | Benefit-risk inputs aligned with the risk management file (§6.10(5)). |
@@ -385,6 +483,7 @@ The clause-level mapping is maintained in
 - SOP-014 Post-Market Surveillance
 - SOP-018 Risk Management (ISO 14971:2019)
 - SOP-019 Usability Engineering (IEC 62366-1:2015+A1:2020)
+- SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
 - SOP-022 AI Management System (ISO/IEC 42001:2023)
 - SOP-023 Data Protection and Privacy Management
 - SOP-024 AI Act Provider QMS (EN 18286:2026)
@@ -395,4 +494,4 @@ The clause-level mapping is maintained in
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-11-19 | Initial release of the clinical evaluation and PMCF procedure under MDR Art. 61 and Annex XIV, with software-specific controls for intended purpose, classification, the evidence chain from valid clinical association to clinical benefit, the Art. 61(10) pathway, and AI-enabled software. |
+| R00 | 2026-11-19 | Initial release of the clinical evaluation and PMCF procedure under MDR Art. 61 and Annex XIV, with software-specific controls for intended purpose, classification, the evidence chain from valid clinical association to clinical benefit, the Art. 61(10) pathway, AI-enabled software, Art. 61(4) to (6) investigation and exemption decisions, PMCF notification and PSUR cadence, clinical impact screening of software changes, and two-step CEP approval. |

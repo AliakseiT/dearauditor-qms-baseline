@@ -18,6 +18,14 @@ conformity, not an exemption from clinical evaluation. The clinical evaluation,
 CER, PMS, and benefit-risk conclusions are still required. "We have not
 collected clinical data" is not a justification.
 
+Class III and implantable devices: Art. 61(10) applies without prejudice to
+Art. 61(4). It does not remove the requirement for clinical investigations.
+Use this template for such a device only together with a recorded Art. 61(4)
+to (6) exemption (`SOP-025 §6.8(5)`, `§6.9(5)`).
+
+- Device class:
+- Class III or implantable: yes / no. If yes, exemption relied on and reference:
+
 ## 1. Why Clinical Data Are Not Appropriate
 Base the argument on the elements named in Art. 61(10):
 

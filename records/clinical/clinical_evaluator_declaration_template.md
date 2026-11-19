@@ -6,13 +6,15 @@ linked_cep_reference: "records/clinical/clinical_evaluation_plan.md"
 approval:
   meaning_of_signature: "Approved Clinical Evaluator Competence"
   signer_roles:
-    - qa_lead
+    - qa_lead            # management_representative instead when the QA Lead is the evaluator
 ---
 
 # Clinical Evaluator Declaration Template
 
 One record per person who plans, performs, or reviews the clinical evaluation
-(`SOP-025 §6.1`). External experts use the same record.
+(`SOP-025 §6.1`). External experts use the same record. If the person is
+not in `matrices/signer_registry.json`, they sign this declaration outside
+GitHub; attach the signed copy and a dated CV to the approving PR.
 
 ## 1. Evaluator
 - Name:
@@ -48,7 +50,12 @@ if anything changes during the evaluation.
 
 - Signature / date:
 
-## 4. QA Lead Confirmation
+## 4. Competence Confirmation
+Confirmed by the QA Lead, or by the Management Representative where the QA
+Lead is the evaluator named in this record. Nobody confirms their own
+competence.
+
+- Confirmed by (role):
 - Competence confirmed for the role stated: yes / no
 - Conditions or limitations:
 - Linked approving PR:

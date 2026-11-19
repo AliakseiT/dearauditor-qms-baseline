@@ -17,10 +17,13 @@ approval:
 
 # Clinical Evaluation Plan Template
 
-Implements MDR Annex XIV Part A 1(a) and `SOP-025 §6.4`. Approve the plan
-before data identification starts. Later changes to endpoints or acceptance
-criteria are revisions of this plan, with the reason recorded, so it is clear
-they were not fitted to the results.
+Implements MDR Annex XIV Part A 1(a) and `SOP-025 §6.4`. Approve the plan in
+two steps. Step 1, before any search: sections 1 to 4, 6, 8 (without
+acceptance criteria), and the state of the art search protocol. Step 2, after
+the state of the art assessment and before any device-specific data set is
+appraised: the outcome parameters and acceptance criteria in sections 5 and 7.
+Later changes to endpoints or acceptance criteria are revisions of this plan,
+with the reason recorded, so it is clear they were not fitted to the results.
 
 Replace the guidance text with product-specific content.
 
@@ -47,7 +50,7 @@ Summarise from the approved intended use record; do not restate it differently.
 ## 3. Classification
 - Class and rule(s) applied (all Annex VIII rules considered):
 - Rule 11 significance of information / healthcare situation:
-- Consequences for the level of evidence expected:
+- Consequences for the level of evidence expected, and how the depth of this evaluation is scaled to class, novelty, and risk (`SOP-025 §2`):
 
 ## 4. GSPRs Requiring Clinical Data
 | GSPR | Why clinical data is needed | Planned evidence |
@@ -66,18 +69,20 @@ website, or marketing material (Art. 7).
 
 ## 6. Safety Evaluation
 - Clinical risks in scope (from the risk management file), including incorrect, delayed, unavailable, or misinterpreted output:
-- Methods for evaluating residual risks and side effects:
+- Methods for examining qualitative and quantitative aspects of clinical safety, with reference to residual risks and side effects:
 - Use-related risk controls whose effectiveness needs usability, simulated-use, or clinical evidence:
 
 ## 7. Benefit-Risk Acceptability
 - Parameters used to judge benefit-risk, based on the state of the art:
 - Acceptance thresholds and how they were derived:
+- Benefit-risk issues from specific components (medicinal substances, non-viable human or animal tissues), or "not applicable" with the reason:
 
 ## 8. Evidence Strategy
 - Data sources to be searched (state of the art, device under evaluation, equivalent device, targeted searches):
 - Literature search protocol: `records/clinical/literature_search_protocol.md`
 - Equivalence intended: yes / no; candidate device(s) and data-access basis:
 - Art. 61(10) intended: yes / no; preliminary rationale:
+- Class III or implantable only: planned clinical investigation, or the Art. 61(4) to (6) exemption relied on and its evidence (`SOP-025 §6.8(5)`); whether the Art. 54 consultation procedure applies:
 - Appraisal method and weighting scheme (e.g. MDCG 2020-6 Appendix III; MEDDEV 2.7/1 rev. 4 section 9):
 - Handling of AI-specific evidence (dataset representativeness, subgroup performance, edge cases):
 

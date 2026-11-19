@@ -12,7 +12,10 @@ approval:
 # Literature Search Protocol and Report Template
 
 Implements `SOP-025 §6.5(2)`. Approve sections 1 to 4 before searching.
-Section 5 records the execution. Someone else must be able to repeat the
+Section 5 records the execution. In practice this means two pull requests: the
+first approves sections 1 to 4 and must be merged before any search runs; the
+second adds the execution log and results. The merge date of the first is the
+evidence that the protocol came before the search. Someone else must be able to repeat the
 search and get the same results. Methodological reference: MEDDEV 2.7/1 rev. 4
 appendix 5.
 

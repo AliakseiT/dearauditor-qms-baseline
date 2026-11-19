@@ -67,6 +67,12 @@ Reference matrix (MDCG 2019-11 rev. 1, adapted from IMDRF/SaMD WG/N12; illustrat
 - Whether variations in vital parameters could result in immediate danger to the patient in the intended clinical context (consider the setting and patient condition, not only the parameter):
 - Whether the software also triggers or prioritises clinical action (if so, reassess under the first paragraph):
 
+### Rule 11, third paragraph: all other software
+Software not caught by the first or second paragraph, nor by another rule, is
+class I. The reference matrix above illustrates only the first paragraph, so
+class I does not appear in it.
+- Reason neither the first nor the second paragraph applies:
+
 ## Follow-Up
 - Dossier Updates Required:
 - Submission or Registration Impact:

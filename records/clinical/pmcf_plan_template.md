@@ -40,22 +40,28 @@ For example: screening of literature and other sources; analysis of
 complaints, vigilance data, and user feedback; real-world performance data
 collected by the software, where lawful under `SOP-023`.
 
-| Method | Objective(s) | Data source | Frequency | Responsible |
-|---|---|---|---|---|
-| | | | | |
+| Method | Objective(s) | Why this method suits the objective (Annex XIV 6.2(c)) | Data source | Frequency | Responsible |
+|---|---|---|---|---|---|
+| | | | | | |
 
 ## 4. Specific PMCF Methods
 For example: PMCF study (Art. 74 where it is an investigation), registry,
 survey, real-world performance study, MRMC re-evaluation. State the protocol
 reference for each.
 
-| Method | Objective(s) | Design, endpoints, sample size | Protocol reference | Timeline |
-|---|---|---|---|---|
-| | | | | |
+| Method | Objective(s) | Why this method suits the objective (Annex XIV 6.2(c)) | Design, endpoints, sample size | Protocol reference | Timeline |
+|---|---|---|---|---|---|
+| | | | | | |
+
+A PMCF investigation that adds invasive or burdensome procedures to normal use
+must be notified to the Member States concerned at least 30 days before it
+starts (MDR Art. 74(1); `SOP-025 §6.8(6)`). Include that lead time in the
+timeline.
 
 Link each specific method to the CER uncertainty it answers. If the plan has
 no specific method, state which uncertainties general methods resolve and why
-that is enough (`SOP-025 §6.12(2)`).
+that is enough (`SOP-025 §6.12(2)`). A decision that no PMCF is needed at all
+does not use this template; record it in the PMS plan (`SOP-025 §6.12(6)`).
 
 ## 5. AI-Specific Monitoring (where applicable)
 - Performance metrics monitored in use and their thresholds:

@@ -38,7 +38,9 @@ data_sets:
     methodological_quality:
       design: ""
       sample_size_and_power: ""
-      reference_standard: ""
+      reference_standard: ""          # how ground truth was set, by whom, blinding, inter-rater agreement
+      data_separation: ""             # AI studies: patient/site separation from development data; test set fixed before final evaluation
+      generalisability: ""            # sites, equipment, protocols, subgroups, prevalence vs intended setting
       statistics: ""
       bias_and_confounding: ""
       rating: "high|medium|low"

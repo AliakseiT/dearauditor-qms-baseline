@@ -17,6 +17,8 @@ Implements MDR Annex XIV Part B sections 7 and 8 and `SOP-025 §6.12(4)`.
 Structured on the topics of the MDCG 2020-8 template.
 
 ## 1. Device and Period
+- Manufacturer name and SRN:
+- Device name, Basic UDI-DI, and class:
 - Device, versions in use during the period, and approximate usage volume:
 - PMCF plan version followed:
 
@@ -32,6 +34,10 @@ findings:
 | Objective | Results | Comparison with CER expectations and SotA benchmarks |
 |---|---|---|
 | | | |
+
+## 3a. Equivalent and Similar Devices
+Findings from monitoring the clinical data of equivalent or similar devices
+named in the PMCF plan, and whether they change any conclusion of the CER:
 
 ## 4. AI Performance in Use (where applicable)
 Observed performance, drift, subgroup differences, and human oversight
