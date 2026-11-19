@@ -6,8 +6,8 @@ regulation:
   normative_source_verified: true
 analysis_scope: >
   Clinical evaluation and PMCF of medical device software placed on the EU market
-  under Regulation (EU) 2017/745, and in Switzerland under MedDO (SR 812.213),
-  which applies the MDR clinical evaluation requirements. In vitro diagnostic
+  under Regulation (EU) 2017/745. Swiss MedDO (SR 812.213) provisions are not
+  mapped here; adopters placing devices in Switzerland confirm them. In vitro diagnostic
   performance evaluation under Regulation (EU) 2017/746 is out of scope.
 analysis_provenance:
   retrieved_on: "2026-11-19"
@@ -21,6 +21,7 @@ analysis_provenance:
     - "Legal requirements are cited from the regulation text. Guidance is cited by document number and revision as listed by the Commission on the retrieval date."
     - "The BSI white paper 'Clinical Evaluation of Software as a Medical Device (SaMD) for Conformity Assessment' (2026) was read as informative background on common notified-body findings. It is copyrighted; no text, tables, or figures from it are reproduced in this matrix, SOP-025, or records/clinical/."
 outstanding_gaps:
+  - "The MedDO (SR 812.213) article implementing clinical evaluation for Switzerland is not yet cited; confirm it against the Fedlex text and add it to regulatory_market_scope.yml."
   - "ISO 18969 (clinical evaluation of medical devices) is at DIS stage; review SOP-025 against the published edition once available and decide whether to add it to qms_intent_standards."
   - "MDR Art. 61(4) to (6) clinical investigation exemptions and Art. 61(2) expert panel consultation are referenced but have no dedicated template; the baseline targets software, for which class III is uncommon. Adopters with class III software extend SOP-025 §6.8 using MDCG 2023-7."
   - "Clinical investigation conduct (MDR Art. 62-82, Annex XV, ISO 14155:2020) is referenced, not proceduralised; adopters running investigations need a study-level procedure or a CRO's controlled procedures under SOP-010."

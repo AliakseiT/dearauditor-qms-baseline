@@ -33,7 +33,7 @@ Also address:
 - Would a clinical study add insight into safety or performance that non-clinical methods cannot give? Why not?
 - How directly does the output determine diagnosis, treatment, or patient management? (The more direct, the harder the justification.)
 
-## 2. Why the Chosen Evidence Sources Are Appropriate
+## 2. Suitability of the Selected Evidence Sources
 | Evidence source (e.g. analytical study, MRMC or simulated-use study, usability evaluation, standards conformity, bench testing) | What it can show | What it cannot show |
 |---|---|---|
 | | | |

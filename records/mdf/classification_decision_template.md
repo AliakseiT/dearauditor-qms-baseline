@@ -37,7 +37,7 @@ Replace the example text below with product-specific content before approval.
 - Supporting References:
 
 ## Software Classification Detail (EU MDR / MedDO)
-Complete this section for medical device software. Guidance: MDCG 2019-11 rev. 1, MDCG 2021-24 rev. 1, IMDRF/SaMD WG/N12 and N81. Base every answer on how the software is realistically used under normal conditions of use, not on how the manufacturer would like it to be used (`SOP-025 §6.3`).
+Complete this section for medical device software. Guidance: MDCG 2019-11 rev. 1, MDCG 2021-24 rev. 1, IMDRF/SaMD WG/N12 and N81. Base every answer on how the software is realistically used under normal conditions of use (`SOP-025 §6.3`). Clinician review of the output, disclaimers, and restrictive wording do not by themselves lower the significance of the information.
 
 ### All Annex VIII rules considered
 | Rule | Applies? | Resulting class | Reason |
@@ -51,7 +51,7 @@ Highest resulting class:
 ### Rule 11, first paragraph: information used for diagnostic or therapeutic decisions
 - Significance of the information to the healthcare decision (treat or diagnose / drives clinical management / informs clinical management), with reasoning:
 - How much users rely on the output in practice; whether there is a realistic opportunity to check the output independently before acting:
-- State of the healthcare situation or condition (critical / serious / non-serious), judged by the consequences of a missed, delayed, or incorrect decision rather than the patient's current presentation:
+- State of the healthcare situation or condition (critical / serious / non-serious), judged by what happens to the patient after an incorrect or late decision rather than the patient's current presentation:
 - Worst credible harm from an incorrect, delayed, or unavailable output:
 
 Reference matrix (MDCG 2019-11 rev. 1, adapted from IMDRF/SaMD WG/N12; illustrative, not a substitute for the rule text):
@@ -66,14 +66,6 @@ Reference matrix (MDCG 2019-11 rev. 1, adapted from IMDRF/SaMD WG/N12; illustrat
 - Physiological process monitored:
 - Whether variations in vital parameters could result in immediate danger to the patient in the intended clinical context (consider the setting and patient condition, not only the parameter):
 - Whether the software also triggers or prioritises clinical action (if so, reassess under the first paragraph):
-
-### Checks against common errors
-Answer each with yes/no and a short reason.
-- The analysis assesses clinical impact, not only the technical function:
-- The presence of a clinician making the final decision has not been used to lower the significance of the information:
-- Disclaimers, warnings, or restrictive wording have not been used to lower the class:
-- The software has been assessed within the full clinical workflow, not in isolation:
-- All applicable rules have been considered, including where the software drives or influences another device:
 
 ## Follow-Up
 - Dossier Updates Required:

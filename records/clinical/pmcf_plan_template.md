@@ -53,9 +53,9 @@ reference for each.
 |---|---|---|---|---|
 | | | | | |
 
-If no specific method is planned, justify it. A justification is expected when
-the device is novel, relies on equivalence or Art. 61(10), has open questions
-about sub-populations or use scenarios, or uses AI.
+Link each specific method to the CER uncertainty it answers. If the plan has
+no specific method, state which uncertainties general methods resolve and why
+that is enough (`SOP-025 §6.12(2)`).
 
 ## 5. AI-Specific Monitoring (where applicable)
 - Performance metrics monitored in use and their thresholds:

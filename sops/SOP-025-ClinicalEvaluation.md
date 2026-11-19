@@ -13,9 +13,11 @@ Define how the organisation plans, conducts, documents, and maintains the
 clinical evaluation of each medical device software product, and how
 post-market clinical follow-up (PMCF) keeps that evaluation current. The
 procedure implements Regulation (EU) 2017/745 (MDR) Article 61 and Annex XIV,
-which the Swiss Medical Devices Ordinance (MedDO) applies through its reference
-to the MDR. It also supplies the clinical evaluation part of design validation
-required by ISO 13485:2016 clause 7.3.7.
+and is used for Switzerland as recorded in
+`matrices/regulatory_market_scope.yml`, where adopters confirm the applicable
+Medical Devices Ordinance (MedDO, SR 812.213) provisions. It also supplies
+the clinical evaluation part of design validation required by ISO 13485:2016
+clause 7.3.7.
 
 Clinical evaluation is a continuous, evidence-based argument. It is not a
 document assembled once before submission. Its output must let a qualified
@@ -98,8 +100,9 @@ in vitro diagnostic software under Regulation (EU) 2017/746 is out of scope.
    `records/mdf/intended_use_template.md`.
 2. Describe normal conditions of use as they will realistically occur: user
    experience levels, workload, workflow variants, input variability, and
-   reasonably foreseeable misuse. Do not define the intended purpose around
-   ideal behaviour or levels of oversight that will not exist in practice.
+   reasonably foreseeable misuse. An intended purpose that only holds if users
+   behave perfectly, or if supervision is stricter than sites actually provide,
+   is not acceptable.
 3. Describe where the software sits in the patient pathway, what it changes in
    that pathway, and how that change is expected to lead to clinical benefit.
    A workflow diagram is recommended.
@@ -238,8 +241,8 @@ the device. Label every data set accordingly in the appraisal.
    `records/clinical/article_61_10_justification_template.md`. It must show:
    (a) why clinical data are not appropriate, based on the risk management
    results, the device's interaction with the patient and the clinical process,
-   the intended clinical performance, and the claims; (b) why the chosen
-   non-clinical evidence sources are suitable; (c) how they support each
+   the intended clinical performance, and the claims; (b) that the
+   non-clinical evidence sources selected are suitable; (c) how they support each
    clinically relevant safety and performance objective; and (d) why the
    totality of evidence is sufficient for the relevant GSPRs.
 3. The more directly the output determines diagnosis or treatment, the harder
@@ -286,26 +289,32 @@ the device. Label every data set accordingly in the appraisal.
    of the PMS plan under `SOP-014` (Annex III Section 1(b)). The plan targets the
    residual uncertainties from §6.10, with research questions, general and
    specific methods, rationale, and timelines (MDCG 2020-7).
-2. Specific PMCF methods are normally expected when the device or its
-   application is novel, when the evaluation relies on equivalence or
-   Art. 61(10), when questions remain about sub-populations or use scenarios,
-   or when AI functionality leaves uncertainty about performance stability,
-   bias, drift, or human oversight. Where no specific method is planned,
-   justify it in the PMCF plan.
+2. Choose methods against the aims in Annex XIV Section 6.1. General methods
+   (user feedback, complaints, literature screening) rarely settle a question
+   the pre-market evidence left open. Plan a specific method, such as a
+   registry or PMCF study (Annex XIV Section 6.2(b)), for each CER uncertainty
+   that general methods cannot answer: little pre-market data for a
+   sub-population or setting, claims that rest mainly on equivalence or on
+   Art. 61(10), or a model whose behaviour on the real input population is not
+   yet known. Where the plan has no specific method, state why in the plan.
 3. Software can often collect real-world performance and use data directly.
    Where lawful and proportionate under `SOP-023`, use it to confirm
    pre-market assumptions.
 4. Report results in a PMCF evaluation report
    (`records/clinical/pmcf_evaluation_report_template.md`; MDCG 2020-8). The
    PMCF evaluation report forms part of the CER and the technical
-   documentation (Annex XIV Section 7). Feed its conclusions into the CER, risk management file, and, where applicable,
-   the summary of safety and clinical performance (SSCP, Art. 32) and periodic
+   documentation (Annex XIV Section 7). Feed its conclusions into the CER,
+   the risk management file (Annex XIV Section 8) and, where applicable, the
+   summary of safety and clinical performance (SSCP, Art. 32) and periodic
    safety update report (PSUR, Art. 86).
 
 ### 6.13 Updating the Clinical Evaluation (Art. 61(11))
-1. Update the CER at a frequency set in the CEP and justified by class, risk,
-   novelty, and how fast the state of the art changes. Class III and
-   implantable devices are updated at least annually with PMCF data.
+1. Update the clinical evaluation and its documentation throughout the
+   lifecycle with clinical data from PMCF and PMS (Art. 61(11)). Set the CER
+   update frequency in the CEP and justify it by class, risk, novelty, and how
+   fast the state of the art changes. For class III and implantable devices,
+   the PMCF evaluation report and, where indicated, the SSCP are updated at
+   least annually.
 2. Update it out of cycle when there is a significant safety signal, a PMCF
    result, a change in the state of the art that affects the benchmarks, a
    design change that may affect clinical performance or safety under
@@ -315,11 +324,11 @@ the device. Label every data set accordingly in the appraisal.
 
 ### 6.14 AI-Enabled Software
 In addition to the steps above:
-1. Show performance across the reasonably foreseeable range of inputs,
-   including atypical, ambiguous, incomplete, and edge cases, not only average
-   performance. Pay attention to failures users are unlikely to detect; the
-   design should not shift onto the user the job of catching errors the device
-   should prevent.
+1. Report error modes over the reasonably foreseeable range of inputs,
+   including atypical and incomplete inputs, as well as summary metrics. An
+   error mode that the user would not notice is a risk to control under
+   GSPR 4 in the order the GSPR sets: design first, then protective measures,
+   and only then information for users.
 2. Assess the representativeness of training, tuning, and test data against
    the intended population and environment, and reflect known data limitations
    in the intended purpose, warnings, and limitations.
@@ -331,8 +340,8 @@ In addition to the steps above:
 5. Evidence produced under `SOP-022` and, where applicable, `SOP-024` for data
    governance, transparency, human oversight, robustness, and post-market
    monitoring can be reused in the clinical evaluation after appraisal under
-   §6.7. Alignment with one framework does not by itself show compliance with
-   the other (MDCG 2025-6).
+   §6.7. Meeting AI Act obligations is not in itself evidence of MDR
+   conformity, and the reverse also holds (MDCG 2025-6).
 
 ## 7. Required Records
 - Clinical evaluator declarations (`records/clinical/clinical_evaluator_declaration_template.md`)
@@ -358,7 +367,6 @@ All records are kept in the product's medical device file under `SOP-007`.
 | Regulation (EU) 2017/745 Art. 61(11), (12); Annex XIV Part A 4 | Updates and CER (§6.11, §6.13). |
 | Regulation (EU) 2017/745 Annex XIV Part B | PMCF (§6.12). |
 | Regulation (EU) 2017/745 Art. 7 | Claims supported by evidence (§6.10(2)). |
-| MedDO (SR 812.213) | Applies the MDR clinical evaluation requirements in Switzerland. |
 | ISO 13485:2016 7.3.7 | Clinical evaluation as part of design and development validation. |
 | ISO 14971:2019 7.4, 8 | Benefit-risk inputs aligned with the risk management file (§6.10(5)). |
 
