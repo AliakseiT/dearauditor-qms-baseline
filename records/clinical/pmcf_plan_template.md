@@ -15,7 +15,7 @@ approval:
 # PMCF Plan Template
 
 Implements MDR Annex XIV Part B section 6 and `SOP-025 §6.12`. Part of the PMS
-plan under `SOP-014` (MDR Annex III 1.1(b)). Structured on the topics of the
+plan under `SOP-014` (MDR Annex III Section 1(b)). Structured on the topics of the
 MDCG 2020-7 template.
 
 ## 1. Device and Scope
@@ -25,7 +25,7 @@ MDCG 2020-7 template.
 
 ## 2. Objectives
 List the residual uncertainties from the CER this plan addresses, and the
-standing objectives from Annex XIV Part B 5:
+standing aims from Annex XIV Section 6.1(a) to (e):
 
 | ID | Objective | Linked CER uncertainty / risk / claim |
 |---|---|---|

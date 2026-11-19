@@ -12,10 +12,12 @@ analysis_scope: >
 analysis_provenance:
   retrieved_on: "2026-11-19"
   sources:
-    - "Regulation (EU) 2017/745, consolidated text: https://eur-lex.europa.eu/eli/reg/2017/745/2025-01-10/eng"
+    - "Regulation (EU) 2017/745, consolidated text 2026-11-09: http://data.europa.eu/eli/reg/2017/745/2026-11-09 (articles and Annex II 6.1 checked)"
+    - "Regulation (EU) 2017/745, consolidated text 2025-01-10, PDF: https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:02017R0745-20250110 (Annexes III, VIII and XIV checked; none amended by acts after that date)"
     - "MDCG endorsed documents list: https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en"
     - "ISO project 85514, ISO/DIS 18969 (stage 40.60, enquiry closed 2026-03-10; not yet published at retrieval)"
   notes:
+    - "Art. 61(6)(b) (exemptions from clinical investigation) was replaced by Commission Delegated Regulation (EU) 2026/1451. SOP-025 refers to Art. 61(6) only generically; adopters relying on the exemption must read the current list."
     - "Legal requirements are cited from the regulation text. Guidance is cited by document number and revision as listed by the Commission on the retrieval date."
     - "The BSI white paper 'Clinical Evaluation of Software as a Medical Device (SaMD) for Conformity Assessment' (2026) was read as informative background on common notified-body findings. It is copyrighted; no text, tables, or figures from it are reproduced in this matrix, SOP-025, or records/clinical/."
 outstanding_gaps:
@@ -29,7 +31,7 @@ requirement_to_control_map:
   - {requirement: "Art. 51, Annex VIII (incl. Rule 11, implementing rule 3.3)", topic: "Classification sets the level of evidence", control: "SOP-025 6.3", evidence: "records/mdf/classification_decision_template.md"}
   - {requirement: "Art. 61(1)", topic: "Conformity with GSPRs based on sufficient clinical evidence; level justified", control: "SOP-025 6.4, 6.10", evidence: "records/clinical/clinical_evaluation_plan_template.md"}
   - {requirement: "Art. 61(2)", topic: "Optional expert panel consultation (class III, class IIb active for medicinal products)", control: "SOP-025 6.4 (adopter extension)", evidence: "records/clinical/clinical_evaluation_plan_template.md", condition: "Only for devices within Art. 61(2) scope."}
-  - {requirement: "Art. 61(3), Annex XIV Part A 1", topic: "Defined and methodologically sound procedure", control: "SOP-025 6.4-6.10", evidence: "records/clinical/"}
+  - {requirement: "Art. 61(1) third subparagraph, Art. 61(3), Annex XIV Part A Section 1", topic: "Defined and methodologically sound procedure", control: "SOP-025 6.4-6.10", evidence: "records/clinical/"}
   - {requirement: "Art. 61(4)-(6)", topic: "Clinical investigations for class III and implantables; exemptions", control: "SOP-025 6.8", evidence: "records/clinical/clinical_evaluation_plan_template.md", condition: "Only for class III or implantable devices."}
   - {requirement: "Art. 61(5), Annex XIV Part A 3", topic: "Equivalence and data access", control: "SOP-025 6.5(5)", evidence: "records/clinical/equivalence_assessment_template.md"}
   - {requirement: "Art. 61(10)", topic: "Non-clinical evidence pathway", control: "SOP-025 6.9", evidence: "records/clinical/article_61_10_justification_template.md"}
@@ -41,8 +43,8 @@ requirement_to_control_map:
   - {requirement: "Annex XIV Part A 1(d)", topic: "Generation of new or additional data", control: "SOP-025 6.8", evidence: "Study protocols and reports"}
   - {requirement: "Annex XIV Part A 1(e)", topic: "Analysis and conclusions on safety, performance, clinical benefit", control: "SOP-025 6.10", evidence: "records/clinical/clinical_evaluation_report_template.md"}
   - {requirement: "Annex XIV Part A 2", topic: "Thorough and objective evaluation, favourable and unfavourable data", control: "SOP-025 6.1, 6.5(3), 6.11(2)", evidence: "records/clinical/clinical_evaluator_declaration_template.md"}
-  - {requirement: "Annex XIV Part B 5-8", topic: "PMCF plan, PMCF evaluation report, feedback into CER and risk management", control: "SOP-025 6.12, SOP-014", evidence: "records/clinical/pmcf_plan_template.md, records/clinical/pmcf_evaluation_report_template.md"}
-  - {requirement: "Annex III 1.1(b)", topic: "PMCF plan as part of the PMS plan", control: "SOP-014, SOP-025 6.12(1)", evidence: "records/pms/pms_plan_template.yml"}
+  - {requirement: "Annex XIV Part B Sections 5-8", topic: "PMCF plan (6.1 aims, 6.2 contents), PMCF evaluation report as part of the CER, feedback into CER and risk management", control: "SOP-025 6.12, SOP-014", evidence: "records/clinical/pmcf_plan_template.md, records/clinical/pmcf_evaluation_report_template.md"}
+  - {requirement: "Annex III Section 1(b)", topic: "PMCF plan as part of the PMS plan", control: "SOP-014, SOP-025 6.12(1)", evidence: "records/pms/pms_plan_template.yml"}
   - {requirement: "Annex II 6.1(c), 6.1(d)", topic: "CEP, CER, PMCF plan and report in the technical documentation", control: "SOP-007 6.1, SOP-025 7", evidence: "records/mdf/medical_device_file_index_template.md"}
   - {requirement: "Annex I GSPR 1, 8", topic: "Benefit-risk and side effects under normal conditions of use", control: "SOP-025 6.10, SOP-018", evidence: "records/clinical/clinical_evaluation_report_template.md"}
   - {requirement: "Annex I GSPR 4, 5", topic: "Effectiveness of risk controls, including use-related controls", control: "SOP-025 6.10(3), SOP-019", evidence: "records/usability/"}

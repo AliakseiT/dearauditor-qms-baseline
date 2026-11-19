@@ -36,7 +36,7 @@ Applies to all released products and product versions in active use.
 ### 6.1 PMS Planning
 1. Maintain product-level PMS plan defining data sources, collection methods, analysis methods, responsibilities, review frequency, and signal detection thresholds.
 2. Align PMS metrics with product risk controls and intended use.
-3. For medical devices, the PMS plan includes the PMCF plan, or a justification for not having one, under `SOP-025 §6.12` (MDR Annex III 1.1(b)).
+3. For medical devices, the PMS plan includes the PMCF plan, or a justification for not having one, under `SOP-025 §6.12` (MDR Annex III Section 1(b)).
 
 ### 6.2 Data Collection and Consolidation
 1. Collect periodic data from complaints, incidents, support, and reliability signals.

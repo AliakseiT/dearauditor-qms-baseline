@@ -283,7 +283,7 @@ the device. Label every data set accordingly in the appraisal.
 
 ### 6.12 Post-Market Clinical Follow-up (Annex XIV Part B)
 1. Prepare a PMCF plan using `records/clinical/pmcf_plan_template.md` as part
-   of the PMS plan under `SOP-014` (Annex III 1.1(b)). The plan targets the
+   of the PMS plan under `SOP-014` (Annex III Section 1(b)). The plan targets the
    residual uncertainties from §6.10, with research questions, general and
    specific methods, rationale, and timelines (MDCG 2020-7).
 2. Specific PMCF methods are normally expected when the device or its
@@ -296,8 +296,9 @@ the device. Label every data set accordingly in the appraisal.
    Where lawful and proportionate under `SOP-023`, use it to confirm
    pre-market assumptions.
 4. Report results in a PMCF evaluation report
-   (`records/clinical/pmcf_evaluation_report_template.md`; MDCG 2020-8) and
-   feed conclusions into the CER, risk management file, and, where applicable,
+   (`records/clinical/pmcf_evaluation_report_template.md`; MDCG 2020-8). The
+   PMCF evaluation report forms part of the CER and the technical
+   documentation (Annex XIV Section 7). Feed its conclusions into the CER, risk management file, and, where applicable,
    the summary of safety and clinical performance (SSCP, Art. 32) and periodic
    safety update report (PSUR, Art. 86).
 
@@ -351,7 +352,7 @@ All records are kept in the product's medical device file under `SOP-007`.
 | Standard Clause | Control in this SOP |
 |---|---|
 | Regulation (EU) 2017/745 Art. 61(1) | GSPR conformity and level of clinical evidence (§6.4, §6.10). |
-| Regulation (EU) 2017/745 Art. 61(3), Annex XIV Part A 1 | Plan, identify, appraise, generate, analyse (§6.4 to §6.10). |
+| Regulation (EU) 2017/745 Art. 61(1) third subparagraph, Art. 61(3), Annex XIV Part A Section 1 | Plan, identify, appraise, generate, analyse (§6.4 to §6.10). |
 | Regulation (EU) 2017/745 Art. 61(4) to (6), Annex XIV Part A 3 | Clinical investigations for class III and implantables; equivalence (§6.5(5), §6.8). |
 | Regulation (EU) 2017/745 Art. 61(10) | Justification for non-clinical evidence (§6.9). |
 | Regulation (EU) 2017/745 Art. 61(11), (12); Annex XIV Part A 4 | Updates and CER (§6.11, §6.13). |
