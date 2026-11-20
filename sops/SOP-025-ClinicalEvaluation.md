@@ -248,7 +248,13 @@ the device. Label every data set accordingly in the appraisal.
    Appendix III together with MEDDEV 2.7/1 rev. 4 section 9 and appendix 6.
    MDCG 2020-6 was written for legacy devices; its ranking is used here by
    analogy, and the CEP states that.
-4. Summarise the appraisal as gaps, uncertainties, and open questions for
+4. Complaint and vigilance data are clinical data under Art. 2(48), but
+   under-reporting makes them a weak source: an absence of complaints does not
+   show that the device is safe or performs as claimed. Use them to detect
+   safety trends and as support only. They are never the sole basis for
+   concluding conformity with the GSPRs (MDCG 2020-6 Appendix III); pair them
+   with appraised clinical data or proactive PMCF data.
+5. Summarise the appraisal as gaps, uncertainties, and open questions for
    §6.8.
 
 ### 6.8 Generate New Data (Annex XIV Part A 1(d))

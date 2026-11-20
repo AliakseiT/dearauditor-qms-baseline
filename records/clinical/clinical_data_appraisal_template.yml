@@ -48,7 +48,7 @@ data_sets:
     favourable_or_unfavourable: "favourable|unfavourable|mixed|neutral"
     supports_claims: []                # claim / endpoint IDs from the CEP
     supports_risks: []                 # risk IDs from the risk management file
-    weight: "pivotal|supportive|not_used"
+    weight: "pivotal|supportive|not_used"   # complaint/vigilance data: supportive at most (SOP-025 §6.7(4))
     weight_rationale: ""
 gaps_and_uncertainties:
   - id: "U-01"

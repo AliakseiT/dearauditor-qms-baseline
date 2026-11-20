@@ -65,7 +65,7 @@ guidance_crosswalk:
   - {ref: "MDCG 2019-11 rev. 1 (June 2025)", scope: "Qualification and classification of software", used_in: "SOP-025 6.3, classification decision template"}
   - {ref: "MDCG 2020-1 (March 2020)", scope: "Clinical evaluation of medical device software: valid clinical association, technical and clinical performance", used_in: "SOP-025 6.5(4), 6.6"}
   - {ref: "MDCG 2020-5 (April 2020)", scope: "Equivalence", used_in: "SOP-025 6.5(5), equivalence template"}
-  - {ref: "MDCG 2020-6 (April 2020)", scope: "Sufficient clinical evidence for legacy devices; Appendix III hierarchy of evidence, used by analogy", used_in: "SOP-025 6.7(3), appraisal template"}
+  - {ref: "MDCG 2020-6 (April 2020)", scope: "Sufficient clinical evidence for legacy devices; Appendix III hierarchy of evidence, used by analogy", used_in: "SOP-025 6.7(3), 6.7(4), appraisal template"}
   - {ref: "MDCG 2020-7 (April 2020)", scope: "PMCF plan template", used_in: "PMCF plan template"}
   - {ref: "MDCG 2020-8 (April 2020)", scope: "PMCF evaluation report template", used_in: "PMCF evaluation report template"}
   - {ref: "MDCG 2020-13 (July 2020)", scope: "Clinical evaluation assessment report template (notified body)", used_in: "CER template structure"}
