@@ -57,7 +57,7 @@ roles:
       SOP-006: R05
       SOP-007: R11
       SOP-008: R12
-      SOP-009: R11
+      SOP-009: R12
       SOP-010: R05
       SOP-011: R12
       SOP-012: R08
@@ -66,9 +66,9 @@ roles:
       SOP-015: R06
       SOP-016: R07
       SOP-017: R06
-      SOP-018: R10
+      SOP-018: R11
       SOP-019: R13
-      SOP-020: R13
+      SOP-020: R14
       SOP-021: R02
       SOP-022: R03
       SOP-023: R00
@@ -97,11 +97,11 @@ roles:
       QM-001: R12
       SOP-001: R15
       SOP-008: R12
-      SOP-009: R11
+      SOP-009: R12
       SOP-011: R12
       SOP-017: R06
-      SOP-018: R10
-      SOP-020: R13
+      SOP-018: R11
+      SOP-020: R14
   engineering_lead:
     users:
       - AliakseiT
@@ -132,12 +132,12 @@ roles:
       SOP-002: R06
       SOP-007: R11
       SOP-008: R12
-      SOP-009: R11
+      SOP-009: R12
       SOP-011: R12
       SOP-015: R06
       SOP-017: R06
-      SOP-018: R10
-      SOP-020: R13
+      SOP-018: R11
+      SOP-020: R14
       SOP-021: R02
       SOP-022: R03
       SOP-023: R00
@@ -164,7 +164,7 @@ roles:
       QM-001: R12
       SOP-001: R15
       SOP-006: R05
-      SOP-009: R11
+      SOP-009: R12
       SOP-011: R12
       SOP-017: R06
       SOP-021: R02
@@ -214,7 +214,7 @@ roles:
       SOP-011: R12
       SOP-012: R08
       SOP-014: R08
-      SOP-018: R10
+      SOP-018: R11
       SOP-019: R13
       SOP-025: R00
   auditor:
@@ -251,12 +251,12 @@ roles:
       SOP-001: R15
       SOP-002: R06
       SOP-003: R07
-      SOP-004: R09
+      SOP-004: R10
       SOP-005: R23
       SOP-006: R05
       SOP-007: R11
       SOP-008: R12
-      SOP-009: R11
+      SOP-009: R12
       SOP-010: R05
       SOP-011: R12
       SOP-012: R08
@@ -265,9 +265,9 @@ roles:
       SOP-015: R06
       SOP-016: R07
       SOP-017: R06
-      SOP-018: R10
+      SOP-018: R11
       SOP-019: R13
-      SOP-020: R13
+      SOP-020: R14
       SOP-021: R02
       SOP-022: R03
       SOP-023: R00
@@ -308,12 +308,12 @@ roles:
       SOP-001: R15
       SOP-002: R06
       SOP-003: R07
-      SOP-004: R09
+      SOP-004: R10
       SOP-005: R23
       SOP-006: R05
       SOP-007: R11
       SOP-008: R12
-      SOP-009: R11
+      SOP-009: R12
       SOP-010: R05
       SOP-011: R12
       SOP-012: R08
@@ -322,9 +322,9 @@ roles:
       SOP-015: R06
       SOP-016: R07
       SOP-017: R06
-      SOP-018: R10
+      SOP-018: R11
       SOP-019: R13
-      SOP-020: R13
+      SOP-020: R14
       SOP-021: R02
       SOP-022: R03
       SOP-023: R00

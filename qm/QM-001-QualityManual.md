@@ -112,7 +112,7 @@ Regulatory applicability is maintained in `matrices/regulatory_market_scope.yml`
 - EN 18286:2026 (EU AI Act provider QMS, implemented through `SOP-024`), for high-risk AI systems placed on the EU market or put into service
 
 Jurisdiction references currently maintained in the regulatory scope baseline include:
-- Switzerland: MedDO, including software classification references
+- Switzerland: MedDO, including software classification references and the clinical evaluation requirement of MedDO Art. 21(4) and Art. 46(3) (implemented through `SOP-025`)
 - European Union: MDR and MDCG software guidance, including MDR Art. 61 and Annex XIV clinical evaluation and PMCF (implemented through `SOP-025`), and Regulation (EU) 2024/1689 (AI Act) for high-risk AI systems
 - United States: FD&C Act device definitions, section 520(o), FDA software guidance, and 21 CFR Part 820
 
@@ -164,4 +164,4 @@ QMS tooling and validation baselines are maintained in:
 | R09 | 2026-05-26 | Added the ISO 9001 general quality-management extension for organization context, customer focus, process performance, and continual improvement. |
 | R10 | 2026-10-26 | Added EN 18286:2026 EU AI Act provider QMS and the EU AI Act to the standards and regulatory framework, with a traceability row cross-referencing SOP-024. |
 | R11 | 2026-10-28 | Aligned the QMS intent with SOP-022 R03, so ISO/IEC 42001 AI management controls cover AI components in all ACME software products, not only medical-device software, and added the EN 18286:2026 provider QMS intent implemented through SOP-024. |
-| R12 | 2026-11-19 | Added MDR Art. 61 and Annex XIV clinical evaluation and PMCF to the regulatory framework and process structure, with a traceability row cross-referencing SOP-025. |
+| R12 | 2026-11-19 | Added MDR Art. 61 and Annex XIV clinical evaluation and PMCF to the regulatory framework and process structure, with a traceability row cross-referencing SOP-025, and the corresponding MedDO clinical evaluation provisions for Switzerland. |

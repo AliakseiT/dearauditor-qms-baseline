@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-009
 title: Change Management
-revision: R11
-revision_date: 2026-05-04
+revision: R12
+revision_date: 2026-11-20
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -47,6 +47,7 @@ Classify each change as one or more of:
 4. For software changes, determine whether configuration baseline, release manifest, or software safety classification updates are required.
 5. Assess impact on released products, including the need for field action, customer communication, or regulatory reporting.
 6. Where applicable, evaluate impact on the risk management file, including hazard analysis, cybersecurity risks, risk controls, and residual risk acceptability.
+7. For medical device software, record the clinical impact screening outcome required by `SOP-025 §6.13(4)` in the change record, and decide whether the notified body must be informed before the change is introduced (`SOP-025 §6.13(5)`). A change to the intended purpose or claims always triggers reassessment of classification, risk, and the clinical evaluation (`SOP-025 §6.2(6)`).
 
 ### 6.3 Approval
 1. Minor changes: QA Lead approval.
@@ -83,6 +84,7 @@ Classify each change as one or more of:
 - SOP-008 Design and Development Control
 - SOP-011 Competence, Training, and Awareness
 - SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 - WI-002 Configuration and Release Management Execution
 
 ## 10. Revision History
@@ -100,3 +102,4 @@ Classify each change as one or more of:
 | R09 | 2026-03-27 | Consolidated the standalone regulatory-lead execution role into the QA-lead change domain and removed the redundant separate role reference. |
 | R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R11 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R12 | 2026-11-20 | Added the SOP-025 clinical impact screening and notified body information decision to the impact assessment for medical device software changes. |

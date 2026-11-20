@@ -6,8 +6,9 @@ regulation:
   normative_source_verified: true
 analysis_scope: >
   Clinical evaluation and PMCF of medical device software placed on the EU market
-  under Regulation (EU) 2017/745. Swiss MedDO (SR 812.213) provisions are not
-  mapped here; adopters placing devices in Switzerland confirm them. In vitro diagnostic
+  under Regulation (EU) 2017/745, and in Switzerland under MedDO (SR 812.213)
+  Art. 21(4) and Art. 46(3), which require the same clinical evaluation by
+  reference to MDR Art. 61 and Annex XIV. In vitro diagnostic
   performance evaluation under Regulation (EU) 2017/746 is out of scope.
 analysis_provenance:
   retrieved_on: "2026-11-19"
@@ -15,18 +16,18 @@ analysis_provenance:
     - "Regulation (EU) 2017/745, consolidated text 2026-11-09: http://data.europa.eu/eli/reg/2017/745/2026-11-09 (articles and Annex II 6.1 checked)"
     - "Regulation (EU) 2017/745, consolidated text 2025-01-10, PDF: https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:02017R0745-20250110 (Annexes III, VIII and XIV checked; none amended by acts after that date)"
     - "MDCG endorsed documents list: https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en"
-    - "ISO project 85514, ISO/DIS 18969 (stage 40.60, enquiry closed 2026-03-10; not yet published at retrieval)"
+    - "MedDO (SR 812.213), Fedlex English text: https://www.fedlex.admin.ch/eli/cc/2020/552/en (Art. 21 para. 4 and Art. 46 para. 3 checked 2026-11-20)"
+    - "ISO project 85514, ISO/FDIS 18969 (stage 50.00, final text registered for formal approval; checked on iso.org 2026-11-20; not yet published)"
   notes:
     - "Art. 61(6)(b) (exemptions from clinical investigation) was replaced by Commission Delegated Regulation (EU) 2026/1451. SOP-025 refers to Art. 61(6) only generically; adopters relying on the exemption must read the current list."
     - "Legal requirements are cited from the regulation text. Guidance is cited by document number and revision as listed by the Commission on the retrieval date."
     - "The BSI white paper 'Clinical Evaluation of Software as a Medical Device (SaMD) for Conformity Assessment' (2026) was read as informative background on common notified-body findings. It is copyrighted; no text, tables, or figures from it are reproduced in this matrix, SOP-025, or records/clinical/."
 outstanding_gaps:
-  - "The MedDO (SR 812.213) article implementing clinical evaluation for Switzerland is not yet cited; confirm it against the Fedlex text and add it to regulatory_market_scope.yml."
-  - "ISO 18969 (clinical evaluation of medical devices) is at DIS stage; review SOP-025 against the published edition once available and decide whether to add it to qms_intent_standards."
+  - "ISO 18969 (clinical evaluation of medical devices) is at FDIS stage (50.00); review SOP-025 against the published edition once available and decide whether to add it to qms_intent_standards."
   - "MDR Art. 61(4) to (6) are covered at decision level (SOP-025 §6.8(5), §6.9(5); CEP section 8) but have no dedicated exemption template, and Art. 61(2) expert panel consultation is only referenced; the baseline targets software, for which class III is uncommon. Adopters with class III or implantable devices add a template using MDCG 2023-7 and the current Art. 61(6)(b) list."
-  - "SOP-009, SOP-018, SOP-004, and SOP-020 do not yet refer back to SOP-025 (clinical impact screening of changes, CER benefit-risk feedback into the risk file, clinical evaluation as a management review input, CER readiness at release). SOP-025 §6.13(4) and the final release decision template carry these interfaces until those SOPs are next revised."
   - "Clinical investigation conduct (MDR Art. 62-82, Annex XV, ISO 14155:2020) is referenced, not proceduralised; adopters running investigations need a study-level procedure or a CRO's controlled procedures under SOP-010."
 requirement_to_control_map:
+  - {requirement: "MedDO (SR 812.213) Art. 21(4), Art. 46(3)", topic: "Swiss clinical evaluation requirement by reference to MDR Art. 61 and Annex XIV, updated with PMCF", control: "SOP-025 1, 6.4-6.13", evidence: "records/clinical/", condition: "Only for devices made available in Switzerland."}
   - {requirement: "Art. 2(12), Annex II 1.1", topic: "Intended purpose", control: "SOP-025 6.2", evidence: "records/mdf/intended_use_template.md"}
   - {requirement: "Art. 2(48), 2(51), 2(52), 2(53)", topic: "Clinical data, clinical evidence, clinical performance, clinical benefit", control: "SOP-025 6.6", evidence: "records/clinical/clinical_data_appraisal_template.yml"}
   - {requirement: "Art. 7", topic: "Claims supported by evidence", control: "SOP-025 6.10(2)", evidence: "records/clinical/clinical_evaluation_report_template.md"}
@@ -49,13 +50,13 @@ requirement_to_control_map:
   - {requirement: "Annex XIV Part B Sections 5-8", topic: "PMCF plan (6.1 aims, 6.2 contents incl. 6.2(c) method rationale), PMCF evaluation report as part of the CER, feedback into CER and risk management", control: "SOP-025 6.12, SOP-014", evidence: "records/clinical/pmcf_plan_template.md, records/clinical/pmcf_evaluation_report_template.md"}
   - {requirement: "Annex III Section 1(b)", topic: "PMCF plan as part of the PMS plan, or justification that PMCF is not applicable", control: "SOP-014, SOP-025 6.12(1), 6.12(6)", evidence: "records/pms/pms_plan_template.yml"}
   - {requirement: "Annex II 6.1(c), 6.1(d)", topic: "CEP, CER, PMCF plan and report in the technical documentation", control: "SOP-007 6.1, SOP-025 7", evidence: "records/mdf/medical_device_file_index_template.md"}
-  - {requirement: "Annex I GSPR 1, 8", topic: "Benefit-risk and side effects under normal conditions of use", control: "SOP-025 6.10, SOP-018", evidence: "records/clinical/clinical_evaluation_report_template.md"}
+  - {requirement: "Annex I GSPR 1, 8", topic: "Benefit-risk and side effects under normal conditions of use", control: "SOP-025 6.10, SOP-018 8.5(4)", evidence: "records/clinical/clinical_evaluation_report_template.md"}
   - {requirement: "Annex I GSPR 4, 5", topic: "Effectiveness of risk controls, including use-related controls", control: "SOP-025 6.10(3), SOP-019", evidence: "records/usability/"}
   - {requirement: "Annex I GSPR 17.2", topic: "Software developed according to the state of the art", control: "SOP-020, SOP-025 6.14", evidence: "records/design/"}
   - {requirement: "Art. 32", topic: "SSCP kept consistent with the CER", control: "SOP-025 6.12(4)", evidence: "records/clinical/clinical_evaluation_report_template.md", condition: "Only for implantable and class III devices."}
   - {requirement: "Art. 74", topic: "PMCF investigations, including 30-day notification under Art. 74(1)", control: "SOP-025 6.8(3), 6.8(6)", evidence: "Study protocols and reports", condition: "Only when PMCF includes an investigation."}
   - {requirement: "Art. 86", topic: "PSUR draws on PMCF results; CER review at least at PSUR cadence", control: "SOP-014, SOP-025 6.12(4), 6.13(1)", evidence: "records/pms/pms_periodic_report_template.md", condition: "Class IIa and higher."}
-  - {requirement: "Annex IX Section 4.10, Annex X Section 5.2", topic: "Clinical impact screening of changes; informing the notified body of planned changes", control: "SOP-025 6.13(4), 6.13(5), SOP-009", evidence: "records/configuration/final_release_decision_template.md", condition: "Notified body information only where the conformity assessment route requires it."}
+  - {requirement: "Annex IX Section 4.10, Annex X Section 5.2", topic: "Clinical impact screening of changes; informing the notified body of planned changes", control: "SOP-025 6.13(4), 6.13(5), SOP-009 6.2(7), SOP-020 6.6", evidence: "records/configuration/final_release_decision_template.md", condition: "Notified body information only where the conformity assessment route requires it."}
 other_framework_links:
   - {ref: "ISO 13485:2016 7.3.7", link: "Clinical evaluation as part of design and development validation", control: "SOP-008 6.6, SOP-025"}
   - {ref: "ISO 14971:2019 7.4, 8", link: "Benefit-risk analysis aligned with CER conclusions", control: "SOP-018, SOP-025 6.10(5)"}
@@ -80,11 +81,11 @@ cited_standards:
   - {ref: "ISO 14155:2020", scope: "Clinical investigation good clinical practice", text_reproduced: false}
   - {ref: "ISO 14971:2019", scope: "Risk management", text_reproduced: false}
   - {ref: "IEC 62366-1:2015+A1:2020", scope: "Usability engineering", text_reproduced: false}
-  - {ref: "ISO/DIS 18969", scope: "Clinical evaluation of medical devices (draft)", text_reproduced: false}
+  - {ref: "ISO/FDIS 18969", scope: "Clinical evaluation of medical devices (final draft)", text_reproduced: false}
 informative_references:
   - {ref: "BSI, Clinical Evaluation of Software as a Medical Device (SaMD) for Conformity Assessment (2026)", note: "Background only; copyrighted, not reproduced."}
 baseline_reuse:
   dedicated_sop: "SOP-025 (new)"
-  reused_qms_sops: ["SOP-001", "SOP-007", "SOP-008", "SOP-009", "SOP-011", "SOP-012", "SOP-013", "SOP-014", "SOP-018", "SOP-019", "SOP-020", "SOP-022", "SOP-023", "SOP-024", "WI-001"]
+  reused_qms_sops: ["SOP-001", "SOP-004", "SOP-007", "SOP-008", "SOP-009", "SOP-011", "SOP-012", "SOP-013", "SOP-014", "SOP-018", "SOP-019", "SOP-020", "SOP-022", "SOP-023", "SOP-024", "WI-001"]
 notes:
   - "No copyrighted standard or commercial publication text is included; only references, control mappings, and implementation decisions."

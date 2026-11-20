@@ -11,6 +11,10 @@ jurisdictions:
           note: "Medical device definition baseline in Switzerland."
         - ref: "Art. 15 MedDO"
           note: "Classification refers to Annex VIII EU MDR, including software classification approach."
+        - ref: "Art. 21 para. 4 MedDO"
+          note: "Demonstrating conformity with the general safety and performance requirements includes a clinical evaluation under Art. 61 EU MDR; implemented through SOP-025."
+        - ref: "Art. 46 para. 3 MedDO"
+          note: "Manufacturers conduct the clinical evaluation under Art. 61 EU MDR (including delegated-act amendments) and Annex XIV, and update it with PMCF results; implemented through SOP-025."
       source_links:
         - "https://www.swissmedic.ch/swissmedic/en/home/medical-devices/regulation-of-medical-devices/faq.html"
         - "https://www.swissmedic.ch/dam/swissmedic/en/dokumente/medizinprodukte/mep_urr/bw630_30_007d_mbmedizinprodukte-software.pdf.download.pdf/BW630_30_007e_MB%20Medical%20Device%20Software.pdf"
@@ -165,7 +169,7 @@ regulatory_commitments:
         - "matrices/mdr_clinical_evaluation_gap_analysis.yml"
         - "records/clinical/"
       scope_owner: qa_lead
-      re_evaluation_trigger: "New device product, change of intended purpose or class, or publication of ISO 18969."
+      re_evaluation_trigger: "New device product, change of intended purpose or class, a MedDO amendment to Art. 21 or Art. 46, or publication of ISO 18969."
       review_by: "2027-06-30"
     - framework: "EN 18286:2026 (EU AI Act provider QMS)"
       gap_analysis: "matrices/en_18286_gap_analysis.yml"

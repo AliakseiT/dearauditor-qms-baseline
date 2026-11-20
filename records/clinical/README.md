@@ -39,11 +39,11 @@ approving PR (`SOP-025 §6.1`).
 ## Sources
 
 The templates are written from the legal text and public guidance:
-Regulation (EU) 2017/745 Art. 2, 7, 32, 61, 74, 86 and Annexes I, II, III, XIV,
-XV; MDCG 2019-11 rev. 1, MDCG 2020-1, MDCG 2020-5, MDCG 2020-6, MDCG 2020-7,
+Regulation (EU) 2017/745 Art. 2, 7, 32, 54, 61, 74, 86 and Annexes I, II, III,
+VIII, IX, X, XIV, XV; MedDO (SR 812.213) Art. 21(4) and 46(3); MDCG 2019-11 rev. 1, MDCG 2020-1, MDCG 2020-5, MDCG 2020-6, MDCG 2020-7,
 MDCG 2020-8, MDCG 2020-13, MDCG 2021-24 rev. 1, MDCG 2025-6; MEDDEV 2.7/1
 rev. 4; IMDRF/SaMD WG/N12, N41, and N81. Standards (ISO 14155:2020,
-ISO 14971:2019, IEC 62366-1, ISO/DIS 18969) are cited by number only; their
+ISO 14971:2019, IEC 62366-1, ISO/FDIS 18969) are cited by number only; their
 text is not reproduced. The BSI white paper "Clinical Evaluation of Software as
 a Medical Device (SaMD) for Conformity Assessment" (2026) was used as
 informative background on common notified-body findings; none of its text or

@@ -12,10 +12,13 @@ approver_role: management_representative
 Define how the organisation plans, conducts, documents, and maintains the
 clinical evaluation of each medical device software product, and how
 post-market clinical follow-up (PMCF) keeps that evaluation current. The
-procedure implements Regulation (EU) 2017/745 (MDR) Article 61 and Annex XIV,
-and is used for Switzerland as recorded in
-`matrices/regulatory_market_scope.yml`, where adopters confirm the applicable
-Medical Devices Ordinance (MedDO, SR 812.213) provisions. It also supplies
+procedure implements Regulation (EU) 2017/745 (MDR) Article 61 and Annex XIV.
+For Switzerland, the Medical Devices Ordinance (MedDO, SR 812.213) requires the
+same clinical evaluation: Art. 21(4) makes it part of demonstrating conformity
+with the general safety and performance requirements, and Art. 46(3) requires
+manufacturers to conduct it in accordance with MDR Art. 61, including
+amendments adopted by delegated acts, and Annex XIV, and to update it with
+PMCF results. It also supplies
 the clinical evaluation part of design validation required by ISO 13485:2016
 clause 7.3.7.
 
@@ -464,6 +467,7 @@ All records are kept in the product's medical device file under `SOP-007`.
 | Regulation (EU) 2017/745 Art. 61(10) | Justification for non-clinical evidence (§6.9). |
 | Regulation (EU) 2017/745 Art. 61(11), (12); Annex XIV Part A 4 | Updates and CER (§6.11, §6.13). |
 | Regulation (EU) 2017/745 Annex XIV Part B; Annex III Section 1(b) | PMCF, including method rationale and any decision that PMCF is not needed (§6.12). |
+| MedDO (SR 812.213) Art. 21(4), Art. 46(3) | Swiss requirement for clinical evaluation under MDR Art. 61 and Annex XIV, updated with PMCF results (§1, §6.4 to §6.13). |
 | Regulation (EU) 2017/745 Art. 7 | Claims supported by evidence (§6.10(2)). |
 | ISO 13485:2016 7.3.7 | Clinical evaluation as part of design and development validation. |
 | ISO 14971:2019 7.4, 8 | Benefit-risk inputs aligned with the risk management file (§6.10(5)). |
@@ -474,6 +478,7 @@ The clause-level mapping is maintained in
 ## 9. Related Controlled Documents
 - QM-001 Quality Manual
 - SOP-001 Document and Record Control
+- SOP-004 Management Review
 - SOP-007 Medical Device File Control
 - SOP-008 Design and Development Control
 - SOP-009 Change Management
@@ -494,4 +499,4 @@ The clause-level mapping is maintained in
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
 |---|---|---|
-| R00 | 2026-11-19 | Initial release of the clinical evaluation and PMCF procedure under MDR Art. 61 and Annex XIV, with software-specific controls for intended purpose, classification, the evidence chain from valid clinical association to clinical benefit, the Art. 61(10) pathway, AI-enabled software, Art. 61(4) to (6) investigation and exemption decisions, PMCF notification and PSUR cadence, clinical impact screening of software changes, and two-step CEP approval. |
+| R00 | 2026-11-19 | Initial release of the clinical evaluation and PMCF procedure under MDR Art. 61 and Annex XIV, with software-specific controls for intended purpose, classification, the evidence chain from valid clinical association to clinical benefit, the Art. 61(10) pathway, AI-enabled software, Art. 61(4) to (6) investigation and exemption decisions, PMCF notification and PSUR cadence, clinical impact screening of software changes, and two-step CEP approval, with MedDO Art. 21(4) and Art. 46(3) cited for Switzerland. |
