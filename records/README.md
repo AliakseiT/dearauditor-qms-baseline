@@ -30,6 +30,7 @@ Some folders are intentionally empty until the first signed and published compan
 | Start with risk records | [Risk management records](risk/) |
 | Start with usability-engineering templates | [Usability engineering templates](usability/) |
 | Start with medical device file templates | [Medical device file templates](mdf/) |
+| Start with clinical evaluation and PMCF templates | [Clinical evaluation templates](clinical/README.md) |
 | Start with V&V templates | [Verification and validation templates](verification_validation/) |
 | Start with release/configuration templates | [Configuration and release templates](configuration/) |
 | Start with ISMS templates | [ISMS record templates](isms/) |
@@ -55,6 +56,7 @@ Some folders are intentionally empty until the first signed and published compan
 - [Risk management](risk/) - Markdown-first risk management plan and review templates, plus risk register templates/reference artifacts
 - [Usability engineering](usability/) - usability file index, use specification, hazard-related scenarios, formative/summative, and post-production usability review templates
 - [Medical device file](mdf/) - classification, device description, declaration of conformity, file index, traceability summary, and in-house health-institution justification templates
+- [Clinical evaluation](clinical/README.md) - clinical evaluation plan, literature search, state of the art, appraisal, equivalence, Art. 61(10) justification, clinical evaluation report, and PMCF plan and report templates under `SOP-025`
 - [Verification and validation](verification_validation/) - V&V plan, test case, execution log, and report templates for designated product/study repositories
 - [Configuration and release](configuration/) - release readiness, final release decision, and release baseline manifest templates for designated product/study repositories
 - [ISMS](isms/) - ISO/IEC 27001 scope, asset, information security risk, access review, incident, exception, and Statement of Applicability templates

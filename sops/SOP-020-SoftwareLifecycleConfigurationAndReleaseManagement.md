@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-020
 title: Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
-revision: R13
-revision_date: 2026-05-04
+revision: R14
+revision_date: 2026-11-20
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -90,6 +90,7 @@ Applies to regulated software products and significant product changes that requ
    - acceptable unresolved anomaly posture
    - completed required verification/validation activities
    - approved residual risk status
+   - for medical devices, a CER that covers the release, or a recorded clinical impact screening of each included change under `SOP-025 §6.13(4)`, and a current PMCF plan
 2. Final release authorization must be made through a distinct group approval after the V&V report, residual-risk decision, anomaly posture, and exact binary/deployment reference are current.
 3. The normal final release decision group is QA Lead and Engineering Lead; Management Representative participates when escalation, exceptional residual risk, or management review is required.
 4. If the release binary changes after formal V&V entry, assess the change through change/risk/release records, record the new binary deployment, and determine whether partial or full re-execution is required before release.
@@ -143,6 +144,7 @@ Applies to regulated software products and significant product changes that requ
 - SOP-009 Change Management
 - SOP-015 Nonconforming Product Control
 - SOP-018 Risk Management (ISO 14971:2019)
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 - WI-001 Verification and Validation Execution
 - WI-002 Configuration and Release Management Execution
 
@@ -163,3 +165,4 @@ Applies to regulated software products and significant product changes that requ
 | R11 | 2026-04-25 | Added an explicit retirement and decommissioning control for released health software products covering retirement decision, user/customer impact assessment, communication, residual-risk handling, retention, and MDF linkage to close IEC 82304-1:2016 clause 8. |
 | R12 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R13 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R14 | 2026-11-20 | Added clinical evaluation coverage of the release under SOP-025 to the release decision prerequisites for medical devices. |

@@ -11,6 +11,10 @@ jurisdictions:
           note: "Medical device definition baseline in Switzerland."
         - ref: "Art. 15 MedDO"
           note: "Classification refers to Annex VIII EU MDR, including software classification approach."
+        - ref: "Art. 21 para. 4 MedDO"
+          note: "Demonstrating conformity with the general safety and performance requirements includes a clinical evaluation under Art. 61 EU MDR; implemented through SOP-025."
+        - ref: "Art. 46 para. 3 MedDO"
+          note: "Manufacturers conduct the clinical evaluation under Art. 61 EU MDR (including delegated-act amendments) and Annex XIV, and update it with PMCF results; implemented through SOP-025."
       source_links:
         - "https://www.swissmedic.ch/swissmedic/en/home/medical-devices/regulation-of-medical-devices/faq.html"
         - "https://www.swissmedic.ch/dam/swissmedic/en/dokumente/medizinprodukte/mep_urr/bw630_30_007d_mbmedizinprodukte-software.pdf.download.pdf/BW630_30_007e_MB%20Medical%20Device%20Software.pdf"
@@ -25,6 +29,10 @@ jurisdictions:
           note: "Risk-classification framework; software classification rules applied through Annex VIII (including Rule 11)."
         - ref: "MDCG 2019-11 Rev.1 (June 2025)"
           note: "Qualification and classification guidance for software under MDR/IVDR."
+        - ref: "Article 61 MDR + Annex XIV"
+          note: "Clinical evaluation and post-market clinical follow-up; implemented through SOP-025 and matrices/mdr_clinical_evaluation_gap_analysis.yml."
+        - ref: "MDCG 2020-1 (March 2020)"
+          note: "Clinical evaluation of medical device software: valid clinical association, technical performance, clinical performance."
         - ref: "Regulation (EU) 2024/1689 (EU AI Act)"
           note: "Provider quality management system (Art. 17), risk management (Art. 9), post-market monitoring (Art. 72), serious incident reporting (Art. 73), technical documentation (Annex IV), and conformity assessment (Annexes VI/VII) apply to high-risk AI systems (Art. 6(1)/(2) + Annex I/III)."
         - ref: "Commission Implementing Decision (EU) 2026/2274 (12 Oct 2026)"
@@ -152,6 +160,17 @@ regulatory_commitments:
       scope_owner: qa_lead
       re_evaluation_trigger: "Introduction or material change of an AI component."
       review_by: "2027-03-31"
+    - framework: "Regulation (EU) 2017/745 Art. 61 and Annex XIV (clinical evaluation and PMCF)"
+      gap_analysis: "matrices/mdr_clinical_evaluation_gap_analysis.yml"
+      status: applied
+      scope_note: "Required for every product that qualifies as a medical device in the EU or Switzerland, from design start until retirement. Product-specific CEP, CER, and PMCF records live in product repositories."
+      evidence:
+        - "sops/SOP-025-ClinicalEvaluation.md"
+        - "matrices/mdr_clinical_evaluation_gap_analysis.yml"
+        - "records/clinical/"
+      scope_owner: qa_lead
+      re_evaluation_trigger: "New device product, change of intended purpose or class, a MedDO amendment to Art. 21 or Art. 46, or publication of ISO 18969."
+      review_by: "2027-06-30"
     - framework: "EN 18286:2026 (EU AI Act provider QMS)"
       gap_analysis: "matrices/en_18286_gap_analysis.yml"
       status: planned

@@ -53,6 +53,9 @@ regulatory_commitments:
     - framework: "ISO/IEC 42001:2023"
       gap_analysis: "matrices/iso_iec_42001_gap_analysis.yml"
       status: not_selected
+    - framework: "Regulation (EU) 2017/745 Art. 61 and Annex XIV (clinical evaluation and PMCF)"
+      gap_analysis: "matrices/mdr_clinical_evaluation_gap_analysis.yml"
+      status: not_selected
     - framework: "EN 18286:2026 (EU AI Act provider QMS)"
       gap_analysis: "matrices/en_18286_gap_analysis.yml"
       status: not_selected

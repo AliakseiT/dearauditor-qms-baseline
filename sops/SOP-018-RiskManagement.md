@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-018
 title: Risk Management (ISO 14971:2019)
-revision: R10
-revision_date: 2026-05-04
+revision: R11
+revision_date: 2026-11-20
 status: Published
 owner_role: qa_lead
 approver_role: management_representative
@@ -31,6 +31,7 @@ This SOP covers:
 - Historical defects/incidents/complaints/PMS data
 - Threat intelligence and vulnerability reports
 - Regulatory and standards requirements
+- Clinical evaluation conclusions, state of the art benchmarks, and PMCF results under `SOP-025`
 
 ## 5. Outputs
 - Risk management plan
@@ -118,6 +119,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 1. Evaluate aggregate residual risk across all risk items.
 2. The decision on overall residual risk acceptability shall be documented and approved by the management representative and is a prerequisite for product release.
 3. Significant residual risks are disclosed in product documentation where required.
+4. For medical devices, the benefit side of the benefit-risk decision rests on the clinical benefits demonstrated in the current CER under `SOP-025`. The overall residual risk decision and the CER benefit-risk conclusion must agree; a change to either triggers review of the other.
 
 ### 8.6 Risk Management Review (Clause 9)
 1. Confirm plan execution, record completeness, and overall residual risk decision.
@@ -127,6 +129,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 1. Continuously collect relevant post-production information.
 2. Feed incidents, vulnerabilities, complaints, and trend shifts back into risk analysis.
 3. Reopen and reassess risk items when acceptability assumptions change.
+4. For medical devices, PMCF evaluation reports and CER updates under `SOP-025` are post-production inputs; new risks, side effects, or misuse they identify are entered in the risk register.
 
 ## 9. Cybersecurity Integration Rules
 1. Cybersecurity threats are created and maintained in the same risk register as other risks.
@@ -160,6 +163,7 @@ Cybersecurity controls follow the same priority and are not separated from safet
 - SOP-012 Feedback and Complaint Handling
 - SOP-013 Regulatory Incident Reporting
 - SOP-014 Post-Market Surveillance
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 
 ## 13. Revision History
 | Revision | Revision Date | Change Summary |
@@ -175,3 +179,4 @@ Cybersecurity controls follow the same priority and are not separated from safet
 | R08 | 2026-03-27 | Consolidated the standalone regulatory-lead risk-file owner role into the QA-lead baseline and aligned the planning accountability wording plus ownership metadata. |
 | R09 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R10 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R11 | 2026-11-20 | Linked the overall residual risk decision to the CER benefit-risk conclusion and added clinical evaluation and PMCF results as risk inputs under SOP-025. |

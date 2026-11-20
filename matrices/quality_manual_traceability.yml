@@ -1,4 +1,4 @@
-version: 9
+version: 10
 standard:
   exact_name: "EVS-EN ISO 13485:2016+A11:2021 Medical devices - Quality management systems - Requirements for regulatory purposes"
   normative_base: "ISO 13485:2016"
@@ -20,6 +20,8 @@ additional_standards:
   - exact_name: "EN 18286:2026 Artificial intelligence - Quality management system for EU AI Act regulatory purposes"
     normative_base: "EN 18286:2026"
 additional_regulatory_frameworks:
+  - exact_name: "Regulation (EU) 2017/745 on medical devices (MDR), Article 61 and Annex XIV (clinical evaluation and post-market clinical follow-up)"
+    normative_base: "EU MDR Art. 61, Annex XIV"
   - exact_name: "Regulation (EU) 2016/679 General Data Protection Regulation (GDPR)"
     normative_base: "GDPR"
   - exact_name: "Swiss Federal Act on Data Protection (FADP), revised Act in force from 2023-09-01"
@@ -137,6 +139,11 @@ quality_manual_sections:
     iso_clauses: ["EN 18286 4-10", "Regulation (EU) 2024/1689 Art. 9, 13, 14, 15, 17, 72, 73"]
     controlling_documents: ["SOP-024", "SOP-022", "SOP-018", "SOP-014", "SOP-021"]
     status: "implemented_with_company_specific_completion_when_in_scope"
+  - section_id: QM-22
+    section_name: "Clinical evaluation and post-market clinical follow-up"
+    iso_clauses: ["7.3.7", "Regulation (EU) 2017/745 Art. 61, Annex XIV"]
+    controlling_documents: ["SOP-025", "SOP-008", "SOP-007", "SOP-014", "SOP-018"]
+    status: "implemented_with_product_specific_extensions"
 supporting_definitions:
   - item: "Regulatory market scope register"
     status: "implemented"
@@ -182,6 +189,10 @@ supporting_definitions:
     status: "implemented_with_product_specific_extensions"
     reference: "matrices/iso_iec_42001_gap_analysis.yml, sops/SOP-022-AIManagementSystem.md"
     note: "ISO/IEC 42001 AIMS scope, AI risk and impact assessment, Statement of Applicability, lifecycle, data, information for users, event handling, audit, review, and improvement interfaces are implemented through one dedicated AIMS SOP plus existing QMS controls. AI tooling used to author or operate the QMS itself is governed under existing supplier and tooling-validation controls."
+  - item: "Clinical evaluation and PMCF baseline for medical device software"
+    status: "implemented_with_product_specific_extensions"
+    reference: "matrices/mdr_clinical_evaluation_gap_analysis.yml, sops/SOP-025-ClinicalEvaluation.md, records/clinical/*"
+    note: "MDR Art. 61 and Annex XIV clinical evaluation and PMCF are implemented through one dedicated SOP and a template family. Each product completes its own CEP, CER, and PMCF records in its designated repository."
   - item: "EN 18286 provider QMS baseline for EU-provided AI systems"
     status: "implemented_with_company_specific_completion_when_in_scope"
     reference: "matrices/en_18286_gap_analysis.yml, sops/SOP-024-AIActProviderQMS.md"

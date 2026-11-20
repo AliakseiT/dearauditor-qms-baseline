@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-008
 title: Design and Development Control
-revision: R11
-revision_date: 2026-05-04
+revision: R12
+revision_date: 2026-11-19
 status: Published
 owner_role: engineering_lead
 approver_role: qa_lead
@@ -79,6 +79,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 2. Validation demonstrates product meets user needs/intended use in representative context.
 3. Maintain bidirectional traceability requirements -> risk controls -> tests -> results.
 4. Execute V&V planning, approval, evidence review, and post-merge PIN signature flow using WI-001.
+5. For medical device products, design validation includes clinical evaluation under `SOP-025`. Plan it from the start of development so that its evidence needs inform design inputs, and complete it before release.
 
 ### 6.7 Design Transfer and Release
 1. Confirm release readiness checklist completion.
@@ -109,6 +110,7 @@ Applies to new products, major features, and significant lifecycle changes affec
 - SOP-009 Change Management
 - SOP-015 Nonconforming Product Control
 - SOP-020 Software Lifecycle, Configuration, and Release Management (IEC 62304:2006+A1:2015)
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 - WI-001 Verification and Validation Execution
 - WI-002 Configuration and Release Management Execution
 
@@ -127,3 +129,4 @@ Applies to new products, major features, and significant lifecycle changes affec
 | R09 | 2026-03-27 | Consolidated the standalone regulatory-lead responsibilities into the QA-lead role and reduced the design-input baseline signer set accordingly. |
 | R10 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R11 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R12 | 2026-11-19 | Added clinical evaluation under SOP-025 as part of design validation (ISO 13485:2016 7.3.7). |
