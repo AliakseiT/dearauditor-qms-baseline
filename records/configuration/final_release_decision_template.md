@@ -22,7 +22,7 @@
 - [ ] Unresolved anomalies are acceptable with documented rationale.
 - [ ] The exact binary / deployment accepted for shipment matches the reviewed evidence set.
 - [ ] Any post-V&V binary change has documented regression rationale or re-execution evidence.
-- [ ] For medical devices: the CER covers this version, or the clinical impact screening of each included change (SOP-025 §6.13(4)) is recorded, and the PMCF plan is current.
+- [ ] For medical devices: the CER covers this version, or the clinical impact screening of each included change (SOP-025 §6.13(4)) is recorded, any required notified-body approval (SOP-025 §6.13(5)) is obtained and linked in the change record, and the PMCF plan is current.
 
 ## Escalation and Conditions
 - Management escalation required: yes | no

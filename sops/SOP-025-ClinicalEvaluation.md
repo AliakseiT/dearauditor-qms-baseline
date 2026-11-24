@@ -411,7 +411,9 @@ the device. Label every data set accordingly in the appraisal.
    body before introducing changes that could affect safety, performance, or
    the conditions of use (for example MDR Annex IX Section 4.10 or Annex X
    Section 5.2). The outcome of the screening in item 4 is the input to that
-   decision.
+   decision. Where notified-body approval is required, the changed device
+   must not be released until that approval has been obtained and its
+   evidence linked in the change record.
 
 ### 6.14 AI-Enabled Software
 In addition to the steps above:
@@ -469,7 +471,7 @@ All records are kept in the product's medical device file under `SOP-007`.
 | Regulation (EU) 2017/745 Art. 54 | Clinical evaluation consultation procedure planned where applicable (§6.8(5)). |
 | Regulation (EU) 2017/745 Art. 74(1) | PMCF investigation notification (§6.8(6)). |
 | Regulation (EU) 2017/745 Art. 86(1) | CER and PMCF review aligned with PSUR cadence (§6.13(1)). |
-| Regulation (EU) 2017/745 Annex IX 4.10, Annex X 5.2 | Clinical impact screening of changes and notified body information (§6.13(4), (5)). |
+| Regulation (EU) 2017/745 Annex IX 4.10, Annex X 5.2 | Clinical impact screening of changes; notified-body notification and pre-release approval where required (§6.13(4), (5)). |
 | Regulation (EU) 2017/745 Art. 61(10) | Justification for non-clinical evidence (§6.9). |
 | Regulation (EU) 2017/745 Art. 61(11), (12); Annex XIV Part A 4 | Updates and CER (§6.11, §6.13). |
 | Regulation (EU) 2017/745 Annex XIV Part B; Annex III Section 1(b) | PMCF, including method rationale and any decision that PMCF is not needed (§6.12). |
