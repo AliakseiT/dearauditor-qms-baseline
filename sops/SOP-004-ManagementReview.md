@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-004
 title: Management Review
-revision: R09
-revision_date: 2026-05-26
+revision: R10
+revision_date: 2026-11-20
 status: Published
 owner_role: management_representative
 approver_role: management_representative
@@ -20,6 +20,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 - Process performance and quality objectives
 - Organization context, interested-party needs, customer satisfaction signals, and risks/opportunities
 - Supplier performance and regulatory changes
+- For medical devices: clinical evaluation and PMCF conclusions under `SOP-025`
 - Resource and competence adequacy
 
 ## 4. Outputs
@@ -51,6 +52,7 @@ Applies to formal management review meetings and resulting decisions/actions for
    - Quality objective performance
    - Organization context, process risks/opportunities, and climate-relevance changes where applicable
    - Supplier and resource status
+   - For medical devices: CER conclusions, benefit-risk changes, open clinical evidence gaps, and PMCF status per product (`SOP-025`)
 
 ### 6.3 Review Execution
 1. Confirm quorum: management representative + required top management delegates.
@@ -84,6 +86,7 @@ Applies to formal management review meetings and resulting decisions/actions for
 - SOP-005 QMS Governance
 - SOP-002 CAPA
 - SOP-016 Quality Metrics and Data Analysis
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
@@ -98,3 +101,4 @@ Applies to formal management review meetings and resulting decisions/actions for
 | R07 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R08 | 2026-05-04 | Standardize standards citations to specific versions. |
 | R09 | 2026-05-26 | Added ISO 9001 management review inputs for context, interested parties, customer satisfaction, risks/opportunities, and improvement. |
+| R10 | 2026-11-20 | Added clinical evaluation and PMCF conclusions under SOP-025 as a management review input for medical devices. |

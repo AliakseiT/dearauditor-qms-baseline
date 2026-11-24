@@ -83,8 +83,10 @@ profiles:
       - SOP-021  # Information security management
       - SOP-022  # AI management system
       - SOP-023  # Data protection and privacy management
+      - SOP-025  # Clinical evaluation and PMCF
     gap_analyses:
       - matrices/iso_13485_gap_analysis.yml
+      - matrices/mdr_clinical_evaluation_gap_analysis.yml
       - matrices/iso_14971_gap_analysis.yml
       - matrices/iec_62304_gap_analysis.yml
       - matrices/iec_62366_1_gap_analysis.yml
@@ -97,6 +99,7 @@ profiles:
       - matrices/regulatory_market_scope.yml
     record_families:
       - records/mdf
+      - records/clinical
       - records/design
       - records/risk
       - records/usability

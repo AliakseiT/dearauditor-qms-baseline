@@ -71,6 +71,15 @@ Baselines that include `SOP-024` (EN 18286:2026) add a `regulatory_commitments` 
 3. Replace every `REPLACE_WITH_` value. The readiness check now scans `matrices/regulatory_market_scope.yml` for placeholders.
 4. Run `python3 tools/qms_distribution.py check-commitments --repo-root .` and `tools/check_adoption_readiness.sh --skip-gh`, then approve the matrix change through your controlled PR process.
 
+### Clinical evaluation (SOP-025)
+
+Baselines that include `SOP-025` add MDR Art. 61 and Annex XIV clinical evaluation and PMCF controls, the `records/clinical/` templates, and `matrices/mdr_clinical_evaluation_gap_analysis.yml`. The upgrade PR brings the SOP and templates. It does not change `matrices/`, because that folder is company-owned. Medical device adopters should, before or with the upgrade PR:
+
+1. Copy `matrices/mdr_clinical_evaluation_gap_analysis.yml` from the upstream release into your repository.
+2. Add the `Regulation (EU) 2017/745 Art. 61 and Annex XIV` entry from [`../../examples/bootstrap/matrices/regulatory_market_scope.yml`](../../examples/bootstrap/matrices/regulatory_market_scope.yml) to your `regulatory_commitments` ledger and set its status. For a device on the EU or Swiss market it is normally `applied`, with evidence paths.
+3. Map `SOP-025` to the roles that plan, review, or approve clinical evaluations in `matrices/training_matrix.yml`, and add `SOP-025` and `records/clinical` to your adoption profile if you keep one.
+4. Run `python3 tools/qms_distribution.py check-commitments --repo-root .` and `tools/check_adoption_readiness.sh --skip-gh`.
+
 ## Signature Hosting Options
 
 Adopters that want the GitHub-native signing flow have two practical options:

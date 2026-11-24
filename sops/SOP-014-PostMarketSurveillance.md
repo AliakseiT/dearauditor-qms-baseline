@@ -1,8 +1,8 @@
 ---
 sop_id: SOP-014
 title: Post-Market Surveillance
-revision: R07
-revision_date: 2026-05-04
+revision: R08
+revision_date: 2026-11-19
 status: Published
 owner_role: qa_lead
 approver_role: qa_lead
@@ -36,6 +36,7 @@ Applies to all released products and product versions in active use.
 ### 6.1 PMS Planning
 1. Maintain product-level PMS plan defining data sources, collection methods, analysis methods, responsibilities, review frequency, and signal detection thresholds.
 2. Align PMS metrics with product risk controls and intended use.
+3. For medical devices, the PMS plan includes the PMCF plan, or a justification for not having one, under `SOP-025 §6.12` (MDR Annex III Section 1(b)).
 
 ### 6.2 Data Collection and Consolidation
 1. Collect periodic data from complaints, incidents, support, and reliability signals.
@@ -44,7 +45,7 @@ Applies to all released products and product versions in active use.
 ### 6.3 Signal Detection and Analysis
 1. Perform trend analysis periodically for active products.
 2. Assess signal significance by severity, frequency, and detectability.
-3. Determine if action is required (risk update, CAPA, incident reporting, design change).
+3. Determine if action is required (risk update, CAPA, incident reporting, design change, clinical evaluation update under `SOP-025 §6.13`).
 
 ### 6.4 Reporting and Escalation
 1. Issue PMS summary with conclusions and required actions.
@@ -72,6 +73,7 @@ Applies to all released products and product versions in active use.
 - SOP-012 Feedback and Complaint Handling
 - SOP-013 Regulatory Incident Reporting
 - SOP-016 Quality Metrics and Data Analysis
+- SOP-025 Clinical Evaluation and Post-Market Clinical Follow-up
 
 ## 10. Revision History
 | Revision | Revision Date | Change Summary |
@@ -84,3 +86,4 @@ Applies to all released products and product versions in active use.
 | R05 | 2026-03-27 | Consolidated the standalone regulatory-lead PMS-owner role into the QA-lead baseline and aligned the role table plus ownership metadata. |
 | R06 | 2026-04-27 | Renamed YAML metadata field `effective_date` to `revision_date` to align controlled-document metadata with the tag-based publication model. The effective date is derived from the published QMS release tag rather than from the document front matter. |
 | R07 | 2026-05-04 | Standardize standards citations to specific versions. |
+| R08 | 2026-11-19 | Linked the PMS plan to the PMCF plan and the clinical evaluation update triggers under SOP-025. |
